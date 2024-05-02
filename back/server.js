@@ -7,7 +7,7 @@ app.use(cors());
 
 app.get("/", (req, res) => {
   return res.json({
-    msg: "hi",
+    msg: "hello",
   });
 });
 
