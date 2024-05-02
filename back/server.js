@@ -7,7 +7,7 @@ app.use(cors());
 
 app.get("/", (req, res) => {
   return res.json({
-    msg: "제발 돼라ㅠㅠ",
+    msg: "verified",
   });
 });
 
