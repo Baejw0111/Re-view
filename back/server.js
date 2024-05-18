@@ -23,10 +23,10 @@ mongoose
 mongoose 6.0 버전 이상부터는 해당 옵션들이 기본값이 되어 따로 명시하지 않아도 된다.
 */
 
-// MongoDB에 테스트 데이터베이스를 생성하고 데이터를 삽입하는 코드
+// MongoDB 데이터 삽입 테스트
 const testConnection = async () => {
   try {
-    const db = mongoose.connection.useDb("testDatabase"); // 'testDatabase'라는 이름의 DB 사용
+    const db = mongoose.connection.useDb("testDatabase"); // 'testDatabase'라는 이름의 DB 사용. 없으면 생성됨.
 
     /* 'Test' 모델 정의.
     Mongoose는 모델을 생성 시 모델 이름을 복수형으로 변환해 컬렉션 이름을 생성한다.
@@ -41,7 +41,66 @@ const testConnection = async () => {
   }
 };
 
-testConnection(); // 테스트 데이터베이스 연결 및 데이터 삽입 실행
+const db = mongoose.connection.useDb("mainDB");
+// 유저 모델
+const UserModel = db.model(
+  "User",
+  new mongoose.Schema({
+    name: { type: String, default: "사용자" },
+    email: { type: String, default: "" },
+    password: { type: String, default: "" },
+  })
+);
+// 리뷰 모델
+const ReviewModel = db.model(
+  "Review",
+  new mongoose.Schema({
+    author: { type: String, default: "작성자" },
+    uploadTime: { type: Date, default: Date.now },
+    title: { type: String, default: "" },
+    comments: { type: String, default: "" },
+    ratings: { type: [Number], default: [0] },
+    tags: { type: [String], default: [] },
+  })
+);
+// 태그 모델
+const TagModel = db.model(
+  "Tag",
+  new mongoose.Schema({
+    tagName: { type: String, default: "" },
+    appliedCount: { type: Number, default: 0 },
+  })
+);
+
+/*
+const testData = new TestModel({ name: "앙 기모띠" }); // 테스트 데이터 생성
+await testData.save(); // 데이터 저장
+*/
+
+// 리뷰 등록 API
+app.post("/review", async (req, res) => {
+  const { author, uploadTime, title, comments, ratings, tags } = req.body;
+
+  if (!author || !uploadTime || !title || !comments || !ratings || !tags) {
+    return res.status(400).json({ message: "모든 필드를 채워주세요." });
+  }
+
+  try {
+    const reviewData = new ReviewModel({
+      author,
+      uploadTime,
+      title,
+      comments,
+      ratings,
+      tags,
+    });
+    await reviewData.save(); // 데이터 저장
+    res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });
+  } catch (error) {
+    console.error("리뷰 등록 중 에러 발생:", error);
+    res.status(500).json({ message: "서버 에러가 발생했습니다." });
+  }
+});
 
 app.get("/", (req, res) => {
   return res.json({
