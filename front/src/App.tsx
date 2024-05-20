@@ -1,7 +1,7 @@
 import Review from "./Review";
 import "./App.css";
-import { ThemeProvider } from "./components/theme-provider";
-import { ModeToggle } from "./components/mode-toggle";
+import ThemeProvider from "./components/theme/theme-provider";
+import { ModeToggle } from "./components/theme/mode-toggle";
 
 function App() {
   return (
