@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "./components/ui/input";
+import { Textarea } from "./components/ui/textarea";
 
 /* TODO:
 - 평점 부여 방식 커스텀
 - 이미지 업로드 로직 구현
+- Shadcn Form 적용
 */
 
 export default function Review() {
@@ -18,7 +22,11 @@ export default function Review() {
   const [newTag, setNewTag] = useState(""); // 새로운 태그 입력 상태
   const [newRating, setNewRating] = useState(0); // 새로운 평점 입력 상태
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const { name, value } = event.target;
     setReviewData((prev) => ({ ...prev, [name]: value }));
   };
@@ -71,22 +79,21 @@ export default function Review() {
     <>
       <form onSubmit={handleSubmit}>
         <label>작성자:</label>
-        <input
+        <Input
           type="text"
           name="author"
           value={reviewData.author}
           onChange={handleInputChange}
         />
         <label>제목:</label>
-        <input
+        <Input
           type="text"
           name="title"
           value={reviewData.title}
           onChange={handleInputChange}
         />
         <label>코멘트:</label>
-        <input
-          type="text"
+        <Textarea
           name="comments"
           value={reviewData.comments}
           onChange={handleInputChange}
@@ -95,12 +102,12 @@ export default function Review() {
         {reviewData.ratings.map((rating, index) => (
           <React.Fragment key={index}>
             <div>{rating}</div>
-            <button type="button" onClick={() => removeRating(index)}>
+            <Button type="button" onClick={() => removeRating(index)}>
               삭제
-            </button>
+            </Button>
           </React.Fragment>
         ))}
-        <input
+        <Input
           type="number"
           name="newRating"
           value={newRating}
@@ -108,19 +115,19 @@ export default function Review() {
             setNewRating(Number(event.target.value));
           }}
         />
-        <button type="button" onClick={addRating}>
+        <Button type="button" onClick={addRating}>
           평점 추가
-        </button>
+        </Button>
         <label>태그:</label>
         {reviewData.tags.map((tag, index) => (
           <React.Fragment key={index}>
             <div>{tag}</div>
-            <button type="button" onClick={() => removeTag(index)}>
+            <Button type="button" onClick={() => removeTag(index)}>
               삭제
-            </button>
+            </Button>
           </React.Fragment>
         ))}
-        <input
+        <Input
           type="text"
           name="newTag"
           value={newTag}
@@ -128,10 +135,10 @@ export default function Review() {
             setNewTag(event.target.value);
           }}
         />
-        <button type="button" onClick={addTag}>
+        <Button type="button" onClick={addTag}>
           태그 추가
-        </button>
-        <button type="submit">리뷰 제출</button>
+        </Button>
+        <Button type="submit">리뷰 제출</Button>
       </form>
     </>
   );
