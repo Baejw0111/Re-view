@@ -42,6 +42,8 @@ const testConnection = async () => {
 };
 
 const db = mongoose.connection.useDb("mainDB");
+
+// 변경 시 FE의 interface.ts도 변경할 것
 // 유저 모델
 const UserModel = db.model(
   "User",
@@ -72,10 +74,16 @@ const TagModel = db.model(
   })
 );
 
-/*
-const testData = new TestModel({ name: "앙 기모띠" }); // 테스트 데이터 생성
-await testData.save(); // 데이터 저장
-*/
+// 리뷰 전체 조회 API
+app.get("/review", async (req, res) => {
+  try {
+    const reviews = await ReviewModel.find();
+    res.json(reviews);
+  } catch (error) {
+    console.error("리뷰 조회 중 에러 발생:", error);
+    res.status(500).json({ message: "서버 에러가 발생했습니다." });
+  }
+});
 
 // 리뷰 등록 API
 app.post("/review", async (req, res) => {
