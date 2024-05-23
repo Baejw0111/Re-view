@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 /* TODO:
 - 평점 부여 방식 커스텀
