@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
+// 리뷰 작성 컴포넌트
+
 /* TODO:
 - 평점 부여 방식 커스텀
 - 이미지 업로드 로직 구현
 - Shadcn Form 적용
 */
 
-export default function Review() {
+export default function ReviewForm() {
   const [reviewData, setReviewData] = useState({
     author: "",
     uploadTime: "",

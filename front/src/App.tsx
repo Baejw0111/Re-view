@@ -1,6 +1,6 @@
 import "./App.css";
 import Feed from "./components/Feed";
-import Review from "./components/Review";
+import ReviewForm from "./components/ReviewForm";
 import ThemeProvider from "./components/theme/ThemeProvider";
 import ThemeToggle from "./components/theme/ThemeToggle";
 
@@ -9,7 +9,7 @@ function App() {
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <ThemeToggle />
       <Feed />
-      <Review />
+      <ReviewForm />
     </ThemeProvider>
   );
 }
