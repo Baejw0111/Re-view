@@ -85,6 +85,21 @@ app.get("/review", async (req, res) => {
   }
 });
 
+// 특정 리뷰 조회 API
+app.get("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const reviewData = await ReviewModel.findById(id);
+    if (!reviewData) {
+      return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+    }
+    res.json(reviewData);
+  } catch (error) {
+    console.error("리뷰 조회 중 에러 발생:", error);
+    res.status(500).json({ message: "서버 에러가 발생했습니다." });
+  }
+});
+
 // 리뷰 등록 API
 app.post("/review", async (req, res) => {
   const { author, uploadTime, title, comments, ratings, tags } = req.body;
@@ -106,6 +121,42 @@ app.post("/review", async (req, res) => {
     res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });
   } catch (error) {
     console.error("리뷰 등록 중 에러 발생:", error);
+    res.status(500).json({ message: "서버 에러가 발생했습니다." });
+  }
+});
+
+// 특정 리뷰 수정 API
+app.patch("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body; // 클라이언트로부터 받은 업데이트할 데이터
+
+  try {
+    const reviewData = await ReviewModel.findById(id);
+    if (!reviewData) {
+      return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+    }
+
+    // 받은 필드만 업데이트
+    for (let key in updateData) {
+      reviewData[key] = updateData[key];
+    }
+
+    await reviewData.save(); // 수정된 데이터 저장
+    res.status(200).json({ message: "리뷰가 성공적으로 수정되었습니다." });
+  } catch (error) {
+    console.error("리뷰 수정 중 에러 발생:", error);
+    res.status(500).json({ message: "서버 에러가 발생했습니다." });
+  }
+});
+
+// 특정 리뷰 삭제 API
+app.delete("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await ReviewModel.findByIdAndDelete(id);
+    res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
+  } catch (error) {
+    console.error("리뷰 삭제 중 에러 발생:", error);
     res.status(500).json({ message: "서버 에러가 발생했습니다." });
   }
 });
