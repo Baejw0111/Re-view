@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchReviews } from "@/util/api";
+import { fetchReviewList } from "@/util/api";
 import ReviewCard from "../components/ReviewCard";
 
 export default function Reviews() {
@@ -9,7 +9,7 @@ export default function Reviews() {
     error,
   } = useQuery({
     queryKey: ["reviews"],
-    queryFn: fetchReviews,
+    queryFn: fetchReviewList,
   });
 
   if (error) return <div>에러: {error.message}</div>;
