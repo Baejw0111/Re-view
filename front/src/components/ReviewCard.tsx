@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
-import { Review } from "@/interface";
+import { Review } from "@/util/interface";
 
 // 피드에서 한 리뷰의 요약된 정보를 보여주는 컴포넌트
 
