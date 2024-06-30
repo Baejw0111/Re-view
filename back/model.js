@@ -39,7 +39,7 @@ export const UserModel = db.model(
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
  * @property {string} image - 이미지 경로
- * @property {string} comments - 댓글
+ * @property {string} reviewText - 리뷰 내용
  * @property {number[]} ratings - 평점
  * @property {string[]} tags - 태그
  */
@@ -50,7 +50,7 @@ export const ReviewModel = db.model(
     uploadTime: { type: Date, default: Date.now },
     title: { type: String, default: "" },
     image: { type: String, default: "" },
-    comments: { type: String, default: "" },
+    reviewText: { type: String, default: "" },
     ratings: { type: [Number], default: [0] },
     tags: { type: [String], default: [] },
   })
