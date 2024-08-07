@@ -49,7 +49,7 @@ export const ReviewModel = db.model(
     author: { type: String, default: "작성자" },
     uploadTime: { type: Date, default: Date.now },
     title: { type: String, default: "" },
-    image: { type: [String], default: [] },
+    images: { type: [String], default: [] },
     reviewText: { type: String, default: "" },
     rating: { type: Number, default: 0 },
     tags: { type: [String], default: [] },
