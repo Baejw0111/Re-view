@@ -38,9 +38,9 @@ export const UserModel = db.model(
  * @property {string} author - 작성자
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
- * @property {string} image - 이미지 경로
- * @property {string} comments - 댓글
- * @property {number[]} ratings - 평점
+ * @property {string[]} images - 이미지 파일 경로 모음
+ * @property {string} reviewText - 리뷰 내용
+ * @property {number} rating - 평점
  * @property {string[]} tags - 태그
  */
 export const ReviewModel = db.model(
@@ -49,9 +49,9 @@ export const ReviewModel = db.model(
     author: { type: String, default: "작성자" },
     uploadTime: { type: Date, default: Date.now },
     title: { type: String, default: "" },
-    image: { type: String, default: "" },
-    comments: { type: String, default: "" },
-    ratings: { type: [Number], default: [0] },
+    images: { type: [String], default: [] },
+    reviewText: { type: String, default: "" },
+    rating: { type: Number, default: 0 },
     tags: { type: [String], default: [] },
   })
 );

@@ -1,147 +1,231 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
+import { uploadReview } from "@/util/api";
 
-// 리뷰 작성 컴포넌트
-
-/* TODO:
-- 평점 부여 방식 커스텀
-- 이미지 업로드 로직 구현
-- Shadcn Form 적용
-*/
+const formSchema = z.object({
+  title: z.string().min(1, {
+    message: "제목은 최소 한글자 이상이어야 합니다.",
+  }),
+  images: z
+    .instanceof(FileList)
+    .refine((files) => files.length > 0, {
+      message: "하나 이상의 이미지를 업로드해야 합니다.",
+    })
+    .refine((files) => files.length <= 5, {
+      message: "최대 5개까지 업로드 가능합니다.",
+    })
+    .refine(
+      (fileList) => fileList[0].size <= 5000000,
+      "파일 크기는 5MB 이하여야 합니다."
+    )
+    .refine(
+      (fileList) =>
+        ["image/jpeg", "image/png", "image/webp"].includes(fileList[0].type),
+      "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
+    ),
+  reviewText: z.string().min(1, {
+    message: "리뷰 내용은 최소 한글자 이상이어야 합니다.",
+  }),
+  rating: z.number().nonnegative({
+    message: "평점은 0 이상이어야 합니다.",
+  }),
+  tags: z.array(z.string()).min(1, {
+    message: "태그는 최소 1개 이상이어야 합니다.",
+  }),
+});
 
 export default function ReviewForm() {
-  const [reviewData, setReviewData] = useState({
-    author: "",
-    uploadTime: "",
-    title: "",
-    comments: "",
-    ratings: [] as number[],
-    tags: [] as string[],
-  }); // 서버에 보낼 폼 데이터
-  const [newTag, setNewTag] = useState(""); // 새로운 태그 입력 상태
-  const [newRating, setNewRating] = useState(0); // 새로운 평점 입력 상태
+  const [tagInput, setTagInput] = useState("");
+  // 폼 정의
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      images: undefined,
+      reviewText: "",
+      rating: 0,
+      tags: [],
+    },
+  });
 
-  const handleInputChange = (
-    event:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const { name, value } = event.target;
-    setReviewData((prev) => ({ ...prev, [name]: value }));
-  };
+  const fileRef = form.register("images");
 
-  const addTag = () => {
-    // 입력값이 비어있지 않다면 배열에 추가
-    if (newTag.trim() !== "") {
-      setReviewData((prev) => ({ ...prev, tags: [...prev.tags, newTag] }));
-      // 입력창 초기화
-      setNewTag("");
+  // 제출 시 실행될 작업
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // 폼 값 처리
+    console.log(values);
+    const formData = new FormData();
+    formData.append("author", "test");
+    formData.append("uploadTime", new Date().toISOString());
+    formData.append("title", values.title);
+    formData.append("reviewText", values.reviewText);
+    formData.append("rating", values.rating.toString());
+    values.tags.forEach((tag) => formData.append("tags", tag));
+
+    if (values.images) {
+      for (let i = 0; i < values.images.length; i++) {
+        formData.append("images", values.images[i]);
+      }
     }
-  };
 
-  const addRating = () => {
-    setReviewData((prev) => ({
-      ...prev,
-      ratings: [...prev.ratings, newRating],
-    }));
-    setNewRating(0);
-  };
-
-  const removeRating = (index: number) => {
-    const newRatings = reviewData.ratings.filter((_, i) => i !== index);
-    setReviewData((prev) => ({ ...prev, ratings: newRatings }));
-  };
-
-  const removeTag = (index: number) => {
-    const newTags = reviewData.tags.filter((_, i) => i !== index);
-    setReviewData((prev) => ({ ...prev, tags: newTags }));
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const updatedReviewData = {
-      ...reviewData,
-      uploadTime: new Date().toISOString(),
-    };
     try {
-      const response = await axios.post(
-        "http://localhost:8080/review",
-        updatedReviewData
-      );
-      console.log("서버 응답:", response.data);
+      await uploadReview(formData);
+      console.log("리뷰가 성공적으로 업로드되었습니다.");
     } catch (error) {
-      console.error("리뷰 전송 에러:", error);
+      console.error("리뷰 업로드 중 오류 발생:", error);
     }
+  };
+
+  const handleEnterKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
+
+  const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      const newTags = tagInput
+        .split("#")
+        .filter((tag) => tag.trim() !== "")
+        .map((tag) => tag.trim());
+      form.setValue("tags", [...form.getValues("tags"), ...newTags]);
+      setTagInput("");
+    }
+  };
+
+  const handleDeleteTag = (index: number) => {
+    const tags = form.getValues("tags");
+    const newTags = tags.filter((_, i) => i !== index);
+    form.setValue("tags", newTags);
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <label>작성자:</label>
-        <Input
-          type="text"
-          name="author"
-          value={reviewData.author}
-          onChange={handleInputChange}
-        />
-        <label>제목:</label>
-        <Input
-          type="text"
-          name="title"
-          value={reviewData.title}
-          onChange={handleInputChange}
-        />
-        <label>코멘트:</label>
-        <Textarea
-          name="comments"
-          value={reviewData.comments}
-          onChange={handleInputChange}
-        />
-        <label>평점:</label>
-        {reviewData.ratings.map((rating, index) => (
-          <React.Fragment key={index}>
-            <div>{rating}</div>
-            <Button type="button" onClick={() => removeRating(index)}>
-              삭제
-            </Button>
-          </React.Fragment>
-        ))}
-        <Input
-          type="number"
-          name="newRating"
-          value={newRating}
-          onChange={(event) => {
-            setNewRating(Number(event.target.value));
-          }}
-        />
-        <Button type="button" onClick={addRating}>
-          평점 추가
-        </Button>
-        <label>태그:</label>
-        {reviewData.tags.map((tag, index) => (
-          <React.Fragment key={index}>
-            <div>{tag}</div>
-            <Button type="button" onClick={() => removeTag(index)}>
-              삭제
-            </Button>
-          </React.Fragment>
-        ))}
-        <Input
-          type="text"
-          name="newTag"
-          value={newTag}
-          onChange={(event) => {
-            setNewTag(event.target.value);
-          }}
-        />
-        <Button type="button" onClick={addTag}>
-          태그 추가
-        </Button>
-        <Button type="submit">리뷰 제출</Button>
-      </form>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          onKeyDown={handleEnterKeyDown}
+          className="w-2/3 space-y-8"
+        >
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <>
+                <FormItem>
+                  <FormControl>
+                    <Input placeholder="제목" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="images"
+            render={({ field }) => (
+              <>
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      multiple
+                      {...fileRef}
+                      onChange={(e) => {
+                        field.onChange(e.target.files?.[0]);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="reviewText"
+            render={({ field }) => (
+              <>
+                <FormItem>
+                  <FormControl>
+                    <Textarea placeholder="리뷰 내용" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="rating"
+            render={({ field }) => (
+              <>
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(+e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="tags"
+            render={({ field }) => (
+              <>
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      placeholder="태그 입력"
+                      {...field}
+                      value={tagInput}
+                      onChange={handleTagInputChange}
+                      onKeyDown={handleTagInputKeyDown}
+                    />
+                  </FormControl>
+                  {form.getValues("tags").map((tag, index) => (
+                    <Badge key={index} className="mr-1">
+                      {tag}{" "}
+                      <X
+                        className="w-4 h-4 cursor-pointer"
+                        onClick={() => handleDeleteTag(index)}
+                      />
+                    </Badge>
+                  ))}
+                  <FormMessage />
+                </FormItem>
+              </>
+            )}
+          />
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </>
   );
 }

@@ -16,16 +16,17 @@ export interface User {
  * @param uploadTime 리뷰 업로드 시간
  * @param title 리뷰 제목
  * @param image 리뷰 이미지
- * @param comments 리뷰 내용
+ * @param reviewText 리뷰 내용
  * @param ratings 리뷰 평점
+ * @param tags 리뷰 태그
  */
 export interface Review {
   author: string;
   uploadTime: Date;
   title: string;
-  image: string;
-  comments: string;
-  ratings: number[];
+  images: FileList;
+  reviewText: string;
+  rating: number;
   tags: string[];
 }
 
