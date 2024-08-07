@@ -5,10 +5,7 @@ import { Review } from "@/util/interface";
 // 피드에서 한 리뷰의 요약된 정보를 보여주는 컴포넌트
 
 export default function ReviewCard({ reviewData }: { reviewData: Review }) {
-  const { author, title, comments, ratings } = reviewData;
-  const averageRating = (
-    ratings.reduce((a, b) => a + b, 0) / ratings.length
-  ).toFixed(1);
+  const { author, title, reviewText, rating } = reviewData;
 
   return (
     <>
@@ -42,11 +39,11 @@ export default function ReviewCard({ reviewData }: { reviewData: Review }) {
             <Star className="w-5 h-5 f stroke-muted-foreground mr-1" />
             <Star className="w-5 h-5 f stroke-muted-foreground mr-1" />
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-              {averageRating}
+              {rating}
             </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-            {comments}
+            {reviewText}
           </p>
         </div>
       </div>

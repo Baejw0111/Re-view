@@ -26,7 +26,7 @@ export interface Review {
   title: string;
   image: string;
   reviewText: string;
-  ratings: number[];
+  rating: number;
   tags: string[];
 }
 
