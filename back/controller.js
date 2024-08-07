@@ -77,13 +77,13 @@ export const createReview = async (req, res) => {
     }
 
     // 필드 검증
-    const { author, uploadTime, title, reviewText, ratings, tags } = req.body;
+    const { author, uploadTime, title, reviewText, rating, tags } = req.body;
     if (
       !author ||
       !uploadTime ||
       !title ||
       !reviewText ||
-      !ratings ||
+      !rating ||
       !tags ||
       !req.file
     ) {
@@ -103,7 +103,7 @@ export const createReview = async (req, res) => {
         uploadTime,
         title,
         reviewText,
-        ratings,
+        rating,
         tags,
       });
       await reviewData.save();

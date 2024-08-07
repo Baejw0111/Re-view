@@ -40,7 +40,7 @@ export const UserModel = db.model(
  * @property {string} title - 제목
  * @property {string} image - 이미지 경로
  * @property {string} reviewText - 리뷰 내용
- * @property {number[]} ratings - 평점
+ * @property {number} rating - 평점
  * @property {string[]} tags - 태그
  */
 export const ReviewModel = db.model(
@@ -51,7 +51,7 @@ export const ReviewModel = db.model(
     title: { type: String, default: "" },
     image: { type: String, default: "" },
     reviewText: { type: String, default: "" },
-    ratings: { type: [Number], default: [0] },
+    rating: { type: Number, default: 0 },
     tags: { type: [String], default: [] },
   })
 );
