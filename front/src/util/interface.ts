@@ -24,7 +24,7 @@ export interface Review {
   author: string;
   uploadTime: Date;
   title: string;
-  image: string;
+  images: FileList;
   reviewText: string;
   rating: number;
   tags: string[];
