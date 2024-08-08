@@ -74,8 +74,6 @@ export default function ReviewForm() {
     },
   });
 
-  const fileRef = form.register("images");
-
   // 제출 시 실행될 작업
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // 폼 값 처리
@@ -165,7 +163,6 @@ export default function ReviewForm() {
                     <Input
                       type="file"
                       multiple
-                      {...fileRef}
                       onChange={(e) => {
                         field.onChange(e.target.files);
                       }}
