@@ -155,7 +155,7 @@ export default function ReviewForm() {
                       multiple
                       {...fileRef}
                       onChange={(e) => {
-                        field.onChange(e.target.files?.[0]);
+                        field.onChange(e.target.files);
                       }}
                     />
                   </FormControl>
