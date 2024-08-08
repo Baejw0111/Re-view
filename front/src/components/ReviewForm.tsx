@@ -16,6 +16,9 @@ import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { uploadReview } from "@/util/api";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 const formSchema = z.object({
   title: z.string().min(1, {
     message: "제목은 최소 한글자 이상이어야 합니다.",
@@ -29,13 +32,22 @@ const formSchema = z.object({
       message: "최대 5개까지 업로드 가능합니다.",
     })
     .refine(
-      (files) => files[0]?.size <= 5000000,
-      "파일 크기는 5MB 이하여야 합니다."
+      (files) => Array.from(files).every((file) => file.size <= MAX_FILE_SIZE),
+      `파일 크기는 5MB 이하여야 합니다.`
     )
     .refine(
       (files) =>
-        ["image/jpeg", "image/png", "image/webp"].includes(files[0]?.type),
+        Array.from(files).every((file) =>
+          ACCEPTED_IMAGE_TYPES.includes(file.type)
+        ),
       "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
+    )
+    .refine(
+      (files) =>
+        Array.from(files).every((file) =>
+          /\.(jpg|jpeg|png|webp)$/i.test(file.name)
+        ),
+      "올바른 파일 확장자(.jpg, .jpeg, .png, .webp)를 가진 이미지만 허용됩니다."
     ),
   reviewText: z.string().min(1, {
     message: "리뷰 내용은 최소 한글자 이상이어야 합니다.",
