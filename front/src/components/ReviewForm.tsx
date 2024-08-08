@@ -29,12 +29,12 @@ const formSchema = z.object({
       message: "최대 5개까지 업로드 가능합니다.",
     })
     .refine(
-      (fileList) => fileList[0].size <= 5000000,
+      (files) => files[0]?.size <= 5000000,
       "파일 크기는 5MB 이하여야 합니다."
     )
     .refine(
-      (fileList) =>
-        ["image/jpeg", "image/png", "image/webp"].includes(fileList[0].type),
+      (files) =>
+        ["image/jpeg", "image/png", "image/webp"].includes(files[0]?.type),
       "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
     ),
   reviewText: z.string().min(1, {
@@ -91,7 +91,11 @@ export default function ReviewForm() {
   };
 
   const handleEnterKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (
+      e.key === "Enter" &&
+      e.target instanceof HTMLInputElement &&
+      e.target.type !== "textarea"
+    ) {
       e.preventDefault();
     }
   };
