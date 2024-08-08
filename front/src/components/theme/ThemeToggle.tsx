@@ -10,7 +10,7 @@ export default function ThemeToggle() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4">
+    <div className="fixed top-4 right-16">
       <Button size="icon" onClick={toggleTheme}>
         {theme === "light" ? (
           <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
