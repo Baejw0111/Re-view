@@ -7,6 +7,7 @@ import ThemeToggle from "./components/theme/ThemeToggle";
 import Feed from "./pages/Feed";
 import Test from "./pages/Test";
 import Menu from "./components/Menu";
+import Review from "./pages/Review";
 
 function App() {
   const queryClient = new QueryClient();
@@ -22,8 +23,9 @@ function App() {
             </div>
             <div className="flex-1 flex justify-center">
               <Routes>
-                <Route path="/" element={<Feed />} />
                 <Route path="/test" element={<Test />} />
+                <Route path="/" element={<Feed />} />
+                <Route path="/review" element={<Review />} />
               </Routes>
             </div>
           </div>
