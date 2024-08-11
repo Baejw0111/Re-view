@@ -29,7 +29,9 @@ export default function ModalPage({
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent className="h-[100vh]">
-        <div className="py-10 px-10 overflow-y-auto">{children}</div>
+        <div className="py-10 px-10 overflow-y-auto scrollbar-hide">
+          {children}
+        </div>
       </DrawerContent>
     </Drawer>
   );
