@@ -1,52 +1,55 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Star } from "lucide-react";
 import { Review } from "@/util/interface";
+import { Star } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Heart } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 // 피드에서 한 리뷰의 요약된 정보를 보여주는 컴포넌트
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function ReviewCard({ reviewData }: { reviewData: Review }) {
-  const { author, title, reviewText, rating } = reviewData;
+  const { author, title, reviewText, images } = reviewData;
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-950 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-        <img
-          alt="Product Image"
-          className="w-full h-48 object-cover"
-          height={300}
-          src="/placeholder.svg"
-          style={{
-            aspectRatio: "400/300",
-            objectFit: "cover",
-          }}
-          width={400}
-        />
+      <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow grid grid-cols-2 h-60 relative">
         <div className="p-4">
-          <h3 className="text-lg font-semibold mb-2">{title}</h3>
           <div className="flex items-center mb-2">
             <Avatar className="w-6 h-6 mr-2">
-              <AvatarImage alt="@shadcn" src="/placeholder-user.jpg" />
+              <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <span className="text-sm text-gray-500 dark:text-gray-400">
               {author}
             </span>
           </div>
+          <h3 className="text-lg text-left font-semibold mb-2">{title}</h3>
           <div className="flex items-center mb-2">
-            <Star className="w-5 h-5 fry mr-1" />
-            <Star className="w-5 h-5 fry mr-1" />
-            <Star className="w-5 h-5 fry mr-1" />
-            <Star className="w-5 h-5 f stroke-muted-foreground mr-1" />
-            <Star className="w-5 h-5 f stroke-muted-foreground mr-1" />
-            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-              {rating}
-            </span>
+            <Star className="w-3 h-3 fill-primary mr-1 flex-shrink-0" />
+            <Star className="w-3 h-3 fill-primary mr-1 flex-shrink-0" />
+            <Star className="w-3 h-3 fill-primary mr-1 flex-shrink-0" />
+            <Star className="w-3 h-3 fill-muted stroke-muted-foreground mr-1 flex-shrink-0" />
+            <Star className="w-3 h-3 fill-muted stroke-muted-foreground mr-1 flex-shrink-0" />
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+          <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-normal break-words">
             {reviewText}
           </p>
+          <div className="flex items-center justify-start absolute bottom-4 left-4">
+            <Heart className="w-5 h-5 flex-shrink-0 mr-2" />
+            <MessageCircle className="w-5 h-5 flex-shrink-0" />
+          </div>
         </div>
-      </div>
+        <img
+          src={`${API_URL}/${images[0]}`}
+          alt="Product Image"
+          width={400}
+          height={300}
+          className="w-full h-full object-cover"
+          style={{ aspectRatio: "400/300", objectFit: "cover" }}
+        />
+      </Card>
     </>
   );
 }
