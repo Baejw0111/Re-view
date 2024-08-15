@@ -10,15 +10,13 @@ export default function ThemeToggle() {
   };
 
   return (
-    <div className="fixed top-4 right-16">
-      <Button size="icon" onClick={toggleTheme}>
-        {theme === "light" ? (
-          <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
-        ) : null}
-        {theme === "dark" ? (
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
-        ) : null}
-      </Button>
-    </div>
+    <Button size="icon" onClick={toggleTheme}>
+      {theme === "light" ? (
+        <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
+      ) : null}
+      {theme === "dark" ? (
+        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
+      ) : null}
+    </Button>
   );
 }
