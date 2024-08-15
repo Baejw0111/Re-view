@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { PencilLine } from "lucide-react";
 
-export default function ReviewModalButton() {
+export default function CreateReviewButton() {
   return (
-    <Button className="fixed top-4 right-4" size="icon">
+    <Button size="icon">
       <PencilLine />
     </Button>
   );
