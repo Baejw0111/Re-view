@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewList } from "@/util/api";
 import ReviewCard from "../components/ReviewCard";
+import { Review } from "@/util/interface";
 
 export default function Reviews() {
   const {
@@ -16,7 +17,7 @@ export default function Reviews() {
   if (isLoading) return <div>로딩 중...</div>;
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {reviews?.map((review, index) => (
+      {reviews?.map((review: Review, index: number) => (
         <ReviewCard key={index} reviewData={review} />
       ))}
     </div>
