@@ -9,7 +9,9 @@ import {
   createReview,
   updateReview,
   deleteReview,
+  getKakaoToken,
 } from "./controller.js";
+import cookieParser from "cookie-parser";
 
 const app = express(); // express 인스턴스 생성
 const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근 가능
@@ -17,10 +19,17 @@ const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근
 // 미들웨어
 app.use(express.json()); //json 데이터 파싱
 app.use(express.urlencoded({ extended: true })); // form 데이터(x-www-form-urlencoded) 파싱(extended 옵션 정의 안해주면 에러 터짐)
-app.use(cors()); // cors 에러 방지
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+); // cors 에러 방지
 app.use(morgan("dev")); // 로그 출력
 app.use("/public", express.static("public")); // url을 통해 public 폴더의 파일들에 접근 가능하게 함
+app.use(cookieParser()); // cookie 파싱
 
+app.post("/login/kakao", getKakaoToken); // 카카오 토큰 요청 API
 app.get("/review", getReviews); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
 app.post("/review", createReview); // 리뷰 등록 API

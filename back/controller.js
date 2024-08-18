@@ -4,6 +4,9 @@ import multer from "multer"; // 파일 업로드용
 import path from "path"; // 파일 경로 설정용
 import fs from "fs"; // 파일 삭제용
 import { ReviewModel } from "./model.js";
+import axios from "axios";
+
+const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = process.env;
 
 // 파일 업로드 처리
 const upload = multer({
@@ -20,6 +23,67 @@ const upload = multer({
     },
   }),
 });
+
+/**
+ * 카카오 토큰 요청 및 쿠키 설정
+ * @param {*} req 요청
+ * @param {*} res 응답
+ * @returns 카카오 토큰
+ */
+export const getKakaoToken = async (req, res) => {
+  const { code } = req.body;
+
+  try {
+    const response = await axios.post(
+      "https://kauth.kakao.com/oauth/token",
+      {
+        grant_type: "authorization_code",
+        client_id: KAKAO_REST_API_KEY,
+        redirect_uri: KAKAO_REDIRECT_URI,
+        code: code,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+        },
+      }
+    );
+
+    const {
+      access_token,
+      refresh_token,
+      expires_in,
+      refresh_token_expires_in,
+    } = response.data;
+
+    console.log(expires_in);
+    console.log(refresh_token_expires_in);
+
+    // 브라우저에 쿠키 설정
+    res.cookie("accessToken", access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: expires_in * 1000, // 엑세스 토큰 유효 기간
+    });
+
+    res.cookie("refreshToken", refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: refresh_token_expires_in * 1000, // 리프레시 토큰 유효 기간
+    });
+
+    return res.status(200).json({
+      message: "토큰 요청 성공",
+      access_token: access_token,
+      refresh_token: refresh_token, // 추후에 지울 것
+    });
+  } catch (error) {
+    console.error("토큰 요청 실패:", error);
+    res.status(500).json({ message: "서버 에러가 발생했습니다." });
+  }
+};
 
 /**
  * 리뷰 전체 조회
