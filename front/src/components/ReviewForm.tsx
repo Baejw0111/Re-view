@@ -15,9 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { uploadReview, refreshKakaoAccessToken } from "@/util/api";
+import { uploadReview } from "@/util/api";
 import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -79,36 +78,16 @@ export default function ReviewForm() {
     },
   });
 
-  /**
-   * 토큰 갱신 후 실패한 요청 재시도
-   * @param variables
-   * @returns
-   */
-  const handleTokenRefresh = async (variables: FormData) => {
-    try {
-      await refreshKakaoAccessToken();
-      return mutation.mutateAsync(variables);
-    } catch (refreshError) {
-      console.error("Token refresh failed:", refreshError);
-      throw refreshError;
-    }
-  };
-
   // 리뷰 업로드
-  const mutation = useMutation<void, AxiosError, FormData>({
+  const mutation = useMutation({
     mutationFn: uploadReview,
     onSuccess: () => {
       console.log("리뷰 업로드 성공");
       navigate("/");
     },
-    onError: async (error, variables): Promise<void> => {
-      if (error.response?.status === 401) {
-        return handleTokenRefresh(variables);
-      } else {
-        console.error("리뷰 업로드 중 에러 발생:", error);
-        // 사용자에게 에러 메시지 표시
-        alert("리뷰 업로드 중 에러가 발생했습니다. 다시 시도해주세요.");
-      }
+    onError: (error) => {
+      console.error("리뷰 업로드 중 에러 발생:", error);
+      alert("리뷰 업로드 중 에러가 발생했습니다. 다시 시도해주세요.");
     },
   });
 
