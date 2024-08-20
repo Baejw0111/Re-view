@@ -12,6 +12,7 @@ import {
   getKakaoToken,
   verifyKakaoAccessToken,
   refreshKakaoAccessToken,
+  getKakaoUserInfo,
 } from "./controller.js";
 import cookieParser from "cookie-parser";
 
@@ -33,6 +34,8 @@ app.use(cookieParser()); // cookie 파싱
 
 app.post("/login/kakao", getKakaoToken); // 카카오 토큰 요청 API
 app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
+app.get("/auth/kakao/user", getKakaoUserInfo); // 카카오 유저 정보 조회 API
+
 app.get("/review", getReviews); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
 app.post("/review", verifyKakaoAccessToken, createReview); // 리뷰 등록 API

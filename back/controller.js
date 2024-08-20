@@ -25,7 +25,7 @@ const upload = multer({
 });
 
 /**
- * 카카오 토큰 요청 및 쿠키 설정
+ * 카카오 서버에 토큰 요청 및 쿠키 설정
  * @param {*} req 요청
  * @param {*} res 응답
  * @returns 카카오 토큰
@@ -76,8 +76,6 @@ export const getKakaoToken = async (req, res) => {
 
     return res.status(200).json({
       message: "토큰 요청 성공",
-      access_token: access_token,
-      refresh_token: refresh_token, // 추후에 지울 것
     });
   } catch (error) {
     console.error("토큰 요청 실패:", error);
@@ -86,7 +84,7 @@ export const getKakaoToken = async (req, res) => {
 };
 
 /**
- * 토큰 검증
+ * 카카오 토큰 검증
  * @param {*} req 요청
  * @param {*} res 응답
  * @param {*} next 다음 미들웨어 호출
@@ -188,6 +186,26 @@ export const refreshKakaoAccessToken = async (req, res) => {
   }
 };
 
+export const getKakaoUserInfo = async (req, res) => {
+  try {
+    const accessToken = req.cookies.accessToken;
+    const response = await axios.get(
+      "https://kapi.kakao.com/v2/user/me?secure_resource=true",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+        },
+      }
+    );
+
+    return res.status(200).json(response.data);
+  } catch (error) {
+    console.error("카카오 유저 정보 조회 중 에러 발생:", error);
+    res.status(500).json({ message: "서버 에러가 발생했습니다." });
+  }
+};
+
 /**
  * 리뷰 전체 조회
  * @param {*} req 요청
@@ -279,7 +297,9 @@ export const createReview = async (req, res) => {
       res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });
     } catch (error) {
       console.error("리뷰 등록 중 에러 발생:", error);
-      res.status(500).json({ message: "서버 에러가 발생했습니다." });
+      res
+        .status(500)
+        .json({ message: "서버 에러가 발생했습니다.", error: error });
     }
   });
 };
@@ -325,7 +345,9 @@ export const updateReview = async (req, res) => {
       res.status(200).json({ message: "리뷰가 성공적으로 수정되었습니다." });
     } catch (error) {
       console.error("리뷰 수정 중 에러 발생:", error);
-      res.status(500).json({ message: "서버 에러가 발생했습니다." });
+      res
+        .status(500)
+        .json({ message: "서버 에러가 발생했습니다.", error: error });
     }
   });
 };
@@ -350,6 +372,8 @@ export const deleteReview = async (req, res) => {
     res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
   } catch (error) {
     console.error("리뷰 삭제 중 에러 발생:", error);
-    res.status(500).json({ message: "서버 에러가 발생했습니다." });
+    res
+      .status(500)
+      .json({ message: "서버 에러가 발생했습니다.", error: error });
   }
 };
