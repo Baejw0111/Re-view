@@ -1,8 +1,10 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
+import { Review } from "@/util/interface";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const api = axios.create({
+// axios 인스턴스 생성
+const api: AxiosInstance = axios.create({
   baseURL: API_URL,
 });
 
@@ -30,7 +32,7 @@ export const getKakaoToken = async (code: string): Promise<void> => {
  * 리뷰 리스트를 가져오는 함수
  * @returns 리뷰 리스트
  */
-export const fetchReviewList = async () => {
+export const fetchReviewList = async (): Promise<Review[]> => {
   try {
     const response = await api.get(`/review`);
     return response.data;
@@ -40,7 +42,7 @@ export const fetchReviewList = async () => {
   }
 };
 
-// api 함수 타입
+// api 함수 타입 정의
 type ApiFunction<T, R> = (data: T) => Promise<R>;
 
 /**
