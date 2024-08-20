@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,7 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { uploadReview } from "@/util/api";
+import { uploadReview, refreshKakaoAccessToken } from "@/util/api";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -61,7 +64,9 @@ const formSchema = z.object({
 });
 
 export default function ReviewForm() {
+  const navigate = useNavigate();
   const [tagInput, setTagInput] = useState("");
+
   // 폼 정의
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,6 +76,39 @@ export default function ReviewForm() {
       reviewText: "",
       rating: 0,
       tags: [],
+    },
+  });
+
+  /**
+   * 토큰 갱신 후 실패한 요청 재시도
+   * @param variables
+   * @returns
+   */
+  const handleTokenRefresh = async (variables: FormData) => {
+    try {
+      await refreshKakaoAccessToken();
+      return mutation.mutateAsync(variables);
+    } catch (refreshError) {
+      console.error("Token refresh failed:", refreshError);
+      throw refreshError;
+    }
+  };
+
+  // 리뷰 업로드
+  const mutation = useMutation<void, AxiosError, FormData>({
+    mutationFn: uploadReview,
+    onSuccess: () => {
+      console.log("리뷰 업로드 성공");
+      navigate("/");
+    },
+    onError: async (error, variables): Promise<void> => {
+      if (error.response?.status === 401) {
+        return handleTokenRefresh(variables);
+      } else {
+        console.error("리뷰 업로드 중 에러 발생:", error);
+        // 사용자에게 에러 메시지 표시
+        alert("리뷰 업로드 중 에러가 발생했습니다. 다시 시도해주세요.");
+      }
     },
   });
 
@@ -92,14 +130,10 @@ export default function ReviewForm() {
       }
     }
 
-    try {
-      await uploadReview(formData);
-      console.log("리뷰가 성공적으로 업로드되었습니다.");
-    } catch (error) {
-      console.error("리뷰 업로드 중 오류 발생:", error);
-    }
+    mutation.mutate(formData);
   };
 
+  // 텍스트 입력 창에서 엔터 키 입력 시 제출 방지
   const handleEnterKeyDown = (e: React.KeyboardEvent) => {
     if (
       e.key === "Enter" &&
@@ -110,10 +144,12 @@ export default function ReviewForm() {
     }
   };
 
+  // 태그 입력 처리
   const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTagInput(e.target.value);
   };
 
+  // 태그 입력 시 추가
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && tagInput.trim() !== "") {
       const newTags = tagInput
@@ -125,6 +161,7 @@ export default function ReviewForm() {
     }
   };
 
+  // 태그 삭제
   const handleDeleteTag = (index: number) => {
     const tags = form.getValues("tags");
     const newTags = tags.filter((_, i) => i !== index);
