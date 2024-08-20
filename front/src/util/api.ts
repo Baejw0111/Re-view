@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -19,6 +19,22 @@ export const getKakaoToken = async (code: string) => {
     return response.data;
   } catch (error) {
     console.error("카카오 토큰 요청 실패:", error);
+    throw error;
+  }
+};
+
+export const refreshKakaoAccessToken = async () => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/auth/kakao/refresh`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("카카오 액세스 토큰 갱신 실패:", error);
     throw error;
   }
 };
@@ -45,13 +61,19 @@ export const fetchReviewList = async () => {
 export const uploadReview = async (formData: FormData) => {
   try {
     const response = await axios.post(`${API_URL}/review`, formData, {
+      withCredentials: true,
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
   } catch (error) {
-    console.error("리뷰 업로드 실패:", error);
+    const { response } = error as AxiosError;
+    if (response?.status === 401) {
+      console.error("액세스 토큰 갱신");
+    } else {
+      console.error("리뷰 업로드 실패:", error);
+    }
     throw error;
   }
 };
