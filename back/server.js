@@ -10,6 +10,8 @@ import {
   updateReview,
   deleteReview,
   getKakaoToken,
+  verifyKakaoAccessToken,
+  refreshKakaoAccessToken,
 } from "./controller.js";
 import cookieParser from "cookie-parser";
 
@@ -30,9 +32,10 @@ app.use("/public", express.static("public")); // url을 통해 public 폴더의 
 app.use(cookieParser()); // cookie 파싱
 
 app.post("/login/kakao", getKakaoToken); // 카카오 토큰 요청 API
+app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
 app.get("/review", getReviews); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
-app.post("/review", createReview); // 리뷰 등록 API
+app.post("/review", verifyKakaoAccessToken, createReview); // 리뷰 등록 API
 app.patch("/review/:id", updateReview); // 리뷰 수정 API
 app.delete("/review/:id", deleteReview); // 리뷰 삭제 API
 
