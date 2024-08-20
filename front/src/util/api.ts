@@ -11,7 +11,6 @@ const api: AxiosInstance = axios.create({
 /**
  * 카카오 토큰 요청 함수
  * @param code 카카오 인증 코드
- * @returns 카카오 토큰
  */
 export const getKakaoToken = async (code: string): Promise<void> => {
   try {
@@ -35,6 +34,7 @@ export const getKakaoToken = async (code: string): Promise<void> => {
 export const fetchReviewList = async (): Promise<Review[]> => {
   try {
     const response = await api.get(`/review`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("리뷰 리스트 조회 실패:", error);
@@ -67,8 +67,9 @@ export const refreshKakaoAccessToken = async (): Promise<void> => {
 };
 
 /**
- * 토큰 갱신 후 실패한 요청 재시도
+ * 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도
  * @param apiFunction 요청 함수
+ * @param data 요청 데이터. 요청 시 데이터를 보내지 않을 경우 인자에 null 넣기
  * @returns 요청 함수
  */
 export const withTokenRefresh = <T, R>(
@@ -99,11 +100,23 @@ export const withTokenRefresh = <T, R>(
  */
 export const uploadReview = withTokenRefresh(
   async (formData: FormData): Promise<void> => {
-    await api.post(`/review`, formData, {
+    const response = await api.post(`/review`, formData, {
       withCredentials: true,
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
+
+    console.log(response.data);
   }
 );
+
+/**
+ * 카카오 서버에서 유저 정보 조회하는 함수
+ */
+export const getKakaoUserInfo = withTokenRefresh(async (): Promise<void> => {
+  const response = await api.get(`/auth/kakao/user`, {
+    withCredentials: true,
+  });
+  console.log(response.data);
+});
