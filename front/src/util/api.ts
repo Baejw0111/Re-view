@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
-import { Review } from "@/util/interface";
+import { Review, UserInfo } from "@/util/interface";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -114,9 +114,13 @@ export const uploadReview = withTokenRefresh(
 /**
  * 카카오 서버에서 유저 정보 조회하는 함수
  */
-export const getKakaoUserInfo = withTokenRefresh(async (): Promise<void> => {
-  const response = await api.get(`/auth/kakao/user`, {
-    withCredentials: true,
-  });
-  console.log(response.data);
-});
+export const getKakaoUserInfo = withTokenRefresh(
+  async (): Promise<UserInfo> => {
+    const response = await api.get(`/auth/kakao/user`, {
+      withCredentials: true,
+    });
+    console.log(response.data);
+
+    return response.data;
+  }
+);
