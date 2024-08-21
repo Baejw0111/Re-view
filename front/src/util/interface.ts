@@ -1,13 +1,12 @@
 /**
  * @description 유저 정보
- * @param name 유저 이름
- * @param email 유저 이메일
- * @param password 유저 비밀번호
+ * @param nickname 유저 닉네임
+ * @param profileImage 유저 프로필 이미지
  */
-export interface User {
-  name: string;
-  email: string;
-  password: string;
+export interface UserInfo {
+  nickname: string;
+  profileImage: string;
+  thumbnailImage: string;
 }
 
 /**
