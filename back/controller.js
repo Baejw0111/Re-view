@@ -122,9 +122,7 @@ export const verifyKakaoAccessToken = async (req, res, next) => {
  */
 export const refreshKakaoAccessToken = async (req, res) => {
   try {
-    const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
-    console.log(accessToken, refreshToken);
     if (!refreshToken) {
       return res
         .status(401)
@@ -216,6 +214,32 @@ export const getKakaoUserInfo = async (req, res) => {
   } catch (error) {
     console.error("카카오 유저 정보 조회 중 에러 발생:", error);
     res.status(500).json({ message: "서버 에러가 발생했습니다." });
+  }
+};
+
+export const logOutKakao = async (req, res) => {
+  try {
+    const accessToken = req.cookies.accessToken;
+    const response = await axios.post(
+      "https://kapi.kakao.com/v1/user/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    console.log(response.data);
+
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.status(200).json({ message: "로그아웃 성공" });
+  } catch (error) {
+    console.error("카카오 로그아웃 중 에러 발생:", error);
+    res
+      .status(500)
+      .json({ message: "서버 에러가 발생했습니다.", error: error });
   }
 };
 

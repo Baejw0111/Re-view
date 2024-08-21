@@ -13,13 +13,14 @@ import {
   verifyKakaoAccessToken,
   refreshKakaoAccessToken,
   getKakaoUserInfo,
+  logOutKakao,
 } from "./controller.js";
 import cookieParser from "cookie-parser";
 
 const app = express(); // express 인스턴스 생성
 const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근 가능
 
-// 미들웨어
+// 미들웨어 설정
 app.use(express.json()); //json 데이터 파싱
 app.use(express.urlencoded({ extended: true })); // form 데이터(x-www-form-urlencoded) 파싱(extended 옵션 정의 안해주면 에러 터짐)
 app.use(
@@ -32,10 +33,13 @@ app.use(morgan("dev")); // 로그 출력
 app.use("/public", express.static("public")); // url을 통해 public 폴더의 파일들에 접근 가능하게 함
 app.use(cookieParser()); // cookie 파싱
 
+// 카카오 로그인 관련 API
 app.post("/login/kakao", getKakaoToken); // 카카오 토큰 요청 API
 app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
-app.get("/auth/kakao/user", getKakaoUserInfo); // 카카오 유저 정보 조회 API
+app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카오 유저 정보 조회 API
+app.post("/logout/kakao", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
 
+// 리뷰 관련 API
 app.get("/review", getReviews); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
 app.post("/review", verifyKakaoAccessToken, createReview); // 리뷰 등록 API
