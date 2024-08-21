@@ -132,8 +132,12 @@ export const getKakaoUserInfo = withTokenRefresh(
  * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
  */
 export const logOutKakao = withTokenRefresh(async (): Promise<void> => {
-  const response = await api.post(`/logout/kakao`, {
-    withCredentials: true,
-  });
+  const response = await api.post(
+    `/logout/kakao`,
+    {},
+    {
+      withCredentials: true,
+    }
+  );
   console.log(response.data);
 });
