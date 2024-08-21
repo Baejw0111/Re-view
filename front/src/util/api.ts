@@ -69,10 +69,10 @@ export const refreshKakaoAccessToken = async (): Promise<void> => {
 /**
  * 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도
  * @param apiFunction 요청 함수
- * @param data 요청 데이터. 요청 시 데이터를 보내지 않을 경우 인자에 null 넣기
+ * @param data 요청 시 사용할 데이터. 요청 시 사용할 데이터가 없을 경우 아무것도 넣지 않아도 된다.
  * @returns 요청 함수
  */
-export const withTokenRefresh = <T, R>(
+export const withTokenRefresh = <T = void, R = void>( // 요청 함수 내의 타입 정의. 각 타입의 기본값을 void로 설정
   apiFunction: ApiFunction<T, R>
 ): ApiFunction<T, R> => {
   return async (data: T): Promise<R> => {
@@ -113,6 +113,8 @@ export const uploadReview = withTokenRefresh(
 
 /**
  * 카카오 서버에서 유저 정보 조회하는 함수
+ * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
+ * @returns 유저 정보
  */
 export const getKakaoUserInfo = withTokenRefresh(
   async (): Promise<UserInfo> => {
@@ -124,3 +126,14 @@ export const getKakaoUserInfo = withTokenRefresh(
     return response.data;
   }
 );
+
+/**
+ * 카카오 서버에서 로그아웃 요청 후 쿠키 삭제
+ * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
+ */
+export const logOutKakao = withTokenRefresh(async (): Promise<void> => {
+  const response = await api.post(`/logout/kakao`, {
+    withCredentials: true,
+  });
+  console.log(response.data);
+});
