@@ -186,6 +186,12 @@ export const refreshKakaoAccessToken = async (req, res) => {
   }
 };
 
+/**
+ * 카카오 유저 정보 조회
+ * @param {*} req 요청
+ * @param {*} res 응답
+ * @returns 카카오 유저 정보 조회 결과
+ */
 export const getKakaoUserInfo = async (req, res) => {
   try {
     const accessToken = req.cookies.accessToken;
@@ -199,7 +205,14 @@ export const getKakaoUserInfo = async (req, res) => {
       }
     );
 
-    return res.status(200).json(response.data);
+    const { nickname, profile_image, thumbnail_image } =
+      response.data.properties;
+
+    return res.status(200).json({
+      nickname,
+      profileImage: profile_image,
+      thumbnailImage: thumbnail_image,
+    });
   } catch (error) {
     console.error("카카오 유저 정보 조회 중 에러 발생:", error);
     res.status(500).json({ message: "서버 에러가 발생했습니다." });
