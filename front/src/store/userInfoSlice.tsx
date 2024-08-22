@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { UserInfo } from "@/util/interface";
+import { PURGE } from "redux-persist";
 
 const initialState: UserInfo = {
   nickname: "",
@@ -16,13 +17,15 @@ const userInfoSlice = createSlice({
       state.profileImage = action.payload.profileImage;
       state.thumbnailImage = action.payload.thumbnailImage;
     },
-    clearUserInfo: (state) => {
+  },
+  extraReducers: (builder) => {
+    builder.addCase(PURGE, (state) => {
       state.nickname = "";
       state.profileImage = "";
       state.thumbnailImage = "";
-    },
+    });
   },
 });
 
 export default userInfoSlice.reducer;
-export const { setUserInfo, clearUserInfo } = userInfoSlice.actions;
+export const { setUserInfo } = userInfoSlice.actions;
