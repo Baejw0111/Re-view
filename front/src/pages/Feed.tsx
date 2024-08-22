@@ -1,4 +1,4 @@
-import Reviews from "../components/Reviews";
+import Reviews from "@/components/Reviews";
 
 export default function Feed() {
   return (

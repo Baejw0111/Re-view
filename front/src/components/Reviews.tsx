@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewList } from "@/util/api";
-import ReviewCard from "../components/ReviewCard";
+import ReviewCard from "@/components/ReviewCard";
 import { Review } from "@/util/interface";
 
 export default function Reviews() {
