@@ -10,6 +10,8 @@ import Header from "./components/Header";
 import Review from "./pages/Review";
 import Authorization from "./pages/Authorization";
 import store from "./store/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor } from "./store/store";
 
 function App() {
   const queryClient = new QueryClient();
@@ -17,16 +19,18 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <Provider store={store}>
-          <Router>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <Header />
-            <Routes>
-              <Route path="/test" element={<Test />} />
-              <Route path="/" element={<Feed />} />
-              <Route path="/review" element={<Review />} />
-              <Route path="/oauth/kakao" element={<Authorization />} />
-            </Routes>
-          </Router>
+          <PersistGate loading={null} persistor={persistor}>
+            <Router>
+              <ReactQueryDevtools initialIsOpen={false} />
+              <Header />
+              <Routes>
+                <Route path="/test" element={<Test />} />
+                <Route path="/" element={<Feed />} />
+                <Route path="/review" element={<Review />} />
+                <Route path="/oauth/kakao" element={<Authorization />} />
+              </Routes>
+            </Router>
+          </PersistGate>
         </Provider>
       </ThemeProvider>
     </QueryClientProvider>
