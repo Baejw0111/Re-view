@@ -79,7 +79,10 @@ export const withTokenRefresh = <T = void, R = void>( // 요청 함수 내의 �
     try {
       return await apiFunction(data);
     } catch (error) {
-      if (error instanceof AxiosError && error.response?.status === 401) {
+      const { response } = error as AxiosError;
+
+      // 토큰 만료 시 토큰 갱신
+      if (response?.status === 401) {
         try {
           await refreshKakaoAccessToken();
           return await apiFunction(data);
@@ -88,7 +91,7 @@ export const withTokenRefresh = <T = void, R = void>( // 요청 함수 내의 �
           throw refreshError;
         }
       }
-      throw error;
+      throw error; // refreshKakaoAccessToken, apiFunction 모두 실패 시 에러 전파
     }
   };
 };
