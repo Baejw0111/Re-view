@@ -7,7 +7,7 @@ import NotificationButton from "@/components/NotificationButton";
 import KakaoLoginButton from "@/components/KakaoLoginButton";
 import KakaoLogoutButton from "@/components/KakaoLogoutButton";
 import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { RootState } from "@/store/index";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);

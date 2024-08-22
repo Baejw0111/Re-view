@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import userInfoSlice from "./userInfoSlice";
+import userInfoSlice from "@/store/userInfoSlice";
 import {
   FLUSH,
   REHYDRATE,
