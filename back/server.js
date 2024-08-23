@@ -9,12 +9,14 @@ import {
   createReview,
   updateReview,
   deleteReview,
+} from "./controllers/Review.js";
+import {
   getKakaoToken,
   verifyKakaoAccessToken,
   refreshKakaoAccessToken,
   getKakaoUserInfo,
   logOutKakao,
-} from "./controller.js";
+} from "./controllers/KakaoLogin.js";
 import cookieParser from "cookie-parser";
 
 const app = express(); // express 인스턴스 생성
