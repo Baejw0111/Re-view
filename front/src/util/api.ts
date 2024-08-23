@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { Review, UserInfo } from "@/util/interface";
+import { persistor } from "@/store/index";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -87,11 +88,15 @@ export const withTokenRefresh = <T = void, R = void>( // 요청 함수 내의 �
           await refreshKakaoAccessToken();
           return await apiFunction(data);
         } catch (refreshError) {
+          // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
           console.error("토큰 갱신 실패:", refreshError);
+          alert("로그인 정보가 만료되었습니다. 다시 로그인해주세요.");
+          await persistor.purge(); // redux-persist가 관리하는 모든 상태 초기화
+          window.location.href = "/";
           throw refreshError;
         }
       }
-      throw error; // refreshKakaoAccessToken, apiFunction 모두 실패 시 에러 전파
+      throw error; // apiFunction 실패 및 401 에러가 아닌 경우 에러 전파
     }
   };
 };
