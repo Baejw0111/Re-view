@@ -1,6 +1,6 @@
 import fs from "fs"; // 파일 삭제용
-import { ReviewModel } from "../model.js";
-import { upload } from "./Utils.js";
+import { ReviewModel } from "../utils/model.js";
+import { upload } from "../utils/upload.js";
 
 /**
  * 리뷰 전체 조회
