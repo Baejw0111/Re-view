@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getKakaoToken, getKakaoUserInfo } from "@/api/api";
+import { getKakaoToken, getKakaoUserInfo } from "@/api/kakaoAuth";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { useNavigate } from "react-router-dom";

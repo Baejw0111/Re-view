@@ -1,5 +1,5 @@
 import { Button } from "@/shared/shadcn-ui/button";
-import { logOutKakao } from "@/api/api";
+import { logOutKakao } from "@/api/kakaoAuth";
 import { LogOutIcon } from "lucide-react";
 import { persistor } from "@/state/store/index";
 

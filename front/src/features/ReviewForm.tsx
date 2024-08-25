@@ -15,7 +15,7 @@ import { Input } from "@/shared/shadcn-ui/input";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { X } from "lucide-react";
-import { uploadReview } from "@/api/api";
+import { uploadReview } from "@/api/review";
 import { useMutation } from "@tanstack/react-query";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
