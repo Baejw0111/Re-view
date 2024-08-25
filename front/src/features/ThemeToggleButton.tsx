@@ -2,7 +2,7 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useTheme } from "@/state/theme/useTheme";
 
-export default function ThemeToggle() {
+export default function ThemeToggleButton() {
   const { theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
