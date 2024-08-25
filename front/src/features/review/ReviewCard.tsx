@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { Review } from "@/shared/types/interface";
+import { ReviewInfo } from "@/shared/types/interface";
 import { Star } from "lucide-react";
 import { Card } from "@/shared/shadcn-ui/card";
 import { Heart } from "lucide-react";
@@ -9,7 +9,7 @@ import { MessageCircle } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export default function ReviewCard({ reviewData }: { reviewData: Review }) {
+export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
   const { author, title, reviewText, images } = reviewData;
 
   return (
