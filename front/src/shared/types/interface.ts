@@ -19,7 +19,7 @@ export interface UserInfo {
  * @param ratings 리뷰 평점
  * @param tags 리뷰 태그
  */
-export interface Review {
+export interface ReviewInfo {
   author: string;
   uploadTime: Date;
   title: string;
