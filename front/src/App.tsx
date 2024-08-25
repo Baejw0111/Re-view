@@ -3,15 +3,15 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Provider } from "react-redux";
-import ThemeProvider from "@/components/theme/ThemeProvider";
+import ThemeProvider from "@/state/theme/ThemeProvider";
 import Feed from "@/pages/Feed";
 import Test from "@/pages/Test";
-import Header from "@/components/Header";
+import Header from "@/widgets/Header";
 import Review from "@/pages/Review";
 import Authorization from "@/pages/Authorization";
-import store from "@/store";
+import store from "@/state/store";
 import { PersistGate } from "redux-persist/integration/react";
-import { persistor } from "@/store";
+import { persistor } from "@/state/store";
 
 function App() {
   const queryClient = new QueryClient();

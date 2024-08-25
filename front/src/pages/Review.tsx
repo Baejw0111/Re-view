@@ -1,4 +1,4 @@
-import ReviewForm from "@/components/ReviewForm";
+import ReviewForm from "@/features/ReviewForm";
 
 export default function Review() {
   return (

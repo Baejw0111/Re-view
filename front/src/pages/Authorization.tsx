@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { getKakaoToken, getKakaoUserInfo } from "@/util/api";
+import { getKakaoToken, getKakaoUserInfo } from "@/api/api";
 import { useDispatch } from "react-redux";
-import { setUserInfo } from "@/store/userInfoSlice";
+import { setUserInfo } from "@/state/store/userInfoSlice";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/shadcn-ui/button";
 
 export default function Authorization() {
   const dispatch = useDispatch();
