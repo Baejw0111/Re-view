@@ -1,11 +1,11 @@
-import Logo from "@/features/Logo";
-import Menu from "@/features/Menu";
-import ThemeToggle from "@/state/theme/ThemeToggle";
-import CreateReviewButton from "@/features/CreateReviewButton";
-import UserProfile from "@/features/UserProfile";
-import NotificationButton from "@/features/NotificationButton";
-import KakaoLoginButton from "@/features/KakaoAuth/KakaoLoginButton";
-import KakaoLogoutButton from "@/features/KakaoAuth/KakaoLogoutButton";
+import Logo from "@/features/common/Logo";
+import Menu from "@/features/common/Menu";
+import ThemeToggleButton from "@/features/setting/ThemeToggleButton";
+import CreateReviewButton from "@/features/review/CreateReviewButton";
+import UserProfile from "@/features/user/UserProfile";
+import NotificationButton from "@/features/user/NotificationButton";
+import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
+import KakaoLogoutButton from "@/features/auth/KakaoLogoutButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store/index";
 
@@ -18,7 +18,7 @@ export default function Header() {
       <Menu />
       <UserProfile />
       <div className="absolute right-4 w-48 flex justify-between">
-        <ThemeToggle />
+        <ThemeToggleButton />
         {userInfo.nickname ? (
           // 닉네임이 있으면 유저가 사용 가능한 버튼 보여주기
           <>

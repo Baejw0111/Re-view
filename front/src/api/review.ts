@@ -1,12 +1,12 @@
 import { apiClient } from "@/api/util";
-import { Review } from "@/shared/types/interface";
+import { ReviewInfo } from "@/shared/types/interface";
 import { withTokenRefresh } from "@/api/util";
 
 /**
  * 리뷰 리스트를 가져오는 함수
  * @returns 리뷰 리스트
  */
-export const fetchReviewList = async (): Promise<Review[]> => {
+export const fetchReviewList = async (): Promise<ReviewInfo[]> => {
   try {
     const response = await apiClient.get(`/review`);
     console.log(response.data);
