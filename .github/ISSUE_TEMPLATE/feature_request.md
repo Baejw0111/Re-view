@@ -4,16 +4,11 @@ about: 기능 추가
 title: "[FEATURE]"
 labels: enhancement
 assignees: Baejw0111
-
 ---
 
 ## 기능 설명
 
 <!-- 제안하는 기능에 대해 설명 -->
-
-## 기대 효과
-
-<!-- 이 기능이 구현되었을 때의 이점 -->
 
 ## TODO
 
