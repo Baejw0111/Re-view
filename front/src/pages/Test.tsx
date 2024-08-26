@@ -1,5 +1,3 @@
-import ReviewForm from "@/components/ReviewForm";
-
 export default function Test() {
   return (
     <>
@@ -8,7 +6,6 @@ export default function Test() {
           <div className="text-2xl md:text-3xl font-bold">Test Page</div>
         </div>
         {/* 컴포넌트 시작 */}
-        <ReviewForm />
         {/* 컴포넌트 끝*/}
       </div>
     </>
