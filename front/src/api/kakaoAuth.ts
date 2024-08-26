@@ -20,26 +20,7 @@ export const getKakaoToken = async (code: string): Promise<void> => {
     throw error;
   }
 };
-/**
- * 카카오 액세스 토큰 갱신 함수
- * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
- */
-export const refreshKakaoAccessToken = async (): Promise<void> => {
-  try {
-    const response = await apiClient.post(
-      `/auth/kakao/refresh`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
 
-    console.log(response.data);
-  } catch (error) {
-    console.error("카카오 액세스 토큰 갱신 실패:", error);
-    throw error;
-  }
-};
 /**
  * 카카오 서버에서 유저 정보 조회하는 함수
  * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증

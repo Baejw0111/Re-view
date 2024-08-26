@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { persistor } from "@/state/store";
-import { refreshKakaoAccessToken } from "@/api/kakaoAuth";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,6 +10,27 @@ export const apiClient: AxiosInstance = axios.create({
 
 // api 함수 타입 정의
 type ApiFunction<T, R> = (data: T) => Promise<R>;
+
+/**
+ * 카카오 액세스 토큰 갱신 함수
+ * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
+ */
+export const refreshKakaoAccessToken = async (): Promise<void> => {
+  try {
+    const response = await apiClient.post(
+      `/auth/kakao/refresh`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log(response.data);
+  } catch (error) {
+    console.error("카카오 액세스 토큰 갱신 실패:", error);
+    throw error;
+  }
+};
 
 /**
  * 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도
