@@ -7,7 +7,7 @@ export default function UserProfile() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   return (
     <Avatar className="w-9 h-9">
-      <AvatarImage src={userInfo.profileImage} />
+      <AvatarImage src={userInfo.thumbnailImage} />
       <AvatarFallback>
         <UserRound />
       </AvatarFallback>
