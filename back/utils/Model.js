@@ -26,9 +26,9 @@ const db = mongoose.connection.useDb("mainDB");
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
-    name: { type: String, default: "사용자" },
-    email: { type: String, default: "" },
-    password: { type: String, default: "" },
+    kakaoId: { type: String, default: "" },
+    reviews: { type: [String], default: [] },
+    favoriteTags: { type: [String], default: [] },
   })
 );
 
