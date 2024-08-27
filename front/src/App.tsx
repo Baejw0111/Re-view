@@ -7,7 +7,7 @@ import ThemeProvider from "@/state/theme/ThemeProvider";
 import Feed from "@/pages/Feed";
 import Test from "@/pages/Test";
 import Header from "@/widgets/Header";
-import Review from "@/pages/Review";
+import CreateReview from "@/pages/CreateReview";
 import Authorization from "@/pages/Authorization";
 import store from "@/state/store";
 import { PersistGate } from "redux-persist/integration/react";
@@ -26,7 +26,7 @@ function App() {
               <Routes>
                 <Route path="/test" element={<Test />} />
                 <Route path="/" element={<Feed />} />
-                <Route path="/review" element={<Review />} />
+                <Route path="/create-review" element={<CreateReview />} />
                 <Route path="/oauth/kakao" element={<Authorization />} />
               </Routes>
             </Router>
