@@ -19,14 +19,15 @@ const db = mongoose.connection.useDb("mainDB");
 /**
  * 유저 모델
  * @type {mongoose.Model}
- * @property {string} name - 사용자 이름
- * @property {string} email - 사용자 이메일
- * @property {string} password - 사용자 비밀번호
+ * @property {string} kakaoId - 카카오 ID
+ * @property {string} reviews - 작성한 리뷰 ID 모음
+ * @property {string} favoriteTags - 자주 찾는 태그 모음
  */
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
     kakaoId: { type: String, default: "" },
+    nickname: { type: String, default: "" },
     reviews: { type: [String], default: [] },
     favoriteTags: { type: [String], default: [] },
   })
@@ -42,6 +43,8 @@ export const UserModel = db.model(
  * @property {string} reviewText - 리뷰 내용
  * @property {number} rating - 평점
  * @property {string[]} tags - 태그
+ * @property {number} likes - 좋아요 수
+ * @property {number} comments - 댓글 수
  */
 export const ReviewModel = db.model(
   "Review",
@@ -53,6 +56,8 @@ export const ReviewModel = db.model(
     reviewText: { type: String, default: "" },
     rating: { type: Number, default: 0 },
     tags: { type: [String], default: [] },
+    likes: { type: Number, default: 0 },
+    comments: { type: Number, default: 0 },
   })
 );
 
@@ -67,5 +72,23 @@ export const TagModel = db.model(
   new mongoose.Schema({
     tagName: { type: String, default: "" },
     appliedCount: { type: Number, default: 0 },
+  })
+);
+
+/**
+ * 댓글 모델
+ * @type {mongoose.Model}
+ * @property {string} authorId - 작성자 ID
+ * @property {Date} uploadTime - 업로드 시간
+ * @property {string} reviewId - 댓글이 작성된 리뷰의 ID
+ * @property {string} content - 댓글 내용
+ */
+export const CommentModel = db.model(
+  "Comment",
+  new mongoose.Schema({
+    authorId: { type: String, default: "" },
+    uploadTime: { type: Date, default: Date.now },
+    reviewId: { type: String, default: "" },
+    content: { type: String, default: "" },
   })
 );
