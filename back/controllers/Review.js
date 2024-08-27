@@ -86,6 +86,8 @@ export const createReview = async (req, res) => {
         reviewText,
         rating,
         tags,
+        likes: 0,
+        comments: 0,
       });
       await reviewData.save();
       res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });

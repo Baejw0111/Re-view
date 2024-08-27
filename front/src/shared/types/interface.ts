@@ -27,6 +27,8 @@ export interface ReviewInfo {
   reviewText: string;
   rating: number;
   tags: string[];
+  likes: number;
+  comments: number;
 }
 
 /**
@@ -37,4 +39,16 @@ export interface ReviewInfo {
 export interface Tag {
   tagName: string;
   appliedCount: number;
+}
+
+/**
+ * @description 댓글 정보
+ * @param authorId 댓글 작성자 ID
+ * @param uploadTime 댓글 업로드 시간
+ * @param content 댓글 내용
+ */
+export interface Comment {
+  authorId: string;
+  uploadTime: Date;
+  content: string;
 }
