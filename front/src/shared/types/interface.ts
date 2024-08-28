@@ -18,6 +18,10 @@ export interface UserInfo {
  * @param reviewText 리뷰 내용
  * @param ratings 리뷰 평점
  * @param tags 리뷰 태그
+ * @param likes 리뷰 좋아요 수
+ * @param comments 리뷰 댓글 수
+ * @param _id 리뷰 ID
+ * @param __v 리뷰 버전
  */
 export interface ReviewInfo {
   author: string;
@@ -29,6 +33,8 @@ export interface ReviewInfo {
   tags: string[];
   likes: number;
   comments: number;
+  _id: string;
+  __v: number;
 }
 
 /**
