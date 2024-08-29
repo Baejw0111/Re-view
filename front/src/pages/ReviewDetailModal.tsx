@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
 import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
@@ -36,6 +37,10 @@ export default function ReviewDetailModal() {
   );
   const navigate = useNavigate();
 
+  useEffect(() => {
+    dispatch(setIsOpen(true));
+  }, [dispatch]);
+
   const handleClose = () => {
     dispatch(setIsOpen(false));
     navigate("/feed");
@@ -54,7 +59,7 @@ export default function ReviewDetailModal() {
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={() => dispatch(setIsOpen(false))}>
+    <Drawer open={isOpen} onOpenChange={handleClose}>
       <DrawerContent className="h-[100vh]">
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>
