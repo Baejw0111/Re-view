@@ -38,7 +38,6 @@ function App() {
                 <Route path="/create-review" element={<CreateReview />} />
                 <Route path="/oauth/kakao" element={<Authorization />} />
               </Routes>
-              {/* <ReviewDetailModal /> */}
             </Router>
           </PersistGate>
         </Provider>
