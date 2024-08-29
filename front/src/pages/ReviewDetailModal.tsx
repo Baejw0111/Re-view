@@ -7,15 +7,14 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
-  // DialogTrigger,
 } from "@/shared/shadcn-ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerTitle,
   DrawerDescription,
-  // DrawerTrigger,
 } from "@/shared/shadcn-ui/drawer";
+import { useNavigate } from "react-router-dom";
 
 function ReviewDetail() {
   return (
@@ -35,11 +34,16 @@ export default function ReviewDetailModal() {
   const isOpen = useSelector(
     (state: RootState) => state.reviewDetailOpen.isOpen
   );
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    dispatch(setIsOpen(false));
+    navigate("/feed");
+  };
 
   if (isDesktop) {
     return (
-      <Dialog open={isOpen} onOpenChange={() => dispatch(setIsOpen(false))}>
-        {/* <DialogTrigger asChild>{trigger}</DialogTrigger> */}
+      <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="max-w-[70vw] h-[90vh] py-10 px-10 overflow-y-auto">
           <DialogTitle hidden></DialogTitle>
           <DialogDescription hidden></DialogDescription>
@@ -51,7 +55,6 @@ export default function ReviewDetailModal() {
 
   return (
     <Drawer open={isOpen} onOpenChange={() => dispatch(setIsOpen(false))}>
-      {/* <DrawerTrigger asChild>{trigger}</DrawerTrigger> */}
       <DrawerContent className="h-[100vh]">
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>

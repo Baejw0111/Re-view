@@ -1,4 +1,5 @@
 import Reviews from "@/widgets/Reviews";
+import { Outlet } from "react-router-dom";
 
 export default function Feed() {
   return (
@@ -8,6 +9,7 @@ export default function Feed() {
           <h1 className="text-2xl md:text-3xl font-bold">Feed</h1>
         </div>
         <Reviews />
+        <Outlet />
       </div>
     </>
   );
