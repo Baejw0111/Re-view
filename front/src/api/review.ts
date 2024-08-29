@@ -34,3 +34,21 @@ export const uploadReview = withTokenRefresh(
     console.log(response.data);
   }
 );
+
+/**
+ * 리뷰 상세 조회 함수
+ * @param reviewId 리뷰 ID
+ * @returns 리뷰 상세 정보
+ */
+export const fetchReviewById = async (
+  reviewId: string
+): Promise<ReviewInfo> => {
+  try {
+    const response = await apiClient.get(`/review/${reviewId}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("리뷰 상세 조회 실패:", error);
+    throw error;
+  }
+};
