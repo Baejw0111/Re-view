@@ -43,7 +43,9 @@ export default function ReviewDetailModal() {
 
   const handleClose = () => {
     dispatch(setIsOpen(false));
-    navigate("/feed");
+    setTimeout(() => {
+      navigate("/feed");
+    }, 100);
   };
 
   if (isDesktop) {
