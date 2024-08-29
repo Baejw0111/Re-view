@@ -10,10 +10,7 @@ import {
 import { useDispatch } from "react-redux";
 import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
 import { useNavigate } from "react-router-dom";
-
-// 피드에서 한 리뷰의 요약된 정보를 보여주는 컴포넌트
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_URL } from "@/shared/constants";
 
 export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
   const { author, title, reviewText, images, _id } = reviewData;

@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { persistor } from "@/state/store";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_URL } from "@/shared/constants";
 
 // axios 인스턴스 생성
 export const apiClient: AxiosInstance = axios.create({
