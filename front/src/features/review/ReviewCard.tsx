@@ -7,20 +7,16 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/shared/shadcn-ui/resizable";
-import { useDispatch } from "react-redux";
-import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "@/shared/constants";
 
 export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
   const { author, title, reviewText, images, _id } = reviewData;
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   return (
     <Card
       onClick={() => {
-        dispatch(setIsOpen(true));
         navigate(`review/${_id}`);
       }}
       className="overflow-hidden shadow-lg transition-shadow h-60 relative
@@ -63,11 +59,8 @@ export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
         <ResizablePanel>
           <img
             src={`${API_URL}/${images[0]}`}
-            alt="Product Image"
-            width={400}
-            height={300}
+            alt="Review Thumbnail Image"
             className="w-full h-full object-cover"
-            style={{ aspectRatio: "400/300", objectFit: "cover" }}
           />
         </ResizablePanel>
       </ResizablePanelGroup>
