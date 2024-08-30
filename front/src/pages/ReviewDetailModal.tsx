@@ -120,6 +120,8 @@ export default function ReviewDetailModal() {
     }, 100);
   };
 
+  if (isDesktop === null) return;
+
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
