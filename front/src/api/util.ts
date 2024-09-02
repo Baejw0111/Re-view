@@ -54,7 +54,7 @@ export const withTokenRefresh = <T = void, R = void>( // 요청 함수 내의 �
         } catch (refreshError) {
           // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
           console.error("토큰 갱신 실패:", refreshError);
-          alert("로그인 정보가 만료되었습니다. 다시 로그인해주세요.");
+          alert("다시 로그인해주세요.");
           await persistor.purge(); // redux-persist가 관리하는 모든 상태 초기화
           window.location.href = "/";
           throw refreshError;
