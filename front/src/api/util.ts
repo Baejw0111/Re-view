@@ -52,7 +52,7 @@ authApiClient.interceptors.response.use(
       } catch (refreshError) {
         // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
         console.error("토큰 갱신 실패:", refreshError);
-        alert("다시 로그인해주세요.");
+        alert("로그인해주세요.");
         await persistor.purge(); // redux-persist가 관리하는 모든 상태 초기화
         window.location.href = "/";
         return Promise.reject(refreshError);
