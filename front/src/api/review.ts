@@ -52,3 +52,17 @@ export const fetchReviewById = async (
     throw error;
   }
 };
+
+export const deleteReview = withTokenRefresh(
+  async (reviewId: string): Promise<void> => {
+    try {
+      const response = await apiClient.delete(`/review/${reviewId}`, {
+        withCredentials: true,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error("리뷰 삭제 실패:", error);
+      throw error;
+    }
+  }
+);
