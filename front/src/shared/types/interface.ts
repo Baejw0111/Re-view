@@ -18,8 +18,8 @@ export interface UserInfo {
  * @param reviewText 리뷰 내용
  * @param ratings 리뷰 평점
  * @param tags 리뷰 태그
- * @param likes 리뷰 좋아요 수
- * @param comments 리뷰 댓글 수
+ * @param likesCount 리뷰 좋아요 수
+ * @param commentsCount 리뷰 댓글 수
  * @param _id 리뷰 ID
  * @param __v 리뷰 버전
  */
@@ -31,8 +31,8 @@ export interface ReviewInfo {
   reviewText: string;
   rating: number;
   tags: string[];
-  likes: number;
-  comments: number;
+  likesCount: number;
+  commentsCount: number;
   _id: string;
   __v: number;
 }
@@ -42,7 +42,7 @@ export interface ReviewInfo {
  * @param tagName 태그 이름
  * @param appliedCount 태그 적용 횟수
  */
-export interface Tag {
+export interface TagInfo {
   tagName: string;
   appliedCount: number;
 }
@@ -53,7 +53,7 @@ export interface Tag {
  * @param uploadTime 댓글 업로드 시간
  * @param content 댓글 내용
  */
-export interface Comment {
+export interface CommentInfo {
   authorId: string;
   uploadTime: Date;
   content: string;
