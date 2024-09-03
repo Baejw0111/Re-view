@@ -1,6 +1,5 @@
-import { apiClient } from "@/api/util";
+import { genaralApiClient, authApiClient } from "@/api/util";
 import { UserInfo } from "@/shared/types/interface";
-import { withTokenRefresh } from "@/api/util";
 
 /**
  * 카카오 토큰 요청 함수
@@ -8,10 +7,12 @@ import { withTokenRefresh } from "@/api/util";
  */
 export const getKakaoToken = async (code: string): Promise<void> => {
   try {
-    const response = await apiClient.post(
+    const response = await genaralApiClient.post(
       `/login/kakao`,
-      { code: code },
-      { withCredentials: true }
+      { code },
+      {
+        withCredentials: true,
+      }
     );
 
     console.log(response.data);
@@ -23,31 +24,17 @@ export const getKakaoToken = async (code: string): Promise<void> => {
 
 /**
  * 카카오 서버에서 유저 정보 조회하는 함수
- * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
  * @returns 유저 정보
  */
-export const getKakaoUserInfo = withTokenRefresh(
-  async (): Promise<UserInfo> => {
-    const response = await apiClient.get(`/auth/kakao/user`, {
-      withCredentials: true,
-    });
-    console.log(response.data);
-
-    return response.data;
-  }
-);
-
-/**
- * 카카오 서버에서 로그아웃 요청 후 쿠키 삭제
- * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
- */
-export const logOutKakao = withTokenRefresh(async (): Promise<void> => {
-  const response = await apiClient.post(
-    `/logout/kakao`,
-    {},
-    {
-      withCredentials: true,
-    }
-  );
+export const getKakaoUserInfo = async (): Promise<UserInfo> => {
+  const response = await authApiClient.get(`/auth/kakao/user`);
   console.log(response.data);
-});
+
+  return response.data;
+};
+
+// 카카오 서버에서 로그아웃 요청 후 쿠키 삭제
+export const logOutKakao = async (): Promise<void> => {
+  const response = await authApiClient.post(`/logout/kakao`, {});
+  console.log(response.data);
+};
