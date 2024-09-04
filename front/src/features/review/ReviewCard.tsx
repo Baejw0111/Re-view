@@ -9,18 +9,25 @@ import {
 } from "@/shared/shadcn-ui/resizable";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "@/shared/constants";
+import { useQuery } from "@tanstack/react-query";
+import { fetchReviewLikesCount } from "@/api/interaction";
 
 export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
-  const { author, title, reviewText, images, _id } = reviewData;
+  const { _id, author, title, reviewText, images, commentsCount } = reviewData;
   const navigate = useNavigate();
+
+  const { data: likesCount } = useQuery({
+    queryKey: ["likesCount", _id],
+    queryFn: () => fetchReviewLikesCount(_id),
+  });
 
   return (
     <Card
-      onClick={() => {
-        navigate(`review/${_id}`);
-      }}
       className="overflow-hidden shadow-lg transition-shadow h-60 relative
       hover:shadow-xl hover:cursor-pointer hover:bg-primary-foreground/90"
+      onClick={() => navigate(`review/${_id}`)}
+      role="button"
+      aria-label={`리뷰: ${title}`}
     >
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={55} minSize={30} collapsible={true}>
@@ -45,13 +52,19 @@ export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
                 <Star className="w-3 h-3 fill-muted stroke-muted-foreground mr-1 flex-shrink-0" />
                 <Star className="w-3 h-3 fill-muted stroke-muted-foreground mr-1 flex-shrink-0" />
               </div>
-              <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-normal break-words">
+              <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap break-words">
                 {reviewText}
               </p>
             </div>
             <div className="flex items-center mt-4">
-              <Heart className="w-5 h-5 flex-shrink-0 mr-2" />
-              <MessageCircle className="w-5 h-5 flex-shrink-0" />
+              <Heart className="w-5 h-5 flex-shrink-0 mr-1" />
+              <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">
+                {likesCount}
+              </span>
+              <MessageCircle className="w-5 h-5 flex-shrink-0 mr-1" />
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {commentsCount}
+              </span>
             </div>
           </div>
         </ResizablePanel>
