@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import userInfoSlice from "@/state/store/userInfoSlice";
+import userInfoReducer from "@/state/store/userInfoSlice";
 import {
   FLUSH,
   REHYDRATE,
@@ -18,7 +18,7 @@ const persistConfig = {
   storage, // 브라우저 로컬스토리지 사용
 };
 
-const persistedReducer = persistReducer(persistConfig, userInfoSlice);
+const persistedReducer = persistReducer(persistConfig, userInfoReducer);
 
 const store = configureStore({
   reducer: {
