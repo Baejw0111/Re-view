@@ -31,7 +31,7 @@ export const addLike = async (req, res) => {
   try {
     const { id } = req.params;
     await ReviewModel.findByIdAndUpdate(id, {
-      $inc: { likes: 1 },
+      $inc: { likesCount: 1 },
     });
     res.status(200).json("추천 완료!");
   } catch (error) {
@@ -62,7 +62,7 @@ export const addComment = async (req, res) => {
 export const cancelLike = async (req, res) => {
   try {
     const { id } = req.params;
-    await ReviewModel.findByIdAndUpdate(id, { $inc: { likes: -1 } });
+    await ReviewModel.findByIdAndUpdate(id, { $inc: { likesCount: -1 } });
     res.status(200).json({ message: "추천 삭제 완료" });
   } catch (error) {
     console.error("추천 삭제 중 에러 발생:", error);
