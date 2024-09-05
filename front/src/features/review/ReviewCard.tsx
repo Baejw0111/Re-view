@@ -52,7 +52,7 @@ export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
                 <Star className="w-3 h-3 fill-muted stroke-muted-foreground mr-1 flex-shrink-0" />
                 <Star className="w-3 h-3 fill-muted stroke-muted-foreground mr-1 flex-shrink-0" />
               </div>
-              <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap break-words">
+              <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap break-all">
                 {reviewText}
               </p>
             </div>
