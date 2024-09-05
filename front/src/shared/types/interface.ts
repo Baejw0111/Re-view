@@ -16,7 +16,7 @@ export interface UserInfo {
  * @param title 리뷰 제목
  * @param image 리뷰 이미지
  * @param reviewText 리뷰 내용
- * @param ratings 리뷰 평점
+ * @param rating 리뷰 평점
  * @param tags 리뷰 태그
  * @param likesCount 리뷰 좋아요 수
  * @param commentsCount 리뷰 댓글 수
