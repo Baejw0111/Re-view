@@ -3,7 +3,7 @@ import { Bell } from "lucide-react";
 
 export default function NotificationButton() {
   return (
-    <Button size="icon">
+    <Button variant="ghost" size="icon">
       <Bell />
     </Button>
   );

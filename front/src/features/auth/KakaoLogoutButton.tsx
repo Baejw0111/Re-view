@@ -11,7 +11,7 @@ export default function KakaoLogoutButton() {
   };
 
   return (
-    <Button size="icon" onClick={handleLogOut}>
+    <Button variant="ghost" size="icon" onClick={handleLogOut}>
       <LogOutIcon />
     </Button>
   );

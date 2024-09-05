@@ -3,7 +3,7 @@ import { PencilLine } from "lucide-react";
 
 export default function CreateReviewButton() {
   return (
-    <Button size="icon">
+    <Button variant="ghost" size="icon">
       <PencilLine />
     </Button>
   );
