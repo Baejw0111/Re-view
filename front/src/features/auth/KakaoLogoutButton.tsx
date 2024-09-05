@@ -2,6 +2,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { logOutKakao } from "@/api/kakaoAuth";
 import { LogOutIcon } from "lucide-react";
 import { persistor } from "@/state/store/index";
+import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 
 export default function KakaoLogoutButton() {
   const handleLogOut = async () => {
@@ -11,8 +12,10 @@ export default function KakaoLogoutButton() {
   };
 
   return (
-    <Button variant="ghost" size="icon" onClick={handleLogOut}>
-      <LogOutIcon />
-    </Button>
+    <TooltipWrapper tooltipText="로그아웃">
+      <Button variant="ghost" size="icon" onClick={handleLogOut}>
+        <LogOutIcon />
+      </Button>
+    </TooltipWrapper>
   );
 }
