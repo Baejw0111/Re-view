@@ -1,5 +1,5 @@
 import fs from "fs"; // 파일 삭제용
-import { ReviewModel } from "../utils/model.js";
+import { ReviewModel } from "../utils/Model.js";
 import { upload } from "../utils/upload.js";
 
 /**

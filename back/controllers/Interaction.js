@@ -1,4 +1,4 @@
-import { ReviewModel, CommentModel } from "../utils/model.js";
+import { ReviewModel, CommentModel } from "../utils/Model.js";
 
 export const getLikes = async (req, res) => {
   try {
