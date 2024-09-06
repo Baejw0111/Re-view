@@ -17,6 +17,9 @@ import {
 } from "@/shared/shadcn-ui/drawer";
 import { useNavigate } from "react-router-dom";
 import ReviewDetail from "@/widgets/ReviewDetail";
+import CommentInput from "@/features/interaction/CommentInput";
+import CommentList from "@/widgets/CommentList";
+import { Separator } from "@/shared/shadcn-ui/separator";
 
 export default function ReviewDetailModal() {
   const dispatch = useDispatch();
@@ -46,6 +49,9 @@ export default function ReviewDetailModal() {
           <DialogTitle hidden></DialogTitle>
           <DialogDescription hidden></DialogDescription>
           <ReviewDetail />
+          <Separator className="my-4" />
+          <CommentInput />
+          <CommentList />
         </DialogContent>
       </Dialog>
     );
@@ -58,6 +64,9 @@ export default function ReviewDetailModal() {
         <DrawerDescription hidden></DrawerDescription>
         <div className="p-10 overflow-y-auto scrollbar-hide">
           <ReviewDetail />
+          <Separator className="my-4" />
+          <CommentList />
+          <CommentInput />
         </div>
       </DrawerContent>
     </Drawer>
