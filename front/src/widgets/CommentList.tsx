@@ -20,17 +20,19 @@ export default function CommentList() {
       <div className="grid gap-4 mt-4">
         {data?.map((comment, index) => (
           <div
-            className="flex items-start gap-4 p-2 rounded-md hover:bg-muted"
+            className="flex items-start gap-4 rounded-md hover:bg-muted"
             key={index}
           >
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-7 w-7">
               <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <div className="grid gap-2 flex-1">
               <div className="flex items-center justify-between">
                 <div className="font-semibold">Test</div>
-                <div className="text-xs text-muted-foreground">2 days ago</div>
+                <div className="text-xs text-muted-foreground p-2">
+                  2 days ago
+                </div>
               </div>
               <p className="text-muted-foreground whitespace-pre-wrap break-all">
                 {comment.content}
