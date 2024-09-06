@@ -62,7 +62,7 @@ export default function ReviewDetailModal() {
       <DrawerContent className="h-[100vh]">
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>
-        <div className="p-10 overflow-y-auto scrollbar-hide">
+        <div className="p-5 pb-20 overflow-y-auto scrollbar-hide">
           <ReviewDetail />
           <Separator className="my-4" />
           <CommentList />
