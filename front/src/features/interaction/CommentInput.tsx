@@ -49,7 +49,7 @@ export default function CommentInput() {
   if (isDesktop) {
     return (
       <form onSubmit={handleSubmit}>
-        <div className="flex space-x-4">
+        <div className="flex gap-4">
           <UserProfile />
           <div className="flex-grow">
             <Textarea
@@ -63,7 +63,7 @@ export default function CommentInput() {
               }`}
             />
             {isExpanded && (
-              <div className="flex justify-end space-x-2 mt-2">
+              <div className="flex justify-end gap-2 mt-2">
                 <Button type="button" variant="ghost" onClick={handleCancel}>
                   취소
                 </Button>
@@ -83,7 +83,7 @@ export default function CommentInput() {
       onSubmit={handleSubmit}
       className="fixed left-0 bottom-0 w-full p-4 bg-background border-t"
     >
-      <div className="flex space-x-4">
+      <div className="flex gap-4">
         <UserProfile />
         <div className="flex-grow flex flex-row justify-between gap-2">
           <Textarea
