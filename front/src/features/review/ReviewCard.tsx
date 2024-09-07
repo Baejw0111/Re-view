@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "@/shared/constants";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewLikesCount } from "@/api/interaction";
+import { Separator } from "@/shared/shadcn-ui/separator";
 
 export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
   const { _id, author, title, reviewText, images, commentsCount } = reviewData;
@@ -56,15 +57,18 @@ export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
                 {reviewText}
               </p>
             </div>
-            <div className="flex items-center mt-4">
-              <Heart className="w-5 h-5 flex-shrink-0 mr-1" />
-              <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">
-                {likesCount}
-              </span>
-              <MessageCircle className="w-5 h-5 flex-shrink-0 mr-1" />
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {commentsCount}
-              </span>
+            <div className="flex flex-col items-start mt-4">
+              <Separator className="my-2" />
+              <div className="flex">
+                <Heart className="w-5 h-5 flex-shrink-0 mr-1" />
+                <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">
+                  {likesCount}
+                </span>
+                <MessageCircle className="w-5 h-5 flex-shrink-0 mr-1" />
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {commentsCount}
+                </span>
+              </div>
             </div>
           </div>
         </ResizablePanel>
