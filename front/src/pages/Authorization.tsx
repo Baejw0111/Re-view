@@ -23,8 +23,8 @@ export default function Authorization() {
       dispatch(setUserInfo(newUserInfo));
       navigate("/");
     },
-    onError: (error) => {
-      console.error("카카오 로그인 처리 중 오류 발생:", error);
+    onError: () => {
+      navigate("/");
     },
   });
 

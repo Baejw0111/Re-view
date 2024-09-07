@@ -13,12 +13,10 @@ export default function ReviewActionBar() {
   const { mutate } = useMutation({
     mutationFn: () => deleteReview(id as string),
     onSuccess: () => {
-      console.log("리뷰 삭제 성공");
       alert("리뷰 삭제 성공");
       navigate("/");
     },
-    onError: (error) => {
-      console.error("리뷰 삭제 실패:", error);
+    onError: () => {
       alert("리뷰 삭제 실패");
     },
   });

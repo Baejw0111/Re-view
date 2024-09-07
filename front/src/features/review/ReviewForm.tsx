@@ -82,11 +82,9 @@ export default function ReviewForm() {
   const mutation = useMutation({
     mutationFn: uploadReview,
     onSuccess: () => {
-      console.log("리뷰 업로드 성공");
       navigate("/");
     },
-    onError: (error) => {
-      console.error("리뷰 업로드 중 에러 발생:", error);
+    onError: () => {
       alert("리뷰 업로드 중 에러가 발생했습니다. 다시 시도해주세요.");
     },
   });
