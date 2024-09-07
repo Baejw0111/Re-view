@@ -6,14 +6,10 @@ import { ReviewInfo } from "@/shared/types/interface";
  * @returns 리뷰 리스트
  */
 export const fetchReviewList = async (): Promise<ReviewInfo[]> => {
-  try {
-    const response = await genaralApiClient.get(`/review`);
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.error("리뷰 리스트 조회 실패:", error);
-    throw error;
-  }
+  const response = await genaralApiClient.get(`/review`);
+  console.log("리뷰 리스트 조회 성공:", response.data);
+
+  return response.data;
 };
 
 /**
@@ -26,8 +22,7 @@ export const uploadReview = async (formData: FormData): Promise<void> => {
       "Content-Type": "multipart/form-data",
     },
   });
-
-  console.log(response.data);
+  console.log("리뷰 업로드 성공:", response.data);
 };
 
 /**
@@ -38,14 +33,10 @@ export const uploadReview = async (formData: FormData): Promise<void> => {
 export const fetchReviewById = async (
   reviewId: string
 ): Promise<ReviewInfo> => {
-  try {
-    const response = await genaralApiClient.get(`/review/${reviewId}`);
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.error("리뷰 상세 조회 실패:", error);
-    throw error;
-  }
+  const response = await genaralApiClient.get(`/review/${reviewId}`);
+  console.log("리뷰 상세 조회 성공:", response.data);
+
+  return response.data;
 };
 
 /**
@@ -53,11 +44,6 @@ export const fetchReviewById = async (
  * @param reviewId 리뷰 ID
  */
 export const deleteReview = async (reviewId: string): Promise<void> => {
-  try {
-    const response = await authApiClient.delete(`/review/${reviewId}`);
-    console.log(response.data);
-  } catch (error) {
-    console.error("리뷰 삭제 실패:", error);
-    throw error;
-  }
+  const response = await authApiClient.delete(`/review/${reviewId}`);
+  console.log("리뷰 삭제 성공:", response.data);
 };

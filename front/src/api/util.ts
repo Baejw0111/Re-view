@@ -1,11 +1,29 @@
 import axios, { AxiosInstance } from "axios";
 import { persistor } from "@/state/store";
 import { API_URL } from "@/shared/constants";
+import { AxiosError, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
 
-// axios 인스턴스 생성
+// axios 인스턴스 생성 함수
+
+const createApiClient = (clientConfig?: CreateAxiosDefaults): AxiosInstance => {
+  const client = axios.create({ ...clientConfig });
+
+  client.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError) => {
+      const { config, response } = error;
+      const method = config?.method?.toUpperCase() || "UNKNOWN"; // 실패한 api의 HTTP 메서드
+      const errorMessage = `${method} ${config?.url} 요청 실패:`;
+      console.error(errorMessage, response?.data);
+      return Promise.reject(error);
+    }
+  );
+
+  return client;
+};
 
 // 일반 인스턴스
-export const genaralApiClient: AxiosInstance = axios.create({
+export const genaralApiClient: AxiosInstance = createApiClient({
   baseURL: API_URL,
 });
 
@@ -13,7 +31,7 @@ export const genaralApiClient: AxiosInstance = axios.create({
  * 인증용 인스턴스
  * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
  */
-export const authApiClient: AxiosInstance = axios.create({
+export const authApiClient: AxiosInstance = createApiClient({
   baseURL: API_URL,
   withCredentials: true,
 });
@@ -22,36 +40,31 @@ export const authApiClient: AxiosInstance = axios.create({
  * 카카오 액세스 토큰 갱신 함수
  */
 export const refreshKakaoAccessToken = async (): Promise<void> => {
-  try {
-    // 인터셉터로 인한 무한 루프 방지를 위해 generalApiClient 사용
-    const response = await genaralApiClient.post(
-      `/auth/kakao/refresh`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
+  // 인터셉터로 인한 무한 루프 방지를 위해 generalApiClient 사용
+  const response = await genaralApiClient.post(
+    `/auth/kakao/refresh`,
+    {},
+    {
+      withCredentials: true,
+    }
+  );
 
-    console.log(response.data);
-  } catch (error) {
-    console.error("카카오 액세스 토큰 갱신 실패:", error);
-    throw error;
-  }
+  console.log(response.data);
 };
 
-// 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도
+// 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도하도록 authApiClient에 인터셉터 추가
 authApiClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  async (error) => {
-    if (error.response.status === 401) {
+  async (error: AxiosError) => {
+    const { response } = error;
+    if (response?.status === 401) {
       try {
         await refreshKakaoAccessToken();
-        return authApiClient(error.response.config);
+        return authApiClient(error.config as AxiosRequestConfig);
       } catch (refreshError) {
         // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
-        console.error("토큰 갱신 실패:", refreshError);
         alert("로그인해주세요.");
         await persistor.purge(); // redux-persist가 관리하는 모든 상태 초기화
         window.location.href = "/";

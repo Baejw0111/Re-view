@@ -6,20 +6,15 @@ import { UserInfo } from "@/shared/types/interface";
  * @param code 카카오 인증 코드
  */
 export const getKakaoToken = async (code: string): Promise<void> => {
-  try {
-    const response = await genaralApiClient.post(
-      `/login/kakao`,
-      { code },
-      {
-        withCredentials: true,
-      }
-    );
+  const response = await genaralApiClient.post(
+    `/login/kakao`,
+    { code },
+    {
+      withCredentials: true,
+    }
+  );
 
-    console.log(response.data);
-  } catch (error) {
-    console.error("카카오 토큰 요청 실패:", error);
-    throw error;
-  }
+  console.log("카카오 토큰 요청 성공:", response.data);
 };
 
 /**
@@ -28,7 +23,7 @@ export const getKakaoToken = async (code: string): Promise<void> => {
  */
 export const getKakaoUserInfo = async (): Promise<UserInfo> => {
   const response = await authApiClient.get(`/auth/kakao/user`);
-  console.log(response.data);
+  console.log("카카오 유저 정보 조회 성공:", response.data);
 
   return response.data;
 };
@@ -36,5 +31,5 @@ export const getKakaoUserInfo = async (): Promise<UserInfo> => {
 // 카카오 서버에서 로그아웃 요청 후 쿠키 삭제
 export const logOutKakao = async (): Promise<void> => {
   const response = await authApiClient.post(`/logout/kakao`, {});
-  console.log(response.data);
+  console.log("카카오 로그아웃 성공:", response.data);
 };
