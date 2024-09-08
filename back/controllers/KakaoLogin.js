@@ -68,6 +68,7 @@ export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
   console.log(`func: verifyKakaoAccessToken`);
   console.table(response.data);
 
+  req.userId = response.data.id;
   return next();
 });
 
