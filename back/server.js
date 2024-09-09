@@ -50,7 +50,7 @@ app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스
 app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카오 유저 정보 조회 API
 app.post("/logout/kakao", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
 app.post(
-  "/auth/kakao/updateUserInfo",
+  "/auth/kakao/updateUserNickname",
   verifyKakaoAccessToken,
   updateKakaoUserNickname
 ); // 카카오 유저 닉네임 수정 API
