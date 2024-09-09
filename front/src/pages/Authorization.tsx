@@ -19,9 +19,15 @@ export default function Authorization() {
       await getKakaoToken(AUTHORIZATION_CODE);
       return await getKakaoUserInfo();
     },
-    onSuccess: (newUserInfo) => {
-      dispatch(setUserInfo(newUserInfo));
-      navigate("/");
+    onSuccess: (responseData) => {
+      const { isNewMember, nickname, profileImage, thumbnailImage } =
+        responseData;
+      dispatch(setUserInfo({ nickname, profileImage, thumbnailImage }));
+      if (isNewMember) {
+        navigate("/onboarding");
+      } else {
+        navigate("/");
+      }
     },
   });
 
