@@ -1,4 +1,5 @@
 import axios from "axios";
+import { UserModel } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = process.env;
@@ -127,6 +128,16 @@ export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "액세스 토큰 갱신 성공" });
 }, "카카오 액세스 토큰 재발급");
 
+// 카카오 유저 가입 여부 체크
+const checkNewMember = async (userId) => {
+  const user = await UserModel.findOne({ kakaoId: userId });
+
+  if (!user) {
+    return true;
+  }
+  return false;
+};
+
 // 카카오 유저 정보 조회
 export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
@@ -143,14 +154,29 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   console.log(`func: getKakaoUserInfo`);
   console.log(response.data);
 
+  const isNewMember = await checkNewMember(response.data.id);
+  console.log(`isNewMember: ${isNewMember}`);
+
+  if (isNewMember) {
+    const newMember = new UserModel({
+      kakaoId: response.data.id,
+      nickname: response.data.properties.nickname,
+      profileImage: response.data.properties.profile_image,
+      thumbnailImage: response.data.properties.thumbnail_image,
+      customNickname: "",
+    });
+    await newMember.save();
+  }
+
   const { nickname, profile_image, thumbnail_image, custom_nickname } =
     response.data.properties;
 
   return res.status(200).json({
+    isNewMember,
     nickname,
-    profileImage: profile_image,
-    thumbnailImage: thumbnail_image,
-    customNickname: custom_nickname,
+    profile_image,
+    thumbnail_image,
+    custom_nickname,
   });
 }, "카카오 유저 정보 조회");
 
@@ -175,6 +201,7 @@ export const logOutKakao = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "로그아웃 성공" });
 }, "카카오 로그아웃");
 
+// 카카오 유저 닉네임 수정
 export const updateKakaoUserNickname = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
   const response = await axios.post(
