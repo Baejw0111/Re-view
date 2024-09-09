@@ -42,3 +42,11 @@ export const updateKakaoUserNickname = async (
   });
   console.log("카카오 유저 닉네임 수정 성공:", response.data);
 };
+
+export const deleteUserAccount = async (): Promise<void> => {
+  const response = await authApiClient.post(
+    `/auth/kakao/deleteUserAccount`,
+    {}
+  );
+  console.log("카카오 유저 계정 삭제 성공:", response.data);
+};
