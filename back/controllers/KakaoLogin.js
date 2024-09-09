@@ -172,11 +172,11 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
     response.data.properties;
 
   return res.status(200).json({
-    isNewMember,
-    nickname,
-    profile_image,
-    thumbnail_image,
-    custom_nickname,
+    isNewMember: isNewMember,
+    nickname: nickname,
+    profileImage: profile_image,
+    thumbnailImage: thumbnail_image,
+    customNickname: custom_nickname,
   });
 }, "카카오 유저 정보 조회");
 
@@ -241,6 +241,11 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
 
   console.log(`func: deleteUserAccount`);
   console.table(response.data);
+
+  const user = await UserModel.findOne({ kakaoId: response.data.id });
+  if (user) {
+    await user.deleteOne();
+  }
 
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
