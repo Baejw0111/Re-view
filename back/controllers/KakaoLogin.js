@@ -45,7 +45,7 @@ export const getKakaoToken = asyncHandler(async (req, res) => {
   return res.status(200).json({
     message: "토큰 요청 성공",
   });
-});
+}, "카카오 토큰 요청");
 
 /**
  * 카카오 토큰 검증
@@ -70,7 +70,7 @@ export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
 
   req.userId = response.data.id;
   return next();
-});
+}, "카카오 토큰 검증");
 
 // 카카오 액세스 토큰 재발급
 export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
@@ -125,7 +125,7 @@ export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({ message: "액세스 토큰 갱신 성공" });
-});
+}, "카카오 액세스 토큰 재발급");
 
 // 카카오 유저 정보 조회
 export const getKakaoUserInfo = asyncHandler(async (req, res) => {
@@ -150,7 +150,7 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
     profileImage: profile_image,
     thumbnailImage: thumbnail_image,
   });
-});
+}, "카카오 유저 정보 조회");
 
 // 카카오 로그아웃
 export const logOutKakao = asyncHandler(async (req, res) => {
@@ -171,16 +171,19 @@ export const logOutKakao = asyncHandler(async (req, res) => {
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.status(200).json({ message: "로그아웃 성공" });
-});
+}, "카카오 로그아웃");
 
 export const updateKakaoUserNickname = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
   const response = await axios.post(
     "https://kapi.kakao.com/v1/user/update_profile",
     {
-      properties: JSON.stringify({
-        custom_nickname: req.body.newNickname,
-      }),
+      properties:
+        // JSON.stringify(
+        {
+          custom_nickname: req.body.newNickname,
+        },
+      // ),
     },
     {
       headers: {
@@ -193,5 +196,5 @@ export const updateKakaoUserNickname = asyncHandler(async (req, res) => {
   console.log(`func: updateKakaoUserNickname`);
   console.table(response.data);
 
-  return res.status(200).json({ message: "유저 정보 수정 성공" });
-});
+  return res.status(200).json({ message: "유저 닉네임 수정 성공" });
+}, "카카오 유저 닉네임 수정");

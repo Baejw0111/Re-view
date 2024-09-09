@@ -7,7 +7,7 @@ import asyncHandler from "../utils/ControllerUtils.js";
 export const getReviews = asyncHandler(async (req, res) => {
   const reviews = await ReviewModel.find();
   res.json(reviews);
-});
+}, "리뷰 전체 조회");
 
 // 특정 리뷰 조회
 export const getReviewsById = asyncHandler(async (req, res) => {
@@ -17,7 +17,7 @@ export const getReviewsById = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
   res.json(reviewData);
-});
+}, "특정 리뷰 조회");
 
 // 리뷰 등록
 export const createReview = asyncHandler(async (req, res) => {
@@ -66,7 +66,7 @@ export const createReview = asyncHandler(async (req, res) => {
   });
   await reviewData.save();
   res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });
-});
+}, "리뷰 등록");
 
 // 리뷰 수정
 export const updateReview = asyncHandler(async (req, res) => {
@@ -101,7 +101,7 @@ export const updateReview = asyncHandler(async (req, res) => {
 
   await reviewData.save();
   res.status(200).json({ message: "리뷰가 성공적으로 수정되었습니다." });
-});
+}, "리뷰 수정");
 
 // 리뷰 삭제
 export const deleteReview = asyncHandler(async (req, res) => {
@@ -115,4 +115,4 @@ export const deleteReview = asyncHandler(async (req, res) => {
   }
   await ReviewModel.findByIdAndDelete(id);
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
-});
+}, "리뷰 삭제");

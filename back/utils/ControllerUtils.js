@@ -20,7 +20,7 @@ const handleError = (res, operation) => (error) => {
  * @param {Function} fn - 비동기 함수
  * @returns {Function} - 래퍼 함수
  */
-const asyncHandler = (fn) => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(handleError(res, fn.name));
+const asyncHandler = (fn, operation) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(handleError(res, operation));
 
 export default asyncHandler;

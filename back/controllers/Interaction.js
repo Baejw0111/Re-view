@@ -6,7 +6,7 @@ export const getLikes = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { likesCount } = await ReviewModel.findById(id);
   res.status(200).json({ likesCount });
-});
+}, "추천수 조회");
 
 // 댓글 조회
 export const getComments = asyncHandler(async (req, res) => {
@@ -22,7 +22,7 @@ export const addLike = asyncHandler(async (req, res) => {
     $inc: { likesCount: 1 },
   });
   res.status(200).json("추천 완료!");
-});
+}, "리뷰 추천");
 
 // 댓글 추가
 export const addComment = asyncHandler(async (req, res) => {
@@ -33,14 +33,14 @@ export const addComment = asyncHandler(async (req, res) => {
   });
   await comment.save();
   res.status(200).json({ message: "댓글 추가 완료" });
-});
+}, "리뷰 댓글 추가");
 
 // 추천 삭제
 export const cancelLike = asyncHandler(async (req, res) => {
   const { id } = req.params;
   await ReviewModel.findByIdAndUpdate(id, { $inc: { likesCount: -1 } });
   res.status(200).json({ message: "추천 삭제 완료" });
-});
+}, "리뷰 추천 취소");
 
 // 댓글 삭제
 export const deleteComment = asyncHandler(async (req, res) => {
@@ -51,4 +51,4 @@ export const deleteComment = asyncHandler(async (req, res) => {
     content,
   });
   res.status(200).json({ message: "댓글 삭제 완료" });
-});
+}, "리뷰 댓글 삭제");
