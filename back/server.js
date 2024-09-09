@@ -18,6 +18,7 @@ import {
   getKakaoUserInfo,
   logOutKakao,
   updateKakaoUserNickname,
+  deleteUserAccount,
 } from "./controllers/KakaoLogin.js";
 import {
   getLikes,
@@ -69,5 +70,10 @@ app.post("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
 app.post("/comment/:id", verifyKakaoAccessToken, addComment); // 리뷰 댓글 등록 API
 app.delete("/like/:id", verifyKakaoAccessToken, cancelLike); // 리뷰 추천 취소 API
 app.delete("/comment/:id", verifyKakaoAccessToken, deleteComment); // 리뷰 댓글 삭제 API
+app.post(
+  "/auth/kakao/deleteUserAccount",
+  verifyKakaoAccessToken,
+  deleteUserAccount
+); // 카카오 유저 계정 삭제 API
 
 app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));
