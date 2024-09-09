@@ -23,7 +23,8 @@ export default function Authorization() {
       dispatch(setUserInfo(newUserInfo));
       navigate("/");
     },
-    onError: () => {
+    onError: (error) => {
+      alert(`로그인 중 에러가 발생했습니다. ${error}`);
       navigate("/");
     },
   });
