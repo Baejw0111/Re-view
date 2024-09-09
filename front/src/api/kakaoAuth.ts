@@ -33,3 +33,12 @@ export const logOutKakao = async (): Promise<void> => {
   const response = await authApiClient.post(`/logout/kakao`, {});
   console.log("카카오 로그아웃 성공:", response.data);
 };
+
+export const updateKakaoUserNickname = async (
+  newNickname: string
+): Promise<void> => {
+  const response = await authApiClient.post(`/auth/kakao/updateUserNickname`, {
+    newNickname,
+  });
+  console.log("카카오 유저 닉네임 수정 성공:", response.data);
+};
