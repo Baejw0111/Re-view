@@ -1,5 +1,4 @@
 import { genaralApiClient, authApiClient } from "@/api/util";
-import { UserInfo } from "@/shared/types/interface";
 
 /**
  * 카카오 토큰 요청 함수
@@ -21,7 +20,12 @@ export const getKakaoToken = async (code: string): Promise<void> => {
  * 카카오 서버에서 유저 정보 조회하는 함수
  * @returns 유저 정보
  */
-export const getKakaoUserInfo = async (): Promise<UserInfo> => {
+export const getKakaoUserInfo = async (): Promise<{
+  isNewMember: boolean;
+  nickname: string;
+  profileImage: string;
+  thumbnailImage: string;
+}> => {
   const response = await authApiClient.get(`/auth/kakao/user`);
   console.log("카카오 유저 정보 조회 성공:", response.data);
 
