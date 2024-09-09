@@ -17,6 +17,7 @@ import {
   refreshKakaoAccessToken,
   getKakaoUserInfo,
   logOutKakao,
+  updateKakaoUserNickname,
 } from "./controllers/KakaoLogin.js";
 import {
   getLikes,
@@ -48,6 +49,11 @@ app.post("/login/kakao", getKakaoToken); // 카카오 토큰 요청 API
 app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
 app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카오 유저 정보 조회 API
 app.post("/logout/kakao", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
+app.post(
+  "/auth/kakao/updateUserInfo",
+  verifyKakaoAccessToken,
+  updateKakaoUserNickname
+); // 카카오 유저 닉네임 수정 API
 
 // 리뷰 관련 API
 app.get("/review", getReviews); // 리뷰 전체 조회 API
