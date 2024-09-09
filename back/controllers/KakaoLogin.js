@@ -143,12 +143,14 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   console.log(`func: getKakaoUserInfo`);
   console.log(response.data);
 
-  const { nickname, profile_image, thumbnail_image } = response.data.properties;
+  const { nickname, profile_image, thumbnail_image, custom_nickname } =
+    response.data.properties;
 
   return res.status(200).json({
     nickname,
     profileImage: profile_image,
     thumbnailImage: thumbnail_image,
+    customNickname: custom_nickname,
   });
 }, "카카오 유저 정보 조회");
 
@@ -178,12 +180,9 @@ export const updateKakaoUserNickname = asyncHandler(async (req, res) => {
   const response = await axios.post(
     "https://kapi.kakao.com/v1/user/update_profile",
     {
-      properties:
-        // JSON.stringify(
-        {
-          custom_nickname: req.body.newNickname,
-        },
-      // ),
+      properties: JSON.stringify({
+        custom_nickname: req.body.newNickname,
+      }),
     },
     {
       headers: {
