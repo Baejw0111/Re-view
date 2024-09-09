@@ -224,3 +224,25 @@ export const updateKakaoUserNickname = asyncHandler(async (req, res) => {
 
   return res.status(200).json({ message: "유저 닉네임 수정 성공" });
 }, "카카오 유저 닉네임 수정");
+
+// 카카오 유저 계정 삭제
+export const deleteUserAccount = asyncHandler(async (req, res) => {
+  const accessToken = req.cookies.accessToken;
+  const response = await axios.post(
+    "https://kapi.kakao.com/v1/user/unlink",
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/x-www-form-urlencoded;",
+      },
+    }
+  );
+
+  console.log(`func: deleteUserAccount`);
+  console.table(response.data);
+
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  res.status(200).json({ message: "유저 계정 삭제 성공" });
+});
