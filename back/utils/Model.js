@@ -19,27 +19,31 @@ const db = mongoose.connection.useDb("mainDB");
 /**
  * 유저 모델
  * @type {mongoose.Model}
- * @property {string} kakaoId - 카카오 ID
+ * @property {number} kakaoId - 카카오 ID
  * @property {string} nickname - 닉네임
  * @property {string[]} reviews - 작성한 리뷰 ID 모음
  * @property {string[]} likedReviews - 좋아요한 리뷰 ID 모음
  * @property {string[]} favoriteTags - 자주 찾는 태그 모음
+ * @property {string} thumbnailImage - 썸네일 이미지 경로
+ * @property {string} profileImage - 프로필 이미지 경로
  */
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
-    kakaoId: { type: String, default: "" },
+    kakaoId: { type: Number, default: 0 },
     nickname: { type: String, default: "" },
     reviews: { type: [String], default: [] },
     likedReviews: { type: [String], default: [] },
     favoriteTags: { type: [String], default: [] },
+    thumbnailImage: { type: String, default: "" },
+    profileImage: { type: String, default: "" },
   })
 );
 
 /**
  * 리뷰 모델
  * @type {mongoose.Model}
- * @property {string} author - 작성자
+ * @property {number} authorId - 작성자 카카오 ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
  * @property {string[]} images - 이미지 파일 경로 모음
@@ -52,7 +56,7 @@ export const UserModel = db.model(
 export const ReviewModel = db.model(
   "Review",
   new mongoose.Schema({
-    author: { type: String, default: "작성자" },
+    authorId: { type: Number, default: 0 },
     uploadTime: { type: Date, default: Date.now },
     title: { type: String, default: "" },
     images: { type: [String], default: [] },

@@ -1,5 +1,5 @@
 import fs from "fs"; // 파일 삭제용
-import { ReviewModel } from "../utils/Model.js";
+import { ReviewModel, UserModel } from "../utils/Model.js";
 import { upload } from "../utils/upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
@@ -32,10 +32,11 @@ export const createReview = asyncHandler(async (req, res) => {
     });
   });
 
+  const authorId = req.userId;
+
   // 필드 검증
-  const { author, uploadTime, title, reviewText, rating, tags } = req.body;
+  const { uploadTime, title, reviewText, rating, tags } = req.body;
   if (
-    !author ||
     !uploadTime ||
     !title ||
     !reviewText ||
@@ -54,7 +55,7 @@ export const createReview = asyncHandler(async (req, res) => {
   }
 
   const reviewData = new ReviewModel({
-    author,
+    authorId,
     images: req.files.map((file) => file.path), // 여러 이미지 경로 저장
     uploadTime,
     title,
@@ -65,6 +66,11 @@ export const createReview = asyncHandler(async (req, res) => {
     comments: 0,
   });
   await reviewData.save();
+
+  await UserModel.findOneAndUpdate(
+    { kakaoId: authorId },
+    { $push: { reviews: reviewData._id } }
+  );
   res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });
 }, "리뷰 등록");
 
@@ -114,5 +120,9 @@ export const deleteReview = asyncHandler(async (req, res) => {
     review.images.forEach((imagePath) => fs.unlinkSync(imagePath)); // 모든 이미지 파일 삭제
   }
   await ReviewModel.findByIdAndDelete(id);
+  await UserModel.findOneAndUpdate(
+    { kakaoId: review.authorId },
+    { $pull: { reviews: id.toString() } }
+  );
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
 }, "리뷰 삭제");
