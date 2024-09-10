@@ -18,6 +18,7 @@ import store from "@/state/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "@/state/store";
 import ReviewDetailModal from "@/pages/ReviewDetailModal";
+import Onboarding from "@/pages/Onboarding";
 
 function App() {
   const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ function App() {
                 </Route>
                 <Route path="/create-review" element={<CreateReview />} />
                 <Route path="/oauth/kakao" element={<Authorization />} />
+                <Route path="/onboarding" element={<Onboarding />} />
               </Routes>
             </Router>
           </PersistGate>
