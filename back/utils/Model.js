@@ -20,6 +20,7 @@ const db = mongoose.connection.useDb("mainDB");
  * 유저 모델
  * @type {mongoose.Model}
  * @property {string} kakaoId - 카카오 ID
+ * @property {string} nickname - 닉네임
  * @property {string[]} reviews - 작성한 리뷰 ID 모음
  * @property {string[]} likedReviews - 좋아요한 리뷰 ID 모음
  * @property {string[]} favoriteTags - 자주 찾는 태그 모음
