@@ -12,6 +12,8 @@ import { RootState } from "@/state/store/index";
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
+  if (window.location.pathname === "/onboarding") return null;
+
   return (
     <header
       className="fixed p-0 top-0 left-0 w-full h-16 border-b border-slate-900/10 dark:border-slate-50/[0.06]
