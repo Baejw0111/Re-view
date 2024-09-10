@@ -1,5 +1,12 @@
-import { ReviewModel, CommentModel } from "../utils/Model.js";
+import { ReviewModel, CommentModel, UserModel } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
+
+// 유저 정보 조회
+export const fetchUserInfoById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const user = await UserModel.findOne({ kakaoId: id });
+  res.status(200).json(user);
+}, "유저 정보 조회");
 
 // 추천수 조회
 export const getLikes = asyncHandler(async (req, res) => {
@@ -27,7 +34,9 @@ export const addLike = asyncHandler(async (req, res) => {
 // 댓글 추가
 export const addComment = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const authorId = req.userId;
   const comment = new CommentModel({
+    authorId,
     reviewId: id,
     content: req.body.comment,
   });
