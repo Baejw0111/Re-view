@@ -21,22 +21,22 @@ const db = mongoose.connection.useDb("mainDB");
  * @type {mongoose.Model}
  * @property {number} kakaoId - 카카오 ID
  * @property {string} nickname - 닉네임
+ * @property {string} thumbnailImage - 썸네일 이미지 경로
+ * @property {string} profileImage - 프로필 이미지 경로
  * @property {string[]} reviews - 작성한 리뷰 ID 모음
  * @property {string[]} likedReviews - 좋아요한 리뷰 ID 모음
  * @property {string[]} favoriteTags - 자주 찾는 태그 모음
- * @property {string} thumbnailImage - 썸네일 이미지 경로
- * @property {string} profileImage - 프로필 이미지 경로
  */
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
     kakaoId: { type: Number, default: 0 },
     nickname: { type: String, default: "" },
+    thumbnailImage: { type: String, default: "" },
+    profileImage: { type: String, default: "" },
     reviews: { type: [String], default: [] },
     likedReviews: { type: [String], default: [] },
     favoriteTags: { type: [String], default: [] },
-    thumbnailImage: { type: String, default: "" },
-    profileImage: { type: String, default: "" },
   })
 );
 
@@ -85,7 +85,7 @@ export const TagModel = db.model(
 /**
  * 댓글 모델
  * @type {mongoose.Model}
- * @property {string} authorId - 작성자 ID
+ * @property {number} authorId - 작성자 ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} reviewId - 댓글이 작성된 리뷰의 ID
  * @property {string} content - 댓글 내용
@@ -93,7 +93,7 @@ export const TagModel = db.model(
 export const CommentModel = db.model(
   "Comment",
   new mongoose.Schema({
-    authorId: { type: String, default: "" },
+    authorId: { type: Number, default: 0 },
     uploadTime: { type: Date, default: Date.now },
     reviewId: { type: String, default: "" },
     content: { type: String, default: "" },
