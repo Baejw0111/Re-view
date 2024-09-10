@@ -173,10 +173,9 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     isNewMember: isNewMember,
-    nickname: nickname,
+    nickname: isNewMember ? nickname : custom_nickname,
     profileImage: profile_image,
     thumbnailImage: thumbnail_image,
-    customNickname: custom_nickname,
   });
 }, "카카오 유저 정보 조회");
 
@@ -204,11 +203,12 @@ export const logOutKakao = asyncHandler(async (req, res) => {
 // 카카오 유저 닉네임 수정
 export const updateKakaoUserNickname = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
+  const { newNickname } = req.body;
   const response = await axios.post(
     "https://kapi.kakao.com/v1/user/update_profile",
     {
       properties: JSON.stringify({
-        custom_nickname: req.body.newNickname,
+        custom_nickname: newNickname,
       }),
     },
     {
@@ -221,6 +221,11 @@ export const updateKakaoUserNickname = asyncHandler(async (req, res) => {
 
   console.log(`func: updateKakaoUserNickname`);
   console.table(response.data);
+
+  await UserModel.findOneAndUpdate(
+    { kakaoId: response.data.id },
+    { nickname: newNickname }
+  );
 
   return res.status(200).json({ message: "유저 닉네임 수정 성공" });
 }, "카카오 유저 닉네임 수정");
@@ -242,10 +247,7 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   console.log(`func: deleteUserAccount`);
   console.table(response.data);
 
-  const user = await UserModel.findOne({ kakaoId: response.data.id });
-  if (user) {
-    await user.deleteOne();
-  }
+  await UserModel.findOneAndDelete({ kakaoId: response.data.id });
 
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
