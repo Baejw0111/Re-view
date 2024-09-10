@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
-import { ReviewInfo } from "@/shared/types/interface";
+import { ReviewInfo, UserInfo } from "@/shared/types/interface";
 import { API_URL } from "@/shared/constants";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/shared/shadcn-ui/carousel";
 import { Card, CardContent } from "@/shared/shadcn-ui/card";
 import ReviewActionBar from "@/widgets/ReviewActionBar";
+import { fetchUserInfoById } from "@/api/interaction";
 
 export default function ReviewDetail() {
   const { id } = useParams();
@@ -26,6 +27,11 @@ export default function ReviewDetail() {
     queryFn: () => fetchReviewById(id as string),
   });
 
+  const { data: userInfo } = useQuery<UserInfo>({
+    queryKey: ["user", reviewDetail?.authorId],
+    queryFn: () => fetchUserInfoById(reviewDetail?.authorId as number),
+  });
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
@@ -37,12 +43,16 @@ export default function ReviewDetail() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarImage
+                    src={userInfo?.thumbnailImage}
+                    alt={userInfo?.nickname}
+                  />
+                  <AvatarFallback>
+                    {userInfo?.nickname.slice(0, 1)}
+                  </AvatarFallback>
                 </Avatar>
-                {/* <div className="font-medium">{reviewDetail.author}</div> */}
                 <div className="text-md text-gray-500 dark:text-gray-400">
-                  {reviewDetail.author}
+                  {userInfo?.nickname}
                 </div>
               </div>
               <div className="flex items-center justify-center bg-primary h-8 w-10 rounded-md text-primary-foreground font-bold text-xl">
