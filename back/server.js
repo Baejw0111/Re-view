@@ -27,6 +27,7 @@ import {
   addComment,
   cancelLike,
   deleteComment,
+  fetchUserInfoById,
 } from "./controllers/Interaction.js";
 
 const app = express(); // express 인스턴스 생성
@@ -75,5 +76,6 @@ app.post(
   verifyKakaoAccessToken,
   deleteUserAccount
 ); // 카카오 유저 계정 삭제 API
+app.get("/user/:id", fetchUserInfoById); // 유저 정보 조회 API
 
 app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));
