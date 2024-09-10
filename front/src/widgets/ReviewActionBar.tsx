@@ -2,19 +2,17 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, Flag } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteReview } from "@/api/review";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 
 export default function ReviewActionBar() {
   const { id } = useParams();
-  const navigate = useNavigate();
-
   const { mutate } = useMutation({
     mutationFn: () => deleteReview(id as string),
     onSuccess: () => {
       alert("리뷰 삭제 성공");
-      navigate("/");
+      window.location.href = "/";
     },
     onError: () => {
       alert("리뷰 삭제 실패");
