@@ -1,5 +1,11 @@
 import { genaralApiClient, authApiClient } from "@/api/util";
-import { CommentInfo } from "@/shared/types/interface";
+import { CommentInfo, UserInfo } from "@/shared/types/interface";
+
+export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
+  const response = await genaralApiClient.get(`/user/${userId}`);
+  console.log("유저 조회 성공:", response.data);
+  return response.data;
+};
 
 /**
  * 리뷰 추천 수 조회 함수
