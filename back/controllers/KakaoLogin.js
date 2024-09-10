@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UserModel } from "../utils/Model.js";
+import { UserModel, ReviewModel, CommentModel } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = process.env;
@@ -161,9 +161,8 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
     const newMember = new UserModel({
       kakaoId: response.data.id,
       nickname: response.data.properties.nickname,
-      profileImage: response.data.properties.profile_image,
       thumbnailImage: response.data.properties.thumbnail_image,
-      customNickname: "",
+      profileImage: response.data.properties.profile_image,
     });
     await newMember.save();
   }
@@ -248,6 +247,8 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   console.table(response.data);
 
   await UserModel.findOneAndDelete({ kakaoId: response.data.id });
+  await ReviewModel.deleteMany({ authorId: response.data.id });
+  await CommentModel.deleteMany({ authorId: response.data.id });
 
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
