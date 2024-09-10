@@ -10,16 +10,22 @@ import {
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "@/shared/constants";
 import { useQuery } from "@tanstack/react-query";
-import { fetchReviewLikesCount } from "@/api/interaction";
+import { fetchReviewLikesCount, fetchUserInfoById } from "@/api/interaction";
 import { Separator } from "@/shared/shadcn-ui/separator";
 
 export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
-  const { _id, author, title, reviewText, images, commentsCount } = reviewData;
+  const { _id, authorId, title, reviewText, images, commentsCount } =
+    reviewData;
   const navigate = useNavigate();
 
   const { data: likesCount } = useQuery({
     queryKey: ["likesCount", _id],
     queryFn: () => fetchReviewLikesCount(_id),
+  });
+
+  const { data: author } = useQuery({
+    queryKey: ["user", authorId],
+    queryFn: () => fetchUserInfoById(authorId),
   });
 
   return (
@@ -36,11 +42,16 @@ export default function ReviewCard({ reviewData }: { reviewData: ReviewInfo }) {
             <div>
               <div className="flex items-center mb-2">
                 <Avatar className="w-6 h-6 mr-2">
-                  <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarImage
+                    src={author?.thumbnailImage}
+                    alt={author?.nickname}
+                  />
+                  <AvatarFallback>
+                    {author?.nickname.slice(0, 1)}
+                  </AvatarFallback>
                 </Avatar>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {author}
+                  {author?.nickname}
                 </span>
               </div>
               <h3 className="text-lg text-left font-semibold mb-2 line-clamp-1">
