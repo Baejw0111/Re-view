@@ -3,6 +3,7 @@ import { UserInfo } from "@/shared/types/interface";
 import { PURGE } from "redux-persist";
 
 const initialState: UserInfo = {
+  kakaoId: 0,
   nickname: "",
   profileImage: "",
   thumbnailImage: "",
@@ -13,6 +14,7 @@ const userInfoSlice = createSlice({
   initialState,
   reducers: {
     setUserInfo: (state, action) => {
+      state.kakaoId = action.payload.kakaoId;
       state.nickname = action.payload.nickname;
       state.profileImage = action.payload.profileImage;
       state.thumbnailImage = action.payload.thumbnailImage;
@@ -20,6 +22,7 @@ const userInfoSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(PURGE, (state) => {
+      state.kakaoId = 0;
       state.nickname = "";
       state.profileImage = "";
       state.thumbnailImage = "";
