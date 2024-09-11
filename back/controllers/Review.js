@@ -1,5 +1,5 @@
 import fs from "fs"; // 파일 삭제용
-import { ReviewModel, UserModel } from "../utils/Model.js";
+import { ReviewModel, UserModel, CommentModel } from "../utils/Model.js";
 import { upload } from "../utils/upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
@@ -11,8 +11,8 @@ export const getReviews = asyncHandler(async (req, res) => {
 
 // 특정 리뷰 조회
 export const getReviewsById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const reviewData = await ReviewModel.findById(id);
+  const { id: reviewId } = req.params;
+  const reviewData = await ReviewModel.findById(reviewId);
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
@@ -71,12 +71,13 @@ export const createReview = asyncHandler(async (req, res) => {
     { kakaoId: authorId },
     { $push: { reviews: reviewData._id } }
   );
+
   res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });
 }, "리뷰 등록");
 
 // 리뷰 수정
 export const updateReview = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { id: reviewId } = req.params;
   const uploader = upload.array("images", 5); // 여러 이미지 파일 처리
 
   await new Promise((resolve, reject) => {
@@ -86,7 +87,7 @@ export const updateReview = asyncHandler(async (req, res) => {
     });
   });
 
-  const reviewData = await ReviewModel.findById(id);
+  const reviewData = await ReviewModel.findById(reviewId);
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
@@ -111,18 +112,22 @@ export const updateReview = asyncHandler(async (req, res) => {
 
 // 리뷰 삭제
 export const deleteReview = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const review = await ReviewModel.findById(id);
+  const { id: reviewId } = req.params;
+  const review = await ReviewModel.findById(reviewId);
   if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
+
   if (review.images) {
     review.images.forEach((imagePath) => fs.unlinkSync(imagePath)); // 모든 이미지 파일 삭제
   }
-  await ReviewModel.findByIdAndDelete(id);
+
+  await ReviewModel.findByIdAndDelete(reviewId); // 리뷰 삭제
   await UserModel.findOneAndUpdate(
     { kakaoId: review.authorId },
-    { $pull: { reviews: id.toString() } }
-  );
+    { $pull: { reviews: reviewId.toString() } }
+  ); // 유저 정보 업데이트
+  await CommentModel.deleteMany({ reviewId: reviewId.toString() }); // 댓글 삭제
+
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
 }, "리뷰 삭제");
