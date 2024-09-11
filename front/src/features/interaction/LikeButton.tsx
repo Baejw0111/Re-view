@@ -7,13 +7,28 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/shared/shadcn-ui/button";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
+import { useMutation } from "@tanstack/react-query";
+import { likeReview } from "@/api/interaction";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LikeButton() {
-  const { id } = useParams();
+  const { id: reviewId } = useParams();
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: () => likeReview(reviewId as string),
+    onSuccess: () => {
+      alert("추천 성공");
+      queryClient.invalidateQueries({ queryKey: ["likesCount", reviewId] });
+    },
+    onError: () => {
+      alert("추천 실패");
+    },
+  });
 
   const { data: likesCount } = useQuery({
-    queryKey: ["likesCount", id],
-    queryFn: () => fetchReviewLikesCount(id as string),
+    queryKey: ["likesCount", reviewId],
+    queryFn: () => fetchReviewLikesCount(reviewId as string),
   });
 
   const [isLiked, setIsLiked] = useState(false);
@@ -44,6 +59,7 @@ export default function LikeButton() {
             }
       ),
     ]);
+    mutate();
   };
 
   useEffect(() => {
