@@ -30,6 +30,7 @@ export default function ReviewDetail() {
   const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["user", reviewDetail?.authorId],
     queryFn: () => fetchUserInfoById(reviewDetail?.authorId as number),
+    enabled: !!reviewDetail, // reviewDetail이 있을 때만 쿼리 실행
   });
 
   if (isLoading) return <div>Loading...</div>;
