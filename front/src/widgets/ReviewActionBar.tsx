@@ -7,9 +7,9 @@ import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 
 export default function ReviewActionBar() {
-  const { id } = useParams();
-  const { mutate } = useMutation({
-    mutationFn: () => deleteReview(id as string),
+  const { id: reviewId } = useParams();
+  const { mutate: deleteReviewMutate } = useMutation({
+    mutationFn: () => deleteReview(reviewId as string),
     onSuccess: () => {
       alert("리뷰 삭제 성공");
       window.location.href = "/";
@@ -29,7 +29,11 @@ export default function ReviewActionBar() {
         </Button>
       </TooltipWrapper>
       <TooltipWrapper tooltipText="삭제">
-        <Button variant="ghost" size="icon" onClick={() => mutate()}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => deleteReviewMutate()}
+        >
           <Trash2 className="w-6 h-6 hover:text-red-500" />
           <span className="sr-only">삭제</span>
         </Button>
