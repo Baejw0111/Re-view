@@ -1,63 +1,67 @@
-import { ReviewModel, CommentModel, UserModel } from "../utils/Model.js";
+import { CommentModel, UserModel, ReviewModel } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 // 유저 정보 조회
 export const fetchUserInfoById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const user = await UserModel.findOne({ kakaoId: id });
+  const { id: userId } = req.params;
+  const user = await UserModel.findOne({ kakaoId: userId });
   res.status(200).json(user);
 }, "유저 정보 조회");
 
 // 추천수 조회
 export const getLikes = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { likesCount } = await ReviewModel.findById(id);
+  const { id: reviewId } = req.params;
+  const { likesCount } = await ReviewModel.findById(reviewId);
   res.status(200).json({ likesCount });
 }, "추천수 조회");
 
 // 댓글 조회
 export const getComments = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const comments = await CommentModel.find({ reviewId: id });
+  const { id: reviewId } = req.params;
+  const comments = await CommentModel.find({ reviewId });
   res.status(200).json(comments);
-});
+}, "댓글 조회");
 
 // 추천 추가
 export const addLike = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  await ReviewModel.findByIdAndUpdate(id, {
+  const { id: reviewId } = req.params;
+  await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { likesCount: 1 },
   });
-  res.status(200).json("추천 완료!");
+  res.status(200).json({ message: "추천 완료!" });
 }, "리뷰 추천");
 
 // 댓글 추가
 export const addComment = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { id: reviewId } = req.params;
   const authorId = req.userId;
-  const comment = new CommentModel({
+  await CommentModel.create({
     authorId,
-    reviewId: id,
+    reviewId,
     content: req.body.comment,
   });
-  await comment.save();
+  await ReviewModel.findByIdAndUpdate(reviewId, {
+    $inc: { commentsCount: 1 },
+  });
   res.status(200).json({ message: "댓글 추가 완료" });
 }, "리뷰 댓글 추가");
 
 // 추천 삭제
 export const cancelLike = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  await ReviewModel.findByIdAndUpdate(id, { $inc: { likesCount: -1 } });
+  const { id: reviewId } = req.params;
+  await ReviewModel.findByIdAndUpdate(reviewId, {
+    $inc: { likesCount: -1 },
+  });
   res.status(200).json({ message: "추천 삭제 완료" });
 }, "리뷰 추천 취소");
 
 // 댓글 삭제
 export const deleteComment = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { content } = req.body;
-  await CommentModel.findOneAndDelete({
-    reviewId: id,
-    content,
+  const { id: commentId } = req.params;
+  const { reviewId } = await CommentModel.findById(commentId);
+  await CommentModel.findByIdAndDelete(commentId);
+  await ReviewModel.findByIdAndUpdate(reviewId, {
+    $inc: { commentsCount: -1 },
   });
   res.status(200).json({ message: "댓글 삭제 완료" });
 }, "리뷰 댓글 삭제");
