@@ -5,8 +5,20 @@ import asyncHandler from "../utils/ControllerUtils.js";
 
 // 리뷰 전체 조회
 export const getReviews = asyncHandler(async (req, res) => {
+  const { kakaoId } = req.query;
+  const user = await UserModel.findOne({ kakaoId });
   const reviews = await ReviewModel.find();
-  res.json(reviews);
+
+  if (!user) {
+    return res.json(reviews);
+  }
+
+  const reviewsWithLikeList = reviews.map((review) => {
+    const reviewObject = review.toObject();
+    reviewObject.isLikedByUser = user.likedReviews.includes(review._id);
+    return reviewObject;
+  });
+  res.status(200).json(reviewsWithLikeList);
 }, "리뷰 전체 조회");
 
 // 특정 리뷰 조회
@@ -16,7 +28,7 @@ export const getReviewsById = asyncHandler(async (req, res) => {
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
-  res.json(reviewData);
+  res.status(200).json(reviewData);
 }, "특정 리뷰 조회");
 
 // 리뷰 등록

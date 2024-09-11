@@ -2,15 +2,18 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchReviewList } from "@/api/review";
 import ReviewCard from "@/features/review/ReviewCard";
 import { ReviewInfo } from "@/shared/types/interface";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function Reviews() {
+  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
   const {
     data: reviews,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["reviews"],
-    queryFn: fetchReviewList,
+    queryFn: () => fetchReviewList(kakaoId),
   });
 
   if (error) return <div>에러: {error.message}</div>;

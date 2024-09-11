@@ -42,7 +42,7 @@ export const UserModel = db.model(
 
 /**
  * 리뷰 모델
- * @type {mongoose.Model}
+ * @type {mongoose.Schema}
  * @property {number} authorId - 작성자 카카오 ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
@@ -53,20 +53,22 @@ export const UserModel = db.model(
  * @property {number} likesCount - 좋아요 수
  * @property {number} commentsCount - 댓글 수
  */
-export const ReviewModel = db.model(
-  "Review",
-  new mongoose.Schema({
-    authorId: { type: Number, default: 0 },
-    uploadTime: { type: Date, default: Date.now },
-    title: { type: String, default: "" },
-    images: { type: [String], default: [] },
-    reviewText: { type: String, default: "" },
-    rating: { type: Number, default: 0 },
-    tags: { type: [String], default: [] },
-    likesCount: { type: Number, default: 0 },
-    commentsCount: { type: Number, default: 0 },
-  })
-);
+const reviewSchema = new mongoose.Schema({
+  authorId: { type: Number, default: 0 },
+  uploadTime: { type: Date, default: Date.now },
+  title: { type: String, default: "" },
+  images: { type: [String], default: [] },
+  reviewText: { type: String, default: "" },
+  rating: { type: Number, default: 0 },
+  tags: { type: [String], default: [] },
+  likesCount: { type: Number, default: 0 },
+  commentsCount: { type: Number, default: 0 },
+});
+
+// 현재 사용자가 좋아요를 눌렀는지 여부를 저장하는 가상 필드
+reviewSchema.virtual("isLikedByUser");
+
+export const ReviewModel = db.model("Review", reviewSchema);
 
 /**
  * 태그 모델
