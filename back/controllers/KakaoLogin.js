@@ -69,7 +69,7 @@ export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
   console.log(`func: verifyKakaoAccessToken`);
   console.table(response.data);
 
-  req.userId = response.data.id;
+  req.userId = response.data.id; // 카카오 유저 ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
   return next();
 }, "카카오 토큰 검증");
 
