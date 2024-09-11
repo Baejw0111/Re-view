@@ -20,9 +20,8 @@ export default function Authorization() {
       return await getKakaoUserInfo();
     },
     onSuccess: (responseData) => {
-      const { isNewMember, nickname, profileImage, thumbnailImage } =
-        responseData;
-      dispatch(setUserInfo({ nickname, profileImage, thumbnailImage }));
+      const { isNewMember, userInfo } = responseData;
+      dispatch(setUserInfo(userInfo));
       if (isNewMember) {
         navigate("/onboarding");
       } else {
