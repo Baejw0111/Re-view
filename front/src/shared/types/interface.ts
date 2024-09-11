@@ -52,11 +52,15 @@ export interface TagInfo {
 
 /**
  * @description 댓글 정보
+ * @param _id 댓글 ID
+ * @param __v 댓글 버전
  * @param authorId 댓글 작성자 ID
  * @param uploadTime 댓글 업로드 시간
  * @param content 댓글 내용
  */
 export interface CommentInfo {
+  _id: string;
+  __v: number;
   authorId: number;
   uploadTime: Date;
   content: string;
