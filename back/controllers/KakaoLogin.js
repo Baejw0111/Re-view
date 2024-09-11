@@ -172,9 +172,12 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     isNewMember: isNewMember,
-    nickname: isNewMember ? nickname : custom_nickname,
-    profileImage: profile_image,
-    thumbnailImage: thumbnail_image,
+    userInfo: {
+      kakaoId: response.data.id,
+      nickname: isNewMember ? nickname : custom_nickname,
+      profileImage: profile_image,
+      thumbnailImage: thumbnail_image,
+    },
   });
 }, "카카오 유저 정보 조회");
 
