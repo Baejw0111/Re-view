@@ -9,19 +9,6 @@ export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
 };
 
 /**
- * 리뷰 추천 수 조회 함수
- * @param reviewId 리뷰 ID
- * @returns 리뷰 추천 수
- */
-export const fetchReviewLikesCount = async (
-  reviewId: string
-): Promise<number> => {
-  const response = await genaralApiClient.get(`/like/${reviewId}`);
-  console.log("리뷰 추천 수 조회 성공:", response.data.likesCount);
-  return response.data.likesCount;
-};
-
-/**
  * 리뷰 추천 함수
  * @param reviewId 리뷰 ID
  */

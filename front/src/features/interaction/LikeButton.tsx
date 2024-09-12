@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchReviewLikesCount } from "@/api/interaction";
+import { fetchReviewById } from "@/api/review";
 import { useParams } from "react-router-dom";
 import { useAnimation } from "framer-motion";
 import { useState, useEffect } from "react";
@@ -10,15 +10,24 @@ import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useMutation } from "@tanstack/react-query";
 import { likeReview, unlikeReview } from "@/api/interaction";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import { ReviewInfo } from "@/shared/types/interface";
 
 export default function LikeButton() {
   const { id: reviewId } = useParams();
   const queryClient = useQueryClient();
+  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
+
+  const { data: reviewInfo } = useQuery<ReviewInfo, Error>({
+    queryKey: ["reviewInfo", reviewId],
+    queryFn: () => fetchReviewById(reviewId as string, kakaoId),
+  });
 
   const { mutate: like } = useMutation({
     mutationFn: () => likeReview(reviewId as string),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["likesCount", reviewId] });
+      queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
     },
     onError: () => {
       alert("추천 실패");
@@ -28,25 +37,20 @@ export default function LikeButton() {
   const { mutate: unlike } = useMutation({
     mutationFn: () => unlikeReview(reviewId as string),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["likesCount", reviewId] });
+      queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
     },
     onError: () => {
       alert("추천 취소 실패");
     },
   });
 
-  const { data: likesCount } = useQuery({
-    queryKey: ["likesCount", reviewId],
-    queryFn: () => fetchReviewLikesCount(reviewId as string),
-  });
-
-  const [isLiked, setIsLiked] = useState(false);
+  const [likeState, setLikeState] = useState(false);
   const likeControls = useAnimation();
   const [currentLikesCount, setCurrentLikesCount] = useState(0);
   const countControls = useAnimation();
 
   const handleLikeClick = async () => {
-    setCurrentLikesCount(currentLikesCount + (isLiked ? -1 : 1));
+    setCurrentLikesCount(currentLikesCount + (likeState ? -1 : 1));
 
     await Promise.all([
       likeControls.start({
@@ -54,7 +58,7 @@ export default function LikeButton() {
         transition: { duration: 0.3 },
       }),
       countControls.start(
-        isLiked
+        likeState
           ? {
               opacity: [0, 1],
               y: [10, 0],
@@ -68,18 +72,19 @@ export default function LikeButton() {
       ),
     ]);
 
-    if (isLiked) {
+    if (likeState) {
       unlike();
     } else {
       like();
     }
 
-    setIsLiked(!isLiked);
+    setLikeState(!likeState);
   };
 
   useEffect(() => {
-    setCurrentLikesCount(likesCount || 0);
-  }, [likesCount]);
+    setCurrentLikesCount(reviewInfo?.likesCount || 0);
+    setLikeState(reviewInfo?.isLikedByUser || false);
+  }, [reviewInfo?.likesCount, reviewInfo?.isLikedByUser]);
 
   return (
     <>
@@ -91,7 +96,7 @@ export default function LikeButton() {
             onClick={handleLikeClick}
             className="relative"
           >
-            {isLiked ? (
+            {likeState ? (
               <Heart className="w-6 h-6 text-red-500" fill="red" />
             ) : (
               <Heart className="w-6 h-6 hover:text-red-500" />

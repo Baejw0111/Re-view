@@ -25,6 +25,7 @@ export interface UserInfo {
  * @param commentsCount 리뷰 댓글 수
  * @param _id 리뷰 ID
  * @param __v 리뷰 버전
+ * @param isLikedByUser 리뷰 좋아요 여부
  */
 export interface ReviewInfo {
   authorId: number;
@@ -38,6 +39,7 @@ export interface ReviewInfo {
   commentsCount: number;
   _id: string;
   __v: number;
+  isLikedByUser: boolean;
 }
 
 /**

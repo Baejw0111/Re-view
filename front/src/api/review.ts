@@ -5,13 +5,9 @@ import { ReviewInfo } from "@/shared/types/interface";
  * 리뷰 리스트를 가져오는 함수
  * @returns 리뷰 리스트
  */
-export const fetchReviewList = async (
-  kakaoId: number
-): Promise<ReviewInfo[]> => {
-  const response = await genaralApiClient.get(`/review`, {
-    params: { kakaoId },
-  });
-  console.log("리뷰 리스트 조회 성공:", response.data);
+export const fetchReviewIdList = async (): Promise<string[]> => {
+  const response = await genaralApiClient.get(`/review`);
+  console.log("리뷰 ID 리스트 조회 성공:", response.data);
 
   return response.data;
 };
@@ -35,9 +31,12 @@ export const uploadReview = async (formData: FormData): Promise<void> => {
  * @returns 리뷰 상세 정보
  */
 export const fetchReviewById = async (
-  reviewId: string
+  reviewId: string,
+  kakaoId: number
 ): Promise<ReviewInfo> => {
-  const response = await genaralApiClient.get(`/review/${reviewId}`);
+  const response = await genaralApiClient.get(`/review/${reviewId}`, {
+    params: { kakaoId },
+  });
   console.log("리뷰 상세 조회 성공:", response.data);
 
   return response.data;

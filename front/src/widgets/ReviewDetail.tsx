@@ -14,23 +14,25 @@ import {
 import { Card, CardContent } from "@/shared/shadcn-ui/card";
 import ReviewActionBar from "@/widgets/ReviewActionBar";
 import { fetchUserInfoById } from "@/api/interaction";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function ReviewDetail() {
+  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
   const { id } = useParams();
-
   const {
-    data: reviewDetail,
+    data: reviewInfo,
     isLoading,
     error,
   } = useQuery<ReviewInfo, Error>({
-    queryKey: ["reviewDetail", id],
-    queryFn: () => fetchReviewById(id as string),
+    queryKey: ["reviewInfo", id],
+    queryFn: () => fetchReviewById(id as string, kakaoId),
   });
 
   const { data: userInfo } = useQuery<UserInfo>({
-    queryKey: ["user", reviewDetail?.authorId],
-    queryFn: () => fetchUserInfoById(reviewDetail?.authorId as number),
-    enabled: !!reviewDetail, // reviewDetail이 있을 때만 쿼리 실행
+    queryKey: ["user", reviewInfo?.authorId],
+    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
+    enabled: !!reviewInfo, // reviewInfo이 있을 때만 쿼리 실행
   });
 
   if (isLoading) return <div>Loading...</div>;
@@ -38,7 +40,7 @@ export default function ReviewDetail() {
 
   return (
     <>
-      {reviewDetail && (
+      {reviewInfo && (
         <div className="grid md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
@@ -57,22 +59,22 @@ export default function ReviewDetail() {
                 </div>
               </div>
               <div className="flex items-center justify-center bg-primary h-8 w-10 rounded-md text-primary-foreground font-bold text-xl">
-                {reviewDetail.rating}
+                {reviewInfo.rating}
               </div>
             </div>
             <div className="flex items-center justify-between">
               <div className="text-2xl md:text-3xl font-bold">
-                {reviewDetail.title}
+                {reviewInfo.title}
               </div>
             </div>
             <p className="text-sm text-left text-gray-500 dark:text-gray-400 whitespace-pre-wrap break-all">
-              {reviewDetail.reviewText}
+              {reviewInfo.reviewText}
             </p>
           </div>
           <div className="grid gap-4">
             <Carousel>
               <CarouselContent className="py-1">
-                {reviewDetail.images.map((image, index) => (
+                {reviewInfo.images.map((image, index) => (
                   <CarouselItem key={index}>
                     <Card>
                       <CardContent className="flex aspect-auto items-center justify-center p-0">

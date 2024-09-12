@@ -8,13 +8,6 @@ export const fetchUserInfoById = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 }, "유저 정보 조회");
 
-// 추천수 조회
-export const getLikes = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
-  const { likesCount } = await ReviewModel.findById(reviewId);
-  res.status(200).json({ likesCount });
-}, "추천수 조회");
-
 // 댓글 조회
 export const getComments = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
