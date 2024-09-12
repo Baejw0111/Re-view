@@ -8,21 +8,30 @@ import { motion } from "framer-motion";
 import { Button } from "@/shared/shadcn-ui/button";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useMutation } from "@tanstack/react-query";
-import { likeReview } from "@/api/interaction";
+import { likeReview, unlikeReview } from "@/api/interaction";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function LikeButton() {
   const { id: reviewId } = useParams();
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate: like } = useMutation({
     mutationFn: () => likeReview(reviewId as string),
     onSuccess: () => {
-      alert("추천 성공");
       queryClient.invalidateQueries({ queryKey: ["likesCount", reviewId] });
     },
     onError: () => {
       alert("추천 실패");
+    },
+  });
+
+  const { mutate: unlike } = useMutation({
+    mutationFn: () => unlikeReview(reviewId as string),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["likesCount", reviewId] });
+    },
+    onError: () => {
+      alert("추천 취소 실패");
     },
   });
 
@@ -37,7 +46,6 @@ export default function LikeButton() {
   const countControls = useAnimation();
 
   const handleLikeClick = async () => {
-    setIsLiked(!isLiked);
     setCurrentLikesCount(currentLikesCount + (isLiked ? -1 : 1));
 
     await Promise.all([
@@ -59,7 +67,14 @@ export default function LikeButton() {
             }
       ),
     ]);
-    mutate();
+
+    if (isLiked) {
+      unlike();
+    } else {
+      like();
+    }
+
+    setIsLiked(!isLiked);
   };
 
   useEffect(() => {

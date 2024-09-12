@@ -25,7 +25,7 @@ import {
   getComments,
   addLike,
   addComment,
-  cancelLike,
+  unLike,
   deleteComment,
   fetchUserInfoById,
 } from "./controllers/Interaction.js";
@@ -67,11 +67,11 @@ app.delete("/review/:id", verifyKakaoAccessToken, deleteReview); // 리뷰 삭�
 // 유저 상호 작용 API
 app.get("/like/:id", getLikes); // 리뷰 추천 조회 API
 app.get("/comment/:id", getComments); // 리뷰 댓글 조회 API
-app.post("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
+app.patch("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
 app.post("/comment/:id", verifyKakaoAccessToken, addComment); // 리뷰 댓글 등록 API
-app.delete("/like/:id", verifyKakaoAccessToken, cancelLike); // 리뷰 추천 취소 API
+app.patch("/unlike/:id", verifyKakaoAccessToken, unLike); // 리뷰 추천 취소 API
 app.delete("/comment/:id", verifyKakaoAccessToken, deleteComment); // 리뷰 댓글 삭제 API
-app.post(
+app.delete(
   "/auth/kakao/deleteUserAccount",
   verifyKakaoAccessToken,
   deleteUserAccount

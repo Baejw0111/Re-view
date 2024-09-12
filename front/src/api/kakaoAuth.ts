@@ -47,7 +47,7 @@ export const updateKakaoUserNickname = async (
 };
 
 export const deleteUserAccount = async (): Promise<void> => {
-  const response = await authApiClient.post(
+  const response = await authApiClient.delete(
     `/auth/kakao/deleteUserAccount`,
     {}
   );
