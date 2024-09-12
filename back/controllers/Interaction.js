@@ -28,6 +28,12 @@ export const addLike = asyncHandler(async (req, res) => {
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { likesCount: 1 },
   });
+  await UserModel.findOneAndUpdate(
+    { kakaoId: req.userId },
+    {
+      $push: { likedReviews: reviewId },
+    }
+  );
   res.status(200).json({ message: "추천 완료!" });
 }, "리뷰 추천");
 
@@ -47,11 +53,17 @@ export const addComment = asyncHandler(async (req, res) => {
 }, "리뷰 댓글 추가");
 
 // 추천 삭제
-export const cancelLike = asyncHandler(async (req, res) => {
+export const unLike = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { likesCount: -1 },
   });
+  await UserModel.findOneAndUpdate(
+    { kakaoId: req.userId },
+    {
+      $pull: { likedReviews: reviewId },
+    }
+  );
   res.status(200).json({ message: "추천 삭제 완료" });
 }, "리뷰 추천 취소");
 
