@@ -19,42 +19,56 @@ const db = mongoose.connection.useDb("mainDB");
 /**
  * 유저 모델
  * @type {mongoose.Model}
- * @property {string} name - 사용자 이름
- * @property {string} email - 사용자 이메일
- * @property {string} password - 사용자 비밀번호
+ * @property {number} kakaoId - 카카오 ID
+ * @property {string} nickname - 닉네임
+ * @property {string} thumbnailImage - 썸네일 이미지 경로
+ * @property {string} profileImage - 프로필 이미지 경로
+ * @property {string[]} reviews - 작성한 리뷰 ID 모음
+ * @property {string[]} likedReviews - 좋아요한 리뷰 ID 모음
+ * @property {string[]} favoriteTags - 자주 찾는 태그 모음
  */
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
-    name: { type: String, default: "사용자" },
-    email: { type: String, default: "" },
-    password: { type: String, default: "" },
+    kakaoId: { type: Number, default: 0 },
+    nickname: { type: String, default: "" },
+    thumbnailImage: { type: String, default: "" },
+    profileImage: { type: String, default: "" },
+    reviews: { type: [String], default: [] },
+    likedReviews: { type: [String], default: [] },
+    favoriteTags: { type: [String], default: [] },
   })
 );
 
 /**
  * 리뷰 모델
- * @type {mongoose.Model}
- * @property {string} author - 작성자
+ * @type {mongoose.Schema}
+ * @property {number} authorId - 작성자 카카오 ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
  * @property {string[]} images - 이미지 파일 경로 모음
  * @property {string} reviewText - 리뷰 내용
  * @property {number} rating - 평점
  * @property {string[]} tags - 태그
+ * @property {number} likesCount - 좋아요 수
+ * @property {number} commentsCount - 댓글 수
  */
-export const ReviewModel = db.model(
-  "Review",
-  new mongoose.Schema({
-    author: { type: String, default: "작성자" },
-    uploadTime: { type: Date, default: Date.now },
-    title: { type: String, default: "" },
-    images: { type: [String], default: [] },
-    reviewText: { type: String, default: "" },
-    rating: { type: Number, default: 0 },
-    tags: { type: [String], default: [] },
-  })
-);
+const reviewSchema = new mongoose.Schema({
+  authorId: { type: Number, default: 0 },
+  uploadTime: { type: Date, default: Date.now },
+  title: { type: String, default: "" },
+  images: { type: [String], default: [] },
+  reviewText: { type: String, default: "" },
+  rating: { type: Number, default: 0 },
+  tags: { type: [String], default: [] },
+  likesCount: { type: Number, default: 0 },
+  commentsCount: { type: Number, default: 0 },
+});
+
+// 현재 사용자가 좋아요를 눌렀는지 여부를 저장하는 가상 필드
+reviewSchema.virtual("isLikedByUser");
+
+export const ReviewModel = db.model("Review", reviewSchema);
 
 /**
  * 태그 모델
@@ -67,5 +81,23 @@ export const TagModel = db.model(
   new mongoose.Schema({
     tagName: { type: String, default: "" },
     appliedCount: { type: Number, default: 0 },
+  })
+);
+
+/**
+ * 댓글 모델
+ * @type {mongoose.Model}
+ * @property {number} authorId - 작성자 ID
+ * @property {Date} uploadTime - 업로드 시간
+ * @property {string} reviewId - 댓글이 작성된 리뷰의 ID
+ * @property {string} content - 댓글 내용
+ */
+export const CommentModel = db.model(
+  "Comment",
+  new mongoose.Schema({
+    authorId: { type: Number, default: 0 },
+    uploadTime: { type: Date, default: Date.now },
+    reviewId: { type: String, default: "" },
+    content: { type: String, default: "" },
   })
 );

@@ -19,12 +19,14 @@ export default function Authorization() {
       await getKakaoToken(AUTHORIZATION_CODE);
       return await getKakaoUserInfo();
     },
-    onSuccess: (newUserInfo) => {
-      dispatch(setUserInfo(newUserInfo));
-      navigate("/");
-    },
-    onError: (error) => {
-      console.error("카카오 로그인 처리 중 오류 발생:", error);
+    onSuccess: (responseData) => {
+      const { isNewMember, userInfo } = responseData;
+      dispatch(setUserInfo(userInfo));
+      if (isNewMember) {
+        navigate("/onboarding");
+      } else {
+        navigate("/");
+      }
     },
   });
 

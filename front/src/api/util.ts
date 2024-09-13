@@ -1,67 +1,76 @@
-import axios, { AxiosError, AxiosInstance } from "axios";
+import axios, { AxiosInstance } from "axios";
 import { persistor } from "@/state/store";
+import { API_URL } from "@/shared/constants";
+import { AxiosError, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+// axios 인스턴스 생성 함수
 
-// axios 인스턴스 생성
-export const apiClient: AxiosInstance = axios.create({
+const createApiClient = (clientConfig?: CreateAxiosDefaults): AxiosInstance => {
+  const client = axios.create({ ...clientConfig });
+
+  client.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError) => {
+      const { config, response } = error;
+      const method = config?.method?.toUpperCase() || "UNKNOWN"; // 실패한 api의 HTTP 메서드
+      const errorMessage = `${method} ${config?.url} 요청 실패:`;
+      console.error(errorMessage, response?.data);
+      return Promise.reject(error);
+    }
+  );
+
+  return client;
+};
+
+// 일반 인스턴스
+export const genaralApiClient: AxiosInstance = createApiClient({
   baseURL: API_URL,
 });
 
-// api 함수 타입 정의
-type ApiFunction<T, R> = (data: T) => Promise<R>;
+/**
+ * 인증용 인스턴스
+ * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
+ */
+export const authApiClient: AxiosInstance = createApiClient({
+  baseURL: API_URL,
+  withCredentials: true,
+});
 
 /**
  * 카카오 액세스 토큰 갱신 함수
- * withCredentials: true 옵션으로 쿠키를 전송해 사용자 인증
  */
 export const refreshKakaoAccessToken = async (): Promise<void> => {
-  try {
-    const response = await apiClient.post(
-      `/auth/kakao/refresh`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
-
-    console.log(response.data);
-  } catch (error) {
-    console.error("카카오 액세스 토큰 갱신 실패:", error);
-    throw error;
-  }
-};
-
-/**
- * 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도
- * @param apiFunction 요청 함수
- * @param data 요청 시 사용할 데이터. 요청 시 사용할 데이터가 없을 경우 아무것도 넣지 않아도 된다.
- * @returns 요청 함수
- */
-export const withTokenRefresh = <T = void, R = void>( // 요청 함수 내의 타입 정의. 각 타입의 기본값을 void로 설정
-  apiFunction: ApiFunction<T, R>
-): ApiFunction<T, R> => {
-  return async (data: T): Promise<R> => {
-    try {
-      return await apiFunction(data);
-    } catch (error) {
-      const { response } = error as AxiosError;
-
-      // 토큰 만료 시 토큰 갱신
-      if (response?.status === 401) {
-        try {
-          await refreshKakaoAccessToken();
-          return await apiFunction(data);
-        } catch (refreshError) {
-          // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
-          console.error("토큰 갱신 실패:", refreshError);
-          alert("로그인 정보가 만료되었습니다. 다시 로그인해주세요.");
-          await persistor.purge(); // redux-persist가 관리하는 모든 상태 초기화
-          window.location.href = "/";
-          throw refreshError;
-        }
-      }
-      throw error; // apiFunction 실패 및 401 에러가 아닌 경우 에러 전파
+  // 인터셉터로 인한 무한 루프 방지를 위해 generalApiClient 사용
+  const response = await genaralApiClient.post(
+    `/auth/kakao/refresh`,
+    {},
+    {
+      withCredentials: true,
     }
-  };
+  );
+
+  console.log(response.data);
 };
+
+// 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도하도록 authApiClient에 인터셉터 추가
+authApiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error: AxiosError) => {
+    const { response } = error;
+    if (response?.status === 401) {
+      try {
+        await refreshKakaoAccessToken();
+        return authApiClient(error.config as AxiosRequestConfig);
+      } catch (refreshError) {
+        // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
+        alert("로그인해주세요.");
+        await persistor.purge(); // redux-persist가 관리하는 모든 상태 초기화
+        window.location.href = "/";
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
