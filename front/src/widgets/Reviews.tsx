@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewIdList } from "@/api/review";
-import ReviewCard from "@/features/review/ReviewCard";
+import ReviewCard from "@/widgets/ReviewCard";
 
 export default function Reviews() {
   const {
