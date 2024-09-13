@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { Star, Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import { Card } from "@/shared/shadcn-ui/card";
 import {
   ResizableHandle,
@@ -40,50 +40,45 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={55} minSize={30} collapsible={true}>
           <div className="p-4 flex flex-col justify-between h-full">
-            <div>
-              <div className="flex items-center mb-2">
-                <Avatar className="w-6 h-6 mr-2">
-                  <AvatarImage
-                    src={author?.thumbnailImage}
-                    alt={author?.nickname}
-                  />
-                  <AvatarFallback>
-                    {author?.nickname.slice(0, 1)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {author?.nickname}
-                </span>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage
+                      src={author?.thumbnailImage}
+                      alt={author?.nickname}
+                    />
+                    <AvatarFallback>
+                      {author?.nickname.slice(0, 1)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {author?.nickname}
+                  </div>
+                </div>
+                <div className="flex items-center justify-center bg-primary h-6 w-8 rounded-md text-primary-foreground font-bold text-md">
+                  {reviewInfo?.rating}
+                </div>
               </div>
-              <h3 className="text-lg text-left font-semibold mb-2 line-clamp-1">
+              <div className="text-md text-left font-semibold line-clamp-1">
                 {reviewInfo?.title}
-              </h3>
-              <div className="flex items-center mb-2">
-                <Star className="w-3 h-3 fill-primary mr-1 flex-shrink-0" />
-                <Star className="w-3 h-3 fill-primary mr-1 flex-shrink-0" />
-                <Star className="w-3 h-3 fill-primary mr-1 flex-shrink-0" />
-                <Star className="w-3 h-3 fill-muted stroke-muted-foreground mr-1 flex-shrink-0" />
-                <Star className="w-3 h-3 fill-muted stroke-muted-foreground mr-1 flex-shrink-0" />
               </div>
               <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap break-all">
                 {reviewInfo?.reviewText}
               </p>
             </div>
-            <div className="flex flex-col items-start mt-4">
-              <Separator className="my-2" />
-              <div className="flex">
+            <div className="flex flex-col items-start">
+              <Separator className="my-3" />
+              <div className="flex gap-1.5">
                 {reviewInfo?.isLikedByUser ? (
-                  <Heart
-                    className="w-5 h-5 flex-shrink-0 mr-1 text-red-500"
-                    fill="red"
-                  />
+                  <Heart className="w-5 h-5 text-red-500" fill="red" />
                 ) : (
-                  <Heart className="w-5 h-5 flex-shrink-0 mr-1" />
+                  <Heart className="w-5 h-5" />
                 )}
-                <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   {reviewInfo?.likesCount}
                 </span>
-                <MessageCircle className="w-5 h-5 flex-shrink-0 mr-1" />
+                <MessageCircle className="w-5 h-5 " />
                 <span className="text-sm text-gray-500 dark:text-gray-400">
                   {reviewInfo?.commentsCount}
                 </span>
