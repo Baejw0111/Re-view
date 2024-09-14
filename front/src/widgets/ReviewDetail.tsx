@@ -16,6 +16,7 @@ import ReviewActionBar from "@/widgets/ReviewActionBar";
 import { fetchUserInfoById } from "@/api/interaction";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 
 export default function ReviewDetail() {
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
@@ -58,9 +59,10 @@ export default function ReviewDetail() {
                   {userInfo?.nickname}
                 </div>
               </div>
-              <div className="flex items-center justify-center bg-primary h-8 w-10 rounded-md text-primary-foreground font-bold text-xl">
-                {reviewInfo.rating}
-              </div>
+              <ReviewRatingSign
+                className="h-8 w-10 text-xl"
+                rating={reviewInfo.rating}
+              />
             </div>
             <div className="flex items-center justify-between">
               <div className="text-2xl md:text-3xl font-bold">

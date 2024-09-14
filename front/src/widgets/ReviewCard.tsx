@@ -14,6 +14,7 @@ import { Separator } from "@/shared/shadcn-ui/separator";
 import { fetchReviewById } from "@/api/review";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
@@ -56,9 +57,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                     {author?.nickname}
                   </div>
                 </div>
-                <div className="flex items-center justify-center bg-primary h-6 w-8 rounded-md text-primary-foreground font-bold text-md">
-                  {reviewInfo?.rating}
-                </div>
+                <ReviewRatingSign rating={reviewInfo?.rating as number} />
               </div>
               <div className="text-md text-left font-semibold line-clamp-1">
                 {reviewInfo?.title}
