@@ -11,12 +11,12 @@ import {
   CarouselNext,
   CarouselContent,
 } from "@/shared/shadcn-ui/carousel";
-import { Card, CardContent } from "@/shared/shadcn-ui/card";
 import ReviewActionBar from "@/widgets/ReviewActionBar";
 import { fetchUserInfoById } from "@/api/interaction";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
+import { Badge } from "@/shared/shadcn-ui/badge";
 
 export default function ReviewDetail() {
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
@@ -42,7 +42,6 @@ export default function ReviewDetail() {
   return (
     <>
       {reviewInfo && (
-        // <div className="grid md:grid-cols-2 gap-6">
         <div className="grid gap-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
@@ -70,20 +69,23 @@ export default function ReviewDetail() {
               {reviewInfo.reviewText}
             </p>
           </div>
+          <div className="flex flex-wrap items-start gap-1.5">
+            {reviewInfo?.tags.map((tag, index) => (
+              <Badge key={index} className="cursor-pointer">
+                {tag}
+              </Badge>
+            ))}
+          </div>
           <div className="grid gap-4">
             <Carousel>
               <CarouselContent className="py-1">
                 {reviewInfo.images.map((image, index) => (
                   <CarouselItem key={index}>
-                    <Card className="border-none rounded-none">
-                      <CardContent className="flex aspect-auto items-center justify-center p-0">
-                        <img
-                          src={`${API_URL}/${image}`}
-                          alt={`review Image-${index}`}
-                          className="w-full h-full object-contain rounded-xl aspect-video"
-                        />
-                      </CardContent>
-                    </Card>
+                    <img
+                      src={`${API_URL}/${image}`}
+                      alt={`review Image-${index}`}
+                      className="w-full h-full object-contain"
+                    />
                   </CarouselItem>
                 ))}
               </CarouselContent>
