@@ -63,7 +63,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   to={`review/${reviewInfo?._id}`}
                   className="flex items-center gap-1 cursor-pointer hover:text-blue-500"
                 >
-                  <div className="text-md text-left font-semibold line-clamp-1">
+                  <div className="text-md font-semibold line-clamp-1">
                     {reviewInfo?.title}
                   </div>
                   <ChevronRight className="w-4 h-4" />
@@ -71,7 +71,6 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               </div>
               <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap break-all">
                 {reviewInfo?.reviewText}
-                {/* {`aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`} */}
               </p>
             </div>
             <div className="flex flex-col items-start">
