@@ -59,7 +59,7 @@ export default function ReviewDetailModal() {
 
   return (
     <Drawer open={isOpen} onOpenChange={handleClose}>
-      <DrawerContent className="h-[100vh]">
+      <DrawerContent className="h-[90vh]">
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>
         <div className="p-5 pb-20 overflow-y-auto scrollbar-hide">
