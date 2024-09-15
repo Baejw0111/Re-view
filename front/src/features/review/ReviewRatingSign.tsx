@@ -36,7 +36,7 @@ export default function ReviewRatingSign({
   return (
     <div
       className={cn(
-        "flex items-center justify-center h-6 w-8 rounded-md text-primary-foreground font-bold text-md",
+        "flex items-center justify-center h-6 w-8 rounded-sm text-primary-foreground font-bold text-md",
         className
       )}
       style={{ backgroundColor: color[rating] }}
