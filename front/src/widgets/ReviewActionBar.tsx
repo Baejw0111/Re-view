@@ -21,7 +21,7 @@ export default function ReviewActionBar() {
 
   return (
     <div className="flex items-center gap-2">
-      <LikeButton />
+      <LikeButton reviewId={reviewId as string} />
       <TooltipWrapper tooltipText="공유">
         <Button variant="ghost" size="icon">
           <Share2 className="w-6 h-6" />
