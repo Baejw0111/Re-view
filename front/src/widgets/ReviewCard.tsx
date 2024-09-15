@@ -38,7 +38,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
       aria-label={`리뷰: ${reviewInfo?.title}`}
     >
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={55} minSize={30} collapsible={true}>
+        <ResizablePanel defaultSize={55} collapsible={true}>
           <div className="p-4 flex flex-col justify-between h-full">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
