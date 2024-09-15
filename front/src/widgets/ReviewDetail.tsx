@@ -42,11 +42,12 @@ export default function ReviewDetail() {
   return (
     <>
       {reviewInfo && (
-        <div className="grid md:grid-cols-2 gap-6">
+        // <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid gap-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-7 w-7">
                   <AvatarImage
                     src={userInfo?.thumbnailImage}
                     alt={userInfo?.nickname}
@@ -55,21 +56,17 @@ export default function ReviewDetail() {
                     {userInfo?.nickname.slice(0, 1)}
                   </AvatarFallback>
                 </Avatar>
-                <div className="text-md text-gray-500 dark:text-gray-400">
+                <div className="text-sm line-clamp-1 text-gray-500 dark:text-gray-400">
                   {userInfo?.nickname}
                 </div>
               </div>
               <ReviewRatingSign
-                className="h-8 w-10 text-xl"
+                className="h-7 w-9 text-xl"
                 rating={reviewInfo.rating}
               />
             </div>
-            <div className="flex items-center justify-between">
-              <div className="text-2xl md:text-3xl font-bold">
-                {reviewInfo.title}
-              </div>
-            </div>
-            <p className="text-sm text-left text-gray-500 dark:text-gray-400 whitespace-pre-wrap break-all">
+            <div className="text-2xl font-bold">{reviewInfo.title}</div>
+            <p className="text-md text-gray-500 dark:text-gray-400 whitespace-pre-wrap break-all">
               {reviewInfo.reviewText}
             </p>
           </div>
@@ -78,7 +75,7 @@ export default function ReviewDetail() {
               <CarouselContent className="py-1">
                 {reviewInfo.images.map((image, index) => (
                   <CarouselItem key={index}>
-                    <Card>
+                    <Card className="border-none rounded-none">
                       <CardContent className="flex aspect-auto items-center justify-center p-0">
                         <img
                           src={`${API_URL}/${image}`}
