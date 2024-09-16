@@ -33,7 +33,7 @@ export default function ReviewDetail() {
   const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["user", reviewInfo?.authorId],
     queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
-    enabled: !!reviewInfo, // reviewInfo이 있을 때만 쿼리 실행
+    enabled: !!reviewInfo, // reviewInfo가 있을 때만 쿼리 실행
   });
 
   if (isLoading) return <div>Loading...</div>;
@@ -92,7 +92,7 @@ export default function ReviewDetail() {
               <CarouselPrevious className="left-1" />
               <CarouselNext className="right-1" />
             </Carousel>
-            <ReviewActionBar />
+            <ReviewActionBar isAuthor={reviewInfo.authorId === kakaoId} />
           </div>
         </div>
       )}
