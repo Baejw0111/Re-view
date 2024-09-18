@@ -19,27 +19,27 @@ export default function ReviewRatingSign({
   // 4.5	아쿠아마린	#7fffd4
   // 5	딥스카이블루	#00bfff
 
-  const color: { [key: number]: [string, string] } = {
-    0: ["#800000", "text-white"],
-    0.5: ["#a52a2a", "text-white"],
-    1: ["#ff0000", "text-white"],
-    1.5: ["#ff7f50", "text-white"],
-    2: ["#ff8c00", "text-white"],
-    2.5: ["#febd3d", "text-white"],
-    3: ["#ffd700", "text-black"],
-    3.5: ["#adff2f", "text-black"],
-    4: ["#04cc7b", "text-black"],
-    4.5: ["#7fffd4", "text-black"],
-    5: ["#00bfff", "text-black"],
+  const colorClasses: { [key: number]: string } = {
+    0: "bg-[#800000] text-white",
+    0.5: "bg-[#a52a2a] text-white",
+    1: "bg-[#ff0000] text-white",
+    1.5: "bg-[#ff7f50] text-white",
+    2: "bg-[#ff8c00] text-white",
+    2.5: "bg-[#febd3d] text-black",
+    3: "bg-[#ffd700] text-black",
+    3.5: "bg-[#adff2f] text-black",
+    4: "bg-[#04cc7b] text-black",
+    4.5: "bg-[#7fffd4] text-black",
+    5: "bg-[#00bfff] text-black",
   };
 
   return (
     <div
       className={cn(
-        `flex flex-shrink-0 items-center justify-center h-6 w-8 rounded-sm font-bold text-md ${color[rating][1]}`,
+        "flex flex-shrink-0 items-center justify-center h-6 w-8 rounded-sm font-bold text-md",
+        colorClasses[rating],
         className
       )}
-      style={{ backgroundColor: color[rating][0] }}
     >
       {rating}
     </div>
