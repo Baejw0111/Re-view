@@ -1,3 +1,4 @@
+import fs from "fs"; // 파일 삭제용
 import axios from "axios";
 import { UserModel, ReviewModel, CommentModel } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
@@ -250,6 +251,12 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   console.table(response.data);
 
   await UserModel.findOneAndDelete({ kakaoId: response.data.id });
+  const reviews = await ReviewModel.find({ authorId: response.data.id });
+  for (const review of reviews) {
+    if (review.images) {
+      review.images.forEach((imagePath) => fs.unlinkSync(imagePath)); // 모든 이미지 파일 삭제
+    }
+  }
   await ReviewModel.deleteMany({ authorId: response.data.id });
   await CommentModel.deleteMany({ authorId: response.data.id });
 
