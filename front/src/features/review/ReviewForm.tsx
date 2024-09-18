@@ -14,16 +14,26 @@ import {
 import { Input } from "@/shared/shadcn-ui/input";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { Badge } from "@/shared/shadcn-ui/badge";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { uploadReview } from "@/api/review";
 import { useMutation } from "@tanstack/react-query";
+import { Card } from "@/shared/shadcn-ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/shadcn-ui/select";
+import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const formSchema = z.object({
   title: z.string().min(1, {
-    message: "제목은 최소 한글자 이상이어야 합니다.",
+    message: "제목을 입력해주세요.",
   }),
   images: z
     .instanceof(FileList)
@@ -31,7 +41,7 @@ const formSchema = z.object({
       message: "하나 이상의 이미지를 업로드해야 합니다.",
     })
     .refine((files) => files.length <= 5, {
-      message: "최대 5개까지 업로드 가능합니다.",
+      message: "이미지 파일은 최대 5개까지 업로드 가능합니다.",
     })
     .refine(
       (files) => Array.from(files).every((file) => file.size <= MAX_FILE_SIZE),
@@ -52,10 +62,10 @@ const formSchema = z.object({
       "올바른 파일 확장자(.jpg, .jpeg, .png, .webp)를 가진 이미지만 허용됩니다."
     ),
   reviewText: z.string().min(1, {
-    message: "리뷰 내용은 최소 한글자 이상이어야 합니다.",
+    message: "리뷰 내용을 입력해주세요.",
   }),
   rating: z.number().nonnegative({
-    message: "평점은 0 이상이어야 합니다.",
+    message: "평점을 입력해주세요.",
   }),
   tags: z.array(z.string()).min(1, {
     message: "태그는 최소 1개 이상이어야 합니다.",
@@ -73,7 +83,7 @@ export default function ReviewForm() {
       title: "",
       images: undefined,
       reviewText: "",
-      rating: 0,
+      rating: -1,
       tags: [],
     },
   });
@@ -145,22 +155,149 @@ export default function ReviewForm() {
     form.setValue("tags", newTags);
   };
 
+  // .........................................................................
+
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFiles = e.target.files;
+    if (newFiles) {
+      console.log(
+        "업로드된 파일:",
+        Array.from(newFiles).map((f) => ({
+          name: f.name,
+          type: f.type,
+          size: f.size,
+        }))
+      );
+
+      const currentFiles = form.getValues("images") || [];
+      const updatedFiles = new DataTransfer();
+
+      // 기존 파일 추가
+      Array.from(currentFiles).forEach((file) => {
+        updatedFiles.items.add(file);
+      });
+
+      // 새 파일 추가
+      Array.from(newFiles).forEach((file) => {
+        updatedFiles.items.add(file);
+      });
+
+      const combinedFiles = updatedFiles.files;
+
+      // 미리보기 이미지 업데이트
+      const newPreviewImages: string[] = [...previewImages];
+      Array.from(newFiles).forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          newPreviewImages.push(reader.result as string);
+          setPreviewImages(newPreviewImages);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      form.setValue("images", combinedFiles);
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newPreviewImages = previewImages.filter((_, i) => i !== index);
+    setPreviewImages(newPreviewImages);
+
+    const currentFiles = form.getValues("images");
+    if (currentFiles) {
+      const dataTransfer = new DataTransfer();
+      Array.from(currentFiles)
+        .filter((_, i) => i !== index)
+        .forEach((file) => dataTransfer.items.add(file));
+      console.log(
+        "업로드된 파일:",
+        Array.from(dataTransfer.files).map((f) => ({
+          name: f.name,
+          type: f.type,
+          size: f.size,
+        }))
+      );
+
+      form.setValue("images", dataTransfer.files);
+    }
+  };
+
   return (
-    <>
+    <Card className="p-6 md:p-8">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           onKeyDown={handleEnterKeyDown}
-          className="w-2/3 space-y-8"
+          className="flex flex-col gap-8"
         >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <>
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        className="w-full"
+                        id="title"
+                        placeholder="제목"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({ field }) => (
+                <>
+                  <FormItem>
+                    <FormControl>
+                      <Select onValueChange={(value) => field.onChange(+value)}>
+                        <SelectTrigger className="w-1/3">
+                          <SelectValue placeholder="평점" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {Array.from({ length: 11 }, (_, index) => (
+                              <SelectItem
+                                key={index}
+                                value={(index * 0.5).toString()}
+                              >
+                                <ReviewRatingSign rating={index * 0.5} />
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
-            name="title"
+            name="reviewText"
             render={({ field }) => (
               <>
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="제목" {...field} />
+                    <div className="grid gap-2">
+                      <Textarea
+                        id="review"
+                        placeholder="리뷰를 작성해주세요."
+                        rows={10}
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -170,51 +307,52 @@ export default function ReviewForm() {
           <FormField
             control={form.control}
             name="images"
-            render={({ field }) => (
+            render={() => (
               <>
                 <FormItem>
                   <FormControl>
-                    <Input
-                      type="file"
-                      multiple
-                      onChange={(e) => {
-                        field.onChange(e.target.files);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="reviewText"
-            render={({ field }) => (
-              <>
-                <FormItem>
-                  <FormControl>
-                    <Textarea placeholder="리뷰 내용" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="rating"
-            render={({ field }) => (
-              <>
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(+e.target.value);
-                      }}
-                    />
+                    <div className="grid gap-2">
+                      <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                        {previewImages.map((image, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={image}
+                              alt={`Thumbnail ${index + 1}`}
+                              className="aspect-square rounded-md object-cover"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              className="absolute top-1 right-1 flex"
+                              onClick={() => handleRemoveImage(index)}
+                            >
+                              <X className="w-4 h-4" />
+                              <span className="sr-only">이미지 제거</span>
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex items-center justify-center"
+                          onClick={() => {
+                            document.getElementById("image-upload")?.click();
+                          }}
+                        >
+                          <Plus className="w-6 h-6 text-muted-foreground" />
+                          <span className="sr-only">이미지 업로드</span>
+                        </Button>
+                      </div>
+                      <Input
+                        id="image-upload"
+                        type="file"
+                        multiple
+                        className="hidden"
+                        onChange={handleImageUpload}
+                        accept="image/jpeg, image/png, image/webp"
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -236,23 +374,28 @@ export default function ReviewForm() {
                       onKeyDown={handleTagInputKeyDown}
                     />
                   </FormControl>
-                  {form.getValues("tags").map((tag, index) => (
-                    <Badge key={index} className="mr-1">
-                      {tag}{" "}
-                      <X
-                        className="w-4 h-4 cursor-pointer"
-                        onClick={() => handleDeleteTag(index)}
-                      />
-                    </Badge>
-                  ))}
+                  <div className="flex flex-wrap items-start gap-1.5">
+                    {form.getValues("tags").map((tag, index) => (
+                      <Badge key={index} className="px-2 gap-2">
+                        {tag}
+                        <X
+                          className="w-4 h-4 cursor-pointer"
+                          onClick={() => handleDeleteTag(index)}
+                          role="button"
+                        />
+                      </Badge>
+                    ))}
+                  </div>
                   <FormMessage />
                 </FormItem>
               </>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" className="md:self-end">
+            리뷰 업로드
+          </Button>
         </form>
       </Form>
-    </>
+    </Card>
   );
 }
