@@ -97,13 +97,16 @@ export default function LikeButton({
           <button onClick={handleLikeClick} className="flex items-center">
             {likeState ? (
               <Heart
-                className={cn("w-6 h-6 text-red-500 cursor-pointer", className)}
+                className={cn(
+                  "w-6 h-6 text-[#FE0000] cursor-pointer",
+                  className
+                )}
                 fill="red"
               />
             ) : (
               <Heart
                 className={cn(
-                  "w-6 h-6 hover:text-red-500 cursor-pointer",
+                  "w-6 h-6 hover:text-[#FE0000] cursor-pointer",
                   className
                 )}
               />
