@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { uploadReview } from "@/api/review";
 import { Button } from "@/shared/shadcn-ui/button";
+import { Input } from "@/shared/shadcn-ui/input";
+import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { Badge } from "@/shared/shadcn-ui/badge";
 import {
   Form,
   FormControl,
@@ -11,12 +16,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/shared/shadcn-ui/form";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { X, Plus } from "lucide-react";
-import { uploadReview } from "@/api/review";
-import { useMutation } from "@tanstack/react-query";
 import { Card } from "@/shared/shadcn-ui/card";
 import {
   Select,
@@ -26,8 +25,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/shadcn-ui/select";
-import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Skeleton } from "@/shared/shadcn-ui/skeleton";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/shadcn-ui/popover";
+import { X, Plus, Info } from "lucide-react";
+import ReviewRatingSign from "@/features/review/ReviewRatingSign";
+import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -351,17 +357,19 @@ export default function ReviewForm() {
                             </Button>
                           </div>
                         ))}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex items-center justify-center"
-                          onClick={() => {
-                            document.getElementById("image-upload")?.click();
-                          }}
-                        >
-                          <Plus className="w-6 h-6 text-muted-foreground" />
-                          <span className="sr-only">이미지 업로드</span>
-                        </Button>
+                        <TooltipWrapper tooltipText="이미지 업로드">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex items-center justify-center"
+                            onClick={() => {
+                              document.getElementById("image-upload")?.click();
+                            }}
+                          >
+                            <Plus className="w-6 h-6 text-muted-foreground" />
+                            <span className="sr-only">이미지 업로드</span>
+                          </Button>
+                        </TooltipWrapper>
                       </div>
                       <Input
                         id="image-upload"
@@ -385,14 +393,33 @@ export default function ReviewForm() {
               <>
                 <FormItem>
                   <FormControl>
-                    <Input
-                      className="w-full md:w-1/4"
-                      placeholder="태그 입력"
-                      {...field}
-                      value={tagInput}
-                      onChange={handleTagInputChange}
-                      onKeyDown={handleTagInputKeyDown}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        className="w-full md:w-1/4"
+                        placeholder="입력 후 엔터를 눌러 태그 생성"
+                        {...field}
+                        value={tagInput}
+                        onChange={handleTagInputChange}
+                        onKeyDown={handleTagInputKeyDown}
+                      />
+                      <Popover>
+                        <PopoverTrigger>
+                          <Button size="icon" variant="ghost" type="button">
+                            <Info className="w-4 h-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          side="right"
+                          className="w-60 text-xs text-muted-foreground break-keep"
+                        >
+                          <p>
+                            {`태그는 다른 유저들이 작성한 리뷰를 시스템에서 쉽게 찾고 분류할 수 있도록 도와줍니다.`}
+                          </p>
+                          <br />
+                          <p>{`올바른 태그들을 사용하여 리뷰를 작성해주세요.`}</p>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </FormControl>
                   <div className="flex flex-wrap items-start gap-1.5">
                     {form.getValues("tags").map((tag, index) => (
