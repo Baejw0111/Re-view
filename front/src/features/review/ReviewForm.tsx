@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/shared/shadcn-ui/select";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
+import { Skeleton } from "@/shared/shadcn-ui/skeleton";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -74,14 +75,15 @@ const formSchema = z.object({
 
 export default function ReviewForm() {
   const navigate = useNavigate();
-  const [tagInput, setTagInput] = useState("");
+  const [tagInput, setTagInput] = useState(""); // 태그 입력 상태
+  const [previewImages, setPreviewImages] = useState<string[]>([]); // 미리보기 이미지 상태
 
   // 폼 정의
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      images: undefined,
+      images: new DataTransfer().files, // 이미지 업로드 시 빈 배열로 초기화
       reviewText: "",
       rating: -1,
       tags: [],
@@ -155,11 +157,35 @@ export default function ReviewForm() {
     form.setValue("tags", newTags);
   };
 
-  // .........................................................................
+  // 파일 목록 업데이트 함수
+  const updateFileList = (newFiles: FileList, currentFiles: FileList) => {
+    const updatedFiles = new DataTransfer();
+    Array.from(currentFiles).forEach((file) => updatedFiles.items.add(file));
+    Array.from(newFiles).forEach((file) => updatedFiles.items.add(file));
+    return updatedFiles.files;
+  };
 
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  // 파일을 데이터 URL로 변환하는 함수
+  const readFileAsDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+  };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 미리보기 이미지 생성 함수
+  const createPreviewImages = async (files: FileList) => {
+    const previewImages: string[] = [];
+    for (const file of Array.from(files)) {
+      const dataUrl = await readFileAsDataURL(file);
+      previewImages.push(dataUrl);
+    }
+    return previewImages;
+  };
+
+  // 메인 이미지 업로드 핸들러
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = e.target.files;
     if (newFiles) {
       console.log(
@@ -171,46 +197,35 @@ export default function ReviewForm() {
         }))
       );
 
-      const currentFiles = form.getValues("images") || [];
-      const updatedFiles = new DataTransfer();
+      const currentPreviewImages = [...previewImages]; // 현재 미리보기 이미지 상태
 
-      // 기존 파일 추가
-      Array.from(currentFiles).forEach((file) => {
-        updatedFiles.items.add(file);
-      });
+      // 스켈레톤 표시
+      setPreviewImages([...previewImages, ...Array(newFiles.length).fill("")]);
 
-      // 새 파일 추가
-      Array.from(newFiles).forEach((file) => {
-        updatedFiles.items.add(file);
-      });
+      const currentFiles = form.getValues("images") || []; // 현재 업로드된 파일 목록
+      const combinedFiles = updateFileList(newFiles, currentFiles); // 새로운 파일 목록과 현재 업로드된 파일 목록을 합친 파일 목록
+      form.setValue("images", combinedFiles); // 폼 값 업데이트
 
-      const combinedFiles = updatedFiles.files;
+      const newPreviewImages = await createPreviewImages(newFiles); // 미리보기 이미지 생성
 
-      // 미리보기 이미지 업데이트
-      const newPreviewImages: string[] = [...previewImages];
-      Array.from(newFiles).forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          newPreviewImages.push(reader.result as string);
-          setPreviewImages(newPreviewImages);
-        };
-        reader.readAsDataURL(file);
-      });
-
-      form.setValue("images", combinedFiles);
+      setPreviewImages([...currentPreviewImages, ...newPreviewImages]); // 미리보기 이미지 업데이트
     }
   };
 
+  // 이미지 제거 핸들러
   const handleRemoveImage = (index: number) => {
     const newPreviewImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(newPreviewImages);
 
     const currentFiles = form.getValues("images");
     if (currentFiles) {
-      const dataTransfer = new DataTransfer();
+      const dataTransfer = new DataTransfer(); // 파일 목록을 담을 DataTransfer 객체 생성
+
+      // 현재 업로드된 파일 목록에서 삭제할 파일을 제외한 새로운 파일 목록 생성
       Array.from(currentFiles)
         .filter((_, i) => i !== index)
         .forEach((file) => dataTransfer.items.add(file));
+
       console.log(
         "업로드된 파일:",
         Array.from(dataTransfer.files).map((f) => ({
@@ -230,9 +245,9 @@ export default function ReviewForm() {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           onKeyDown={handleEnterKeyDown}
-          className="flex flex-col gap-8"
+          className="flex flex-col gap-6"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="title"
@@ -311,15 +326,19 @@ export default function ReviewForm() {
               <>
                 <FormItem>
                   <FormControl>
-                    <div className="grid gap-2">
-                      <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                    <div>
+                      <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-6">
                         {previewImages.map((image, index) => (
                           <div key={index} className="relative group">
-                            <img
-                              src={image}
-                              alt={`Thumbnail ${index + 1}`}
-                              className="aspect-square rounded-md object-cover"
-                            />
+                            {image === "" ? (
+                              <Skeleton className="aspect-square rounded-md" />
+                            ) : (
+                              <img
+                                src={image}
+                                alt={`Thumbnail ${index + 1}`}
+                                className="aspect-square rounded-md object-cover"
+                              />
+                            )}
                             <Button
                               type="button"
                               variant="outline"
@@ -367,6 +386,7 @@ export default function ReviewForm() {
                 <FormItem>
                   <FormControl>
                     <Input
+                      className="w-full md:w-1/4"
                       placeholder="태그 입력"
                       {...field}
                       value={tagInput}
