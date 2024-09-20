@@ -10,7 +10,7 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import reviewDetailOpenSlice from "@/state/store/reviewDetailOpenSlice";
+import reviewDetailOpenReducer from "@/state/store/reviewDetailOpenSlice";
 
 // persist 설정
 const persistConfig = {
@@ -23,7 +23,7 @@ const persistedReducer = persistReducer(persistConfig, userInfoReducer);
 const store = configureStore({
   reducer: {
     userInfo: persistedReducer,
-    reviewDetailOpen: reviewDetailOpenSlice,
+    reviewDetailOpen: reviewDetailOpenReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
