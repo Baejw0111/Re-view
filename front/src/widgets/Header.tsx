@@ -1,7 +1,7 @@
 import Logo from "@/features/common/Logo";
 import Menu from "@/features/common/Menu";
 import ThemeToggleButton from "@/features/setting/ThemeToggleButton";
-import CreateReviewButton from "@/features/review/CreateReviewButton";
+import WriteReviewButton from "@/features/review/WriteReviewButton";
 import UserProfile from "@/features/user/UserProfile";
 import NotificationButton from "@/features/user/NotificationButton";
 import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
@@ -27,7 +27,7 @@ export default function Header() {
         {userInfo.nickname ? (
           // 닉네임이 있으면 유저가 사용 가능한 버튼 보여주기
           <>
-            <CreateReviewButton />
+            <WriteReviewButton />
             <NotificationButton />
             <KakaoLogoutButton />
           </>

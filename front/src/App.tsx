@@ -12,13 +12,14 @@ import ThemeProvider from "@/state/theme/ThemeProvider";
 import Feed from "@/pages/Feed";
 import Test from "@/pages/Test";
 import Header from "@/widgets/Header";
-import CreateReview from "@/pages/CreateReview";
+import WriteReview from "@/pages/WriteReview";
 import Authorization from "@/pages/Authorization";
 import store from "@/state/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "@/state/store";
 import ReviewDetailModal from "@/pages/ReviewDetailModal";
 import Onboarding from "@/pages/Onboarding";
+import EditReview from "@/pages/EditReview";
 
 function App() {
   const queryClient = new QueryClient();
@@ -35,7 +36,8 @@ function App() {
                 <Route path="/" element={<Navigate to="/feed" />} />
                 <Route path="/test" element={<Test />} />
                 <Route path="/feed" element={<Feed />} />
-                <Route path="/create-review" element={<CreateReview />} />
+                <Route path="/write" element={<WriteReview />} />
+                <Route path="/edit" element={<EditReview />} />
                 <Route path="/oauth/kakao" element={<Authorization />} />
                 <Route path="/onboarding" element={<Onboarding />} />
               </Routes>
