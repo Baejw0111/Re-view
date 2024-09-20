@@ -403,7 +403,7 @@ export default function ReviewForm() {
                         onKeyDown={handleTagInputKeyDown}
                       />
                       <Popover>
-                        <PopoverTrigger>
+                        <PopoverTrigger asChild>
                           <Button size="icon" variant="ghost" type="button">
                             <Info className="w-4 h-4" />
                           </Button>
