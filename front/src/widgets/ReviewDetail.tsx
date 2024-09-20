@@ -30,6 +30,7 @@ export default function ReviewDetail() {
   } = useQuery<ReviewInfo, Error>({
     queryKey: ["reviewInfo", reviewId],
     queryFn: () => fetchReviewById(reviewId as string, kakaoId),
+    enabled: !!reviewId,
   });
 
   const { data: userInfo } = useQuery<UserInfo>({

@@ -11,6 +11,7 @@ export default function CommentList() {
   const { data, isLoading, error } = useQuery<CommentInfo[]>({
     queryKey: ["comments", reviewId],
     queryFn: () => fetchComments(reviewId as string),
+    enabled: !!reviewId,
   });
 
   if (isLoading) return <div>Loading...</div>;
