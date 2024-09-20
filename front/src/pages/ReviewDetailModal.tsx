@@ -29,10 +29,10 @@ export default function ReviewDetailModal() {
   const navigate = useNavigate();
 
   const handleClose = () => {
-    dispatch(setIsOpen(false));
-    setTimeout(() => {
+    if (isOpen) {
+      dispatch(setIsOpen(false));
       navigate(-1);
-    }, 100);
+    }
   };
 
   if (isDesktop === null) return;
@@ -53,7 +53,7 @@ export default function ReviewDetailModal() {
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={handleClose}>
+    <Drawer open={isOpen} onClose={handleClose}>
       <DrawerContent className="h-[90vh]">
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>
