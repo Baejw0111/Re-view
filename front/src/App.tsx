@@ -30,12 +30,11 @@ function App() {
             <Router>
               <ReactQueryDevtools initialIsOpen={false} />
               <Header />
+              <ReviewDetailModal />
               <Routes>
                 <Route path="/" element={<Navigate to="/feed" />} />
                 <Route path="/test" element={<Test />} />
-                <Route path="/feed" element={<Feed />}>
-                  <Route path="review/:id" element={<ReviewDetailModal />} />
-                </Route>
+                <Route path="/feed" element={<Feed />} />
                 <Route path="/create-review" element={<CreateReview />} />
                 <Route path="/oauth/kakao" element={<Authorization />} />
                 <Route path="/onboarding" element={<Onboarding />} />

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo, UserInfo } from "@/shared/types/interface";
@@ -19,15 +19,17 @@ import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
 
 export default function ReviewDetail() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const reviewId = queryParams.get("reviewId");
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
-  const { id } = useParams();
   const {
     data: reviewInfo,
     isLoading,
     error,
   } = useQuery<ReviewInfo, Error>({
-    queryKey: ["reviewInfo", id],
-    queryFn: () => fetchReviewById(id as string, kakaoId),
+    queryKey: ["reviewInfo", reviewId],
+    queryFn: () => fetchReviewById(reviewId as string, kakaoId),
   });
 
   const { data: userInfo } = useQuery<UserInfo>({

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
 import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
@@ -29,14 +28,10 @@ export default function ReviewDetailModal() {
   );
   const navigate = useNavigate();
 
-  useEffect(() => {
-    dispatch(setIsOpen(true));
-  }, [dispatch]);
-
   const handleClose = () => {
     dispatch(setIsOpen(false));
     setTimeout(() => {
-      navigate("/feed");
+      navigate(-1);
     }, 100);
   };
 

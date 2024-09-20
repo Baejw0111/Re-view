@@ -2,12 +2,14 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, Flag, FilePenLine } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteReview } from "@/api/review";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
-  const { id: reviewId } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const reviewId = queryParams.get("reviewId");
   const { mutate: deleteReviewMutate } = useMutation({
     mutationFn: () => deleteReview(reviewId as string),
     onSuccess: () => {

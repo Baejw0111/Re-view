@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
 import { MessageCircle, ChevronRight } from "lucide-react";
 import { Card } from "@/shared/shadcn-ui/card";
@@ -12,15 +14,18 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchUserInfoById } from "@/api/interaction";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { fetchReviewById } from "@/api/review";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
+import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import LikeButton from "@/features/interaction/LikeButton";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
+  const location = useLocation();
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
+  const dispatch = useDispatch();
   const { data: reviewInfo } = useQuery({
     queryKey: ["reviewInfo", reviewId],
     queryFn: () => fetchReviewById(reviewId, kakaoId),
@@ -31,6 +36,13 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
     queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
     enabled: !!reviewInfo,
   });
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    if (queryParams.get("reviewId") === reviewId) {
+      dispatch(setIsOpen(true));
+    }
+  }, [reviewId, location.search, dispatch]);
 
   return (
     <Card
@@ -60,7 +72,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               </div>
               <div className="flex items-center justify-start">
                 <Link
-                  to={`review/${reviewInfo?._id}`}
+                  to={`?reviewId=${reviewInfo?._id}`}
                   className="flex items-center gap-1 cursor-pointer hover:text-blue-500"
                 >
                   <div className="text-md font-semibold line-clamp-1">
@@ -90,7 +102,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                 <TooltipWrapper tooltipText="댓글 보기">
                   <div className="flex items-center gap-1.5">
                     <Link
-                      to={`review/${reviewInfo?._id}`}
+                      to={`?reviewId=${reviewInfo?._id}`}
                       className="hover:text-muted-foreground"
                     >
                       <MessageCircle className="w-5 h-5" />
