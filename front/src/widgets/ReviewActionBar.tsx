@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, Flag, FilePenLine } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
@@ -40,19 +41,22 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
       <div className="flex items-center gap-2 ml-auto">
         {isAuthor ? (
           <>
-            <TooltipWrapper tooltipText="작성글 수정">
-              <Button variant="ghost" size="icon">
-                <FilePenLine className="w-6 h-6" />
-                <span className="sr-only">수정</span>
-              </Button>
+            <TooltipWrapper tooltipText="수정">
+              <Link to={`/edit?reviewId=${reviewId}`}>
+                <Button variant="ghost" size="icon">
+                  <FilePenLine className="w-6 h-6" />
+                  <span className="sr-only">수정</span>
+                </Button>
+              </Link>
             </TooltipWrapper>
             <TooltipWrapper tooltipText="삭제">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => deleteReviewMutate()}
+                className="hover:text-red-500"
               >
-                <Trash2 className="w-6 h-6 hover:text-red-500" />
+                <Trash2 className="w-6 h-6" />
                 <span className="sr-only">삭제</span>
               </Button>
             </TooltipWrapper>
