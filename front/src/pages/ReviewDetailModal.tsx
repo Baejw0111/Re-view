@@ -30,6 +30,10 @@ export default function ReviewDetailModal() {
 
   const handleClose = () => {
     if (isOpen) {
+      /**
+       * 아래의 코드는 유저가 직접 UI를 조작해 isOpen을 false로 만들 때 작동한다.
+       * 코드에 의해 isOpen이 false가 될 경우 아래의 코드는 동작하지 않는다.
+       */
       dispatch(setIsOpen(false));
       navigate(-1);
     }
