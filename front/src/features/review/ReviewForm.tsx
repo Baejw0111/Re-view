@@ -9,6 +9,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Input } from "@/shared/shadcn-ui/input";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { Badge } from "@/shared/shadcn-ui/badge";
+import { Label } from "@/shared/shadcn-ui/label";
 import {
   Form,
   FormControl,
@@ -35,7 +36,6 @@ import { X, Plus, Info } from "lucide-react";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { ReviewInfo } from "@/shared/types/interface";
-// import { formSchema, ACCEPTED_IMAGE_TYPES } from "@/shared/types/formSchema";
 import { API_URL } from "@/shared/constants";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -53,15 +53,20 @@ export default function ReviewForm({
   const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지
 
   const formSchema = z.object({
-    title: z.string().min(1, {
-      message: "제목을 입력해주세요.",
-    }),
+    title: z
+      .string()
+      .min(1, {
+        message: "제목을 입력해주세요.",
+      })
+      .max(20, {
+        message: "제목은 최대 20자까지 입력할 수 있습니다.",
+      }),
     images: z
       .instanceof(FileList)
       .refine((files) => files.length + initialImages.length > 0, {
         message: "하나 이상의 이미지를 업로드해야 합니다.",
       })
-      .refine((files) => files.length <= 5, {
+      .refine((files) => files.length + initialImages.length <= 5, {
         message: "이미지 파일은 최대 5개까지 업로드 가능합니다.",
       })
       .refine(
@@ -70,6 +75,7 @@ export default function ReviewForm({
         `파일 크기는 5MB 이하여야 합니다.`
       )
       .refine(
+        // 이미지 MIME 타입 검증
         (files) =>
           Array.from(files).every((file) =>
             ACCEPTED_IMAGE_TYPES.includes(file.type)
@@ -77,21 +83,32 @@ export default function ReviewForm({
         "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
       )
       .refine(
+        // 이미지 확장자 검증
         (files) =>
           Array.from(files).every((file) =>
             /\.(jpg|jpeg|png|webp)$/i.test(file.name)
           ),
         "올바른 파일 확장자(.jpg, .jpeg, .png, .webp)를 가진 이미지만 허용됩니다."
       ),
-    reviewText: z.string().min(1, {
-      message: "리뷰 내용을 입력해주세요.",
-    }),
+    reviewText: z
+      .string()
+      .min(1, {
+        message: "리뷰 내용을 입력해주세요.",
+      })
+      .max(1000, {
+        message: "리뷰 내용은 최대 1000자까지 입력할 수 있습니다.",
+      }),
     rating: z.number().nonnegative({
       message: "평점을 입력해주세요.",
     }),
-    tags: z.array(z.string()).min(1, {
-      message: "태그는 최소 1개 이상이어야 합니다.",
-    }),
+    tags: z
+      .array(z.string())
+      .min(1, {
+        message: "태그는 최소 1개 이상이어야 합니다.",
+      })
+      .max(5, {
+        message: "태그는 최대 5개까지 입력할 수 있습니다.",
+      }),
   });
 
   // 폼 정의
@@ -123,7 +140,9 @@ export default function ReviewForm({
       navigate("/");
     },
     onError: () => {
-      alert("리뷰 업로드 중 에러가 발생했습니다. 다시 시도해주세요.");
+      alert(
+        "리뷰 업로드 중 에러가 발생했습니다.\n입력된 내용에 문제가 없는지 확인해주세요."
+      );
     },
   });
 
@@ -135,7 +154,9 @@ export default function ReviewForm({
       navigate(-1);
     },
     onError: () => {
-      alert("리뷰 수정 중 에러가 발생했습니다. 다시 시도해주세요.");
+      alert(
+        "리뷰 수정 중 에러가 발생했습니다.\n입력된 내용에 문제가 없는지 확인해주세요."
+      );
     },
   });
 
@@ -328,7 +349,7 @@ export default function ReviewForm({
                       <Input
                         className="w-full"
                         id="title"
-                        placeholder="제목"
+                        placeholder="제목(최대 20자)"
                         {...field}
                       />
                     </FormControl>
@@ -382,7 +403,7 @@ export default function ReviewForm({
                     <div className="grid gap-2">
                       <Textarea
                         id="review"
-                        placeholder="리뷰를 작성해주세요."
+                        placeholder="리뷰를 작성해주세요.(최대 1000자)"
                         rows={10}
                         {...field}
                       />
@@ -400,7 +421,15 @@ export default function ReviewForm({
               <>
                 <FormItem>
                   <FormControl>
-                    <div>
+                    <div className="flex flex-col gap-4 border border-muted rounded-md p-4">
+                      <div className="flex flex-col gap-2 text-sm text-left text-muted-foreground font-medium">
+                        <Label htmlFor="image-upload">파일 업로드</Label>
+                        <ul>
+                          <li> - 최대 5개</li>
+                          <li> - 파일 당 최대 5MB</li>
+                          <li> - 파일 확장자: .jpg, .jpeg, .png, .webp</li>
+                        </ul>
+                      </div>
                       <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-6">
                         {initialImages.map((image, index) => (
                           <div key={index} className="relative group">
@@ -487,7 +516,7 @@ export default function ReviewForm({
                     <div className="flex items-center gap-2">
                       <Input
                         className="w-full md:w-1/4"
-                        placeholder="입력 후 엔터를 눌러 태그 생성"
+                        placeholder="입력 후 엔터를 눌러 태그 생성(최대 5개)"
                         {...field}
                         value={tagInput}
                         onChange={handleTagInputChange}
@@ -495,7 +524,12 @@ export default function ReviewForm({
                       />
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button size="icon" variant="ghost" type="button">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            type="button"
+                            className=" shrink-0"
+                          >
                             <Info className="w-4 h-4" />
                           </Button>
                         </PopoverTrigger>
