@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { uploadReview } from "@/api/review";
+import { uploadReview, editReview } from "@/api/review";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Input } from "@/shared/shadcn-ui/input";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
@@ -34,55 +34,20 @@ import {
 import { X, Plus, Info } from "lucide-react";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
+import { ReviewInfo } from "@/shared/types/interface";
+import { formSchema, ACCEPTED_IMAGE_TYPES } from "@/shared/types/formSchema";
+import { API_URL } from "@/shared/constants";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
-const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "제목을 입력해주세요.",
-  }),
-  images: z
-    .instanceof(FileList)
-    .refine((files) => files.length > 0, {
-      message: "하나 이상의 이미지를 업로드해야 합니다.",
-    })
-    .refine((files) => files.length <= 5, {
-      message: "이미지 파일은 최대 5개까지 업로드 가능합니다.",
-    })
-    .refine(
-      (files) => Array.from(files).every((file) => file.size <= MAX_FILE_SIZE),
-      `파일 크기는 5MB 이하여야 합니다.`
-    )
-    .refine(
-      (files) =>
-        Array.from(files).every((file) =>
-          ACCEPTED_IMAGE_TYPES.includes(file.type)
-        ),
-      "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
-    )
-    .refine(
-      (files) =>
-        Array.from(files).every((file) =>
-          /\.(jpg|jpeg|png|webp)$/i.test(file.name)
-        ),
-      "올바른 파일 확장자(.jpg, .jpeg, .png, .webp)를 가진 이미지만 허용됩니다."
-    ),
-  reviewText: z.string().min(1, {
-    message: "리뷰 내용을 입력해주세요.",
-  }),
-  rating: z.number().nonnegative({
-    message: "평점을 입력해주세요.",
-  }),
-  tags: z.array(z.string()).min(1, {
-    message: "태그는 최소 1개 이상이어야 합니다.",
-  }),
-});
-
-export default function ReviewForm() {
+export default function ReviewForm({
+  reviewInfo,
+}: {
+  reviewInfo?: ReviewInfo;
+}) {
   const navigate = useNavigate();
   const [tagInput, setTagInput] = useState(""); // 태그 입력 상태
-  const [previewImages, setPreviewImages] = useState<string[]>([]); // 미리보기 이미지 상태
+  const [previewImages, setPreviewImages] = useState<string[]>([]); // 미리보기 이미지
+  const [initialImages, setInitialImages] = useState<string[]>([]); // 초기 이미지
+  const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지
 
   // 폼 정의
   const form = useForm<z.infer<typeof formSchema>>({
@@ -96,8 +61,18 @@ export default function ReviewForm() {
     },
   });
 
+  useEffect(() => {
+    if (reviewInfo) {
+      form.setValue("title", reviewInfo.title);
+      form.setValue("reviewText", reviewInfo.reviewText);
+      form.setValue("rating", reviewInfo.rating);
+      form.setValue("tags", reviewInfo.tags);
+      setInitialImages(reviewInfo.images);
+    }
+  }, [reviewInfo, form]);
+
   // 리뷰 업로드
-  const mutation = useMutation({
+  const { mutate: uploadReviewMutation } = useMutation({
     mutationFn: uploadReview,
     onSuccess: () => {
       navigate("/");
@@ -107,25 +82,60 @@ export default function ReviewForm() {
     },
   });
 
-  // 제출 시 실행될 작업
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  // 리뷰 수정
+  const { mutate: editReviewMutation } = useMutation({
+    mutationFn: (formData: FormData) =>
+      editReview(reviewInfo?._id as string, formData),
+    onSuccess: () => {
+      navigate(-1);
+    },
+    onError: () => {
+      alert("리뷰 수정 중 에러가 발생했습니다. 다시 시도해주세요.");
+    },
+  });
+
+  // 업로드 제출 시 실행될 작업
+  const onUploadSubmit = async (values: z.infer<typeof formSchema>) => {
     // 폼 값 처리
     console.log(values);
-    const formData = new FormData();
-    formData.append("author", "test");
-    formData.append("uploadTime", new Date().toISOString());
-    formData.append("title", values.title);
-    formData.append("reviewText", values.reviewText);
-    formData.append("rating", values.rating.toString());
-    values.tags.forEach((tag) => formData.append("tags", tag));
+    const { title, reviewText, rating, tags, images } = values;
 
-    if (values.images) {
-      for (let i = 0; i < values.images.length; i++) {
-        formData.append("images", values.images[i]);
-      }
+    const formData = new FormData();
+    formData.append("uploadTime", new Date().toISOString());
+    formData.append("title", title);
+    formData.append("reviewText", reviewText);
+    formData.append("rating", rating.toString());
+    tags.forEach((tag) => formData.append("tags", tag));
+    [...images].forEach((image) => formData.append("images", image));
+
+    uploadReviewMutation(formData);
+  };
+
+  // 수정 제출 시 실행될 작업
+  const onEditSubmit = async (values: z.infer<typeof formSchema>) => {
+    // 폼 값 처리
+    console.log(values);
+    const { title, reviewText, rating, tags, images } = values;
+
+    const formData = new FormData();
+    if (reviewInfo?.title !== title) {
+      formData.append("title", title);
+    }
+    if (reviewInfo?.reviewText !== reviewText) {
+      formData.append("reviewText", reviewText);
+    }
+    if (reviewInfo?.rating !== rating) {
+      formData.append("rating", rating.toString());
+    }
+    if (reviewInfo?.tags !== tags) {
+      tags.forEach((tag) => formData.append("tags", tag));
     }
 
-    mutation.mutate(formData);
+    // 이미지 업데이트
+    deletedImages.forEach((image) => formData.append("deletedImages", image));
+    [...images].forEach((image) => formData.append("images", image));
+
+    editReviewMutation(formData);
   };
 
   // 텍스트 입력 창에서 엔터 키 입력 시 제출 방지
@@ -218,8 +228,15 @@ export default function ReviewForm() {
     }
   };
 
-  // 이미지 제거 핸들러
-  const handleRemoveImage = (index: number) => {
+  // 초기 이미지 제거 핸들러
+  const handleRemoveInitialImage = (index: number) => {
+    setDeletedImages([...deletedImages, initialImages[index]]);
+    const newInitialImages = initialImages.filter((_, i) => i !== index);
+    setInitialImages(newInitialImages);
+  };
+
+  // 사용자가 현재 업로드한 이미지 제거 핸들러
+  const handleRemoveUploadedImage = (index: number) => {
     const newPreviewImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(newPreviewImages);
 
@@ -249,7 +266,9 @@ export default function ReviewForm() {
     <Card className="p-6 md:p-8">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(
+            reviewInfo ? onEditSubmit : onUploadSubmit
+          )}
           onKeyDown={handleEnterKeyDown}
           className="flex flex-col gap-6"
         >
@@ -280,7 +299,11 @@ export default function ReviewForm() {
                 <>
                   <FormItem>
                     <FormControl>
-                      <Select onValueChange={(value) => field.onChange(+value)}>
+                      <Select
+                        key={reviewInfo ? reviewInfo._id : "default"}
+                        onValueChange={(value) => field.onChange(+value)}
+                        defaultValue={reviewInfo?.rating.toString()}
+                      >
                         <SelectTrigger className="w-1/3">
                           <SelectValue placeholder="평점" />
                         </SelectTrigger>
@@ -334,6 +357,29 @@ export default function ReviewForm() {
                   <FormControl>
                     <div>
                       <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-6">
+                        {initialImages.map((image, index) => (
+                          <div key={index} className="relative group">
+                            {image === "" ? (
+                              <Skeleton className="aspect-square rounded-md" />
+                            ) : (
+                              <img
+                                src={`${API_URL}/${image}`}
+                                alt={`Thumbnail ${index + 1}`}
+                                className="aspect-square rounded-md object-cover"
+                              />
+                            )}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              className="absolute top-1 right-1 flex"
+                              onClick={() => handleRemoveInitialImage(index)}
+                            >
+                              <X className="w-4 h-4" />
+                              <span className="sr-only">이미지 제거</span>
+                            </Button>
+                          </div>
+                        ))}
                         {previewImages.map((image, index) => (
                           <div key={index} className="relative group">
                             {image === "" ? (
@@ -350,7 +396,7 @@ export default function ReviewForm() {
                               variant="outline"
                               size="icon"
                               className="absolute top-1 right-1 flex"
-                              onClick={() => handleRemoveImage(index)}
+                              onClick={() => handleRemoveUploadedImage(index)}
                             >
                               <X className="w-4 h-4" />
                               <span className="sr-only">이미지 제거</span>
@@ -377,7 +423,7 @@ export default function ReviewForm() {
                         multiple
                         className="hidden"
                         onChange={handleImageUpload}
-                        accept="image/jpeg, image/png, image/webp"
+                        accept={ACCEPTED_IMAGE_TYPES.join(", ")}
                       />
                     </div>
                   </FormControl>
@@ -439,7 +485,7 @@ export default function ReviewForm() {
             )}
           />
           <Button type="submit" className="md:self-end">
-            리뷰 업로드
+            {reviewInfo ? "리뷰 수정" : "리뷰 업로드"}
           </Button>
         </form>
       </Form>

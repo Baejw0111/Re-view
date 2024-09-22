@@ -39,6 +39,7 @@ export const createReview = asyncHandler(async (req, res) => {
   // 리뷰 등록에 문제가 있을 시 이미지가 서버에 저장되는 것을 막기 위해 multer 미들웨어를 수동으로 처리
   const uploader = upload.array("images", 5); // 최대 5개 파일 업로드 가능
 
+  // 파일 업로드 처리
   await new Promise((resolve, reject) => {
     uploader(req, res, (err) => {
       if (err) reject(err);
@@ -92,7 +93,7 @@ export const createReview = asyncHandler(async (req, res) => {
 // 리뷰 수정
 export const updateReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  const uploader = upload.array("images", 5); // 여러 이미지 파일 처리
+  const uploader = upload.array("images", 5);
 
   await new Promise((resolve, reject) => {
     uploader(req, res, (err) => {
@@ -109,15 +110,23 @@ export const updateReview = asyncHandler(async (req, res) => {
   // 받은 필드만 업데이트
   const updateData = req.body;
   for (let key in updateData) {
+    if (key === "deletedImages") {
+      continue;
+    }
     reviewData[key] = updateData[key];
   }
 
   // 새 이미지 파일이 있을 경우 기존 이미지 파일들 삭제 후 경로 업데이트
+  updateData.deletedImages.forEach((imagePath) => fs.unlinkSync(imagePath));
+
+  reviewData.images = reviewData.images.filter(
+    (image) => !updateData.deletedImages.includes(image)
+  );
+
   if (req.files && req.files.length > 0) {
-    if (reviewData.images) {
-      reviewData.images.forEach((imagePath) => fs.unlinkSync(imagePath));
-    }
-    reviewData.images = req.files.map((file) => file.path);
+    reviewData.images = reviewData.images.concat(
+      req.files.map((file) => file.path)
+    );
   }
 
   await reviewData.save();
