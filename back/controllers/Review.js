@@ -117,11 +117,13 @@ export const updateReview = asyncHandler(async (req, res) => {
   }
 
   // 새 이미지 파일이 있을 경우 기존 이미지 파일들 삭제 후 경로 업데이트
-  updateData.deletedImages.forEach((imagePath) => fs.unlinkSync(imagePath));
+  if (updateData.deletedImages) {
+    updateData.deletedImages.forEach((imagePath) => fs.unlinkSync(imagePath));
 
-  reviewData.images = reviewData.images.filter(
-    (image) => !updateData.deletedImages.includes(image)
-  );
+    reviewData.images = reviewData.images.filter(
+      (image) => !updateData.deletedImages.includes(image)
+    );
+  }
 
   if (req.files && req.files.length > 0) {
     reviewData.images = reviewData.images.concat(

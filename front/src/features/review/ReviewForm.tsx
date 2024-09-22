@@ -35,8 +35,11 @@ import { X, Plus, Info } from "lucide-react";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { ReviewInfo } from "@/shared/types/interface";
-import { formSchema, ACCEPTED_IMAGE_TYPES } from "@/shared/types/formSchema";
+// import { formSchema, ACCEPTED_IMAGE_TYPES } from "@/shared/types/formSchema";
 import { API_URL } from "@/shared/constants";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export default function ReviewForm({
   reviewInfo,
@@ -48,6 +51,48 @@ export default function ReviewForm({
   const [previewImages, setPreviewImages] = useState<string[]>([]); // 미리보기 이미지
   const [initialImages, setInitialImages] = useState<string[]>([]); // 초기 이미지
   const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지
+
+  const formSchema = z.object({
+    title: z.string().min(1, {
+      message: "제목을 입력해주세요.",
+    }),
+    images: z
+      .instanceof(FileList)
+      .refine((files) => files.length + initialImages.length > 0, {
+        message: "하나 이상의 이미지를 업로드해야 합니다.",
+      })
+      .refine((files) => files.length <= 5, {
+        message: "이미지 파일은 최대 5개까지 업로드 가능합니다.",
+      })
+      .refine(
+        (files) =>
+          Array.from(files).every((file) => file.size <= MAX_FILE_SIZE),
+        `파일 크기는 5MB 이하여야 합니다.`
+      )
+      .refine(
+        (files) =>
+          Array.from(files).every((file) =>
+            ACCEPTED_IMAGE_TYPES.includes(file.type)
+          ),
+        "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
+      )
+      .refine(
+        (files) =>
+          Array.from(files).every((file) =>
+            /\.(jpg|jpeg|png|webp)$/i.test(file.name)
+          ),
+        "올바른 파일 확장자(.jpg, .jpeg, .png, .webp)를 가진 이미지만 허용됩니다."
+      ),
+    reviewText: z.string().min(1, {
+      message: "리뷰 내용을 입력해주세요.",
+    }),
+    rating: z.number().nonnegative({
+      message: "평점을 입력해주세요.",
+    }),
+    tags: z.array(z.string()).min(1, {
+      message: "태그는 최소 1개 이상이어야 합니다.",
+    }),
+  });
 
   // 폼 정의
   const form = useForm<z.infer<typeof formSchema>>({
