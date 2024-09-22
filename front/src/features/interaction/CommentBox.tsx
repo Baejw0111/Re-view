@@ -18,7 +18,7 @@ export default function CommentBox({
 
   // 댓글 작성자 정보 가져오기
   const { data } = useQuery<UserInfo>({
-    queryKey: ["user", commentInfo.authorId],
+    queryKey: ["userInfo", commentInfo.authorId],
     queryFn: () => fetchUserInfoById(commentInfo.authorId),
   });
 

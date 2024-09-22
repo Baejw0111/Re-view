@@ -32,7 +32,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
   });
 
   const { data: author } = useQuery({
-    queryKey: ["user", reviewInfo?.authorId],
+    queryKey: ["userInfo", reviewInfo?.authorId],
     queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
     enabled: !!reviewInfo,
   });
