@@ -163,7 +163,6 @@ export default function ReviewForm({
   // 업로드 제출 시 실행될 작업
   const onUploadSubmit = async (values: z.infer<typeof formSchema>) => {
     // 폼 값 처리
-    console.log(values);
     const { title, reviewText, rating, tags, images } = values;
 
     const formData = new FormData();
@@ -180,7 +179,6 @@ export default function ReviewForm({
   // 수정 제출 시 실행될 작업
   const onEditSubmit = async (values: z.infer<typeof formSchema>) => {
     // 폼 값 처리
-    console.log(values);
     const { title, reviewText, rating, tags, images } = values;
 
     const formData = new FormData();
@@ -193,12 +191,17 @@ export default function ReviewForm({
     if (reviewInfo?.rating !== rating) {
       formData.append("rating", rating.toString());
     }
-    if (reviewInfo?.tags !== tags) {
-      tags.forEach((tag) => formData.append("tags", tag));
+
+    // 현재 태그 목록이 이전 태그 목록과 서로 같은지 확인
+    const sortedNewTags = tags.sort();
+    const sortedOldTags = reviewInfo?.tags.sort();
+
+    if (sortedNewTags.join(",") !== sortedOldTags?.join(",")) {
+      tags.forEach((tag) => formData.append("tags[]", tag));
     }
 
     // 이미지 업데이트
-    deletedImages.forEach((image) => formData.append("deletedImages", image));
+    deletedImages.forEach((image) => formData.append("deletedImages[]", image));
     [...images].forEach((image) => formData.append("images", image));
 
     editReviewMutation(formData);
@@ -223,11 +226,13 @@ export default function ReviewForm({
   // 태그 입력 시 추가
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && tagInput.trim() !== "") {
-      const newTags = tagInput
-        .split("#")
-        .filter((tag) => tag.trim() !== "")
-        .map((tag) => tag.trim());
-      form.setValue("tags", [...form.getValues("tags"), ...newTags]);
+      const newTags = tagInput.trim();
+
+      // 중복 태그 제외
+      if (!form.getValues("tags").includes(newTags)) {
+        form.setValue("tags", [...form.getValues("tags"), newTags]);
+      }
+
       setTagInput("");
     }
   };
