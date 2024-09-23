@@ -226,7 +226,7 @@ export default function ReviewForm({
   // 태그 입력 시 추가
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && tagInput.trim() !== "") {
-      const newTags = tagInput.trim();
+      const newTags = tagInput.trim().toLowerCase();
 
       // 중복 태그 제외
       if (!form.getValues("tags").includes(newTags)) {
