@@ -33,12 +33,42 @@ export const getReviewsById = asyncHandler(async (req, res) => {
   res.status(200).json(reviewDataWithLike);
 }, "특정 리뷰 조회");
 
+/**
+ * 리뷰 등록 시 필드 검증
+ * @param {string} title
+ * @param {string} reviewText
+ * @param {number} rating
+ * @param {string[]} tags
+ * @param {File[]} files
+ */
+const verifyFormFields = (title, reviewText, rating, tags, files) => {
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const validExtensions = ["jpg", "jpeg", "png", "webp"];
+
+  if (title.length > 20) return false; // 제목 길이 검증
+  if (reviewText.length > 1000) return false; // 리뷰 길이 검증
+  if (rating < 0 || rating > 5) return false; // 평점 값 검증
+  if (tags.length > 5) return false; // 태그 개수 검증
+  if (files.length > 5) return false; // 이미지 개수 검증
+  if (files.some((file) => file.size > MAX_FILE_SIZE)) return false; // 이미지 크기 검증
+
+  // 파일 확장자 검증
+  const isInvalidExtension = files.some((file) => {
+    const extension = file.originalname.split(".").pop().toLowerCase();
+    return !validExtensions.includes(extension);
+  });
+  if (isInvalidExtension) return false;
+
+  return true;
+};
+
 // 리뷰 등록
 export const createReview = asyncHandler(async (req, res) => {
   // 여러 파일 업로드를 위해 'array' 메소드 사용
   // 리뷰 등록에 문제가 있을 시 이미지가 서버에 저장되는 것을 막기 위해 multer 미들웨어를 수동으로 처리
   const uploader = upload.array("images", 5); // 최대 5개 파일 업로드 가능
 
+  // 파일 업로드 처리
   await new Promise((resolve, reject) => {
     uploader(req, res, (err) => {
       if (err) reject(err);
@@ -57,15 +87,18 @@ export const createReview = asyncHandler(async (req, res) => {
     !rating ||
     !tags ||
     !req.files ||
-    req.files.length === 0
+    req.files.length === 0 ||
+    !verifyFormFields(title, reviewText, rating, tags, req.files)
   ) {
     // 업로드된 파일이 있다면 모두 삭제
     if (req.files) {
       req.files.forEach((file) => fs.unlinkSync(file.path));
     }
-    return res
-      .status(400)
-      .json({ message: "모든 필드를 채워주세요.", req: req.body });
+    return res.status(400).json({
+      message: "입력된 데이터에 문제가 있습니다.",
+      req: req.body,
+      files: req.files,
+    });
   }
 
   const reviewData = new ReviewModel({
@@ -92,7 +125,7 @@ export const createReview = asyncHandler(async (req, res) => {
 // 리뷰 수정
 export const updateReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  const uploader = upload.array("images", 5); // 여러 이미지 파일 처리
+  const uploader = upload.array("images", 5);
 
   await new Promise((resolve, reject) => {
     uploader(req, res, (err) => {
@@ -106,18 +139,48 @@ export const updateReview = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
 
+  // 필드 검증
+  const { title, reviewText, rating, tags } = req.body;
+  if (
+    !verifyFormFields(
+      title || reviewData.title,
+      reviewText || reviewData.reviewText,
+      rating || reviewData.rating,
+      tags || reviewData.tags,
+      req.files || []
+    )
+  ) {
+    // 업로드된 파일이 있다면 모두 삭제
+    if (req.files) {
+      req.files.forEach((file) => fs.unlinkSync(file.path));
+    }
+    return res
+      .status(400)
+      .json({ message: "입력된 데이터에 문제가 있습니다." });
+  }
+
   // 받은 필드만 업데이트
   const updateData = req.body;
   for (let key in updateData) {
+    if (key === "deletedImages") {
+      continue;
+    }
     reviewData[key] = updateData[key];
   }
 
   // 새 이미지 파일이 있을 경우 기존 이미지 파일들 삭제 후 경로 업데이트
+  if (updateData.deletedImages && updateData.deletedImages.length > 0) {
+    updateData.deletedImages.forEach((imagePath) => fs.unlinkSync(imagePath));
+
+    reviewData.images = reviewData.images.filter(
+      (image) => !updateData.deletedImages.includes(image)
+    );
+  }
+
   if (req.files && req.files.length > 0) {
-    if (reviewData.images) {
-      reviewData.images.forEach((imagePath) => fs.unlinkSync(imagePath));
-    }
-    reviewData.images = req.files.map((file) => file.path);
+    reviewData.images = reviewData.images.concat(
+      req.files.map((file) => file.path)
+    );
   }
 
   await reviewData.save();

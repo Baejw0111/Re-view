@@ -50,3 +50,20 @@ export const deleteReview = async (reviewId: string): Promise<void> => {
   const response = await authApiClient.delete(`/review/${reviewId}`);
   console.log("리뷰 삭제 성공:", response.data);
 };
+
+/**
+ * 리뷰 수정 함수
+ * @param reviewId 리뷰 ID
+ * @param formData 전송할 리뷰 정보
+ */
+export const editReview = async (
+  reviewId: string,
+  formData: FormData
+): Promise<void> => {
+  const response = await authApiClient.patch(`/review/${reviewId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  console.log("리뷰 수정 성공:", response.data);
+};

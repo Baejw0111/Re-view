@@ -11,7 +11,10 @@ export const upload = multer({
     // 파일 이름 설정
     filename: function (req, file, cb) {
       const ext = path.extname(file.originalname); // 파일 확장자 추출
-      const originalName = path.basename(file.originalname, ext); // 파일 이름 추출
+      const originalName = Buffer.from(
+        path.basename(file.originalname, ext),
+        "latin1"
+      ).toString("utf8"); // 추출한 파일 이름을 UTF-8로 인코딩
       cb(null, path.join(originalName + Date.now() + ext)); // 파일 이름 설정
     },
   }),

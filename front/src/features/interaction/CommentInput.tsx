@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useState, useRef } from "react";
 import UserProfile from "@/features/user/UserProfile";
 import { Button } from "@/shared/shadcn-ui/button";
@@ -11,7 +11,10 @@ import { Send } from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 
 export default function CommentInput() {
-  const { id } = useParams();
+  const location=useLocation();
+  const queryParams=new URLSearchParams(location.search);
+  const reviewId=queryParams.get("reviewId");
+
   const [comment, setComment] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -19,10 +22,10 @@ export default function CommentInput() {
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: () => addComment(id as string, comment),
+    mutationFn: () => addComment(reviewId as string, comment),
     // 댓글 등록 성공 시, 댓글 목록 갱신
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", id] });
+      queryClient.invalidateQueries({ queryKey: ["comments", reviewId] });
     },
   });
 

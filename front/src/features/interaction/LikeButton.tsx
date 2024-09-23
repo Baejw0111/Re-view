@@ -1,11 +1,9 @@
 import { Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
-import { useParams } from "react-router-dom";
 import { useAnimation } from "framer-motion";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/shared/shadcn-ui/button";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useMutation } from "@tanstack/react-query";
 import { likeReview, unlikeReview } from "@/api/interaction";
@@ -13,9 +11,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { ReviewInfo } from "@/shared/types/interface";
+import { cn } from "@/shared/lib/utils";
 
-export default function LikeButton() {
-  const { id: reviewId } = useParams();
+export default function LikeButton({
+  reviewId,
+  className,
+}: {
+  reviewId: string;
+  className?: string;
+}) {
   const queryClient = useQueryClient();
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
@@ -87,27 +91,33 @@ export default function LikeButton() {
   }, [reviewInfo?.likesCount, reviewInfo?.isLikedByUser]);
 
   return (
-    <>
+    <div className="flex items-center gap-1.5">
       <TooltipWrapper tooltipText="추천">
         <motion.div animate={likeControls}>
-          <Button
-            variant="link"
-            size="icon"
-            onClick={handleLikeClick}
-            className="relative"
-          >
+          <button onClick={handleLikeClick} className="flex items-center">
             {likeState ? (
-              <Heart className="w-6 h-6 text-red-500" fill="red" />
+              <Heart
+                className={cn(
+                  "w-6 h-6 text-[#FE0000] cursor-pointer",
+                  className
+                )}
+                fill="red"
+              />
             ) : (
-              <Heart className="w-6 h-6 hover:text-red-500" />
+              <Heart
+                className={cn(
+                  "w-6 h-6 hover:text-[#FE0000] cursor-pointer",
+                  className
+                )}
+              />
             )}
             <span className="sr-only">추천</span>
-          </Button>
+          </button>
         </motion.div>
       </TooltipWrapper>
-      <motion.div animate={countControls} hidden={currentLikesCount === 0}>
+      <motion.div animate={countControls}>
         <div className="text-sm text-muted-foreground">{currentLikesCount}</div>
       </motion.div>
-    </>
+    </div>
   );
 }

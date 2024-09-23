@@ -1,14 +1,17 @@
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { fetchComments } from "@/api/interaction";
 import { useQuery } from "@tanstack/react-query";
 import { CommentInfo } from "@/shared/types/interface";
 import CommentBox from "@/features/interaction/CommentBox";
 
 export default function CommentList() {
-  const { id } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const reviewId = queryParams.get("reviewId");
   const { data, isLoading, error } = useQuery<CommentInfo[]>({
-    queryKey: ["comments", id],
-    queryFn: () => fetchComments(id as string),
+    queryKey: ["comments", reviewId],
+    queryFn: () => fetchComments(reviewId as string),
+    enabled: !!reviewId,
   });
 
   if (isLoading) return <div>Loading...</div>;

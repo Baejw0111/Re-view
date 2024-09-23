@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
 import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
@@ -29,15 +28,15 @@ export default function ReviewDetailModal() {
   );
   const navigate = useNavigate();
 
-  useEffect(() => {
-    dispatch(setIsOpen(true));
-  }, [dispatch]);
-
   const handleClose = () => {
-    dispatch(setIsOpen(false));
-    setTimeout(() => {
-      navigate("/feed");
-    }, 100);
+    if (isOpen) {
+      /**
+       * 아래의 코드는 유저가 직접 UI를 조작해 isOpen을 false로 만들 때 작동한다.
+       * 코드에 의해 isOpen이 false가 될 경우 아래의 코드는 동작하지 않는다.
+       */
+      dispatch(setIsOpen(false));
+      navigate(-1);
+    }
   };
 
   if (isDesktop === null) return;
@@ -58,8 +57,8 @@ export default function ReviewDetailModal() {
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={handleClose}>
-      <DrawerContent className="h-[100vh]">
+    <Drawer open={isOpen} onClose={handleClose}>
+      <DrawerContent className="h-[90vh]">
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>
         <div className="p-5 pb-20 overflow-y-auto scrollbar-hide">
