@@ -73,12 +73,12 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               <div className="flex items-center justify-start">
                 <Link
                   to={`?reviewId=${reviewInfo?._id}`}
-                  className="flex items-center gap-1 cursor-pointer hover:text-blue-500"
+                  className="group flex items-center gap-1 cursor-pointer hover:text-blue-500 transition-colors"
                 >
                   <div className="text-md font-semibold line-clamp-1">
                     {reviewInfo?.title}
                   </div>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
               <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap break-all">
