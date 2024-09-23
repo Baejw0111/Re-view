@@ -87,7 +87,7 @@ export default function ReviewDetail() {
                     <img
                       src={`${API_URL}/${image}`}
                       alt={`review Image-${index}`}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain bg-muted rounded-md"
                     />
                   </CarouselItem>
                 ))}
