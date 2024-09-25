@@ -20,6 +20,7 @@ import { persistor } from "@/state/store";
 import ReviewDetailModal from "@/pages/ReviewDetailModal";
 import Onboarding from "@/pages/Onboarding";
 import EditReview from "@/pages/EditReview";
+import Profile from "@/pages/Profile";
 
 function App() {
   const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/edit" element={<EditReview />} />
                 <Route path="/oauth/kakao" element={<Authorization />} />
                 <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/profile/:id" element={<Profile />} />
               </Routes>
             </Router>
           </PersistGate>
