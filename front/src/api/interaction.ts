@@ -31,7 +31,7 @@ export const unlikeReview = async (reviewId: string): Promise<void> => {
 };
 
 /**
- * 댓글 조회 함수
+ * 리뷰의 댓글 조회 함수
  * @param reviewId 리뷰 ID
  * @returns 댓글 리스트
  */
@@ -65,4 +65,17 @@ export const addComment = async (
 export const deleteComment = async (commentId: string): Promise<void> => {
   const response = await authApiClient.delete(`/comment/${commentId}`);
   console.log("댓글 삭제 성공:", response.data);
+};
+
+/**
+ * 유저가 작성한 댓글 조회 함수
+ * @param userId 유저 ID
+ * @returns 댓글 리스트
+ */
+export const fetchUserComments = async (
+  userId: number
+): Promise<CommentInfo[]> => {
+  const response = await genaralApiClient.get(`/user/comments/${userId}`);
+  console.log("유저가 작성한 댓글 조회 성공:", response.data);
+  return response.data;
 };
