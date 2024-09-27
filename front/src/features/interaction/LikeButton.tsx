@@ -85,9 +85,10 @@ export default function LikeButton({
     setLikeState(!likeState);
   };
 
+  // 좋아요 상태 업데이트
   useEffect(() => {
-    setCurrentLikesCount(reviewInfo?.likesCount || 0);
-    setLikeState(reviewInfo?.isLikedByUser || false);
+    setCurrentLikesCount(reviewInfo?.likesCount || 0); // 추천수 업데이트
+    setLikeState(reviewInfo?.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
   }, [reviewInfo?.likesCount, reviewInfo?.isLikedByUser]);
 
   return (
