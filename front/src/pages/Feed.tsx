@@ -31,7 +31,7 @@ export default function Feed() {
   if (error) return <div>에러: {error.message}</div>;
   if (isLoading) return <div>로딩 중...</div>;
   return (
-    <PageTemplate pageName="Feed">
+    <PageTemplate pageName="피드">
       {isSuccess && <Reviews reviewIdList={feed} />}
     </PageTemplate>
   );
