@@ -8,6 +8,13 @@ export const fetchUserInfoById = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 }, "유저 정보 조회");
 
+// 유저가 작성한 댓글 조회
+export const getUserComments = asyncHandler(async (req, res) => {
+  const { id: userId } = req.params;
+  const comments = await CommentModel.find({ authorId: userId });
+  res.status(200).json(comments);
+}, "유저가 작성한 댓글 조회");
+
 // 댓글 조회
 export const getComments = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
