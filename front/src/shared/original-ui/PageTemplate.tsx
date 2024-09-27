@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import WriteReviewButton from "@/features/review/WriteReviewButton";
+
 export default function PageTemplate({
   pageName,
   children,
@@ -8,6 +12,8 @@ export default function PageTemplate({
 }) {
   const [isScrollingUp, setIsScrollingUp] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,7 +39,16 @@ export default function PageTemplate({
         }`}
       >
         <div className="flex items-center justify-between max-w-[1280px] mx-auto px-4 md:px-6 py-2 md:py-4 bg-background border-b border-border">
-          <h1 className="text-2xl md:text-3xl font-bold">{pageName}</h1>
+          <div className="flex items-center gap-2">
+            {pageName !== "피드" && (
+              <ArrowLeft
+                className="cursor-pointer w-6 h-6 md:w-[30px] md:h-[30px]"
+                onClick={() => navigate(-1)}
+              />
+            )}
+            <h1 className="text-2xl md:text-3xl font-bold">{pageName}</h1>
+          </div>
+          {pageName === "피드" && <WriteReviewButton />}
         </div>
       </div>
       <div className="w-full px-4 md:px-6 py-16 md:py-24">{children}</div>
