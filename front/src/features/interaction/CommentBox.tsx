@@ -17,7 +17,7 @@ export default function CommentBox({
   const queryClient = useQueryClient();
 
   // 댓글 작성자 정보 가져오기
-  const { data } = useQuery<UserInfo>({
+  const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["userInfo", commentInfo.authorId],
     queryFn: () => fetchUserInfoById(commentInfo.authorId),
   });
@@ -33,12 +33,12 @@ export default function CommentBox({
   return (
     <div className="flex items-start gap-4">
       <Avatar className="h-7 w-7">
-        <AvatarImage src={data?.thumbnailImage} alt={data?.nickname} />
-        <AvatarFallback>{data?.nickname.slice(0, 1)}</AvatarFallback>
+        <AvatarImage src={userInfo?.thumbnailImage} alt={userInfo?.nickname} />
+        <AvatarFallback>{userInfo?.nickname.slice(0, 1)}</AvatarFallback>
       </Avatar>
       <div className="grid gap-2 flex-1">
         <div className="flex items-center justify-between">
-          <div className="font-semibold">{data?.nickname}</div>
+          <div className="font-semibold">{userInfo?.nickname}</div>
           <div className="text-xs text-muted-foreground p-2">
             {new Date(commentInfo.uploadTime).toLocaleDateString()}
           </div>
