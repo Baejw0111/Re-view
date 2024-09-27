@@ -3,8 +3,8 @@ import { ReviewModel, UserModel, CommentModel } from "../utils/Model.js";
 import { upload } from "../utils/upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
-// 리뷰 전체 조회
-export const getReviewIdList = asyncHandler(async (req, res) => {
+// 홈 피드에 표시될 리뷰 조회
+export const getFeed = asyncHandler(async (req, res) => {
   const reviewList = await ReviewModel.find();
   const reviewIdList = reviewList.map((review) => review._id);
 

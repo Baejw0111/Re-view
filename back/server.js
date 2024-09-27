@@ -5,7 +5,7 @@ import morgan from "morgan"; // 로그 출력용
 import "dotenv/config"; // .env 파일에서 바로 환경 변수 로드
 import cookieParser from "cookie-parser";
 import {
-  getReviewIdList,
+  getFeed,
   getReviewsById,
   createReview,
   updateReview,
@@ -57,7 +57,7 @@ app.post(
 ); // 카카오 유저 닉네임 수정 API
 
 // 리뷰 관련 API
-app.get("/review", getReviewIdList); // 리뷰 전체 조회 API
+app.get("/review", getFeed); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
 app.post("/review", verifyKakaoAccessToken, createReview); // 리뷰 등록 API
 app.patch("/review/:id", verifyKakaoAccessToken, updateReview); // 리뷰 수정 API
