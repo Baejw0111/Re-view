@@ -4,12 +4,18 @@
  * @param nickname 유저 닉네임
  * @param profileImage 유저 프로필 이미지
  * @param thumbnailImage 유저 썸네일 이미지
+ * @param reviews 유저 리뷰 목록
+ * @param likedReviews 유저 좋아요한 리뷰 목록
+ * @param favoriteTags 유저 즐겨찾기 태그
  */
 export interface UserInfo {
   kakaoId: number;
   nickname: string;
   profileImage: string;
   thumbnailImage: string;
+  reviews: string[];
+  likedReviews: string[];
+  favoriteTags: string[];
 }
 
 /**
