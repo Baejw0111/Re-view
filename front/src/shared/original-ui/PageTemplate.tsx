@@ -32,13 +32,13 @@ export default function PageTemplate({
   return (
     <>
       <div
-        className={`fixed top-16 left-0 z-40 w-full transition-all duration-300 ease-in-out ${
+        className={`sticky top-16 left-0 z-40 w-full transition-all duration-300 ease-in-out ${
           isScrollingUp
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-full"
         }`}
       >
-        <div className="flex items-center justify-between max-w-[1280px] mx-auto px-4 md:px-6 py-2 md:py-4 bg-background border-b border-border">
+        <div className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 md:px-6 py-2 md:py-4 bg-background border-b border-border">
           <div className="flex items-center gap-2">
             {pageName !== "피드" && (
               <ArrowLeft
@@ -51,7 +51,9 @@ export default function PageTemplate({
           {pageName === "피드" && <WriteReviewButton />}
         </div>
       </div>
-      <div className="w-full px-4 md:px-6 py-16 md:py-24">{children}</div>
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8">
+        {children}
+      </div>
     </>
   );
 }
