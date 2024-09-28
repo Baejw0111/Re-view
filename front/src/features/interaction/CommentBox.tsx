@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
+import UserProfile from "@/features/user/UserProfile";
 import { CommentInfo, UserInfo } from "@/shared/types/interface";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserInfoById, deleteComment } from "@/api/interaction";
@@ -32,10 +32,11 @@ export default function CommentBox({
 
   return (
     <div className="flex items-start gap-4">
-      <Avatar className="h-7 w-7">
-        <AvatarImage src={userInfo?.thumbnailImage} alt={userInfo?.nickname} />
-        <AvatarFallback>{userInfo?.nickname.slice(0, 1)}</AvatarFallback>
-      </Avatar>
+      <UserProfile
+        className="h-7 w-7"
+        thumbnailImage={userInfo?.thumbnailImage}
+        nickname={userInfo?.nickname}
+      />
       <div className="grid gap-2 flex-1">
         <div className="flex items-center justify-between">
           <div className="font-semibold">{userInfo?.nickname}</div>

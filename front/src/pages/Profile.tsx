@@ -1,5 +1,4 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Card } from "@/shared/shadcn-ui/card";
 import {
@@ -16,6 +15,7 @@ import { fetchUserInfoById, fetchUserComments } from "@/api/interaction";
 import { UserInfo, CommentInfo } from "@/shared/types/interface";
 import Reviews from "@/widgets/Reviews";
 import CommentBox from "@/features/interaction/CommentBox";
+import UserProfile from "@/features/user/UserProfile";
 
 export default function Profile() {
   // 사용자 정보 가져오기
@@ -35,13 +35,11 @@ export default function Profile() {
     <PageTemplate pageName="프로필">
       <Card className="p-4 md:p-6">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
-          <Avatar className="h-24 w-24 md:h-32 md:w-32">
-            <AvatarImage
-              src={userInfo?.thumbnailImage}
-              alt={userInfo?.nickname}
-            />
-            <AvatarFallback>{userInfo?.nickname.slice(0, 1)}</AvatarFallback>
-          </Avatar>
+          <UserProfile
+            className="h-24 w-24 md:h-32 md:w-32"
+            thumbnailImage={userInfo?.thumbnailImage}
+            nickname={userInfo?.nickname}
+          />
           <div className="flex-1 text-center md:text-left flex flex-col gap-2">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h1 className="text-2xl font-bold">{userInfo?.nickname}</h1>

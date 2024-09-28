@@ -1,15 +1,21 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store/index";
 import { UserRound } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 
-export default function UserProfile() {
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+export default function UserProfile({
+  className,
+  thumbnailImage,
+  nickname,
+}: {
+  className?: string;
+  thumbnailImage?: string;
+  nickname?: string;
+}) {
   return (
-    <Avatar className="w-9 h-9">
-      <AvatarImage src={userInfo.thumbnailImage} />
+    <Avatar className={cn("w-9 h-9", className)}>
+      <AvatarImage src={thumbnailImage} alt={nickname} />
       <AvatarFallback>
-        <UserRound />
+        {nickname ? nickname.slice(0, 1) : <UserRound />}
       </AvatarFallback>
     </Avatar>
   );

@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo, UserInfo } from "@/shared/types/interface";
 import { API_URL } from "@/shared/constants";
-import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
 import {
   Carousel,
   CarouselItem,
@@ -17,6 +16,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
+import UserProfile from "@/features/user/UserProfile";
 
 export default function ReviewDetail() {
   const location = useLocation();
@@ -49,15 +49,11 @@ export default function ReviewDetail() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Avatar className="h-7 w-7">
-                  <AvatarImage
-                    src={userInfo?.thumbnailImage}
-                    alt={userInfo?.nickname}
-                  />
-                  <AvatarFallback>
-                    {userInfo?.nickname.slice(0, 1)}
-                  </AvatarFallback>
-                </Avatar>
+                <UserProfile
+                  className="h-7 w-7"
+                  thumbnailImage={userInfo?.thumbnailImage}
+                  nickname={userInfo?.nickname}
+                />
                 <div className="text-sm line-clamp-1 text-gray-500 dark:text-gray-400">
                   {userInfo?.nickname}
                 </div>

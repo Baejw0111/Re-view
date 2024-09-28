@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
+import UserProfile from "@/features/user/UserProfile";
 import { MessageCircle, ChevronRight } from "lucide-react";
 import { Card } from "@/shared/shadcn-ui/card";
 import {
@@ -55,15 +55,11 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage
-                      src={author?.thumbnailImage}
-                      alt={author?.nickname}
-                    />
-                    <AvatarFallback>
-                      {author?.nickname.slice(0, 1)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserProfile
+                    className="h-6 w-6"
+                    thumbnailImage={author?.thumbnailImage}
+                    nickname={author?.nickname}
+                  />
                   <div className="text-xs line-clamp-1 text-gray-500 dark:text-gray-400">
                     {author?.nickname}
                   </div>
