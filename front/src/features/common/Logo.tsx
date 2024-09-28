@@ -1,9 +1,6 @@
 export default function Logo() {
   return (
-    <a
-      href="/feed"
-      className="absolute left-4 h-10 w-10 bg-[url('/logo.svg')] flex"
-    >
+    <a href="/feed" className="h-10 w-10 flex">
       <svg
         className="fill-current text-primary"
         viewBox="-1 -1 120 90"
