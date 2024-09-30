@@ -1,8 +1,12 @@
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+
 export default function Logo() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   return (
-    <a href="/feed" className="h-10 w-10 flex">
+    <a href="/feed" className="flex items-center gap-2">
       <svg
-        className="fill-current text-primary"
+        className="fill-current text-primary h-10 w-10"
         viewBox="-1 -1 120 90"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -17,6 +21,7 @@ export default function Logo() {
           mask="url(#path-1-inside-1_157_236)"
         />
       </svg>
+      {!isMobile && <span className="text-2xl font-bold">Axis</span>}
     </a>
   );
 }
