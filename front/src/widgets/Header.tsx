@@ -1,13 +1,13 @@
 import Logo from "@/features/common/Logo";
-import Menu from "@/features/common/Menu";
 import ThemeToggleButton from "@/features/setting/ThemeToggleButton";
-import WriteReviewButton from "@/features/review/WriteReviewButton";
 import UserProfile from "@/features/user/UserProfile";
 import NotificationButton from "@/features/user/NotificationButton";
 import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
-import KakaoLogoutButton from "@/features/auth/KakaoLogoutButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store/index";
+import { Link } from "react-router-dom";
+import { Button } from "@/shared/shadcn-ui/button";
+import SearchBar from "@/features/common/SearchBar";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -16,25 +16,33 @@ export default function Header() {
 
   return (
     <header
-      className="fixed p-0 top-0 left-0 w-full h-16 border-b border-slate-900/10 dark:border-slate-50/[0.06]
-      bg-background text-slate-700 dark:text-slate-200 flex justify-around items-center z-50"
+      className="sticky p-0 top-0 left-0 w-full h-16 backdrop-blur-xl
+      text-slate-700 dark:text-slate-200 flex justify-around items-center z-50 supports-[backdrop-filter]:bg-background/40"
     >
-      <Logo />
-      <Menu />
-      <UserProfile />
-      <div className="absolute right-4 w-48 flex justify-between">
-        <ThemeToggleButton />
-        {userInfo.nickname ? (
-          // 닉네임이 있으면 유저가 사용 가능한 버튼 보여주기
-          <>
-            <WriteReviewButton />
-            <NotificationButton />
-            <KakaoLogoutButton />
-          </>
-        ) : (
-          // 닉네임이 없으면 로그인 버튼 보여주기
-          <KakaoLoginButton />
-        )}
+      <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-2">
+        <Logo />
+        <div className="flex flex-1 md:justify-end items-center gap-2">
+          <SearchBar />
+          <ThemeToggleButton />
+          {userInfo.nickname ? (
+            // 닉네임이 있으면(로그인을 했을 경우) 유저가 사용 가능한 버튼 보여주기
+            <>
+              <NotificationButton />
+              <Button variant="ghost" className="h-9 w-9 rounded-full">
+                <Link to={`/profile/${userInfo.kakaoId}`}>
+                  <UserProfile
+                    className="h-7 w-7"
+                    thumbnailImage={userInfo.thumbnailImage}
+                    nickname={userInfo.nickname}
+                  />
+                </Link>
+              </Button>
+            </>
+          ) : (
+            // 닉네임이 없으면 로그인 버튼 보여주기
+            <KakaoLoginButton />
+          )}
+        </div>
       </div>
     </header>
   );
