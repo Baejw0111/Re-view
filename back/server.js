@@ -17,7 +17,6 @@ import {
   refreshKakaoAccessToken,
   getKakaoUserInfo,
   logOutKakao,
-  updateKakaoUserNickname,
   deleteUserAccount,
 } from "./controllers/KakaoLogin.js";
 import {
@@ -29,6 +28,7 @@ import {
   fetchUserInfoById,
   getUserComments,
 } from "./controllers/Interaction.js";
+import { updateUserNickname } from "./controllers/UserSetting.js";
 
 const app = express(); // express 인스턴스 생성
 const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근 가능
@@ -51,11 +51,6 @@ app.post("/login/kakao", getKakaoToken); // 카카오 토큰 요청 API
 app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
 app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카오 유저 정보 조회 API
 app.post("/logout/kakao", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
-app.post(
-  "/auth/kakao/updateUserNickname",
-  verifyKakaoAccessToken,
-  updateKakaoUserNickname
-); // 카카오 유저 닉네임 수정 API
 
 // 리뷰 관련 API
 app.get("/review", getFeed); // 리뷰 전체 조회 API
@@ -77,5 +72,6 @@ app.delete(
 ); // 카카오 유저 계정 삭제 API
 app.get("/user/:id", fetchUserInfoById); // 유저 정보 조회 API
 app.get("/user/comments/:id", getUserComments); // 유저가 작성한 댓글 조회 API
+app.post("/user/nickname", verifyKakaoAccessToken, updateUserNickname); // 유저 닉네임 수정 API
 
 app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));
