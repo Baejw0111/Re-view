@@ -161,23 +161,20 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   if (isNewMember) {
     const newMember = new UserModel({
       kakaoId: response.data.id,
-      nickname: response.data.properties.nickname,
-      thumbnailImage: response.data.properties.thumbnail_image,
-      profileImage: response.data.properties.profile_image,
     });
     await newMember.save();
   }
 
-  const { nickname, profile_image, thumbnail_image, custom_nickname } =
-    response.data.properties;
+  const { kakaoId, nickname, profileImage, thumbnailImage } =
+    await UserModel.findOne({ kakaoId: response.data.id });
 
   return res.status(200).json({
     isNewMember: isNewMember,
     userInfo: {
-      kakaoId: response.data.id,
-      nickname: isNewMember ? nickname : custom_nickname,
-      profileImage: profile_image,
-      thumbnailImage: thumbnail_image,
+      kakaoId: kakaoId,
+      nickname: nickname,
+      profileImage: profileImage,
+      thumbnailImage: thumbnailImage,
     },
   });
 }, "카카오 유저 정보 조회");
@@ -203,36 +200,6 @@ export const logOutKakao = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "로그아웃 성공" });
 }, "카카오 로그아웃");
 
-// 카카오 유저 닉네임 수정
-export const updateKakaoUserNickname = asyncHandler(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const { newNickname } = req.body;
-  const response = await axios.post(
-    "https://kapi.kakao.com/v1/user/update_profile",
-    {
-      properties: JSON.stringify({
-        custom_nickname: newNickname,
-      }),
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    }
-  );
-
-  console.log(`func: updateKakaoUserNickname`);
-  console.table(response.data);
-
-  await UserModel.findOneAndUpdate(
-    { kakaoId: response.data.id },
-    { nickname: newNickname }
-  );
-
-  return res.status(200).json({ message: "유저 닉네임 수정 성공" });
-}, "카카오 유저 닉네임 수정");
-
 // 카카오 유저 계정 삭제
 export const deleteUserAccount = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
@@ -256,6 +223,7 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
     if (review.images) {
       review.images.forEach((imagePath) => fs.unlinkSync(imagePath)); // 모든 이미지 파일 삭제
     }
+    await CommentModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 댓글들 모두 삭제
   }
   await ReviewModel.deleteMany({ authorId: response.data.id });
   await CommentModel.deleteMany({ authorId: response.data.id });
