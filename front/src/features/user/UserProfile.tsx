@@ -15,7 +15,7 @@ export default function UserProfile({
     <Avatar className={cn("w-9 h-9", className)}>
       <AvatarImage src={thumbnailImage} alt={nickname} />
       <AvatarFallback>
-        {nickname ? nickname.slice(0, 1) : <UserRound />}
+        <UserRound className="w-[70%] h-[70%]" />
       </AvatarFallback>
     </Avatar>
   );
