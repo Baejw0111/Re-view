@@ -1,21 +1,14 @@
 import { Button } from "@/shared/shadcn-ui/button";
 import { Input } from "@/shared/shadcn-ui/input";
 import { Triangle, Search, Star, User } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store/index";
 import { useState } from "react";
-import { updateKakaoUserNickname } from "@/api/kakaoAuth";
-import { useDispatch } from "react-redux";
-import { setUserInfo } from "@/state/store/userInfoSlice";
+import { updateUserNickname } from "@/api/userSetting";
 
 export default function Onboarding() {
-  const userInfo = useSelector((state: RootState) => state.userInfo);
-  const [newNickname, setNewNickname] = useState(userInfo.nickname);
-  const dispatch = useDispatch();
+  const [newNickname, setNewNickname] = useState("");
 
   const handleUpdateNickname = async () => {
-    await updateKakaoUserNickname(newNickname);
-    dispatch(setUserInfo({ ...userInfo, nickname: newNickname }));
+    await updateUserNickname(newNickname);
     window.location.href = "/";
   };
 
@@ -33,10 +26,7 @@ export default function Onboarding() {
             <p className="text-muted-foreground">
               활동하면서 사용할 닉네임을 설정하고 바로 시작하세요.
             </p>
-            <Input
-              value={newNickname}
-              onChange={(e) => setNewNickname(e.target.value)}
-            />
+            <Input onChange={(e) => setNewNickname(e.target.value)} />
             <Button onClick={handleUpdateNickname} className="font-bold">
               시작하기
             </Button>
