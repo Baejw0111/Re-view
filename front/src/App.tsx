@@ -40,9 +40,7 @@ function App() {
       }
     };
 
-    if (!userInfo.kakaoId) {
-      fetchUserInfo();
-    }
+    fetchUserInfo();
   }, [dispatch, userInfo]);
 
   return (
