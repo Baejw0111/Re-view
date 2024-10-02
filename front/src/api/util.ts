@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import { persistor } from "@/state/store";
 import { API_URL } from "@/shared/constants";
 import { AxiosError, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
 import {
@@ -76,7 +75,6 @@ authApiClient.interceptors.response.use(
       } catch (refreshError) {
         // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
         alert("로그인해주세요.");
-        await persistor.purge(); // redux-persist가 관리하는 모든 상태 초기화
         window.location.href = `${KAKAO_OAUTH_URL}&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}`;
         return Promise.reject(refreshError);
       }

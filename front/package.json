@@ -40,7 +40,6 @@
     "react-redux": "^9.1.2",
     "react-resizable-panels": "^2.1.1",
     "react-router-dom": "^6.23.1",
-    "redux-persist": "^6.0.0",
     "tailwind-merge": "^2.3.0",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-animate": "^1.0.7",
