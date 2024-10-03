@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import PageTemplate from "../shared/original-ui/PageTemplate";
-import ReviewForm from "@/features/review/ReviewForm";
+import ReviewForm from "@/widgets/ReviewForm";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
 import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
