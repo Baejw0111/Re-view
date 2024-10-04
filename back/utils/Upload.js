@@ -1,5 +1,6 @@
 import multer from "multer"; // 파일 업로드용
 import path from "path"; // 파일 경로 설정용
+import fs from "fs"; // 파일 삭제용
 
 // 파일 업로드 처리
 export const upload = multer({
@@ -19,3 +20,10 @@ export const upload = multer({
     },
   }),
 });
+
+// 업로드된 파일이 있다면 모두 삭제
+export const deleteUploadedFiles = (files) => {
+  if (files) {
+    files.forEach((file) => fs.unlinkSync(file.path));
+  }
+};
