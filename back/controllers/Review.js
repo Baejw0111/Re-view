@@ -137,6 +137,8 @@ export const updateReview = asyncHandler(async (req, res) => {
   const reviewData = await ReviewModel.findById(reviewId);
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+  } else if (reviewData.authorId !== req.userId) {
+    return res.status(403).json({ message: "리뷰 수정 권한이 없습니다." });
   }
 
   // 필드 검증
@@ -193,6 +195,8 @@ export const deleteReview = asyncHandler(async (req, res) => {
   const review = await ReviewModel.findById(reviewId);
   if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+  } else if (review.authorId !== req.userId) {
+    return res.status(403).json({ message: "리뷰 삭제 권한이 없습니다." });
   }
 
   if (review.images) {
