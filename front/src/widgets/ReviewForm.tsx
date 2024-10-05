@@ -36,10 +36,11 @@ import { X, Plus, Info } from "lucide-react";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { ReviewInfo } from "@/shared/types/interface";
-import { API_URL } from "@/shared/constants";
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+import {
+  API_URL,
+  MAX_FILE_SIZE,
+  ACCEPTED_IMAGE_TYPES,
+} from "@/shared/constants";
 
 export default function ReviewForm({
   reviewInfo,
