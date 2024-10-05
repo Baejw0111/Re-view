@@ -1,5 +1,5 @@
 import { ReviewModel, UserModel, CommentModel } from "../utils/Model.js";
-import { upload, deleteUploadedFiles } from "../utils/Upload.js";
+import { deleteUploadedFiles } from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 // 홈 피드에 표시될 리뷰 조회
@@ -63,18 +63,6 @@ const verifyFormFields = (title, reviewText, rating, tags, files) => {
 
 // 리뷰 등록
 export const createReview = asyncHandler(async (req, res) => {
-  // 여러 파일 업로드를 위해 'array' 메소드 사용
-  // 리뷰 등록에 문제가 있을 시 이미지가 서버에 저장되는 것을 막기 위해 multer 미들웨어를 수동으로 처리
-  const uploader = upload.array("images", 5); // 최대 5개 파일 업로드 가능
-
-  // 파일 업로드 처리
-  await new Promise((resolve, reject) => {
-    uploader(req, res, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-
   const authorId = req.userId;
 
   // 필드 검증
@@ -122,14 +110,6 @@ export const createReview = asyncHandler(async (req, res) => {
 // 리뷰 수정
 export const updateReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  const uploader = upload.array("images", 5);
-
-  await new Promise((resolve, reject) => {
-    uploader(req, res, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
 
   const reviewData = await ReviewModel.findById(reviewId);
   if (!reviewData) {

@@ -29,6 +29,7 @@ import {
   getUserComments,
 } from "./controllers/Interaction.js";
 import { updateUserNickname } from "./controllers/UserSetting.js";
+import { upload } from "./utils/Upload.js";
 
 const app = express(); // express 인스턴스 생성
 const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근 가능
@@ -55,8 +56,18 @@ app.post("/logout/kakao", verifyKakaoAccessToken, logOutKakao); // 카카오 로
 // 리뷰 관련 API
 app.get("/review", getFeed); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
-app.post("/review", verifyKakaoAccessToken, createReview); // 리뷰 등록 API
-app.patch("/review/:id", verifyKakaoAccessToken, updateReview); // 리뷰 수정 API
+app.post(
+  "/review",
+  verifyKakaoAccessToken,
+  upload.array("images", 5),
+  createReview
+); // 리뷰 등록 API
+app.patch(
+  "/review/:id",
+  verifyKakaoAccessToken,
+  upload.array("images", 5),
+  updateReview
+); // 리뷰 수정 API
 app.delete("/review/:id", verifyKakaoAccessToken, deleteReview); // 리뷰 삭제 API
 
 // 유저 상호 작용 API
