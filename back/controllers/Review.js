@@ -90,7 +90,7 @@ export const createReview = asyncHandler(async (req, res) => {
     !verifyFormFields(title, reviewText, rating, tags, req.files)
   ) {
     // 업로드된 파일이 있다면 모두 삭제
-    deleteUploadedFiles(req.files);
+    deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(400).json({
       message: "입력된 데이터에 문제가 있습니다.",
       req: req.body,
@@ -133,10 +133,10 @@ export const updateReview = asyncHandler(async (req, res) => {
 
   const reviewData = await ReviewModel.findById(reviewId);
   if (!reviewData) {
-    deleteUploadedFiles(req.files);
+    deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   } else if (reviewData.authorId !== req.userId) {
-    deleteUploadedFiles(req.files);
+    deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(403).json({ message: "리뷰 수정 권한이 없습니다." });
   }
 
@@ -151,7 +151,7 @@ export const updateReview = asyncHandler(async (req, res) => {
       req.files || []
     )
   ) {
-    deleteUploadedFiles(req.files);
+    deleteUploadedFiles(req.files.map((file) => file.path));
     return res
       .status(400)
       .json({ message: "입력된 데이터에 문제가 있습니다." });

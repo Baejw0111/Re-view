@@ -22,8 +22,8 @@ export const upload = multer({
 });
 
 // 업로드된 파일이 있다면 모두 삭제
-export const deleteUploadedFiles = (files) => {
-  if (files) {
-    files.forEach((file) => fs.unlinkSync(file.path));
+export const deleteUploadedFiles = (filePaths) => {
+  if (filePaths) {
+    filePaths.forEach((filePath) => fs.unlinkSync(filePath));
   }
 };
