@@ -28,7 +28,7 @@ import {
   fetchUserInfoById,
   getUserComments,
 } from "./controllers/Interaction.js";
-import { updateUserNickname } from "./controllers/UserSetting.js";
+import { updateUserInfo } from "./controllers/UserSetting.js";
 import { upload } from "./utils/Upload.js";
 
 const app = express(); // express 인스턴스 생성
@@ -83,6 +83,11 @@ app.delete(
 ); // 카카오 유저 계정 삭제 API
 app.get("/user/:id", fetchUserInfoById); // 유저 정보 조회 API
 app.get("/user/comments/:id", getUserComments); // 유저가 작성한 댓글 조회 API
-app.post("/user/nickname", verifyKakaoAccessToken, updateUserNickname); // 유저 닉네임 수정 API
+app.put(
+  "/user/info",
+  verifyKakaoAccessToken,
+  upload.single("profileImage"),
+  updateUserInfo
+); // 유저 정보 수정 API
 
 app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));
