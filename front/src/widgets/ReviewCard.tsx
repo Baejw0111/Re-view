@@ -57,7 +57,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                 <div className="flex items-center gap-2">
                   <UserProfile
                     className="h-6 w-6"
-                    thumbnailImage={author?.thumbnailImage}
+                    profileImage={author?.profileImage}
                     nickname={author?.nickname}
                   />
                   <div className="text-xs line-clamp-1 text-gray-500 dark:text-gray-400">

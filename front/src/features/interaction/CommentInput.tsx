@@ -57,7 +57,7 @@ export default function CommentInput() {
       <form onSubmit={handleSubmit}>
         <div className="flex gap-4">
           <UserProfile
-            thumbnailImage={userInfo?.thumbnailImage}
+            profileImage={userInfo?.profileImage}
             nickname={userInfo?.nickname}
           />
           <div className="flex-grow">
@@ -94,7 +94,7 @@ export default function CommentInput() {
     >
       <div className="flex gap-4">
         <UserProfile
-          thumbnailImage={userInfo?.thumbnailImage}
+          profileImage={userInfo?.profileImage}
           nickname={userInfo?.nickname}
         />
         <div className="flex-grow flex flex-row justify-between gap-2">

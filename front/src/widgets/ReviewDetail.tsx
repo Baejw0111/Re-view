@@ -51,7 +51,7 @@ export default function ReviewDetail() {
               <div className="flex items-center gap-2">
                 <UserProfile
                   className="h-7 w-7"
-                  thumbnailImage={userInfo?.thumbnailImage}
+                  profileImage={userInfo?.profileImage}
                   nickname={userInfo?.nickname}
                 />
                 <div className="text-sm line-clamp-1 text-gray-500 dark:text-gray-400">

@@ -5,12 +5,10 @@ const initialState: {
   kakaoId: number;
   nickname: string;
   profileImage: string;
-  thumbnailImage: string;
 } = {
   kakaoId: 0,
   nickname: "",
   profileImage: "",
-  thumbnailImage: "",
 };
 
 const userInfoSlice = createSlice({
@@ -21,7 +19,6 @@ const userInfoSlice = createSlice({
       state.kakaoId = action.payload.kakaoId;
       state.nickname = action.payload.nickname;
       state.profileImage = action.payload.profileImage;
-      state.thumbnailImage = action.payload.thumbnailImage;
     },
   },
 });

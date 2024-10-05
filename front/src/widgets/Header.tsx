@@ -19,7 +19,7 @@ export default function Header() {
       className="sticky p-0 top-0 left-0 w-full h-16 backdrop-blur-xl
       text-slate-700 dark:text-slate-200 flex justify-around items-center z-50 supports-[backdrop-filter]:bg-background/40"
     >
-      <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-2">
+      <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-5">
         <Logo />
         <div className="flex flex-1 md:justify-end items-center gap-2">
           <SearchBar />
@@ -32,7 +32,7 @@ export default function Header() {
                 <Link to={`/profile/${userInfo.kakaoId}`}>
                   <UserProfile
                     className="h-7 w-7"
-                    thumbnailImage={userInfo.thumbnailImage}
+                    profileImage={userInfo.profileImage}
                     nickname={userInfo.nickname}
                   />
                 </Link>

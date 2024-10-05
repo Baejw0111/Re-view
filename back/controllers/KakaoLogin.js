@@ -165,8 +165,9 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
     await newMember.save();
   }
 
-  const { kakaoId, nickname, profileImage, thumbnailImage } =
-    await UserModel.findOne({ kakaoId: response.data.id });
+  const { kakaoId, nickname, profileImage } = await UserModel.findOne({
+    kakaoId: response.data.id,
+  });
 
   return res.status(200).json({
     isNewMember: isNewMember,
@@ -174,7 +175,6 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
       kakaoId: kakaoId,
       nickname: nickname,
       profileImage: profileImage,
-      thumbnailImage: thumbnailImage,
     },
   });
 }, "카카오 유저 정보 조회");

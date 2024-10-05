@@ -21,7 +21,6 @@ const db = mongoose.connection.useDb("mainDB");
  * @type {mongoose.Model}
  * @property {number} kakaoId - 카카오 ID
  * @property {string} nickname - 닉네임
- * @property {string} thumbnailImage - 썸네일 이미지 경로
  * @property {string} profileImage - 프로필 이미지 경로
  * @property {string[]} reviews - 작성한 리뷰 ID 모음
  * @property {string[]} likedReviews - 좋아요한 리뷰 ID 모음
@@ -32,7 +31,6 @@ export const UserModel = db.model(
   new mongoose.Schema({
     kakaoId: { type: Number, default: 0 },
     nickname: { type: String, default: "" },
-    thumbnailImage: { type: String, default: "" },
     profileImage: { type: String, default: "" },
     reviews: { type: [String], default: [] },
     likedReviews: { type: [String], default: [] },

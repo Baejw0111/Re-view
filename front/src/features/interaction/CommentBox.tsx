@@ -34,7 +34,7 @@ export default function CommentBox({
     <div className="flex items-start gap-4">
       <UserProfile
         className="h-7 w-7"
-        thumbnailImage={userInfo?.thumbnailImage}
+        profileImage={userInfo?.profileImage}
         nickname={userInfo?.nickname}
       />
       <div className="grid gap-2 flex-1">
