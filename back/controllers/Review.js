@@ -2,7 +2,10 @@ import { ReviewModel, UserModel, CommentModel } from "../utils/Model.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
-// 홈 피드에 표시될 리뷰 조회
+/**
+ * 홈 피드에 표시될 리뷰 조회
+ * @returns {string[]} 리뷰 ID 리스트
+ */
 export const getFeed = asyncHandler(async (req, res) => {
   const reviewList = await ReviewModel.find();
   const reviewIdList = reviewList.map((review) => review._id);
@@ -10,7 +13,10 @@ export const getFeed = asyncHandler(async (req, res) => {
   return res.json(reviewIdList);
 }, "리뷰 ID 리스트 조회");
 
-// 특정 리뷰 조회
+/**
+ * 특정 리뷰 조회
+ * @returns {ReviewModel} 리뷰 데이터
+ */
 export const getReviewsById = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const { kakaoId } = req.query;
@@ -61,7 +67,10 @@ const verifyFormFields = (title, reviewText, rating, tags, files) => {
   return true;
 };
 
-// 리뷰 등록
+/**
+ * 리뷰 등록
+ * @returns {string} 리뷰 등록 성공 메시지
+ */
 export const createReview = asyncHandler(async (req, res) => {
   const authorId = req.userId;
 
@@ -107,7 +116,10 @@ export const createReview = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });
 }, "리뷰 등록");
 
-// 리뷰 수정
+/**
+ * 리뷰 수정
+ * @returns {string} 리뷰 수정 성공 메시지
+ */
 export const updateReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
 
@@ -165,7 +177,10 @@ export const updateReview = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "리뷰가 성공적으로 수정되었습니다." });
 }, "리뷰 수정");
 
-// 리뷰 삭제
+/**
+ * 리뷰 삭제
+ * @returns {string} 리뷰 삭제 성공 메시지
+ */
 export const deleteReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const review = await ReviewModel.findById(reviewId);
