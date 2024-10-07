@@ -41,6 +41,7 @@ import {
   MAX_FILE_SIZE,
   ACCEPTED_IMAGE_TYPES,
 } from "@/shared/constants";
+import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
 
 export default function ReviewForm({
   reviewInfo,
@@ -208,17 +209,6 @@ export default function ReviewForm({
     editReviewMutation(formData);
   };
 
-  // 텍스트 입력 창에서 엔터 키 입력 시 제출 방지
-  const handleEnterKeyDown = (e: React.KeyboardEvent) => {
-    if (
-      e.key === "Enter" &&
-      e.target instanceof HTMLInputElement &&
-      e.target.type !== "textarea"
-    ) {
-      e.preventDefault();
-    }
-  };
-
   // 태그 입력 처리
   const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTagInput(e.target.value);
@@ -251,25 +241,6 @@ export default function ReviewForm({
     Array.from(currentFiles).forEach((file) => updatedFiles.items.add(file));
     Array.from(newFiles).forEach((file) => updatedFiles.items.add(file));
     return updatedFiles.files;
-  };
-
-  // 파일을 데이터 URL로 변환하는 함수
-  const readFileAsDataURL = (file: File): Promise<string> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(file);
-    });
-  };
-
-  // 미리보기 이미지 생성 함수
-  const createPreviewImages = async (files: FileList) => {
-    const previewImages: string[] = [];
-    for (const file of Array.from(files)) {
-      const dataUrl = await readFileAsDataURL(file);
-      previewImages.push(dataUrl);
-    }
-    return previewImages;
   };
 
   // 메인 이미지 업로드 핸들러
