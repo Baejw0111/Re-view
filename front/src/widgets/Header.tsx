@@ -20,7 +20,9 @@ export default function Header() {
       text-slate-700 dark:text-slate-200 flex justify-around items-center z-50 supports-[backdrop-filter]:bg-background/40"
     >
       <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-5">
-        <Logo />
+        <Link to="/feed">
+          <Logo />
+        </Link>
         <div className="flex flex-1 md:justify-end items-center gap-2">
           <SearchBar />
           <ThemeToggleButton />
