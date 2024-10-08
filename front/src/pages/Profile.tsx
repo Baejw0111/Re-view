@@ -16,7 +16,7 @@ import Reviews from "@/widgets/Reviews";
 import CommentBox from "@/features/interaction/CommentBox";
 import UserProfile from "@/features/user/UserProfile";
 import UserSetting from "@/features/setting/UserSetting";
-import EditUserProfile from "@/features/setting/EditUserProfile";
+import EditUserProfileModal from "@/widgets/EditUserProfileModal";
 
 export default function Profile() {
   // 사용자 정보 가져오기
@@ -44,7 +44,7 @@ export default function Profile() {
           <div className="flex-1 text-center md:text-left flex flex-col gap-2">
             <div className="flex flex-col md:flex-row md:items-center justify-start gap-4">
               <h1 className="text-2xl font-bold">{userInfo?.nickname}</h1>
-              <EditUserProfile />
+              <EditUserProfileModal />
             </div>
             <div className="absolute right-4 top-4 md:right-6 md:top-6">
               <UserSetting />
