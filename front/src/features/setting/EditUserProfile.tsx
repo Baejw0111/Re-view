@@ -1,17 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { Button } from "@/shared/shadcn-ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-  DialogHeader,
-  DialogFooter,
-  DialogClose,
-} from "@/shared/shadcn-ui/dialog";
 import { Input } from "@/shared/shadcn-ui/input";
 import {
   Form,
@@ -28,13 +17,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { updateUserInfo } from "@/api/userSetting";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
-import { UserRound } from "lucide-react";
+import { Camera, UserRound, X } from "lucide-react";
 import UserProfile from "@/features/user/UserProfile";
 import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
 
-export default function EditUserProfile() {
+export default function EditUserProfile({
+  submitFooter,
+}: {
+  submitFooter: React.ReactNode;
+}) {
   const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
-  const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 현재 프로필 이미지
+  const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 사용자가 현재 등록한 프로필 이미지
 
   const formSchema = z.object({
     profileImage: z
@@ -145,44 +138,39 @@ export default function EditUserProfile() {
     form.setValue("profileImage", new DataTransfer().files);
   };
 
-  /**
-   * 사용자 입력 정보 초기화
-   */
-  const initializeState = () => {
+  useEffect(() => {
     form.setValue("profileImage", new DataTransfer().files);
     form.setValue("newNickname", userInfo.nickname);
-    form.setValue("useDefaultProfile", false);
-  };
+    if (userInfo.profileImage.length > 0) {
+      form.setValue("useDefaultProfile", false);
+    } else {
+      form.setValue("useDefaultProfile", true);
+    }
+  }, [userInfo, form]);
 
   return (
-    <Dialog onOpenChange={initializeState}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          프로필 편집
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>프로필 편집</DialogTitle>
-        </DialogHeader>
-        <DialogDescription hidden></DialogDescription>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            onKeyDown={handleEnterKeyDown}
-            className="flex flex-col gap-4"
-          >
-            <FormField
-              control={form.control}
-              name="profileImage"
-              render={() => (
-                <>
-                  <FormItem>
-                    <FormControl>
-                      <div className="flex flex-col items-center gap-4">
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        onKeyDown={handleEnterKeyDown}
+        className="flex flex-col gap-4"
+      >
+        <FormField
+          control={form.control}
+          name="profileImage"
+          render={() => (
+            <>
+              <FormItem>
+                <FormControl>
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative">
+                      <FormLabel
+                        htmlFor="profileImage-upload"
+                        className="cursor-pointer"
+                      >
                         {currentProfileImage.length > 0 ||
                         form.getValues("useDefaultProfile") ? (
-                          <Avatar className="h-24 w-24">
+                          <Avatar className="h-24 w-24 transition-transform hover:scale-105">
                             <AvatarImage
                               src={currentProfileImage}
                               alt={userInfo.nickname}
@@ -193,75 +181,62 @@ export default function EditUserProfile() {
                           </Avatar>
                         ) : (
                           <UserProfile
-                            className="h-24 w-24"
+                            className="h-24 w-24 transition-transform hover:scale-105"
                             profileImage={userInfo.profileImage}
                             nickname={userInfo.nickname}
                           />
                         )}
-                        <Input
-                          id="profileImage-upload"
-                          type="file"
-                          accept={ACCEPTED_IMAGE_TYPES.join(", ")}
-                          className="hidden"
-                          onChange={handleProfileImageUpload}
-                        />
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              document
-                                .getElementById("profileImage-upload")
-                                ?.click();
-                            }}
-                          >
-                            프로필 사진 업로드
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleDefaultProfileImage}
-                          >
-                            기본 프로필로 변경
-                          </Button>
+                        <div className="absolute bottom-0 right-0 bg-muted-foreground rounded-full p-1 shadow-lg">
+                          <Camera className="w-4 h-4 text-white" />
                         </div>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="newNickname"
-              render={({ field }) => (
-                <>
-                  <FormItem>
-                    <FormControl>
-                      <div className="flex flex-col gap-2">
-                        <FormLabel htmlFor="newNickname">닉네임</FormLabel>
-                        <Input id="newNickname" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </>
-              )}
-            />
-            <DialogFooter className="flex flex-row justify-end gap-2">
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  취소
-                </Button>
-              </DialogClose>
-              <Button type="submit">저장</Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                      </FormLabel>
+                      <Input
+                        id="profileImage-upload"
+                        type="file"
+                        accept={ACCEPTED_IMAGE_TYPES.join(", ")}
+                        className="hidden"
+                        onChange={handleProfileImageUpload}
+                      />
+                      {!form.getValues("useDefaultProfile") && (
+                        <button
+                          type="button"
+                          onClick={handleDefaultProfileImage}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors"
+                          aria-label="프로필 사진 삭제"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      클릭하여 프로필 사진 업로드
+                    </span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="newNickname"
+          render={({ field }) => (
+            <>
+              <FormItem>
+                <FormControl>
+                  <div className="flex flex-col gap-2">
+                    <FormLabel htmlFor="newNickname">닉네임</FormLabel>
+                    <Input id="newNickname" {...field} />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </>
+          )}
+        />
+        {submitFooter}
+      </form>
+    </Form>
   );
 }
