@@ -1,63 +1,98 @@
 import { Button } from "@/shared/shadcn-ui/button";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Triangle, Search, Star, User } from "lucide-react";
-import { useState } from "react";
-import { updateUserNickname } from "@/api/userSetting";
+import { motion } from "framer-motion";
+import EditUserProfile from "@/features/setting/EditUserProfile";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+} from "@/shared/shadcn-ui/card";
+import MovingLogo from "@/features/common/MovingLogo";
 
-export default function Onboarding() {
-  const [newNickname, setNewNickname] = useState("");
+export default function OnboardingPage() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2,
+      },
+    },
+  };
 
-  const handleUpdateNickname = async () => {
-    await updateUserNickname(newNickname);
-    window.location.href = "/";
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2,
+      },
+    },
   };
 
   return (
-    <div className="w-full bg-background">
-      <div className="container mx-auto py-12 md:py-20 lg:py-24">
-        <div className="mx-4 rounded-lg bg-card p-6 md:mx-6 md:p-8 lg:mx-8 lg:p-10">
-          <div className="flex flex-col items-center space-y-6">
-            <div className="flex items-center space-x-2">
-              <Triangle className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold">
-                올평에 오신 것을 환영합니다!
-              </h1>
-            </div>
-            <p className="text-muted-foreground">
-              활동하면서 사용할 닉네임을 설정하고 바로 시작하세요.
-            </p>
-            <Input onChange={(e) => setNewNickname(e.target.value)} />
-            <Button onClick={handleUpdateNickname} className="font-bold">
-              시작하기
-            </Button>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-              <div className="flex flex-col items-center space-y-2">
-                <Search className="h-12 w-12 text-primary" />
-                <h3 className="text-lg font-semibold">Search for Reviews</h3>
-                <p className="text-center text-muted-foreground">
-                  Find reviews on the products or services you're interested in.
-                </p>
-              </div>
-              <div className="flex flex-col items-center space-y-2">
-                <Star className="h-12 w-12 text-primary" />
-                <h3 className="text-lg font-semibold">Write Reviews</h3>
-                <p className="text-center text-muted-foreground">
-                  Share your experiences and help others make informed
-                  decisions.
-                </p>
-              </div>
-              <div className="flex flex-col items-center space-y-2">
-                <User className="h-12 w-12 text-primary" />
-                <h3 className="text-lg font-semibold">Create an Account</h3>
-                <p className="text-center text-muted-foreground">
-                  Sign up to save your favorite reviews and get personalized
-                  recommendations.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="pt-20 flex flex-col items-center justify-center gap-10">
+      <MovingLogo className="w-40 h-40" />
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <Card className="w-96">
+          <CardHeader>
+            <motion.h1
+              className="text-2xl font-bold text-center"
+              variants={itemVariants}
+            >
+              환영합니다!
+            </motion.h1>
+          </CardHeader>
+
+          <CardDescription className="text-center mb-8">
+            <motion.span variants={itemVariants}>
+              프로필을 설정해주세요.
+            </motion.span>
+          </CardDescription>
+
+          <CardContent>
+            <motion.div variants={itemVariants}>
+              <EditUserProfile
+                submitFooter={
+                  <motion.div variants={itemVariants}>
+                    <CardFooter className="p-0">
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        className="w-full relative overflow-hidden group"
+                      >
+                        <span className="relative z-10">프로필 설정 완료</span>
+                        <span
+                          className="absolute inset-0 bg-gradient-to-r from-red-500 via-green-500 to-blue-500
+                      opacity-0 group-hover:opacity-100 animate-shimmer transition-opacity duration-300"
+                        ></span>
+                      </Button>
+                      <style>{`
+                      @keyframes shimmer {
+                        0% { background-position: 200% 0; }
+                        100% { background-position: -200% 0; }
+                      }
+                      .animate-shimmer {
+                        background-size: 200% auto;
+                        animation: shimmer 0.5s linear infinite;
+                      }
+                    `}</style>
+                    </CardFooter>
+                  </motion.div>
+                }
+              />
+            </motion.div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }
