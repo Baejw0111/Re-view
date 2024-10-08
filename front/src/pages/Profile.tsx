@@ -18,8 +18,12 @@ import UserProfile from "@/features/user/UserProfile";
 import UserSetting from "@/features/setting/UserSetting";
 import EditUserProfileModal from "@/widgets/EditUserProfileModal";
 import { Separator } from "@/shared/shadcn-ui/separator";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function Profile() {
+  const loginedUserInfo = useSelector((state: RootState) => state.userInfo);
+
   // 사용자 정보 가져오기
   const { id: userId } = useParams();
   const { data: userInfo } = useQuery<UserInfo>({
@@ -45,11 +49,15 @@ export default function Profile() {
           <div className="flex-1 text-center md:text-left flex flex-col gap-2">
             <div className="flex flex-col md:flex-row md:items-center justify-start gap-4">
               <h1 className="text-2xl font-bold">{userInfo?.nickname}</h1>
-              <EditUserProfileModal />
+              {loginedUserInfo?.kakaoId === Number(userId) && (
+                <EditUserProfileModal />
+              )}
             </div>
-            <div className="absolute right-4 top-4 md:right-6 md:top-6">
-              <UserSetting />
-            </div>
+            {loginedUserInfo?.kakaoId === Number(userId) && (
+              <div className="absolute right-4 top-4 md:right-6 md:top-6">
+                <UserSetting />
+              </div>
+            )}
             <div className="flex justify-center md:justify-start gap-6 my-4">
               <span>
                 리뷰 <strong>{userInfo?.reviews.length}</strong>
