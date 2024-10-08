@@ -15,12 +15,16 @@ export default function EditUserProfileModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button
+          variant="outline"
+          size="sm"
+          className="max-w-32 mx-auto md:mx-0"
+        >
           프로필 편집
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-sm">
-        <DialogHeader>
+        <DialogHeader className="text-left">
           <DialogTitle>프로필 편집</DialogTitle>
         </DialogHeader>
         <DialogDescription hidden></DialogDescription>
