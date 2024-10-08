@@ -37,7 +37,7 @@ export default function Profile() {
       <Card className="relative p-4 md:p-6">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
           <UserProfile
-            className="h-24 w-24 md:h-28 md:w-28"
+            className="h-24 w-24 md:h-32 md:w-32"
             profileImage={userInfo?.profileImage}
             nickname={userInfo?.nickname}
           />
@@ -49,11 +49,20 @@ export default function Profile() {
             <div className="absolute right-4 top-4 md:right-6 md:top-6">
               <UserSetting />
             </div>
-            <div className="mb-2">
-              <span className="text-sm font-medium text-muted-foreground">
-                선호 태그:
+            <div className="flex justify-center md:justify-start gap-6 my-4">
+              <span>
+                리뷰 <strong>{userInfo?.reviews.length}</strong>
+              </span>
+              <span>
+                댓글 <strong>{userComments?.length}</strong>
+              </span>
+              <span>
+                추천 <strong>{userInfo?.likedReviews.length}</strong>
               </span>
             </div>
+            <span className="text-sm font-medium text-muted-foreground">
+              선호 태그:
+            </span>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               {userInfo?.favoriteTags.length === 0 ? (
                 <Badge>선호 태그가 없습니다.</Badge>
@@ -76,7 +85,7 @@ export default function Profile() {
             <MessageCircle className="h-4 w-4 mr-2" /> 댓글
           </TabsTrigger>
           <TabsTrigger value="likes">
-            <Heart className="h-4 w-4 mr-2" /> 추천한 리뷰
+            <Heart className="h-4 w-4 mr-2" /> 추천
           </TabsTrigger>
         </TabsList>
         <TabsContent value="posts" className="mt-6">
