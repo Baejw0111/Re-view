@@ -17,6 +17,7 @@ import CommentBox from "@/features/interaction/CommentBox";
 import UserProfile from "@/features/user/UserProfile";
 import UserSetting from "@/features/setting/UserSetting";
 import EditUserProfileModal from "@/widgets/EditUserProfileModal";
+import { Separator } from "@/shared/shadcn-ui/separator";
 
 export default function Profile() {
   // 사용자 정보 가져오기
@@ -34,7 +35,7 @@ export default function Profile() {
 
   return (
     <PageTemplate pageName="프로필">
-      <Card className="relative p-4 md:p-6">
+      <Card className="relative p-4 md:p-6 md:max-w-xl mx-auto">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
           <UserProfile
             className="h-24 w-24 md:h-32 md:w-32"
@@ -53,16 +54,15 @@ export default function Profile() {
               <span>
                 리뷰 <strong>{userInfo?.reviews.length}</strong>
               </span>
+              <Separator orientation="vertical" className="h-6" />
               <span>
                 댓글 <strong>{userComments?.length}</strong>
               </span>
+              <Separator orientation="vertical" className="h-6" />
               <span>
                 추천 <strong>{userInfo?.likedReviews.length}</strong>
               </span>
             </div>
-            <span className="text-sm font-medium text-muted-foreground">
-              선호 태그:
-            </span>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               {userInfo?.favoriteTags.length === 0 ? (
                 <Badge>선호 태그가 없습니다.</Badge>
@@ -77,7 +77,7 @@ export default function Profile() {
       </Card>
 
       <Tabs defaultValue="posts" className="mt-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 md:max-w-xl mx-auto">
           <TabsTrigger value="posts">
             <Grid className="h-4 w-4 mr-2" /> 리뷰
           </TabsTrigger>
