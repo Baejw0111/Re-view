@@ -54,7 +54,10 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
           <div className="p-4 flex flex-col justify-between h-full">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <a
+                  href={`/profile/${author?.kakaoId}`}
+                  className="flex items-center gap-2"
+                >
                   <UserProfile
                     className="h-6 w-6"
                     profileImage={author?.profileImage}
@@ -63,7 +66,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   <div className="text-xs line-clamp-1 text-gray-500 dark:text-gray-400">
                     {author?.nickname}
                   </div>
-                </div>
+                </a>
                 <ReviewRatingSign rating={reviewInfo?.rating as number} />
               </div>
               <div className="flex items-center justify-start">

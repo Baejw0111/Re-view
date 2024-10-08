@@ -48,7 +48,10 @@ export default function ReviewDetail() {
         <div className="grid gap-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <a
+                href={`/profile/${reviewInfo.authorId}`}
+                className="flex items-center gap-2"
+              >
                 <UserProfile
                   className="h-7 w-7"
                   profileImage={userInfo?.profileImage}
@@ -57,7 +60,7 @@ export default function ReviewDetail() {
                 <div className="text-sm line-clamp-1 text-gray-500 dark:text-gray-400">
                   {userInfo?.nickname}
                 </div>
-              </div>
+              </a>
               <ReviewRatingSign
                 className="h-7 w-9 text-xl"
                 rating={reviewInfo.rating}

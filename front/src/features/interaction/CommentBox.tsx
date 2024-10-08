@@ -32,14 +32,18 @@ export default function CommentBox({
 
   return (
     <div className="flex items-start gap-4">
-      <UserProfile
-        className="h-7 w-7"
-        profileImage={userInfo?.profileImage}
-        nickname={userInfo?.nickname}
-      />
+      <a href={`/profile/${userInfo?.kakaoId}`}>
+        <UserProfile
+          className="h-7 w-7"
+          profileImage={userInfo?.profileImage}
+          nickname={userInfo?.nickname}
+        />
+      </a>
       <div className="grid gap-2 flex-1">
         <div className="flex items-center justify-between">
-          <div className="font-semibold">{userInfo?.nickname}</div>
+          <a href={`/profile/${userInfo?.kakaoId}`} className="font-semibold">
+            {userInfo?.nickname}
+          </a>
           <div className="text-xs text-muted-foreground p-2">
             {new Date(commentInfo.uploadTime).toLocaleDateString()}
           </div>
