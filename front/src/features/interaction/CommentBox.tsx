@@ -7,6 +7,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import ProfilePopOver from "@/widgets/ProfilePopOver";
 
 export default function CommentBox({
   commentInfo,
@@ -31,44 +32,53 @@ export default function CommentBox({
   });
 
   return (
-    <div className="flex items-start gap-4">
-      <a href={`/profile/${userInfo?.kakaoId}`}>
-        <UserProfile
-          className="h-7 w-7"
-          profileImage={userInfo?.profileImage}
-          nickname={userInfo?.nickname}
-        />
-      </a>
-      <div className="grid gap-2 flex-1">
-        <div className="flex items-center justify-between">
-          <a href={`/profile/${userInfo?.kakaoId}`} className="font-semibold">
-            {userInfo?.nickname}
-          </a>
-          <div className="text-xs text-muted-foreground p-2">
-            {new Date(commentInfo.uploadTime).toLocaleDateString()}
+    <>
+      {userInfo && (
+        <div className="flex items-start gap-4">
+          <ProfilePopOver userId={userInfo?.kakaoId}>
+            <Button variant="ghost" className="h-9 w-9 rounded-full">
+              <UserProfile
+                className="h-7 w-7"
+                profileImage={userInfo?.profileImage}
+                nickname={userInfo?.nickname}
+              />
+            </Button>
+          </ProfilePopOver>
+          <div className="grid gap-2 flex-1">
+            <div className="flex items-center justify-between">
+              <a
+                href={`/profile/${userInfo?.kakaoId}`}
+                className="font-semibold"
+              >
+                {userInfo?.nickname}
+              </a>
+              <div className="text-xs text-muted-foreground p-2">
+                {new Date(commentInfo.uploadTime).toLocaleDateString()}
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-muted-foreground whitespace-pre-wrap break-all">
+                {commentInfo.content}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon">
+                  <Heart className="w-4 h-4 text-muted-foreground" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Pencil className="w-4 h-4 text-muted-foreground" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => deleteCommentMutate(commentInfo._id)}
+                >
+                  <Trash className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-muted-foreground whitespace-pre-wrap break-all">
-            {commentInfo.content}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-              <Heart className="w-4 h-4 text-muted-foreground" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Pencil className="w-4 h-4 text-muted-foreground" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => deleteCommentMutate(commentInfo._id)}
-            >
-              <Trash className="w-4 h-4 text-muted-foreground" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
