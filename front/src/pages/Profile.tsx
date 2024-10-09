@@ -6,7 +6,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/shared/shadcn-ui/tabs";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import { Grid, MessageCircle, Heart } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -14,12 +13,11 @@ import { fetchUserInfoById, fetchUserComments } from "@/api/interaction";
 import { UserInfo, CommentInfo } from "@/shared/types/interface";
 import Reviews from "@/widgets/Reviews";
 import CommentBox from "@/features/interaction/CommentBox";
-import UserProfile from "@/features/user/UserProfile";
 import UserSetting from "@/features/setting/UserSetting";
-import EditUserProfileModal from "@/widgets/EditUserProfileModal";
-import { Separator } from "@/shared/shadcn-ui/separator";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import ProfileInfo from "@/features/user/ProfileInfo";
+import UserProfile from "@/features/user/UserProfile";
 
 export default function Profile() {
   const loginedUserInfo = useSelector((state: RootState) => state.userInfo);
@@ -27,61 +25,32 @@ export default function Profile() {
   // 사용자 정보 가져오기
   const { id: userId } = useParams();
   const { data: userInfo } = useQuery<UserInfo>({
-    queryKey: ["userInfo", userId],
+    queryKey: ["userInfo", Number(userId)],
     queryFn: () => fetchUserInfoById(Number(userId)),
   });
 
   // 사용자가 작성한 댓글 가져오기
   const { data: userComments } = useQuery<CommentInfo[]>({
-    queryKey: ["userComments", userId],
+    queryKey: ["userComments", Number(userId)],
     queryFn: () => fetchUserComments(Number(userId)),
   });
 
   return (
     <PageTemplate pageName="프로필">
-      <Card className="relative p-4 md:p-6 md:max-w-xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
+      <Card className="relative p-4 md:p-6 md:px-16 md:max-w-xl mx-auto">
+        <div className="flex flex-row items-center md:items-start gap-4 md:gap-6">
           <UserProfile
-            className="h-24 w-24 md:h-32 md:w-32"
+            className="h-24 w-24 md:h-32 md:w-32 my-auto"
             profileImage={userInfo?.profileImage}
             nickname={userInfo?.nickname}
           />
-          <div className="flex-1 text-center md:text-left flex flex-col gap-2">
-            <div className="flex flex-col md:flex-row md:items-center justify-start gap-4">
-              <h1 className="text-2xl font-bold">{userInfo?.nickname}</h1>
-              {loginedUserInfo?.kakaoId === Number(userId) && (
-                <EditUserProfileModal />
-              )}
-            </div>
-            {loginedUserInfo?.kakaoId === Number(userId) && (
-              <div className="absolute right-4 top-4 md:right-6 md:top-6">
-                <UserSetting />
-              </div>
-            )}
-            <div className="flex justify-center md:justify-start gap-6 my-4">
-              <span>
-                리뷰 <strong>{userInfo?.reviews.length}</strong>
-              </span>
-              <Separator orientation="vertical" className="h-6" />
-              <span>
-                댓글 <strong>{userComments?.length}</strong>
-              </span>
-              <Separator orientation="vertical" className="h-6" />
-              <span>
-                추천 <strong>{userInfo?.likedReviews.length}</strong>
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-              {userInfo?.favoriteTags.length === 0 ? (
-                <Badge>선호 태그가 없습니다.</Badge>
-              ) : (
-                userInfo?.favoriteTags.map((tag) => (
-                  <Badge key={tag}>{tag}</Badge>
-                ))
-              )}
-            </div>
-          </div>
+          <ProfileInfo userId={Number(userId)} />
         </div>
+        {loginedUserInfo?.kakaoId === Number(userId) && (
+          <div className="absolute right-4 top-4 md:right-6 md:top-6">
+            <UserSetting />
+          </div>
+        )}
       </Card>
 
       <Tabs defaultValue="posts" className="mt-6">
