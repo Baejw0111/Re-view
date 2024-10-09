@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useState, useRef } from "react";
-import UserProfile from "@/features/user/UserProfile";
+import UserAvatar from "@/features/user/UserAvatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { useMutation } from "@tanstack/react-query";
@@ -9,11 +9,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { Send } from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function CommentInput() {
-  const location=useLocation();
-  const queryParams=new URLSearchParams(location.search);
-  const reviewId=queryParams.get("reviewId");
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const reviewId = queryParams.get("reviewId");
 
   const [comment, setComment] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
@@ -53,7 +56,10 @@ export default function CommentInput() {
     return (
       <form onSubmit={handleSubmit}>
         <div className="flex gap-4">
-          <UserProfile />
+          <UserAvatar
+            profileImage={userInfo?.profileImage}
+            nickname={userInfo?.nickname}
+          />
           <div className="flex-grow">
             <Textarea
               ref={textareaRef}
@@ -87,7 +93,10 @@ export default function CommentInput() {
       className="fixed left-0 bottom-0 w-full p-4 bg-background border-t"
     >
       <div className="flex gap-4">
-        <UserProfile />
+        <UserAvatar
+          profileImage={userInfo?.profileImage}
+          nickname={userInfo?.nickname}
+        />
         <div className="flex-grow flex flex-row justify-between gap-2">
           <Textarea
             ref={textareaRef}

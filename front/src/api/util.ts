@@ -1,10 +1,17 @@
 import axios, { AxiosInstance } from "axios";
-import { persistor } from "@/state/store";
 import { API_URL } from "@/shared/constants";
 import { AxiosError, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
+import {
+  KAKAO_OAUTH_URL,
+  KAKAO_REST_API_KEY,
+  KAKAO_REDIRECT_URI,
+} from "@/shared/constants";
 
-// axios 인스턴스 생성 함수
-
+/**
+ * axios 인스턴스 생성 함수
+ * @param clientConfig axios 인스턴스 생성 옵션
+ * @returns axios 인스턴스
+ */
 const createApiClient = (clientConfig?: CreateAxiosDefaults): AxiosInstance => {
   const client = axios.create({ ...clientConfig });
 
@@ -22,7 +29,9 @@ const createApiClient = (clientConfig?: CreateAxiosDefaults): AxiosInstance => {
   return client;
 };
 
-// 일반 인스턴스
+/**
+ * 일반 인스턴스
+ */
 export const genaralApiClient: AxiosInstance = createApiClient({
   baseURL: API_URL,
 });
@@ -66,8 +75,7 @@ authApiClient.interceptors.response.use(
       } catch (refreshError) {
         // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
         alert("로그인해주세요.");
-        await persistor.purge(); // redux-persist가 관리하는 모든 상태 초기화
-        window.location.href = "/";
+        window.location.href = `${KAKAO_OAUTH_URL}&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}`;
         return Promise.reject(refreshError);
       }
     }

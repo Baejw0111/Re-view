@@ -14,7 +14,7 @@ export default function Authorization() {
   ).searchParams.get("code") as string;
 
   // 카카오 로그인 처리
-  const kakaoLoginMutation = useMutation({
+  const { mutate, isPending, isError } = useMutation({
     mutationFn: async () => {
       await getKakaoToken(AUTHORIZATION_CODE);
       return await getKakaoUserInfo();
@@ -23,18 +23,18 @@ export default function Authorization() {
       const { isNewMember, userInfo } = responseData;
       dispatch(setUserInfo(userInfo));
       if (isNewMember) {
-        navigate("/onboarding");
+        window.location.href = "/onboarding";
       } else {
-        navigate("/");
+        window.location.href = "/";
       }
     },
   });
 
   useEffect(() => {
-    kakaoLoginMutation.mutate();
-  }, []);
+    mutate();
+  }, [mutate]);
 
-  if (kakaoLoginMutation.isPending) {
+  if (isPending) {
     return (
       <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
         <div className="text-2xl md:text-3xl font-bold m-8">
@@ -44,7 +44,7 @@ export default function Authorization() {
     );
   }
 
-  if (kakaoLoginMutation.isError) {
+  if (isError) {
     return (
       <div className="w-full px-4 py-6 md:py-4">
         <div className="text-2xl md:text-3xl font-bold m-8">

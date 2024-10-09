@@ -13,10 +13,10 @@ export default function TooltipWrapper({
   tooltipText: string;
 }) {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent side="bottom">
           <p>{tooltipText}</p>
         </TooltipContent>
       </Tooltip>

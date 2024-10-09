@@ -44,7 +44,10 @@ export default function ReviewDetailModal() {
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="block md:max-w-[760px] lg:max-w-[860px] h-[90vh] p-20 overflow-y-auto scrollbar-hide">
+        <DialogContent
+          className="block md:max-w-[760px] lg:max-w-[860px] h-[90vh] p-20 overflow-y-auto scrollbar-hide"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogTitle hidden></DialogTitle>
           <DialogDescription hidden></DialogDescription>
           <ReviewDetail />

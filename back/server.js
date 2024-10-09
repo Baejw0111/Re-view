@@ -5,7 +5,7 @@ import morgan from "morgan"; // 로그 출력용
 import "dotenv/config"; // .env 파일에서 바로 환경 변수 로드
 import cookieParser from "cookie-parser";
 import {
-  getReviewIdList,
+  getFeed,
   getReviewsById,
   createReview,
   updateReview,
@@ -17,7 +17,6 @@ import {
   refreshKakaoAccessToken,
   getKakaoUserInfo,
   logOutKakao,
-  updateKakaoUserNickname,
   deleteUserAccount,
 } from "./controllers/KakaoLogin.js";
 import {
@@ -27,7 +26,10 @@ import {
   unLike,
   deleteComment,
   fetchUserInfoById,
+  getUserComments,
 } from "./controllers/Interaction.js";
+import { updateUserInfo } from "./controllers/UserSetting.js";
+import { upload } from "./utils/Upload.js";
 
 const app = express(); // express 인스턴스 생성
 const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근 가능
@@ -50,17 +52,22 @@ app.post("/login/kakao", getKakaoToken); // 카카오 토큰 요청 API
 app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
 app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카오 유저 정보 조회 API
 app.post("/logout/kakao", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
-app.post(
-  "/auth/kakao/updateUserNickname",
-  verifyKakaoAccessToken,
-  updateKakaoUserNickname
-); // 카카오 유저 닉네임 수정 API
 
 // 리뷰 관련 API
-app.get("/review", getReviewIdList); // 리뷰 전체 조회 API
+app.get("/review", getFeed); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
-app.post("/review", verifyKakaoAccessToken, createReview); // 리뷰 등록 API
-app.patch("/review/:id", verifyKakaoAccessToken, updateReview); // 리뷰 수정 API
+app.post(
+  "/review",
+  verifyKakaoAccessToken,
+  upload.array("images", 5),
+  createReview
+); // 리뷰 등록 API
+app.patch(
+  "/review/:id",
+  verifyKakaoAccessToken,
+  upload.array("images", 5),
+  updateReview
+); // 리뷰 수정 API
 app.delete("/review/:id", verifyKakaoAccessToken, deleteReview); // 리뷰 삭제 API
 
 // 유저 상호 작용 API
@@ -75,5 +82,12 @@ app.delete(
   deleteUserAccount
 ); // 카카오 유저 계정 삭제 API
 app.get("/user/:id", fetchUserInfoById); // 유저 정보 조회 API
+app.get("/user/comments/:id", getUserComments); // 유저가 작성한 댓글 조회 API
+app.put(
+  "/user/info",
+  verifyKakaoAccessToken,
+  upload.single("profileImage"),
+  updateUserInfo
+); // 유저 정보 수정 API
 
 app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));
