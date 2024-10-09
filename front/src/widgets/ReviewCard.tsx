@@ -38,6 +38,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
     enabled: !!reviewInfo,
   });
 
+  // 리뷰 상세 페이지로 이동 시, 리뷰 상세 페이지 열기
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     if (queryParams.get("reviewId") === reviewId) {
