@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Camera, UserRound, X } from "lucide-react";
 import UserProfile from "@/features/user/UserProfile";
 import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
+import { useLocation } from "react-router-dom";
 
 export default function EditUserProfile({
   submitFooter,
@@ -28,6 +29,8 @@ export default function EditUserProfile({
 }) {
   const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
   const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 사용자가 현재 등록한 프로필 이미지
+  const location = useLocation();
+  const currentPage = location.pathname.split("/").pop();
 
   const formSchema = z.object({
     profileImage: z
@@ -82,7 +85,11 @@ export default function EditUserProfile({
   const { mutate: updateUserInfoMutation } = useMutation({
     mutationFn: updateUserInfo,
     onSuccess: () => {
-      window.location.reload();
+      if (currentPage === "onboarding") {
+        window.location.href = "/";
+      } else {
+        window.location.reload();
+      }
     },
     onError: () => {
       alert("프로필 업데이트 중 에러가 발생했습니다.");
