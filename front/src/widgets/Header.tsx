@@ -8,6 +8,7 @@ import { RootState } from "@/state/store/index";
 import { Link } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import SearchBar from "@/features/common/SearchBar";
+import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -30,15 +31,17 @@ export default function Header() {
             // 닉네임이 있으면(로그인을 했을 경우) 유저가 사용 가능한 버튼 보여주기
             <>
               <NotificationButton />
-              <Button variant="ghost" className="h-9 w-9 rounded-full">
+              <TooltipWrapper tooltipText="프로필">
                 <Link to={`/profile/${userInfo.kakaoId}`}>
-                  <UserProfile
-                    className="h-7 w-7"
-                    profileImage={userInfo.profileImage}
-                    nickname={userInfo.nickname}
-                  />
+                  <Button variant="ghost" className="h-9 w-9 rounded-full">
+                    <UserProfile
+                      className="h-7 w-7"
+                      profileImage={userInfo.profileImage}
+                      nickname={userInfo.nickname}
+                    />
+                  </Button>
                 </Link>
-              </Button>
+              </TooltipWrapper>
             </>
           ) : (
             // 닉네임이 없으면 로그인 버튼 보여주기
