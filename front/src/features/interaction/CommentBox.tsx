@@ -5,8 +5,8 @@ import { fetchUserInfoById, deleteComment } from "@/api/interaction";
 import { Trash, Pencil, Heart } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
 import ProfilePopOver from "@/widgets/ProfilePopOver";
 
 export default function CommentBox({
@@ -14,7 +14,9 @@ export default function CommentBox({
 }: {
   commentInfo: CommentInfo;
 }) {
-  const { id: reviewId } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const reviewId = queryParams.get("reviewId");
   const queryClient = useQueryClient();
 
   // 댓글 작성자 정보 가져오기
@@ -27,7 +29,12 @@ export default function CommentBox({
   const { mutate: deleteCommentMutate } = useMutation({
     mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", reviewId] });
+      if (reviewId) {
+        queryClient.invalidateQueries({ queryKey: ["comments", reviewId] });
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["userComments", commentInfo.authorId],
+      });
     },
   });
 
