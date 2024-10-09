@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import UserProfile from "@/features/user/UserProfile";
+import UserAvatar from "@/features/user/UserAvatar";
 import { MessageCircle, ChevronRight } from "lucide-react";
 import { Card } from "@/shared/shadcn-ui/card";
 import {
@@ -60,7 +60,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   <div className="flex items-center justify-between">
                     <ProfilePopOver userId={author?.kakaoId as number}>
                       <div role="button" className="flex items-center gap-2">
-                        <UserProfile
+                        <UserAvatar
                           className="h-6 w-6"
                           profileImage={author?.profileImage}
                           nickname={author?.nickname}

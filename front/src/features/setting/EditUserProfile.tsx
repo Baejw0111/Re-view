@@ -18,7 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import { updateUserInfo } from "@/api/userSetting";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Camera, UserRound, X } from "lucide-react";
-import UserProfile from "@/features/user/UserProfile";
+import UserAvatar from "@/features/user/UserAvatar";
 import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
 import { useLocation } from "react-router-dom";
 
@@ -188,7 +188,7 @@ export default function EditUserProfile({
                             </AvatarFallback>
                           </Avatar>
                         ) : (
-                          <UserProfile
+                          <UserAvatar
                             className="h-24 w-24 transition-transform hover:scale-105"
                             profileImage={userInfo.profileImage}
                             nickname={userInfo.nickname}

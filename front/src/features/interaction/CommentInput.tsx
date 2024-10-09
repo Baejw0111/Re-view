@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useState, useRef } from "react";
-import UserProfile from "@/features/user/UserProfile";
+import UserAvatar from "@/features/user/UserAvatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { useMutation } from "@tanstack/react-query";
@@ -56,7 +56,7 @@ export default function CommentInput() {
     return (
       <form onSubmit={handleSubmit}>
         <div className="flex gap-4">
-          <UserProfile
+          <UserAvatar
             profileImage={userInfo?.profileImage}
             nickname={userInfo?.nickname}
           />
@@ -93,7 +93,7 @@ export default function CommentInput() {
       className="fixed left-0 bottom-0 w-full p-4 bg-background border-t"
     >
       <div className="flex gap-4">
-        <UserProfile
+        <UserAvatar
           profileImage={userInfo?.profileImage}
           nickname={userInfo?.nickname}
         />

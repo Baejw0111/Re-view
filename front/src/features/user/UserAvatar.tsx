@@ -3,7 +3,7 @@ import { UserRound } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { API_URL } from "@/shared/constants";
 
-export default function UserProfile({
+export default function UserAvatar({
   className,
   profileImage,
   nickname,

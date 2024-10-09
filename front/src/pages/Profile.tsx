@@ -17,7 +17,7 @@ import UserSetting from "@/features/setting/UserSetting";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ProfileInfo from "@/features/user/ProfileInfo";
-import UserProfile from "@/features/user/UserProfile";
+import UserAvatar from "@/features/user/UserAvatar";
 
 export default function Profile() {
   const loginedUserInfo = useSelector((state: RootState) => state.userInfo);
@@ -39,7 +39,7 @@ export default function Profile() {
     <PageTemplate pageName="프로필">
       <Card className="relative p-4 md:p-6 md:px-16 md:max-w-xl mx-auto">
         <div className="flex flex-row items-center md:items-start gap-4 md:gap-6">
-          <UserProfile
+          <UserAvatar
             className="h-24 w-24 md:h-32 md:w-32 my-auto"
             profileImage={userInfo?.profileImage}
             nickname={userInfo?.nickname}

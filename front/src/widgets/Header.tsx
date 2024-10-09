@@ -1,6 +1,6 @@
 import Logo from "@/features/common/Logo";
 import ThemeToggleButton from "@/features/setting/ThemeToggleButton";
-import UserProfile from "@/features/user/UserProfile";
+import UserAvatar from "@/features/user/UserAvatar";
 import NotificationButton from "@/features/user/NotificationButton";
 import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
 import { useSelector } from "react-redux";
@@ -34,7 +34,7 @@ export default function Header() {
               <TooltipWrapper tooltipText="프로필">
                 <Link to={`/profile/${userInfo.kakaoId}`}>
                   <Button variant="ghost" className="h-9 w-9 rounded-full">
-                    <UserProfile
+                    <UserAvatar
                       className="h-7 w-7"
                       profileImage={userInfo.profileImage}
                       nickname={userInfo.nickname}

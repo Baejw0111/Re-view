@@ -1,4 +1,4 @@
-import UserProfile from "@/features/user/UserProfile";
+import UserAvatar from "@/features/user/UserAvatar";
 import { CommentInfo, UserInfo } from "@/shared/types/interface";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserInfoById, deleteComment } from "@/api/interaction";
@@ -44,7 +44,7 @@ export default function CommentBox({
         <div className="flex items-start gap-4">
           <ProfilePopOver userId={userInfo?.kakaoId}>
             <Button variant="ghost" className="h-9 w-9 rounded-full">
-              <UserProfile
+              <UserAvatar
                 className="h-7 w-7"
                 profileImage={userInfo?.profileImage}
                 nickname={userInfo?.nickname}

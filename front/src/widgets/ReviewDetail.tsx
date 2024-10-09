@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
-import UserProfile from "@/features/user/UserProfile";
+import UserAvatar from "@/features/user/UserAvatar";
 
 export default function ReviewDetail() {
   const location = useLocation();
@@ -52,7 +52,7 @@ export default function ReviewDetail() {
                 href={`/profile/${reviewInfo.authorId}`}
                 className="flex items-center gap-2"
               >
-                <UserProfile
+                <UserAvatar
                   className="h-7 w-7"
                   profileImage={userInfo?.profileImage}
                   nickname={userInfo?.nickname}
