@@ -181,6 +181,7 @@ export default function EditUserProfile({
                             <AvatarImage
                               src={currentProfileImage}
                               alt={userInfo.nickname}
+                              className="object-cover"
                             />
                             <AvatarFallback>
                               <UserRound className="w-[70%] h-[70%]" />
