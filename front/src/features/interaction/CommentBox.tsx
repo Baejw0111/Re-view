@@ -2,7 +2,7 @@ import UserAvatar from "@/features/user/UserAvatar";
 import { CommentInfo, UserInfo } from "@/shared/types/interface";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserInfoById, deleteComment } from "@/api/interaction";
-import { Trash, Pencil, Heart } from "lucide-react";
+import { Trash, Pencil } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
@@ -41,7 +41,7 @@ export default function CommentBox({
   return (
     <>
       {userInfo && (
-        <div className="flex items-start gap-4">
+        <div className="pb-4 flex items-start gap-4">
           <ProfilePopOver userId={userInfo.kakaoId}>
             <Button variant="ghost" className="h-12 w-12 rounded-full">
               <UserAvatar
@@ -53,21 +53,18 @@ export default function CommentBox({
           </ProfilePopOver>
           <div className="flex flex-col gap-2 w-full">
             <div className="flex items-center justify-between">
-              <div className="flex items-center justify-start">
+              <div className="flex items-center gap-2">
                 <a
                   href={`/profile/${userInfo.kakaoId}`}
                   className="font-semibold"
                 >
                   {userInfo.nickname}
                 </a>
-                <span className="text-xs text-muted-foreground p-2">
+                <span className="text-xs text-muted-foreground">
                   {new Date(commentInfo.uploadTime).toLocaleDateString()}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Heart className="w-4 h-4 text-muted-foreground" />
-                </Button>
                 <Button variant="ghost" size="icon">
                   <Pencil className="w-4 h-4 text-muted-foreground" />
                 </Button>
@@ -80,11 +77,9 @@ export default function CommentBox({
                 </Button>
               </div>
             </div>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-muted-foreground whitespace-pre-wrap break-all">
-                {commentInfo.content}
-              </p>
-            </div>
+            <p className="text-muted-foreground whitespace-pre-wrap break-all">
+              {commentInfo.content}
+            </p>
           </div>
         </div>
       )}

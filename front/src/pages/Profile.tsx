@@ -71,7 +71,9 @@ export default function Profile() {
         <TabsContent value="comments" className="mt-6 max-w-3xl mx-auto">
           {userComments &&
             userComments.map((comment) => (
-              <CommentBox key={comment._id} commentInfo={comment} />
+              <div key={comment._id} className="border-b last:border-b-0 pt-2">
+                <CommentBox key={comment._id} commentInfo={comment} />
+              </div>
             ))}
         </TabsContent>
         <TabsContent value="likes" className="mt-6">

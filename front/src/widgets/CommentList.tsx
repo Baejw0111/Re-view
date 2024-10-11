@@ -20,7 +20,7 @@ export default function CommentList() {
   return (
     <div>
       <h2 className="text-lg font-semibold">댓글({data?.length})</h2>
-      <div className="grid gap-4 mt-4">
+      <div className="grid mt-4">
         {data?.map((commentInfo, index) => (
           <CommentBox key={index} commentInfo={commentInfo} />
         ))}
