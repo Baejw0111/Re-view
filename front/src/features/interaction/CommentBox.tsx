@@ -42,22 +42,22 @@ export default function CommentBox({
     <>
       {userInfo && (
         <div className="flex items-start gap-4">
-          <ProfilePopOver userId={userInfo?.kakaoId}>
+          <ProfilePopOver userId={userInfo.kakaoId}>
             <Button variant="ghost" className="h-9 w-9 rounded-full">
               <UserAvatar
                 className="h-7 w-7"
-                profileImage={userInfo?.profileImage}
-                nickname={userInfo?.nickname}
+                profileImage={userInfo.profileImage}
+                nickname={userInfo.nickname}
               />
             </Button>
           </ProfilePopOver>
           <div className="grid gap-2 flex-1">
             <div className="flex items-center justify-between">
               <a
-                href={`/profile/${userInfo?.kakaoId}`}
+                href={`/profile/${userInfo.kakaoId}`}
                 className="font-semibold"
               >
-                {userInfo?.nickname}
+                {userInfo.nickname}
               </a>
               <div className="text-xs text-muted-foreground p-2">
                 {new Date(commentInfo.uploadTime).toLocaleDateString()}
