@@ -71,3 +71,23 @@ export interface CommentInfo {
   uploadTime: Date;
   content: string;
 }
+
+/**
+ * @description 알림 정보
+ * @param avatarImage 아바타 이미지
+ * @param title 제목
+ * @param message 메시지
+ * @param time 시간
+ * @param reviewTitle 리뷰 제목
+ * @param reviewThumbnail 리뷰 썸네일
+ * @param category 카테고리
+ */
+export interface NotificationInfo {
+  avatarImage: string;
+  title: string;
+  message: string;
+  time: Date;
+  reviewTitle: string;
+  reviewThumbnail: string;
+  category: string;
+}
