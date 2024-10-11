@@ -68,7 +68,7 @@ export default function Profile() {
         <TabsContent value="posts" className="mt-6">
           {userInfo?.reviews && <Reviews reviewIdList={userInfo?.reviews} />}
         </TabsContent>
-        <TabsContent value="comments" className="mt-6">
+        <TabsContent value="comments" className="mt-6 max-w-3xl mx-auto">
           {userComments &&
             userComments.map((comment) => (
               <CommentBox key={comment._id} commentInfo={comment} />
