@@ -57,7 +57,7 @@ export default function ReviewDetail() {
                   profileImage={userInfo?.profileImage}
                   nickname={userInfo?.nickname}
                 />
-                <div className="text-sm line-clamp-1 text-gray-500 dark:text-gray-400">
+                <div className="text-sm line-clamp-1 text-muted-foreground">
                   {userInfo?.nickname}
                 </div>
               </a>
@@ -66,8 +66,8 @@ export default function ReviewDetail() {
                 rating={reviewInfo.rating}
               />
             </div>
-            <div className="text-2xl font-bold">{reviewInfo.title}</div>
-            <p className="text-md text-gray-500 dark:text-gray-400 whitespace-pre-wrap break-all">
+            <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
+            <p className="text-md text-muted-foreground whitespace-pre-wrap break-all">
               {reviewInfo.reviewText}
             </p>
           </div>

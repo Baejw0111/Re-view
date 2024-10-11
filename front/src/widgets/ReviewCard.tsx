@@ -65,7 +65,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                           profileImage={author?.profileImage}
                           nickname={author?.nickname}
                         />
-                        <div className="text-xs line-clamp-1 text-gray-500 dark:text-gray-400">
+                        <div className="text-xs line-clamp-1 text-muted-foreground">
                           {author?.nickname}
                         </div>
                       </div>
@@ -77,13 +77,13 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                       to={`?reviewId=${reviewInfo?._id}`}
                       className="group flex items-center gap-1 cursor-pointer hover:text-blue-500 transition-colors"
                     >
-                      <div className="text-md font-semibold line-clamp-1">
+                      <h2 className="font-semibold line-clamp-1">
                         {reviewInfo?.title}
-                      </div>
+                      </h2>
                       <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
-                  <p className="text-sm text-left text-gray-500 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap break-all">
+                  <p className="text-sm text-left text-muted-foreground line-clamp-3 whitespace-pre-wrap break-all">
                     {reviewInfo?.reviewText}
                   </p>
                 </div>
@@ -110,7 +110,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                           <MessageCircle className="w-5 h-5" />
                         </Link>
                       </TooltipWrapper>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                      <span className="text-sm text-muted-foreground">
                         {reviewInfo?.commentsCount}
                       </span>
                     </div>
