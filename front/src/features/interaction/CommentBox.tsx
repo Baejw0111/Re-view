@@ -43,30 +43,27 @@ export default function CommentBox({
       {userInfo && (
         <div className="flex items-start gap-4">
           <ProfilePopOver userId={userInfo.kakaoId}>
-            <Button variant="ghost" className="h-9 w-9 rounded-full">
+            <Button variant="ghost" className="h-12 w-12 rounded-full">
               <UserAvatar
-                className="h-7 w-7"
+                className="h-9 w-9"
                 profileImage={userInfo.profileImage}
                 nickname={userInfo.nickname}
               />
             </Button>
           </ProfilePopOver>
-          <div className="grid gap-2 flex-1">
+          <div className="flex flex-col gap-2 w-full">
             <div className="flex items-center justify-between">
-              <a
-                href={`/profile/${userInfo.kakaoId}`}
-                className="font-semibold"
-              >
-                {userInfo.nickname}
-              </a>
-              <div className="text-xs text-muted-foreground p-2">
-                {new Date(commentInfo.uploadTime).toLocaleDateString()}
+              <div className="flex items-center justify-start">
+                <a
+                  href={`/profile/${userInfo.kakaoId}`}
+                  className="font-semibold"
+                >
+                  {userInfo.nickname}
+                </a>
+                <span className="text-xs text-muted-foreground p-2">
+                  {new Date(commentInfo.uploadTime).toLocaleDateString()}
+                </span>
               </div>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-muted-foreground whitespace-pre-wrap break-all">
-                {commentInfo.content}
-              </p>
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon">
                   <Heart className="w-4 h-4 text-muted-foreground" />
@@ -82,6 +79,11 @@ export default function CommentBox({
                   <Trash className="w-4 h-4 text-muted-foreground" />
                 </Button>
               </div>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-muted-foreground whitespace-pre-wrap break-all">
+                {commentInfo.content}
+              </p>
             </div>
           </div>
         </div>
