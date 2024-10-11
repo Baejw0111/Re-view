@@ -13,13 +13,13 @@ export default function NotificationBox({
   category,
 }: NotificationInfo) {
   return (
-    <div className="p-4 border-b last:border-b-0 flex items-start gap-4">
+    <div className="py-4 border-b last:border-b-0 flex items-start gap-4">
       <UserAvatar
         className="h-9 w-9"
         profileImage={avatarImage}
         nickname={title}
       />
-      <div className="flex justify-between items-start w-full">
+      <div className="flex justify-between w-full">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             {category === "like" ? (
@@ -27,13 +27,15 @@ export default function NotificationBox({
             ) : (
               <MessageCircle className="w-4 h-4" />
             )}
-            <h3 className="font-semibold">{title}</h3>
+            <h3 className="font-semibold line-clamp-1">{title}</h3>
             <span className="text-xs text-muted-foreground">
               {time.toLocaleString()}
             </span>
           </div>
-          <p className="text-xs text-muted-foreground">{reviewTitle}</p>
-          <p className="text-md">{message}</p>
+          <h4 className="text-xs text-muted-foreground line-clamp-1">
+            {reviewTitle}
+          </h4>
+          <p className="text-md whitespace-pre-wrap break-all">{message}</p>
         </div>
         <div className="flex items-start gap-2">
           <img className="h-20" src={reviewThumbnail} alt="review thumbnail" />
