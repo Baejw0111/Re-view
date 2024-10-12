@@ -85,7 +85,7 @@ export const TagModel = db.model(
 /**
  * 댓글 모델
  * @type {mongoose.Model}
- * @property {number} authorId - 작성자 ID
+ * @property {number} authorId - 작성자 카카오 ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} reviewId - 댓글이 작성된 리뷰의 ID
  * @property {string} content - 댓글 내용
@@ -97,5 +97,25 @@ export const CommentModel = db.model(
     uploadTime: { type: Date, default: Date.now },
     reviewId: { type: String, default: "" },
     content: { type: String, default: "" },
+  })
+);
+
+/**
+ * 알림 모델
+ * @type {mongoose.Model}
+ * @property {number} kakaoId - 알림을 받을 유저의 카카오 ID
+ * @property {Date} time - 알림 생성 시간
+ * @property {string} commentId - 알림과 관련된 댓글 ID
+ * @property {string} reviewId - 알림과 관련된 리뷰 ID
+ * @property {string} category - 알림 종류
+ */
+export const NotificationModel = db.model(
+  "Notification",
+  new mongoose.Schema({
+    kakaoId: { type: Number, default: 0 },
+    time: { type: Date, default: Date.now },
+    commentId: { type: String, default: "" },
+    reviewId: { type: String, default: "" },
+    category: { type: String, default: "" },
   })
 );
