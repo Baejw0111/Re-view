@@ -82,15 +82,29 @@ export const getComments = asyncHandler(async (req, res) => {
  */
 export const addLike = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  await ReviewModel.findByIdAndUpdate(reviewId, {
+
+  // 리뷰 추천 수 증카
+  const review = await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { likesCount: 1 },
   });
+
+  // 유저 추천 리뷰 목록에 추가
   await UserModel.findOneAndUpdate(
     { kakaoId: req.userId },
     {
       $push: { likedReviews: reviewId },
     }
   );
+
+  // 리뷰의 추천 수가 10의 배수인 경우 알림 생성
+  if (review.likesCount !== 0 && review.likesCount % 10 === 0) {
+    await NotificationModel.create({
+      kakaoId: review.authorId,
+      reviewId,
+      category: "like",
+    });
+  }
+
   res.status(200).json({ message: "추천 완료!" });
 }, "리뷰 추천");
 
@@ -100,13 +114,25 @@ export const addLike = asyncHandler(async (req, res) => {
 export const addComment = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const authorId = req.userId;
-  await CommentModel.create({
+
+  // 댓글 생성
+  const comment = await CommentModel.create({
     authorId,
     reviewId,
     content: req.body.comment,
   });
+
+  // 리뷰 댓글 수 증가
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { commentsCount: 1 },
+  });
+
+  // 알림 생성
+  await NotificationModel.create({
+    kakaoId: authorId,
+    commentId: comment._id,
+    reviewId,
+    category: "comment",
   });
 
   // 새로운 댓글 이벤트 전송
@@ -138,9 +164,16 @@ export const unLike = asyncHandler(async (req, res) => {
 export const deleteComment = asyncHandler(async (req, res) => {
   const { id: commentId } = req.params;
   const { reviewId } = await CommentModel.findById(commentId);
-  await CommentModel.findByIdAndDelete(commentId);
+
+  await CommentModel.findByIdAndDelete(commentId); // 댓글 삭제
+
+  // 리뷰 댓글 수 감소
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { commentsCount: -1 },
   });
+
+  // 알림 삭제
+  await NotificationModel.findOneAndDelete({ commentId });
+
   res.status(200).json({ message: "댓글 삭제 완료" });
 }, "리뷰 댓글 삭제");
