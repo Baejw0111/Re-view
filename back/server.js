@@ -20,6 +20,7 @@ import {
   deleteUserAccount,
 } from "./controllers/KakaoLogin.js";
 import {
+  getNotification,
   getComments,
   addLike,
   addComment,
@@ -71,6 +72,7 @@ app.patch(
 app.delete("/review/:id", verifyKakaoAccessToken, deleteReview); // 리뷰 삭제 API
 
 // 유저 상호 작용 API
+app.get("/notification", getNotification); // 알림 SSE API
 app.get("/comment/:id", getComments); // 리뷰 댓글 조회 API
 app.patch("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
 app.post("/comment/:id", verifyKakaoAccessToken, addComment); // 리뷰 댓글 등록 API
