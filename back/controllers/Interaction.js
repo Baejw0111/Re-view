@@ -8,7 +8,7 @@ import asyncHandler from "../utils/ControllerUtils.js";
 
 let clients = new Map();
 
-export const getNotification = asyncHandler((req, res) => {
+export const connectNotificationSSE = asyncHandler((req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
@@ -37,7 +37,11 @@ export const getNotification = asyncHandler((req, res) => {
   });
 });
 
-function sendEventToClient(userId) {
+/**
+ * 클라이언트에 이벤트 전송 함수
+ * @param {number} userId - 사용자 ID
+ */
+const sendEventToClient = (userId) => {
   const userClients = clients.get(userId);
   if (userClients) {
     userClients.forEach((client) => {
@@ -46,12 +50,23 @@ function sendEventToClient(userId) {
       );
     });
   }
-}
+};
+
+/**
+ * 알림 조회 API
+ * @returns 알림 리스트
+ */
+export const getNotifications = asyncHandler(async (req, res) => {
+  const notifications = await NotificationModel.find({
+    kakaoId: req.userId,
+  });
+  res.status(200).json(notifications);
+}, "알림 조회");
 
 /**
  * 유저 정보 조회 API
  */
-export const fetchUserInfoById = asyncHandler(async (req, res) => {
+export const getUserInfoById = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
   const user = await UserModel.findOne({ kakaoId: userId });
   res.status(200).json(user);
@@ -123,20 +138,20 @@ export const addComment = asyncHandler(async (req, res) => {
   });
 
   // 리뷰 댓글 수 증가
-  await ReviewModel.findByIdAndUpdate(reviewId, {
+  const review = await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { commentsCount: 1 },
   });
 
   // 알림 생성
   await NotificationModel.create({
-    kakaoId: authorId,
+    kakaoId: review.authorId,
     commentId: comment._id,
     reviewId,
     category: "comment",
   });
 
   // 새로운 댓글 이벤트 전송
-  sendEventToClient(authorId);
+  sendEventToClient(review.authorId);
 
   res.status(200).json({ message: "댓글 추가 완료" });
 }, "리뷰 댓글 추가");

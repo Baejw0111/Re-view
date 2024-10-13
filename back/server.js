@@ -20,14 +20,15 @@ import {
   deleteUserAccount,
 } from "./controllers/KakaoLogin.js";
 import {
-  getNotification,
   getComments,
   addLike,
   addComment,
   unLike,
   deleteComment,
-  fetchUserInfoById,
+  getUserInfoById,
   getUserComments,
+  connectNotificationSSE,
+  getNotifications,
 } from "./controllers/Interaction.js";
 import { updateUserInfo } from "./controllers/UserSetting.js";
 import { upload } from "./utils/Upload.js";
@@ -72,7 +73,8 @@ app.patch(
 app.delete("/review/:id", verifyKakaoAccessToken, deleteReview); // 리뷰 삭제 API
 
 // 유저 상호 작용 API
-app.get("/notification", getNotification); // 알림 SSE API
+app.get("/notifications/stream", connectNotificationSSE); // 알림 SSE API
+app.get("/notifications", verifyKakaoAccessToken, getNotifications); // 알림 조회 API
 app.get("/comment/:id", getComments); // 리뷰 댓글 조회 API
 app.patch("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
 app.post("/comment/:id", verifyKakaoAccessToken, addComment); // 리뷰 댓글 등록 API
@@ -83,7 +85,7 @@ app.delete(
   verifyKakaoAccessToken,
   deleteUserAccount
 ); // 카카오 유저 계정 삭제 API
-app.get("/user/:id", fetchUserInfoById); // 유저 정보 조회 API
+app.get("/user/:id", getUserInfoById); // 유저 정보 조회 API
 app.get("/user/comments/:id", getUserComments); // 유저가 작성한 댓글 조회 API
 app.put(
   "/user/info",
