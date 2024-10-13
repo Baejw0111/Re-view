@@ -81,6 +81,7 @@ export interface CommentInfo {
  * @property {string} reviewTitle - 리뷰 제목
  * @property {string} reviewThumbnail - 리뷰 썸네일
  * @property {string} category - 알림 종류
+ * @property {boolean} isRead - 알림 읽음 여부
  */
 export interface NotificationInfo {
   avatarImage: string;
@@ -90,4 +91,5 @@ export interface NotificationInfo {
   reviewTitle: string;
   reviewThumbnail: string;
   category: string;
+  isRead: boolean;
 }

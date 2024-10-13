@@ -108,6 +108,7 @@ export const CommentModel = db.model(
  * @property {string} commentId - 알림과 관련된 댓글 ID
  * @property {string} reviewId - 알림과 관련된 리뷰 ID
  * @property {string} category - 알림 종류
+ * @property {boolean} isRead - 알림 읽음 여부
  */
 export const NotificationModel = db.model(
   "Notification",
@@ -117,5 +118,6 @@ export const NotificationModel = db.model(
     commentId: { type: String, default: "" },
     reviewId: { type: String, default: "" },
     category: { type: String, default: "" },
+    isRead: { type: Boolean, default: false },
   })
 );
