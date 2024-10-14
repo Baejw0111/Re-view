@@ -1,5 +1,9 @@
 import { genaralApiClient, authApiClient } from "@/api/util";
-import { CommentInfo, UserInfo } from "@/shared/types/interface";
+import {
+  CommentInfo,
+  UserInfo,
+  NotificationInfo,
+} from "@/shared/types/interface";
 
 /**
  * 유저 조회 함수
@@ -31,15 +35,15 @@ export const unlikeReview = async (reviewId: string): Promise<void> => {
 };
 
 /**
- * 리뷰의 댓글 조회 함수
+ * 리뷰의 댓글 목록 조회 함수
  * @param reviewId 리뷰 ID
  * @returns 댓글 리스트
  */
 export const fetchComments = async (
   reviewId: string
 ): Promise<CommentInfo[]> => {
-  const response = await genaralApiClient.get(`/comment/${reviewId}`);
-  console.log("댓글 조회 성공:", response.data);
+  const response = await genaralApiClient.get(`/review/${reviewId}/comments`);
+  console.log("리뷰 댓글 목록 조회 성공:", response.data);
   return response.data;
 };
 
@@ -75,7 +79,30 @@ export const deleteComment = async (commentId: string): Promise<void> => {
 export const fetchUserComments = async (
   userId: number
 ): Promise<CommentInfo[]> => {
-  const response = await genaralApiClient.get(`/user/comments/${userId}`);
+  const response = await genaralApiClient.get(`/user/${userId}/comments`);
   console.log("유저가 작성한 댓글 조회 성공:", response.data);
+  return response.data;
+};
+
+/**
+ * 특정 댓글 조회 함수
+ * @param commentId 댓글 ID
+ * @returns 댓글 정보
+ */
+export const fetchCommentById = async (
+  commentId: string
+): Promise<CommentInfo> => {
+  const response = await genaralApiClient.get(`/comment/${commentId}`);
+  console.log("특정 댓글 조회 성공:", response.data);
+  return response.data;
+};
+
+/**
+ * 알림 조회 함수
+ * @returns 알림 리스트
+ */
+export const fetchNotifications = async (): Promise<NotificationInfo[]> => {
+  const response = await authApiClient.get("/notifications");
+  console.log("알림 조회 성공:", response.data);
   return response.data;
 };
