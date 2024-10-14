@@ -16,6 +16,7 @@ import ReviewDetailModal from "@/pages/ReviewDetailModal";
 import Onboarding from "@/pages/Onboarding";
 import EditReview from "@/pages/EditReview";
 import Profile from "@/pages/Profile";
+import Notification from "@/pages/Notification";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
@@ -51,13 +52,14 @@ function App() {
         <ReviewDetailModal />
         <Routes>
           <Route path="/" element={<Navigate to="/feed" />} />
-          <Route path="/test" element={<Test />} />
+          <Route path="/oauth/kakao" element={<Authorization />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/feed" element={<Feed />} />
           <Route path="/write" element={<WriteReview />} />
           <Route path="/edit" element={<EditReview />} />
-          <Route path="/oauth/kakao" element={<Authorization />} />
-          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/notifications" element={<Notification />} />
+          <Route path="/test" element={<Test />} />
         </Routes>
       </Router>
     </ThemeProvider>

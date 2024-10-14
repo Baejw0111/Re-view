@@ -1,7 +1,7 @@
 import Logo from "@/features/common/Logo";
 import ThemeToggleButton from "@/features/setting/ThemeToggleButton";
 import UserAvatar from "@/features/user/UserAvatar";
-import NotificationButton from "@/features/user/NotificationButton";
+import NotificationButton from "@/widgets/NotificationButton";
 import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store/index";
