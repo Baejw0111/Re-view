@@ -1,4 +1,9 @@
-import { ReviewModel, UserModel, CommentModel } from "../utils/Model.js";
+import {
+  ReviewModel,
+  UserModel,
+  CommentModel,
+  NotificationModel,
+} from "../utils/Model.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
@@ -198,6 +203,7 @@ export const deleteReview = asyncHandler(async (req, res) => {
     { $pull: { reviews: reviewId.toString() } }
   ); // 유저 정보 업데이트
   await CommentModel.deleteMany({ reviewId: reviewId.toString() }); // 댓글 삭제
+  await NotificationModel.deleteMany({ reviewId: reviewId.toString() }); // 알림 삭제
 
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
 }, "리뷰 삭제");

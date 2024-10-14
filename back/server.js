@@ -29,6 +29,7 @@ import {
   getUserComments,
   connectNotificationSSE,
   getNotifications,
+  getCommentById,
 } from "./controllers/Interaction.js";
 import { updateUserInfo } from "./controllers/UserSetting.js";
 import { upload } from "./utils/Upload.js";
@@ -50,14 +51,16 @@ app.use("/public", express.static("public")); // url을 통해 public 폴더의 
 app.use(cookieParser()); // cookie 파싱
 
 // 카카오 로그인 관련 API
-app.post("/login/kakao", getKakaoToken); // 카카오 토큰 요청 API
+app.post("/auth/kakao/login", getKakaoToken); // 카카오 토큰 요청 API
 app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
+app.post("/auth/kakao/logout", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
 app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카오 유저 정보 조회 API
-app.post("/logout/kakao", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
+app.delete("/auth/kakao/delete", verifyKakaoAccessToken, deleteUserAccount); // 카카오 유저 계정 삭제 API
 
 // 리뷰 관련 API
 app.get("/review", getFeed); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
+app.get("/review/:id/comments", getComments); // 리뷰 댓글 목록 조회 API
 app.post(
   "/review",
   verifyKakaoAccessToken,
@@ -72,26 +75,27 @@ app.patch(
 ); // 리뷰 수정 API
 app.delete("/review/:id", verifyKakaoAccessToken, deleteReview); // 리뷰 삭제 API
 
-// 유저 상호 작용 API
-app.get("/notifications/stream", connectNotificationSSE); // 알림 SSE API
-app.get("/notifications", verifyKakaoAccessToken, getNotifications); // 알림 조회 API
-app.get("/comment/:id", getComments); // 리뷰 댓글 조회 API
-app.patch("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
-app.post("/comment/:id", verifyKakaoAccessToken, addComment); // 리뷰 댓글 등록 API
-app.patch("/unlike/:id", verifyKakaoAccessToken, unLike); // 리뷰 추천 취소 API
-app.delete("/comment/:id", verifyKakaoAccessToken, deleteComment); // 리뷰 댓글 삭제 API
-app.delete(
-  "/auth/kakao/deleteUserAccount",
-  verifyKakaoAccessToken,
-  deleteUserAccount
-); // 카카오 유저 계정 삭제 API
+// 유저 정보 관련 API
 app.get("/user/:id", getUserInfoById); // 유저 정보 조회 API
-app.get("/user/comments/:id", getUserComments); // 유저가 작성한 댓글 조회 API
+app.get("/user/:id/comments", getUserComments); // 유저가 작성한 댓글 목록 조회 API
 app.put(
   "/user/info",
   verifyKakaoAccessToken,
   upload.single("profileImage"),
   updateUserInfo
 ); // 유저 정보 수정 API
+
+// 알림 관련 API
+app.get("/notifications/stream", connectNotificationSSE); // 알림 SSE API
+app.get("/notifications", verifyKakaoAccessToken, getNotifications); // 알림 조회 API
+
+// 댓글 관련 API
+app.get("/comment/:id", getCommentById); // 특정 댓글 조회 API
+app.post("/comment/:id", verifyKakaoAccessToken, addComment); // 리뷰 댓글 등록 API
+app.delete("/comment/:id", verifyKakaoAccessToken, deleteComment); // 리뷰 댓글 삭제 API
+
+// 추천 관련 API
+app.patch("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
+app.patch("/unlike/:id", verifyKakaoAccessToken, unLike); // 리뷰 추천 취소 API
 
 app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));

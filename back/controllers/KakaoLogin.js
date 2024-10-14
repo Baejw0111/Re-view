@@ -1,6 +1,11 @@
 import fs from "fs"; // 파일 삭제용
 import axios from "axios";
-import { UserModel, ReviewModel, CommentModel } from "../utils/Model.js";
+import {
+  UserModel,
+  ReviewModel,
+  CommentModel,
+  NotificationModel,
+} from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = process.env;
@@ -217,18 +222,29 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   console.log(`func: deleteUserAccount`);
   console.table(response.data);
 
-  await UserModel.findOneAndDelete({ kakaoId: response.data.id });
+  await UserModel.findOneAndDelete({ kakaoId: response.data.id }); // 유저 데이터 삭제
+
+  // 리뷰 관련 데이터 모두 삭제
   const reviews = await ReviewModel.find({ authorId: response.data.id });
   for (const review of reviews) {
     if (review.images) {
       review.images.forEach((imagePath) => fs.unlinkSync(imagePath)); // 모든 이미지 파일 삭제
     }
     await CommentModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 댓글들 모두 삭제
+    await NotificationModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 알림들 모두 삭제
   }
   await ReviewModel.deleteMany({ authorId: response.data.id });
+
+  // 댓글 관련 데이터 모두 삭제
+  const comments = await CommentModel.find({ authorId: response.data.id });
+  for (const comment of comments) {
+    await NotificationModel.deleteMany({ commentId: comment._id }); // 댓글에 달린 알림들 모두 삭제
+  }
   await CommentModel.deleteMany({ authorId: response.data.id });
+
+  await NotificationModel.deleteMany({ kakaoId: response.data.id }); // 유저의 알림들 모두 삭제
 
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.status(200).json({ message: "유저 계정 삭제 성공" });
-});
+}, "카카오 유저 계정 삭제");
