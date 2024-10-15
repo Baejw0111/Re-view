@@ -41,7 +41,11 @@ export default function Notification() {
           <ScrollArea className="h-[80vh] rounded-md">
             {notifications ? (
               notifications.map((notification, index) => (
-                <NotificationBox key={index} {...notification} />
+                <NotificationBox
+                  key={index}
+                  className="px-4 md:px-6 hover:bg-muted active:bg-muted"
+                  notificationInfo={notification}
+                />
               ))
             ) : (
               <div className="text-center py-8 text-muted-foreground">
