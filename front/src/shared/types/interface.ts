@@ -19,7 +19,7 @@ export interface UserInfo {
 /**
  * @description 리뷰 정보
  * @property {number} authorId - 리뷰 작성자 ID
- * @property {Date} uploadTime - 리뷰 업로드 시간
+ * @property {string} uploadTime - 리뷰 업로드 시간
  * @property {string} title - 리뷰 제목
  * @property {string[]} images - 리뷰 이미지
  * @property {string} reviewText - 리뷰 내용
@@ -33,7 +33,7 @@ export interface UserInfo {
  */
 export interface ReviewInfo {
   authorId: number;
-  uploadTime: Date;
+  uploadTime: string;
   title: string;
   images: string[];
   reviewText: string;
@@ -61,21 +61,21 @@ export interface TagInfo {
  * @property {string} _id - 댓글 ID
  * @property {number} __v - 댓글 버전
  * @property {number} authorId - 댓글 작성자 ID
- * @property {Date} uploadTime - 댓글 업로드 시간
+ * @property {string} uploadTime - 댓글 업로드 시간
  * @property {string} content - 댓글 내용
  */
 export interface CommentInfo {
   _id: string;
   __v: number;
   authorId: number;
-  uploadTime: Date;
+  uploadTime: string;
   content: string;
 }
 
 /**
  * @description 알림 정보
  * @property {number} kakaoId - 알림을 받을 유저의 카카오 ID
- * @property {Date} time - 알림 생성 시간
+ * @property {string} time - 알림 생성 시간
  * @property {string} commentId - 알림과 관련된 댓글 ID
  * @property {string} reviewId - 알림과 관련된 리뷰 ID
  * @property {string} category - 알림 종류
@@ -83,7 +83,7 @@ export interface CommentInfo {
  */
 export interface NotificationInfo {
   kakaoId: number;
-  time: Date;
+  time: string;
   commentId: string;
   reviewId: string;
   category: string;
