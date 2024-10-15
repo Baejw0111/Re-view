@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
 import {
   DropdownMenu,
@@ -52,9 +51,9 @@ export default function NotificationButton() {
         <DropdownMenuTrigger asChild>
           <Button className="relative shrink-0" variant="ghost" size="icon">
             <Bell className={`${isOpen ? "fill-current" : ""}`} />
-            <Badge className="absolute -top-1 -right-1 px-1 min-w-5 h-5 rounded-full flex items-center justify-center text-xs">
+            <div className="absolute bg-red-600 dark:bg-red-700 text-white -top-1 -right-1 px-1 min-w-5 h-5 rounded-full flex items-center justify-center text-xs">
               {notifications?.length}
-            </Badge>
+            </div>
           </Button>
         </DropdownMenuTrigger>
       </TooltipWrapper>
@@ -71,7 +70,7 @@ export default function NotificationButton() {
             notifications.map((notification, index) => (
               <DropdownMenuItem
                 key={index}
-                className="flex flex-col items-start active:bg-muted"
+                className="flex flex-col items-start"
               >
                 <NotificationBox notificationInfo={notification} />
               </DropdownMenuItem>
