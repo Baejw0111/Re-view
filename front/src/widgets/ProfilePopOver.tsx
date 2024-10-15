@@ -17,7 +17,12 @@ export default function ProfilePopOver({
 }) {
   return (
     <Popover>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverTrigger
+        asChild
+        className="hover:bg-muted active:bg-muted rounded-md"
+      >
+        {children}
+      </PopoverTrigger>
       <PopoverContent
         className="w-64 flex flex-col gap-6"
         onOpenAutoFocus={(e) => e.preventDefault()}
