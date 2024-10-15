@@ -47,7 +47,7 @@ export default function NotificationButton() {
   }, [userInfo, refetch]);
 
   return (
-    <DropdownMenu onOpenChange={setIsOpen}>
+    <DropdownMenu onOpenChange={setIsOpen} modal={false}>
       <TooltipWrapper tooltipText="알림">
         <DropdownMenuTrigger asChild>
           <Button className="relative shrink-0" variant="ghost" size="icon">
@@ -58,17 +58,22 @@ export default function NotificationButton() {
           </Button>
         </DropdownMenuTrigger>
       </TooltipWrapper>
-      <DropdownMenuContent onCloseAutoFocus={(e) => e.preventDefault()}>
+      <DropdownMenuContent
+        className="max-w-xs md:max-w-md"
+        align="end"
+        collisionPadding={20}
+        onCloseAutoFocus={(e) => e.preventDefault()}
+      >
         <DropdownMenuLabel>알림</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <ScrollArea className="h-[300px] max-w-xl">
+        <ScrollArea className="h-[300px]">
           {notifications ? (
             notifications.map((notification, index) => (
               <DropdownMenuItem
                 key={index}
-                className="flex flex-col items-start p-4"
+                className="flex flex-col items-start active:bg-muted"
               >
-                <NotificationBox {...notification} />
+                <NotificationBox notificationInfo={notification} />
               </DropdownMenuItem>
             ))
           ) : (
@@ -78,14 +83,11 @@ export default function NotificationButton() {
           )}
         </ScrollArea>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-center">
-          <Link
-            to="/notifications"
-            className="w-full text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
-          >
+        <Link to="/notifications">
+          <DropdownMenuItem className="flex items-center justify-center w-full text-blue-500">
             모든 알림 보기
-          </Link>
-        </DropdownMenuItem>
+          </DropdownMenuItem>
+        </Link>
       </DropdownMenuContent>
     </DropdownMenu>
   );
