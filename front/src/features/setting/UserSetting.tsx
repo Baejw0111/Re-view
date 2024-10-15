@@ -47,7 +47,7 @@ export default function UserSetting() {
 
   return (
     <>
-      <DropdownMenu onOpenChange={setIsDropdownOpen}>
+      <DropdownMenu onOpenChange={setIsDropdownOpen} modal={false}>
         <TooltipWrapper tooltipText="설정">
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
