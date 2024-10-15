@@ -6,13 +6,18 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchUserInfoById, fetchCommentById } from "@/api/interaction";
 import { fetchReviewById } from "@/api/review";
 import { API_URL } from "@/shared/constants";
+import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
+import { cn } from "@/shared/lib/utils";
 
 export default function NotificationBox({
-  time,
-  commentId,
-  reviewId,
-  category,
-}: NotificationInfo) {
+  className,
+  notificationInfo,
+}: {
+  className?: string;
+  notificationInfo: NotificationInfo;
+}) {
+  const { time, commentId, reviewId, category } = notificationInfo;
+
   const { data: reviewInfo } = useQuery({
     queryKey: ["reviewInfo", reviewId],
     queryFn: () => fetchReviewById(reviewId, 0),
@@ -30,8 +35,32 @@ export default function NotificationBox({
     enabled: category === "comment" && !!commentInfo,
   });
 
+  const claculateTime = (time: string) => {
+    const date = new Date(time);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (seconds < 60) return `${seconds}초 전`;
+    if (minutes < 60) return `${minutes}분 전`;
+    if (hours < 24) return `${hours}시간 전`;
+    if (days < 30) return `${days}일 전`;
+    if (months < 12) return `${months}달 전`;
+    return `${years}년 전`;
+  };
+
   return (
-    <div className="py-4 border-b last:border-b-0 flex items-start gap-4">
+    <div
+      className={cn(
+        "py-3 border-b last:border-b-0 flex items-start gap-4 w-full",
+        className
+      )}
+    >
       <UserAvatar
         className="h-9 w-9"
         profileImage={
@@ -39,42 +68,49 @@ export default function NotificationBox({
         }
         nickname={category === "like" ? "시스템" : userInfo?.nickname}
       />
-      <div className="flex justify-between w-full">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            {category === "like" ? (
-              <Heart className="w-4 h-4 fill-red-500 text-red-500" />
-            ) : (
-              <MessageCircle className="w-4 h-4" />
-            )}
-            <h3 className="font-semibold line-clamp-1">
+      <div className="flex justify-between w-full gap-2">
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-start gap-1">
+            <div className="pt-0.5">
+              {category === "like" ? (
+                <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+              ) : (
+                <MessageCircle className="w-4 h-4" />
+              )}
+            </div>
+            <h3 className="text-sm font-semibold break-words whitespace-pre-wrap">
               {category === "like"
                 ? `작성하신 리뷰가 인기 리뷰로 선정되었습니다.`
                 : userInfo?.nickname}
             </h3>
-            <span className="text-xs text-muted-foreground">
-              {time.toLocaleString()}
-            </span>
           </div>
-          <h4 className="text-xs text-muted-foreground line-clamp-1">
+          <h4 className="text-sm text-muted-foreground line-clamp-1">
             {reviewInfo?.title}
           </h4>
-          <p className="text-md whitespace-pre-wrap break-all">
+          <p className="text-sm whitespace-pre-wrap break-all line-clamp-3">
             {commentInfo?.content}
           </p>
+          <span className="text-sm text-muted-foreground">
+            {claculateTime(time)}
+          </span>
         </div>
-        <div className="flex items-start gap-2">
-          <img
-            className="h-20"
-            src={`${API_URL}/${reviewInfo?.images[0]}`}
-            alt="review thumbnail"
-          />
+        <div className="flex items-start gap-1 md:gap-2">
+          {category === "comment" && (
+            <div className="w-24 md:w-28">
+              <AspectRatio ratio={16 / 9}>
+                <img
+                  className="w-full h-full object-cover rounded-md"
+                  src={`${API_URL}/${reviewInfo?.images[0]}`}
+                  alt="review thumbnail"
+                />
+              </AspectRatio>
+            </div>
+          )}
           <Button
             variant="link"
-            size="icon"
             // onClick={() => onDelete(id)}
             aria-label="알림 삭제"
-            className="opacity-70 hover:opacity-100"
+            className="p-0 w-4 h-4 opacity-70 hover:opacity-100"
           >
             <X className="w-4 h-4" />
           </Button>
