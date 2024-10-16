@@ -21,28 +21,33 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { API_URL } from "./shared/constants";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
+import { useMutation } from "@tanstack/react-query";
+import { UserInfo } from "@/shared/types/interface";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
   const dispatch = useDispatch();
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/auth/kakao/user`, {
+        withCredentials: true,
+      });
+      return response.data.userInfo;
+    } catch (error) {
+      console.error("Failed to fetch user info:", error);
+    }
+  };
+  const { mutate } = useMutation({
+    mutationFn: fetchUserInfo,
+    onSuccess: (userInfo: UserInfo) => {
+      dispatch(setUserInfo(userInfo));
+    },
+  });
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/auth/kakao/user`, {
-          withCredentials: true,
-        });
-        dispatch(setUserInfo(response.data.userInfo));
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, [dispatch, userInfo]);
+    mutate();
+    console.log("mutate");
+  }, [mutate]);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
