@@ -91,7 +91,7 @@ export default function NotificationBox({
             variant="link"
             // onClick={() => onDelete(id)}
             aria-label="알림 삭제"
-            className="p-0 w-4 h-4 opacity-70 hover:opacity-100"
+            className="p-0 w-4 h-4 opacity-70 hover:opacity-100 active:opacity-100"
           >
             <X className="w-4 h-4" />
           </Button>

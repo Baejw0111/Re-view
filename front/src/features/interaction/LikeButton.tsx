@@ -107,7 +107,7 @@ export default function LikeButton({
             ) : (
               <Heart
                 className={cn(
-                  "w-6 h-6 hover:text-[#FE0000] cursor-pointer",
+                  "w-6 h-6 hover:text-[#FE0000] active:text-[#FE0000] cursor-pointer",
                   className
                 )}
               />

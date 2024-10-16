@@ -50,7 +50,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
     <>
       {reviewInfo && author && (
         <Card
-          className="overflow-hidden shadow-lg transition-shadow h-60 relative hover:shadow-xl"
+          className="overflow-hidden shadow-lg transition-shadow h-60 relative hover:shadow-xl active:shadow-xl"
           aria-label={`리뷰: ${reviewInfo?.title}`}
         >
           <ResizablePanelGroup direction="horizontal">
@@ -105,7 +105,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                       <TooltipWrapper tooltipText="댓글 보기">
                         <Link
                           to={`?reviewId=${reviewInfo?._id}`}
-                          className="hover:text-muted-foreground"
+                          className="hover:text-muted-foreground active:text-muted-foreground"
                         >
                           <MessageCircle className="w-5 h-5" />
                         </Link>

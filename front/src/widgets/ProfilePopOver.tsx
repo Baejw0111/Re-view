@@ -19,7 +19,7 @@ export default function ProfilePopOver({
     <Popover>
       <PopoverTrigger
         asChild
-        className="hover:bg-muted active:bg-muted rounded-md"
+        className="hover:bg-accent active:bg-accent rounded-md"
       >
         {children}
       </PopoverTrigger>
