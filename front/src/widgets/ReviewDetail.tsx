@@ -59,11 +59,11 @@ export default function ReviewDetail() {
                     profileImage={userInfo?.profileImage}
                     nickname={userInfo?.nickname}
                   />
-                  <div className="text-sm line-clamp-1 font-semibold">
+                  <div className="line-clamp-1 font-semibold">
                     {userInfo?.nickname}
                   </div>
                 </a>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                   {claculateTime(reviewInfo.uploadTime)}
                 </div>
               </div>
