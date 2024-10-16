@@ -45,3 +45,27 @@ export const createPreviewImages = async (files: FileList) => {
   }
   return previewImages;
 };
+
+/**
+ * 시간 계산 함수
+ * @param time 시간
+ * @returns 시간 계산 결과
+ */
+export const claculateTime = (time: string) => {
+  const date = new Date(time);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (seconds < 60) return `${seconds}초 전`;
+  if (minutes < 60) return `${minutes}분 전`;
+  if (hours < 24) return `${hours}시간 전`;
+  if (days < 30) return `${days}일 전`;
+  if (months < 12) return `${months}달 전`;
+  return `${years}년 전`;
+};

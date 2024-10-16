@@ -8,6 +8,7 @@ import { fetchReviewById } from "@/api/review";
 import { API_URL } from "@/shared/constants";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 import { cn } from "@/shared/lib/utils";
+import { claculateTime } from "@/shared/lib/utils";
 
 export default function NotificationBox({
   className,
@@ -34,25 +35,6 @@ export default function NotificationBox({
     queryFn: () => fetchUserInfoById(commentInfo?.authorId ?? 0),
     enabled: category === "comment" && !!commentInfo,
   });
-
-  const claculateTime = (time: string) => {
-    const date = new Date(time);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const months = Math.floor(days / 30);
-    const years = Math.floor(days / 365);
-
-    if (seconds < 60) return `${seconds}초 전`;
-    if (minutes < 60) return `${minutes}분 전`;
-    if (hours < 24) return `${hours}시간 전`;
-    if (days < 30) return `${days}일 전`;
-    if (months < 12) return `${months}달 전`;
-    return `${years}년 전`;
-  };
 
   return (
     <div
