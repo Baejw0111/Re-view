@@ -44,7 +44,6 @@ export default function NotificationBox({
       )}
     >
       <UserAvatar
-        className="h-9 w-9"
         profileImage={
           category === "like" ? `public/logo.svg` : userInfo?.profileImage
         }
