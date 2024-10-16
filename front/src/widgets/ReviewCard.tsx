@@ -65,7 +65,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                           profileImage={author?.profileImage}
                           nickname={author?.nickname}
                         />
-                        <div className="text-xs line-clamp-1 text-muted-foreground">
+                        <div className="text-sm line-clamp-1 text-muted-foreground font-semibold">
                           {author?.nickname}
                         </div>
                       </div>
