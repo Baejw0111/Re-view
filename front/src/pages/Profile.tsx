@@ -62,7 +62,7 @@ export default function Profile() {
             <MessageCircle className="h-4 w-4 mr-2" /> 댓글
           </TabsTrigger>
           <TabsTrigger value="likes">
-            <Heart className="h-4 w-4 mr-2" /> 추천
+            <Heart className="text-red-500 fill-red-500 h-4 w-4 mr-2" /> 추천
           </TabsTrigger>
         </TabsList>
         <TabsContent value="posts" className="mt-6">
