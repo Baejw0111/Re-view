@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import ProfilePopOver from "@/widgets/ProfilePopOver";
+import { claculateTime } from "@/shared/lib/utils";
 
 export default function CommentBox({
   commentInfo,
@@ -41,27 +42,26 @@ export default function CommentBox({
   return (
     <>
       {userInfo && (
-        <div className="pb-4 flex items-start gap-4">
+        <div className="py-2 flex items-start gap-2.5">
           <ProfilePopOver userId={userInfo.kakaoId}>
             <Button variant="ghost" className="h-12 w-12 rounded-full">
               <UserAvatar
-                className="h-9 w-9"
                 profileImage={userInfo.profileImage}
                 nickname={userInfo.nickname}
               />
             </Button>
           </ProfilePopOver>
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-0.5 w-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <a
                   href={`/profile/${userInfo.kakaoId}`}
-                  className="font-semibold"
+                  className="font-semibold text-sm"
                 >
                   {userInfo.nickname}
                 </a>
                 <span className="text-xs text-muted-foreground">
-                  {new Date(commentInfo.uploadTime).toLocaleDateString()}
+                  {claculateTime(commentInfo.uploadTime)}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ export default function CommentBox({
                 </Button>
               </div>
             </div>
-            <p className="text-muted-foreground whitespace-pre-wrap break-all">
+            <p className="text-sm whitespace-pre-wrap break-all">
               {commentInfo.content}
             </p>
           </div>
