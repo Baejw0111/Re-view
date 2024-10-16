@@ -106,3 +106,14 @@ export const fetchNotifications = async (): Promise<NotificationInfo[]> => {
   console.log("알림 조회 성공:", response.data);
   return response.data;
 };
+
+/**
+ * 알림 확인 시간 업데이트 함수
+ */
+export const updateNotificationCheckTime = async (): Promise<void> => {
+  const checkTime = new Date().toISOString();
+  const response = await authApiClient.post("/notifications/check", {
+    checkTime,
+  });
+  console.log("알림 확인 시간 업데이트 성공:", response.data);
+};

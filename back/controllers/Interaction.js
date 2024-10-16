@@ -207,3 +207,12 @@ export const unLike = asyncHandler(async (req, res) => {
   );
   res.status(200).json({ message: "추천 삭제 완료" });
 }, "리뷰 추천 취소");
+
+export const updateNotificationCheckTime = asyncHandler(async (req, res) => {
+  const { checkTime } = req.body;
+  await UserModel.findOneAndUpdate(
+    { kakaoId: req.userId },
+    { $set: { notificationCheckTime: checkTime } }
+  );
+  res.status(200).json({ message: "알림 확인 시간 업데이트 완료" });
+}, "알림 확인 시간 업데이트");

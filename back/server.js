@@ -30,6 +30,7 @@ import {
   connectNotificationSSE,
   getNotifications,
   getCommentById,
+  updateNotificationCheckTime,
 } from "./controllers/Interaction.js";
 import { updateUserInfo } from "./controllers/UserSetting.js";
 import { upload } from "./utils/Upload.js";
@@ -86,8 +87,13 @@ app.put(
 ); // 유저 정보 수정 API
 
 // 알림 관련 API
-app.get("/notifications/stream", connectNotificationSSE); // 알림 SSE API
 app.get("/notifications", verifyKakaoAccessToken, getNotifications); // 알림 조회 API
+app.get("/notifications/stream", connectNotificationSSE); // 알림 SSE API
+app.post(
+  "/notifications/check",
+  verifyKakaoAccessToken,
+  updateNotificationCheckTime
+); // 알림 확인 시간 업데이트 API
 
 // 댓글 관련 API
 app.get("/comment/:id", getCommentById); // 특정 댓글 조회 API

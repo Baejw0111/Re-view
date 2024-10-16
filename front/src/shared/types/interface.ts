@@ -6,6 +6,7 @@
  * @property {string[]} reviews - 유저 리뷰 목록
  * @property {string[]} likedReviews - 유저 좋아요한 리뷰 목록
  * @property {string[]} favoriteTags - 유저 즐겨찾기 태그
+ * @property {string} notificationCheckTime - 유저 알림 확인 시간
  */
 export interface UserInfo {
   kakaoId: number;
@@ -14,6 +15,7 @@ export interface UserInfo {
   reviews: string[];
   likedReviews: string[];
   favoriteTags: string[];
+  notificationCheckTime: string;
 }
 
 /**
