@@ -170,17 +170,13 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
     await newMember.save();
   }
 
-  const { kakaoId, nickname, profileImage } = await UserModel.findOne({
+  const userInfo = await UserModel.findOne({
     kakaoId: response.data.id,
   });
 
   return res.status(200).json({
     isNewMember: isNewMember,
-    userInfo: {
-      kakaoId: kakaoId,
-      nickname: nickname,
-      profileImage: profileImage,
-    },
+    userInfo: userInfo,
   });
 }, "카카오 유저 정보 조회");
 
