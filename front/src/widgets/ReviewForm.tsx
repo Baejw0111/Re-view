@@ -423,7 +423,7 @@ export default function ReviewForm({
                               type="button"
                               variant="outline"
                               size="icon"
-                              className="absolute top-1 right-1 flex"
+                              className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
                               onClick={() => handleRemoveInitialImage(index)}
                             >
                               <X className="w-4 h-4" />
@@ -446,7 +446,7 @@ export default function ReviewForm({
                               type="button"
                               variant="outline"
                               size="icon"
-                              className="absolute top-1 right-1 flex"
+                              className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
                               onClick={() => handleRemoveUploadedImage(index)}
                             >
                               <X className="w-4 h-4" />
