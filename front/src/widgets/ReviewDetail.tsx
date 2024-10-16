@@ -17,6 +17,7 @@ import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import UserAvatar from "@/features/user/UserAvatar";
+import { claculateTime } from "@/shared/lib/utils";
 
 export default function ReviewDetail() {
   const location = useLocation();
@@ -46,21 +47,27 @@ export default function ReviewDetail() {
     <>
       {reviewInfo && (
         <div className="grid gap-6">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 md:gap-4">
             <div className="flex items-center justify-between">
-              <a
-                href={`/profile/${reviewInfo.authorId}`}
-                className="flex items-center gap-2"
-              >
-                <UserAvatar
-                  className="h-7 w-7"
-                  profileImage={userInfo?.profileImage}
-                  nickname={userInfo?.nickname}
-                />
-                <div className="text-sm line-clamp-1 text-muted-foreground">
-                  {userInfo?.nickname}
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/profile/${reviewInfo.authorId}`}
+                  className="flex items-center gap-2"
+                >
+                  <UserAvatar
+                    className="h-7 w-7"
+                    profileImage={userInfo?.profileImage}
+                    nickname={userInfo?.nickname}
+                  />
+                  <div className="text-sm line-clamp-1 font-semibold">
+                    {userInfo?.nickname}
+                  </div>
+                </a>
+                <div className="text-sm text-muted-foreground">
+                  {claculateTime(reviewInfo.uploadTime)}
                 </div>
-              </a>
+              </div>
+
               <ReviewRatingSign
                 className="h-7 w-9 text-xl"
                 rating={reviewInfo.rating}
