@@ -47,6 +47,7 @@ export default function NotificationButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [unCheckedNotifications, setUnCheckedNotifications] = useState(0);
 
+  // 알림 스트림 연결
   useEffect(() => {
     if (!userInfo || !userInfo.kakaoId) return;
 
@@ -79,15 +80,16 @@ export default function NotificationButton() {
     }
   }, [userInfo, notifications, isOpen]);
 
-  useEffect(() => {
-    updateCheckTime();
-  }, [isOpen, updateCheckTime]);
-
   return (
     <DropdownMenu onOpenChange={setIsOpen} modal={false}>
       <TooltipWrapper tooltipText="알림">
         <DropdownMenuTrigger asChild>
-          <Button className="relative shrink-0" variant="ghost" size="icon">
+          <Button
+            className="relative shrink-0"
+            variant="ghost"
+            size="icon"
+            onClick={() => updateCheckTime()}
+          >
             <Bell className={`${isOpen ? "fill-current" : ""}`} />
             {unCheckedNotifications > 0 && (
               <div className="absolute bg-red-600 dark:bg-red-700 text-white -top-1 -right-1 px-1 min-w-5 h-5 rounded-full flex items-center justify-center text-xs">
