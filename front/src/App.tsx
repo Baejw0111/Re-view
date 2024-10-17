@@ -21,13 +21,13 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { API_URL } from "./shared/constants";
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
   const dispatch = useDispatch();
-  const fetchUserInfo = async () => {
+  const fetchUserInfoForPageReload = async () => {
     try {
       const response = await axios.get(`${API_URL}/auth/kakao/user`, {
         withCredentials: true,
@@ -37,17 +37,17 @@ function App() {
       console.error("Failed to fetch user info:", error);
     }
   };
-  const { mutate } = useMutation({
-    mutationFn: fetchUserInfo,
-    onSuccess: (userInfo: UserInfo) => {
-      dispatch(setUserInfo(userInfo));
-    },
+
+  const { data, isFetched } = useQuery<UserInfo>({
+    queryKey: ["loggedInUserInfo"],
+    queryFn: fetchUserInfoForPageReload,
   });
 
   useEffect(() => {
-    mutate();
-    console.log("mutate");
-  }, [mutate]);
+    if (isFetched) {
+      dispatch(setUserInfo(data));
+    }
+  }, [data, isFetched]);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
