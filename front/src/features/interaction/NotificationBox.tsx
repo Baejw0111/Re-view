@@ -13,6 +13,7 @@ import { API_URL } from "@/shared/constants";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 import { cn } from "@/shared/lib/utils";
 import { claculateTime } from "@/shared/lib/utils";
+import { Link } from "react-router-dom";
 
 export default function NotificationBox({
   className,
@@ -52,7 +53,8 @@ export default function NotificationBox({
   });
 
   return (
-    <div
+    <Link
+      to={`/feed?reviewId=${reviewId}`}
       className={cn(
         "py-3 border-b last:border-b-0 flex items-start gap-4 w-full",
         className
@@ -112,6 +114,6 @@ export default function NotificationBox({
           </Button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
