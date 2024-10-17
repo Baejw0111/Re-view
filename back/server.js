@@ -31,6 +31,7 @@ import {
   getNotifications,
   getCommentById,
   updateNotificationCheckTime,
+  deleteNotification,
 } from "./controllers/Interaction.js";
 import { updateUserInfo } from "./controllers/UserSetting.js";
 import { upload } from "./utils/Upload.js";
@@ -94,6 +95,7 @@ app.post(
   verifyKakaoAccessToken,
   updateNotificationCheckTime
 ); // 알림 확인 시간 업데이트 API
+app.delete("/notifications/:id", verifyKakaoAccessToken, deleteNotification); // 알림 삭제 API
 
 // 댓글 관련 API
 app.get("/comment/:id", getCommentById); // 특정 댓글 조회 API

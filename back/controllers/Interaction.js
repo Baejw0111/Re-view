@@ -216,3 +216,12 @@ export const updateNotificationCheckTime = asyncHandler(async (req, res) => {
   );
   res.status(200).json({ message: "알림 확인 시간 업데이트 완료" });
 }, "알림 확인 시간 업데이트");
+
+/**
+ * 알림 삭제 API
+ */
+export const deleteNotification = asyncHandler(async (req, res) => {
+  const { id: notificationId } = req.params;
+  await NotificationModel.findByIdAndDelete(notificationId);
+  res.status(200).json({ message: "알림 삭제 완료" });
+}, "알림 삭제");

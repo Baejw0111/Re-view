@@ -117,3 +117,16 @@ export const updateNotificationCheckTime = async (): Promise<void> => {
   });
   console.log("알림 확인 시간 업데이트 성공:", response.data);
 };
+
+/**
+ * 알림 삭제 함수
+ * @param notificationId 알림 ID
+ */
+export const deleteNotification = async (
+  notificationId: string
+): Promise<void> => {
+  const response = await authApiClient.delete(
+    `/notifications/${notificationId}`
+  );
+  console.log("알림 삭제 성공:", response.data);
+};
