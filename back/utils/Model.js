@@ -120,6 +120,5 @@ export const NotificationModel = db.model(
     commentId: { type: String, default: "" },
     reviewId: { type: String, default: "" },
     category: { type: String, default: "" },
-    isRead: { type: Boolean, default: false },
   })
 );

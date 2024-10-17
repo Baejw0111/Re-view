@@ -76,18 +76,18 @@ export interface CommentInfo {
 
 /**
  * @description 알림 정보
+ * @property {string} _id - 알림 ID
  * @property {number} kakaoId - 알림을 받을 유저의 카카오 ID
  * @property {string} time - 알림 생성 시간
  * @property {string} commentId - 알림과 관련된 댓글 ID
  * @property {string} reviewId - 알림과 관련된 리뷰 ID
  * @property {string} category - 알림 종류
- * @property {boolean} isRead - 알림 읽음 여부
  */
 export interface NotificationInfo {
+  _id: string;
   kakaoId: number;
   time: string;
   commentId: string;
   reviewId: string;
   category: string;
-  isRead: boolean;
 }
