@@ -44,7 +44,7 @@ function App() {
   });
 
   useEffect(() => {
-    if (isFetched) {
+    if (isFetched && data) {
       dispatch(setUserInfo(data));
     }
   }, [data, isFetched]);
