@@ -32,7 +32,7 @@ export default function NotificationButton() {
     queryFn: () => fetchNotifications(),
   });
 
-  const { mutate } = useMutation({
+  const { mutate: updateCheckTime } = useMutation({
     mutationFn: () => updateNotificationCheckTime(),
     onSuccess: () => {
       dispatch(
@@ -66,20 +66,22 @@ export default function NotificationButton() {
 
   useEffect(() => {
     if (userInfo && userInfo.kakaoId && notifications) {
-      const unChecked = notifications?.filter(
-        (notification) =>
-          new Date(notification.time).getTime() >
-          new Date(userInfo.notificationCheckTime).getTime()
-      ).length;
-      setUnCheckedNotifications(unChecked);
+      if (isOpen) setUnCheckedNotifications(0);
+      else {
+        const unChecked = notifications?.filter(
+          (notification) =>
+            new Date(notification.time).getTime() >
+            new Date(userInfo.notificationCheckTime).getTime()
+        ).length;
+
+        setUnCheckedNotifications(unChecked);
+      }
     }
-  }, [userInfo, notifications]);
+  }, [userInfo, notifications, isOpen]);
 
   useEffect(() => {
-    if (isOpen) {
-      mutate();
-    }
-  }, [isOpen, mutate]);
+    updateCheckTime();
+  }, [isOpen, updateCheckTime]);
 
   return (
     <DropdownMenu onOpenChange={setIsOpen} modal={false}>
