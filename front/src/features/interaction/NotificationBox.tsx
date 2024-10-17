@@ -2,8 +2,12 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Heart, MessageCircle, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
 import { NotificationInfo } from "@/shared/types/interface";
-import { useQuery } from "@tanstack/react-query";
-import { fetchUserInfoById, fetchCommentById } from "@/api/interaction";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  fetchUserInfoById,
+  fetchCommentById,
+  deleteNotification,
+} from "@/api/interaction";
 import { fetchReviewById } from "@/api/review";
 import { API_URL } from "@/shared/constants";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
@@ -17,6 +21,7 @@ export default function NotificationBox({
   className?: string;
   notificationInfo: NotificationInfo;
 }) {
+  const queryClient = useQueryClient();
   const { time, commentId, reviewId, category } = notificationInfo;
 
   const { data: reviewInfo } = useQuery({
@@ -34,6 +39,16 @@ export default function NotificationBox({
     queryKey: ["userInfo", commentInfo?.authorId],
     queryFn: () => fetchUserInfoById(commentInfo?.authorId ?? 0),
     enabled: category === "comment" && !!commentInfo,
+  });
+
+  const { mutate: deleteNotificationMutate } = useMutation({
+    mutationFn: () => deleteNotification(notificationInfo._id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+    onError: () => {
+      alert("알림 삭제 실패");
+    },
   });
 
   return (
@@ -89,7 +104,7 @@ export default function NotificationBox({
           )}
           <Button
             variant="link"
-            // onClick={() => onDelete(id)}
+            onClick={() => deleteNotificationMutate()}
             aria-label="알림 삭제"
             className="p-0 w-4 h-4 opacity-70 hover:opacity-100 active:opacity-100"
           >
