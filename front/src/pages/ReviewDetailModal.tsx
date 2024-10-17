@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
 import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
@@ -19,9 +20,11 @@ import ReviewDetail from "@/widgets/ReviewDetail";
 import CommentInput from "@/features/interaction/CommentInput";
 import CommentList from "@/widgets/CommentList";
 import { Separator } from "@/shared/shadcn-ui/separator";
+import { useLocation } from "react-router-dom";
 
 export default function ReviewDetailModal() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const isDesktop = useMediaQuery("(min-width: 768px)"); // md(768px) 아래의 너비는 모바일 환경으로 간주
   const isOpen = useSelector(
     (state: RootState) => state.reviewDetailOpen.isOpen
@@ -38,6 +41,13 @@ export default function ReviewDetailModal() {
       navigate(-1);
     }
   };
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    if (queryParams.get("reviewId") === null) {
+      dispatch(setIsOpen(false));
+    }
+  }, [location.search, dispatch]);
 
   if (isDesktop === null) return;
 
