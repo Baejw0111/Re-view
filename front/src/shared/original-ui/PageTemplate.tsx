@@ -39,10 +39,10 @@ export default function PageTemplate({
         }`}
       >
         <div className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 md:px-6 py-2 md:py-4 bg-background border-b border-border">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {pageName !== "피드" && (
               <ChevronLeft
-                className="cursor-pointer w-6 h-6 md:w-[30px] md:h-[30px]"
+                className="cursor-pointer w-6 h-6 md:w-[30px] md:h-[30px] transform hover:-translate-x-1 active:-translate-x-1 transition-transform"
                 onClick={() => navigate(-1)}
                 role="button"
               />
