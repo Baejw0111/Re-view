@@ -39,10 +39,12 @@ export default function CommentBox({ commentId }: { commentId: string }) {
     mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: () => {
       if (reviewId) {
-        queryClient.invalidateQueries({ queryKey: ["comments", reviewId] });
+        queryClient.invalidateQueries({
+          queryKey: ["reviewCommentList", reviewId],
+        });
       }
       queryClient.invalidateQueries({
-        queryKey: ["userComments", commentInfo?.authorId],
+        queryKey: ["userCommentList", commentInfo?.authorId],
       });
     },
   });

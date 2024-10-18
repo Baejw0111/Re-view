@@ -28,9 +28,11 @@ export default function CommentInput() {
     mutationFn: () => addComment(reviewId as string, comment),
     // 댓글 등록 성공 시, 댓글 목록 갱신
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", reviewId] });
       queryClient.invalidateQueries({
-        queryKey: ["userComments", userInfo?.kakaoId],
+        queryKey: ["reviewCommentList", reviewId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userCommentList", userInfo?.kakaoId],
       });
     },
   });

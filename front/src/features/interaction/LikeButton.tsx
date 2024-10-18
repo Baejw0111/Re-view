@@ -32,6 +32,7 @@ export default function LikeButton({
     mutationFn: () => likeReview(reviewId as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
+      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
     },
     onError: () => {
       alert("추천 실패");
@@ -42,6 +43,7 @@ export default function LikeButton({
     mutationFn: () => unlikeReview(reviewId as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
+      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
     },
     onError: () => {
       alert("추천 취소 실패");
