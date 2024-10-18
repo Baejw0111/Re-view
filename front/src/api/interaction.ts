@@ -72,15 +72,15 @@ export const deleteComment = async (commentId: string): Promise<void> => {
 };
 
 /**
- * 유저가 작성한 댓글 조회 함수
+ * 유저가 작성한 댓글 ID 목록 조회 함수
  * @param userId 유저 ID
- * @returns 댓글 리스트
+ * @returns 댓글 ID 리스트
  */
-export const fetchUserComments = async (
+export const fetchUserCommentList = async (
   userId: number
-): Promise<CommentInfo[]> => {
+): Promise<string[]> => {
   const response = await genaralApiClient.get(`/user/${userId}/comments`);
-  console.log("유저가 작성한 댓글 조회 성공:", response.data);
+  console.log("유저가 작성한 댓글 ID 목록 조회 성공:", response.data);
   return response.data;
 };
 

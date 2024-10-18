@@ -2,12 +2,12 @@ import { genaralApiClient, authApiClient } from "@/api/util";
 import { ReviewInfo } from "@/shared/types/interface";
 
 /**
- * 리뷰 리스트를 가져오는 함수
- * @returns 리뷰 리스트
+ * 피드에 표시할 리뷰 ID 리스트를 가져오는 함수
+ * @returns 리뷰 ID 리스트
  */
 export const fetchFeed = async (): Promise<string[]> => {
   const response = await genaralApiClient.get(`/review`);
-  console.log("리뷰 ID 리스트 조회 성공:", response.data);
+  console.log("피드 리뷰 ID 리스트 조회 성공:", response.data);
 
   return response.data;
 };
@@ -38,6 +38,32 @@ export const fetchReviewById = async (
     params: { kakaoId },
   });
   console.log("리뷰 상세 조회 성공:", response.data);
+
+  return response.data;
+};
+
+/**
+ * 유저가 작성한 리뷰 ID 리스트를 가져오는 함수
+ * @param userId 유저 ID
+ * @returns 리뷰 ID 리스트
+ */
+export const fetchUserReviewList = async (
+  userId: number
+): Promise<string[]> => {
+  const response = await genaralApiClient.get(`/user/${userId}/reviews`);
+  console.log("유저가 작성한 리뷰 ID 리스트 조회 성공:", response.data);
+
+  return response.data;
+};
+
+/**
+ * 유저가 추천한 리뷰 ID 리스트를 가져오는 함수
+ * @param userId 유저 ID
+ * @returns 리뷰 ID 리스트
+ */
+export const fetchUserLikedList = async (userId: number): Promise<string[]> => {
+  const response = await genaralApiClient.get(`/user/${userId}/liked`);
+  console.log("유저가 추천한 리뷰 ID 리스트 조회 성공:", response.data);
 
   return response.data;
 };
