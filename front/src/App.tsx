@@ -62,7 +62,7 @@ function App() {
           <Route path="/feed" element={<Feed />} />
           <Route path="/write" element={<WriteReview />} />
           <Route path="/edit" element={<EditReview />} />
-          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/profile/:id/*" element={<Profile />} />
           <Route path="/notifications" element={<Notification />} />
           <Route path="/test" element={<Test />} />
         </Routes>
