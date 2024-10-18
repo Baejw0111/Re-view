@@ -77,14 +77,31 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
 }, "유저 정보 조회");
 
 /**
- * 유저가 작성한 댓글 목록 조회 API
- * @returns 유저가 작성한 댓글 목록
+ * 유저가 작성한 댓글 ID 목록 조회 API
+ * @returns 유저가 작성한 댓글 ID 목록
  */
-export const getUserComments = asyncHandler(async (req, res) => {
+export const getUserCommentList = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
   const comments = await CommentModel.find({ authorId: userId });
-  res.status(200).json(comments);
-}, "유저가 작성한 댓글 목록 조회");
+  const commentIdList = comments.map((comment) => comment._id);
+  res.status(200).json(commentIdList);
+}, "유저가 작성한 댓글 ID 목록 조회");
+
+/**
+ * 유저가 추천한 리뷰 ID 목록 조회 API
+ * @returns 유저가 추천한 리뷰 ID 목록
+ */
+export const getUserLikedList = asyncHandler(async (req, res) => {
+  const { id: userId } = req.params;
+  const user = await UserModel.exists({ kakaoId: userId });
+  if (!user) {
+    return res.status(404).json({ message: "유저가 존재하지 않습니다." });
+  }
+
+  const likes = await ReviewLikeModel.find({ kakaoId: userId });
+  const reviewIdList = likes.map((like) => like.reviewId);
+  res.status(200).json(reviewIdList);
+}, "유저가 추천한 리뷰 ID 목록 조회");
 
 /**
  * 리뷰 댓글 목록 조회 API

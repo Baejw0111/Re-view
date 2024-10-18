@@ -10,6 +10,7 @@ import {
   createReview,
   updateReview,
   deleteReview,
+  getUserReviewList,
 } from "./controllers/Review.js";
 import {
   getKakaoToken,
@@ -26,12 +27,13 @@ import {
   unLike,
   deleteComment,
   getUserInfoById,
-  getUserComments,
+  getUserCommentList,
   connectNotificationSSE,
   getNotifications,
   getCommentById,
   updateNotificationCheckTime,
   deleteNotification,
+  getUserLikedList,
 } from "./controllers/Interaction.js";
 import { updateUserInfo } from "./controllers/UserSetting.js";
 import { upload } from "./utils/Upload.js";
@@ -79,7 +81,9 @@ app.delete("/review/:id", verifyKakaoAccessToken, deleteReview); // 리뷰 삭�
 
 // 유저 정보 관련 API
 app.get("/user/:id", getUserInfoById); // 유저 정보 조회 API
-app.get("/user/:id/comments", getUserComments); // 유저가 작성한 댓글 목록 조회 API
+app.get("/user/:id/reviews", getUserReviewList); // 유저가 작성한 리뷰 목록 조회 API
+app.get("/user/:id/comments", getUserCommentList); // 유저가 작성한 댓글 목록 조회 API
+app.get("/user/:id/liked", getUserLikedList); // 유저가 추천한 리뷰 목록 조회 API
 app.put(
   "/user/info",
   verifyKakaoAccessToken,
