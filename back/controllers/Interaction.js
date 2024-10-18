@@ -89,10 +89,11 @@ export const getUserComments = asyncHandler(async (req, res) => {
  * 리뷰 댓글 목록 조회 API
  * @returns 리뷰 댓글 목록
  */
-export const getComments = asyncHandler(async (req, res) => {
+export const getReviewCommentList = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const comments = await CommentModel.find({ reviewId });
-  res.status(200).json(comments);
+  const commentIdList = comments.map((comment) => comment._id);
+  res.status(200).json(commentIdList);
 }, "리뷰 댓글 목록 조회");
 
 /**

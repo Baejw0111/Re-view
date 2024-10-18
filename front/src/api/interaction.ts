@@ -39,11 +39,11 @@ export const unlikeReview = async (reviewId: string): Promise<void> => {
  * @param reviewId 리뷰 ID
  * @returns 댓글 리스트
  */
-export const fetchComments = async (
+export const fetchReviewCommentList = async (
   reviewId: string
-): Promise<CommentInfo[]> => {
+): Promise<string[]> => {
   const response = await genaralApiClient.get(`/review/${reviewId}/comments`);
-  console.log("리뷰 댓글 목록 조회 성공:", response.data);
+  console.log("리뷰 댓글 ID 목록 조회 성공:", response.data);
   return response.data;
 };
 

@@ -1,16 +1,19 @@
 import { useLocation } from "react-router-dom";
-import { fetchComments } from "@/api/interaction";
+import { fetchReviewCommentList } from "@/api/interaction";
 import { useQuery } from "@tanstack/react-query";
-import { CommentInfo } from "@/shared/types/interface";
 import CommentBox from "@/features/interaction/CommentBox";
 
 export default function CommentList() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const reviewId = queryParams.get("reviewId");
-  const { data, isLoading, error } = useQuery<CommentInfo[]>({
-    queryKey: ["comments", reviewId],
-    queryFn: () => fetchComments(reviewId as string),
+  const {
+    data: commentIdList,
+    isLoading,
+    error,
+  } = useQuery<string[]>({
+    queryKey: ["reviewCommentList", reviewId],
+    queryFn: () => fetchReviewCommentList(reviewId as string),
     enabled: !!reviewId,
   });
 
@@ -19,10 +22,12 @@ export default function CommentList() {
 
   return (
     <div>
-      <h2 className="pt-2 text-lg font-semibold">댓글({data?.length})</h2>
+      <h2 className="pt-2 text-lg font-semibold">
+        댓글({commentIdList?.length})
+      </h2>
       <div className="grid mt-4">
-        {data?.map((commentInfo, index) => (
-          <CommentBox key={index} commentInfo={commentInfo} />
+        {commentIdList?.map((commentId, index) => (
+          <CommentBox key={index} commentId={commentId} />
         ))}
       </div>
     </div>

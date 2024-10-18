@@ -1,7 +1,11 @@
 import UserAvatar from "@/features/user/UserAvatar";
 import { CommentInfo, UserInfo } from "@/shared/types/interface";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserInfoById, deleteComment } from "@/api/interaction";
+import {
+  fetchUserInfoById,
+  fetchCommentById,
+  deleteComment,
+} from "@/api/interaction";
 import { Trash, Pencil } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
@@ -10,20 +14,24 @@ import { useQueryClient } from "@tanstack/react-query";
 import ProfilePopOver from "@/widgets/ProfilePopOver";
 import { claculateTime } from "@/shared/lib/utils";
 
-export default function CommentBox({
-  commentInfo,
-}: {
-  commentInfo: CommentInfo;
-}) {
+export default function CommentBox({ commentId }: { commentId: string }) {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const reviewId = queryParams.get("reviewId");
   const queryClient = useQueryClient();
 
+  // 댓글 정보 가져오기
+  const { data: commentInfo } = useQuery<CommentInfo>({
+    queryKey: ["commentInfo", commentId],
+    queryFn: () => fetchCommentById(commentId),
+    enabled: !!commentId,
+  });
+
   // 댓글 작성자 정보 가져오기
   const { data: userInfo } = useQuery<UserInfo>({
-    queryKey: ["userInfo", commentInfo.authorId],
-    queryFn: () => fetchUserInfoById(commentInfo.authorId),
+    queryKey: ["userInfo", commentInfo?.authorId],
+    queryFn: () => fetchUserInfoById(commentInfo?.authorId as number),
+    enabled: !!commentInfo,
   });
 
   // 댓글 삭제
@@ -34,14 +42,14 @@ export default function CommentBox({
         queryClient.invalidateQueries({ queryKey: ["comments", reviewId] });
       }
       queryClient.invalidateQueries({
-        queryKey: ["userComments", commentInfo.authorId],
+        queryKey: ["userComments", commentInfo?.authorId],
       });
     },
   });
 
   return (
     <>
-      {userInfo && (
+      {userInfo && commentInfo && (
         <div className="py-2 flex items-start gap-2.5">
           <ProfilePopOver userId={userInfo.kakaoId}>
             <Button variant="ghost" className="h-12 w-12 rounded-full">
