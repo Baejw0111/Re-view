@@ -3,6 +3,7 @@ import {
   UserModel,
   CommentModel,
   NotificationModel,
+  ReviewLikeModel,
 } from "../utils/Model.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
@@ -38,7 +39,10 @@ export const getReviewsById = asyncHandler(async (req, res) => {
 
   // 유저가 존재할 경우 리뷰 데이터에 현재 로그인한 유저의 추천 여부 추가
   const reviewDataWithLike = reviewData.toObject();
-  reviewDataWithLike.isLikedByUser = user.likedReviews.includes(reviewData._id);
+  reviewDataWithLike.isLikedByUser = await ReviewLikeModel.exists({
+    kakaoId,
+    reviewId,
+  });
 
   res.status(200).json(reviewDataWithLike);
 }, "특정 리뷰 조회");

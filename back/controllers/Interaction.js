@@ -2,6 +2,7 @@ import {
   CommentModel,
   UserModel,
   ReviewModel,
+  ReviewLikeModel,
   NotificationModel,
 } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
@@ -164,21 +165,27 @@ export const deleteComment = asyncHandler(async (req, res) => {
 export const addLike = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
 
+  const reviewExists = await ReviewModel.exists({ _id: reviewId });
+
+  if (!reviewExists) {
+    return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+  }
+
   // 리뷰 추천 수 증카
-  const review = await ReviewModel.findByIdAndUpdate(reviewId, {
+  await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { likesCount: 1 },
   });
 
-  // 유저 추천 리뷰 목록에 추가
-  await UserModel.findOneAndUpdate(
-    { kakaoId: req.userId },
-    {
-      $push: { likedReviews: reviewId },
-    }
-  );
+  // 리뷰 추천 데이터 생성
+  await ReviewLikeModel.create({
+    kakaoId: req.userId,
+    reviewId,
+  });
 
-  // 리뷰의 추천 수가 10개 이상인 경우 알림 생성
-  if (review.likesCount >= 9) {
+  const review = await ReviewModel.findById(reviewId);
+
+  // 리뷰의 추천 수가 10개가 될 경우 알림 생성
+  if (review.likesCount === 10) {
     await NotificationModel.create({
       kakaoId: review.authorId,
       reviewId,
@@ -200,12 +207,12 @@ export const unLike = asyncHandler(async (req, res) => {
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { likesCount: -1 },
   });
-  await UserModel.findOneAndUpdate(
-    { kakaoId: req.userId },
-    {
-      $pull: { likedReviews: reviewId },
-    }
-  );
+
+  await ReviewLikeModel.findOneAndDelete({
+    kakaoId: req.userId,
+    reviewId,
+  });
+
   res.status(200).json({ message: "추천 삭제 완료" });
 }, "리뷰 추천 취소");
 

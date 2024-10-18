@@ -22,8 +22,6 @@ const db = mongoose.connection.useDb("mainDB");
  * @property {number} kakaoId - 카카오 ID
  * @property {string} nickname - 닉네임
  * @property {string} profileImage - 프로필 이미지 경로
- * @property {string[]} reviews - 작성한 리뷰 ID 모음
- * @property {string[]} likedReviews - 좋아요한 리뷰 ID 모음
  * @property {string[]} favoriteTags - 자주 찾는 태그 모음
  * @property {Date} notificationCheckTime - 알림 확인 시간
  */
@@ -33,8 +31,6 @@ export const UserModel = db.model(
     kakaoId: { type: Number, default: 0 },
     nickname: { type: String, default: "" },
     profileImage: { type: String, default: "" },
-    reviews: { type: [String], default: [] },
-    likedReviews: { type: [String], default: [] },
     favoriteTags: { type: [String], default: [] },
     notificationCheckTime: { type: Date, default: Date.now },
   })
@@ -67,8 +63,23 @@ reviewSchema.virtual("isLikedByUser");
  * @property {string[]} tags - 태그
  * @property {number} likesCount - 좋아요 수
  * @property {number} commentsCount - 댓글 수
+ * @property {boolean} isLikedByUser - (가상 필드)현재 사용자가 좋아요를 눌렀는지 여부
  */
 export const ReviewModel = db.model("Review", reviewSchema);
+
+/**
+ * 유저 추천 모델
+ * @type {mongoose.Model}
+ * @property {number} kakaoId - 유저 ID
+ * @property {string} reviewId - 추천된 리뷰 ID 모음
+ */
+export const ReviewLikeModel = db.model(
+  "ReviewLike",
+  new mongoose.Schema({
+    kakaoId: { type: Number, default: 0 },
+    reviewId: { type: String, default: "" },
+  })
+);
 
 /**
  * 태그 모델
