@@ -56,11 +56,27 @@ export default function LikeButton({
   const handleLikeClick = async () => {
     setCurrentLikesCount(currentLikesCount + (likeState ? -1 : 1));
 
-    await Promise.all([
-      likeControls.start({
-        scale: [1, 1.3, 1],
-        transition: { duration: 0.3 },
-      }),
+    if (likeState) {
+      unlike();
+    } else {
+      like();
+    }
+
+    setLikeState(!likeState);
+  };
+
+  // 추천 상태 업데이트
+  useEffect(() => {
+    setCurrentLikesCount(reviewInfo?.likesCount || 0); // 추천수 업데이트
+    setLikeState(reviewInfo?.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
+  }, [reviewInfo?.likesCount, reviewInfo?.isLikedByUser]);
+
+  // 추천 애니메이션
+  useEffect(() => {
+    likeControls.start({
+      scale: [1, 1.3, 1],
+      transition: { duration: 0.2 },
+    }),
       countControls.start(
         likeState
           ? {
@@ -73,23 +89,8 @@ export default function LikeButton({
               y: [-10, 0],
               transition: { duration: 0.3 },
             }
-      ),
-    ]);
-
-    if (likeState) {
-      unlike();
-    } else {
-      like();
-    }
-
-    setLikeState(!likeState);
-  };
-
-  // 좋아요 상태 업데이트
-  useEffect(() => {
-    setCurrentLikesCount(reviewInfo?.likesCount || 0); // 추천수 업데이트
-    setLikeState(reviewInfo?.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
-  }, [reviewInfo?.likesCount, reviewInfo?.isLikedByUser]);
+      );
+  }, [likeState]);
 
   return (
     <div className="flex items-center gap-1.5">
