@@ -38,7 +38,7 @@ export default function ReviewDetailModal() {
        * 코드에 의해 isOpen이 false가 될 경우 아래의 코드는 동작하지 않는다.
        */
       dispatch(setIsOpen(false));
-      navigate(-1);
+      navigate(location.pathname);
     }
   };
 
