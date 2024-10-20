@@ -110,8 +110,23 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
 export const getReviewCommentList = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const comments = await CommentModel.find({ reviewId });
-  const commentIdList = comments.map((comment) => comment._id);
-  res.status(200).json(commentIdList);
+  const commentList = await Promise.all(
+    comments.map(async (comment) => {
+      const user = await UserModel.findOne({ kakaoId: comment.authorId });
+      console.log(comment);
+
+      return {
+        _id: comment._id,
+        authorId: comment.authorId,
+        profileImage: user.profileImage,
+        nickname: user.nickname,
+        reviewId: comment.reviewId,
+        uploadTime: comment.uploadTime,
+        content: comment.content,
+      };
+    })
+  );
+  res.status(200).json(commentList);
 }, "리뷰 댓글 목록 조회");
 
 /**
