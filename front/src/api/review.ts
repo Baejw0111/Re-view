@@ -43,32 +43,6 @@ export const fetchReviewById = async (
 };
 
 /**
- * 유저가 작성한 리뷰 ID 리스트를 가져오는 함수
- * @param userId 유저 ID
- * @returns 리뷰 ID 리스트
- */
-export const fetchUserReviewList = async (
-  userId: number
-): Promise<string[]> => {
-  const response = await genaralApiClient.get(`/user/${userId}/reviews`);
-  console.log("유저가 작성한 리뷰 ID 리스트 조회 성공:", response.data);
-
-  return response.data;
-};
-
-/**
- * 유저가 추천한 리뷰 ID 리스트를 가져오는 함수
- * @param userId 유저 ID
- * @returns 리뷰 ID 리스트
- */
-export const fetchUserLikedList = async (userId: number): Promise<string[]> => {
-  const response = await genaralApiClient.get(`/user/${userId}/liked`);
-  console.log("유저가 추천한 리뷰 ID 리스트 조회 성공:", response.data);
-
-  return response.data;
-};
-
-/**
  * 리뷰 삭제 함수
  * @param reviewId 리뷰 ID
  */
