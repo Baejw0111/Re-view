@@ -3,14 +3,14 @@ import { createSlice } from "@reduxjs/toolkit";
 const reviewDetailOpenSlice = createSlice({
   name: "reviewDetailOpen",
   initialState: {
-    isOpen: false,
+    isReviewDetailOpen: false,
   },
   reducers: {
-    setIsOpen: (state, action) => {
-      state.isOpen = action.payload;
+    setIsReviewDetailOpen: (state, action) => {
+      state.isReviewDetailOpen = action.payload;
     },
   },
 });
 
-export const { setIsOpen } = reviewDetailOpenSlice.actions;
+export const { setIsReviewDetailOpen } = reviewDetailOpenSlice.actions;
 export default reviewDetailOpenSlice.reducer;
