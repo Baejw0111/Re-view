@@ -61,15 +61,19 @@ export interface TagInfo {
 /**
  * @description 댓글 정보
  * @property {string} _id - 댓글 ID
- * @property {number} __v - 댓글 버전
  * @property {number} authorId - 댓글 작성자 ID
+ * @property {string} profileImage - 댓글 작성자 프로필 이미지
+ * @property {string} nickname - 댓글 작성자 닉네임
+ * @property {string} reviewId - 댓글이 작성된 리뷰 ID
  * @property {string} uploadTime - 댓글 업로드 시간
  * @property {string} content - 댓글 내용
  */
 export interface CommentInfo {
   _id: string;
-  __v: number;
   authorId: number;
+  profileImage: string;
+  nickname: string;
+  reviewId: string;
   uploadTime: string;
   content: string;
 }
