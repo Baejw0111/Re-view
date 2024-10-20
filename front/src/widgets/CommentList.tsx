@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { fetchReviewCommentList } from "@/api/interaction";
+import { fetchReviewCommentList } from "@/api/comment";
 import { useQuery } from "@tanstack/react-query";
 import CommentBox from "@/features/interaction/CommentBox";
 import { CommentInfo } from "@/shared/types/interface";
@@ -22,23 +22,13 @@ export default function CommentList() {
 
   useEffect(() => {
     if (commentId && commentIdList) {
-      // DOM 업데이트가 완료된 후에 스크롤 이동
-      // setHighlight(true);
-      const scrollTimer = setTimeout(() => {
-        const commentElement = document.getElementById(commentId);
+      const commentElement = document.getElementById(commentId);
 
-        if (commentElement) {
-          commentElement.scrollIntoView({
-            behavior: "smooth",
-          });
-        }
-      }, 100);
-
-      // const highlightTimer = setTimeout(() => setHighlight(false), 1000);
-      return () => {
-        clearTimeout(scrollTimer);
-        // clearTimeout(highlightTimer);
-      };
+      if (commentElement) {
+        commentElement.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
     }
   }, [commentId, commentIdList]);
 
