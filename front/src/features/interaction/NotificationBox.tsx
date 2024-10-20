@@ -3,11 +3,9 @@ import { Heart, MessageCircle, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
 import { NotificationInfo } from "@/shared/types/interface";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  fetchUserInfoById,
-  fetchCommentById,
-  deleteNotification,
-} from "@/api/interaction";
+import { deleteNotification } from "@/api/notification";
+import { fetchCommentById } from "@/api/comment";
+import { fetchUserInfoById } from "@/api/user";
 import { fetchReviewById } from "@/api/review";
 import { API_URL } from "@/shared/constants";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";

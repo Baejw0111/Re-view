@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/shared/shadcn-ui/card";
 import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
 import { Loader2Icon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNotifications } from "@/api/interaction";
+import { fetchNotifications } from "@/api/notification";
 import NotificationBox from "@/features/interaction/NotificationBox";
 import { API_URL } from "@/shared/constants";
 

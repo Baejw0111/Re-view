@@ -4,7 +4,7 @@ import UserAvatar from "@/features/user/UserAvatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { useMutation } from "@tanstack/react-query";
-import { addComment } from "@/api/interaction";
+import { addComment } from "@/api/comment";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { Send } from "lucide-react";

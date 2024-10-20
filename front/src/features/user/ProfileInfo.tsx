@@ -1,8 +1,12 @@
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserInfoById, fetchUserCommentList } from "@/api/interaction";
-import { fetchUserReviewList, fetchUserLikedList } from "@/api/review";
+import {
+  fetchUserInfoById,
+  fetchUserCommentList,
+  fetchUserReviewList,
+  fetchUserLikedList,
+} from "@/api/user";
 import { UserInfo } from "@/shared/types/interface";
 
 export default function ProfileInfo({ userId }: { userId: number }) {

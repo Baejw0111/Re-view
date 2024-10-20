@@ -15,7 +15,7 @@ import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from "@/shared/constants";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { updateUserInfo } from "@/api/userSetting";
+import { updateUserInfo } from "@/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Camera, UserRound, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";

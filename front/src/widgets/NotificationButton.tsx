@@ -16,7 +16,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   fetchNotifications,
   updateNotificationCheckTime,
-} from "@/api/interaction";
+} from "@/api/notification";
 import NotificationBox from "@/features/interaction/NotificationBox";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";

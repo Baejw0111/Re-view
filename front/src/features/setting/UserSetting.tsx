@@ -6,8 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/shadcn-ui/dropdown-menu";
-import { logOutKakao } from "@/api/kakaoAuth";
-import { deleteUserAccount } from "@/api/kakaoAuth";
+import { logOutKakao, deleteUserAccount } from "@/api/auth";
 import {
   KAKAO_REST_API_KEY,
   KAKAO_LOGOUT_REDIRECT_URI,

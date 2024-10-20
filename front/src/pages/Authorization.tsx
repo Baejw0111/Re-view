@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getKakaoToken, getKakaoUserInfo } from "@/api/kakaoAuth";
+import { getKakaoToken, getLoginUserInfo } from "@/api/auth";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,7 @@ export default function Authorization() {
   const { mutate, isPending, isError } = useMutation({
     mutationFn: async () => {
       await getKakaoToken(AUTHORIZATION_CODE);
-      return await getKakaoUserInfo();
+      return await getLoginUserInfo();
     },
     onSuccess: (responseData) => {
       const { isNewMember, userInfo } = responseData;

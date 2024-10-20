@@ -11,7 +11,7 @@ import {
   CarouselContent,
 } from "@/shared/shadcn-ui/carousel";
 import ReviewActionBar from "@/widgets/ReviewActionBar";
-import { fetchUserInfoById } from "@/api/interaction";
+import { fetchUserInfoById } from "@/api/user";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";

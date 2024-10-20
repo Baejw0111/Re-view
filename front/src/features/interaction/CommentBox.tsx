@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import UserAvatar from "@/features/user/UserAvatar";
 import { CommentInfo } from "@/shared/types/interface";
-import { deleteComment } from "@/api/interaction";
+import { deleteComment } from "@/api/comment";
 import { Trash, Pencil } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
