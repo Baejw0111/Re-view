@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import UserAvatar from "@/features/user/UserAvatar";
 import { MessageCircle, ChevronRight } from "lucide-react";
 import { Card } from "@/shared/shadcn-ui/card";
@@ -14,9 +12,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchUserInfoById } from "@/api/interaction";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { fetchReviewById } from "@/api/review";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-import { setIsOpen } from "@/state/store/reviewDetailOpenSlice";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import LikeButton from "@/features/interaction/LikeButton";
@@ -24,9 +21,7 @@ import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import ProfilePopOver from "./ProfilePopOver";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
-  const location = useLocation();
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
-  const dispatch = useDispatch();
   const { data: reviewInfo } = useQuery({
     queryKey: ["reviewInfo", reviewId],
     queryFn: () => fetchReviewById(reviewId, kakaoId),
@@ -37,14 +32,6 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
     queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
     enabled: !!reviewInfo,
   });
-
-  // 리뷰 상세 페이지로 이동 시, 리뷰 상세 페이지 열기
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    if (queryParams.get("reviewId") === reviewId) {
-      dispatch(setIsOpen(true));
-    }
-  }, [reviewId, location.search, dispatch]);
 
   return (
     <>
