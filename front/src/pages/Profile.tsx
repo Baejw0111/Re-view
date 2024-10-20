@@ -9,9 +9,13 @@ import {
 import { Grid, MessageCircle, Heart } from "lucide-react";
 import { Link, Route, Routes, useParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserInfoById, fetchUserCommentList } from "@/api/interaction";
-import { fetchUserReviewList, fetchUserLikedList } from "@/api/review";
-import { UserInfo } from "@/shared/types/interface";
+import {
+  fetchUserInfoById,
+  fetchUserCommentList,
+  fetchUserReviewList,
+  fetchUserLikedList,
+} from "@/api/user";
+import { CommentInfo, UserInfo } from "@/shared/types/interface";
 import Reviews from "@/widgets/Reviews";
 import CommentBox from "@/features/interaction/CommentBox";
 import UserSetting from "@/features/setting/UserSetting";
@@ -32,7 +36,7 @@ export default function Profile() {
   });
 
   // 사용자가 작성한 댓글 가져오기
-  const { data: userCommentList } = useQuery<string[]>({
+  const { data: userCommentList } = useQuery<CommentInfo[]>({
     queryKey: ["userCommentList", Number(userId)],
     queryFn: () => fetchUserCommentList(Number(userId)),
   });
@@ -112,9 +116,9 @@ export default function Profile() {
             element={
               <TabsContent value="comments" className="mt-6 max-w-3xl mx-auto">
                 {userCommentList &&
-                  userCommentList.map((commentId, index) => (
+                  userCommentList.map((commentInfo, index) => (
                     <div key={index} className="border-b last:border-b-0 pb-1">
-                      <CommentBox key={index} commentId={commentId} />
+                      <CommentBox key={index} commentInfo={commentInfo} />
                     </div>
                   ))}
               </TabsContent>
