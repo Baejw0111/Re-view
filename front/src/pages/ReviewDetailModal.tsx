@@ -48,13 +48,13 @@ export default function ReviewDetailModal() {
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    if (queryParams.get("reviewId") === null) {
+    if (queryParams.get("reviewId") === null || location.pathname === "/edit") {
       dispatch(setIsReviewDetailOpen(false));
     } else {
       dispatch(setIsNotificationOpen(false));
       dispatch(setIsReviewDetailOpen(true));
     }
-  }, [location.search]);
+  }, [location.search, location.pathname]);
 
   if (isDesktop === null) return;
 
