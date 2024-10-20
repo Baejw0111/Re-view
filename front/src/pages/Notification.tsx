@@ -21,7 +21,7 @@ export default function Notification() {
     if (!userInfo || !userInfo.kakaoId) return;
 
     const eventSource = new EventSource(
-      `${API_URL}/notifications/stream?userId=${userInfo.kakaoId}`
+      `${API_URL}/notification/stream?userId=${userInfo.kakaoId}`
     );
 
     eventSource.onmessage = () => {
