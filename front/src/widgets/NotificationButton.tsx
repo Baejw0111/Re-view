@@ -23,10 +23,14 @@ import { RootState } from "@/state/store";
 import { API_URL } from "@/shared/constants";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
+import { setIsNotificationOpen } from "@/state/store/notificationOpenSlice";
 
 export default function NotificationButton() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const dispatch = useDispatch();
+  const isNotificationOpen = useSelector(
+    (state: RootState) => state.notificationOpen.isNotificationOpen
+  );
   const { data: notifications, refetch } = useQuery({
     queryKey: ["notifications"],
     queryFn: () => fetchNotifications(),
@@ -44,8 +48,11 @@ export default function NotificationButton() {
     },
   });
 
-  const [isOpen, setIsOpen] = useState(false);
   const [unCheckedNotifications, setUnCheckedNotifications] = useState(0);
+
+  const handleNotificationOpenChange = () => {
+    dispatch(setIsNotificationOpen(!isNotificationOpen));
+  };
 
   // 알림 스트림 연결
   useEffect(() => {
@@ -67,7 +74,7 @@ export default function NotificationButton() {
 
   useEffect(() => {
     if (userInfo && userInfo.kakaoId && notifications) {
-      if (isOpen) setUnCheckedNotifications(0);
+      if (isNotificationOpen) setUnCheckedNotifications(0);
       else {
         const unChecked = notifications?.filter(
           (notification) =>
@@ -78,10 +85,14 @@ export default function NotificationButton() {
         setUnCheckedNotifications(unChecked);
       }
     }
-  }, [userInfo, notifications, isOpen]);
+  }, [userInfo, notifications, isNotificationOpen]);
 
   return (
-    <DropdownMenu onOpenChange={setIsOpen} modal={false}>
+    <DropdownMenu
+      open={isNotificationOpen}
+      onOpenChange={handleNotificationOpenChange}
+      modal={false}
+    >
       <TooltipWrapper tooltipText="알림">
         <DropdownMenuTrigger asChild>
           <Button
@@ -90,7 +101,7 @@ export default function NotificationButton() {
             size="icon"
             onClick={() => updateCheckTime()}
           >
-            <Bell className={`${isOpen ? "fill-current" : ""}`} />
+            <Bell className={`${isNotificationOpen ? "fill-current" : ""}`} />
             {unCheckedNotifications > 0 && (
               <div className="absolute bg-red-600 dark:bg-red-700 text-white -top-1 -right-1 px-1 min-w-5 h-5 rounded-full flex items-center justify-center text-xs">
                 {unCheckedNotifications}
