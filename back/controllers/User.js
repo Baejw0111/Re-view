@@ -1,5 +1,10 @@
 import asyncHandler from "../utils/ControllerUtils.js";
-import { UserModel } from "../utils/Model.js";
+import {
+  UserModel,
+  ReviewModel,
+  CommentModel,
+  ReviewLikeModel,
+} from "../utils/Model.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 
 /**
@@ -28,15 +33,29 @@ export const getUserReviewList = asyncHandler(async (req, res) => {
 }, "유저가 작성한 리뷰 ID 리스트 조회");
 
 /**
- * 유저가 작성한 댓글 ID 목록 조회
- * @returns 유저가 작성한 댓글 ID 목록
+ * 유저가 작성한 댓글 목록 조회
+ * @returns 유저가 작성한 댓글 목록
  */
 export const getUserCommentList = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
   const comments = await CommentModel.find({ authorId: userId });
-  const commentIdList = comments.map((comment) => comment._id);
-  res.status(200).json(commentIdList);
-}, "유저가 작성한 댓글 ID 목록 조회");
+  const commentList = await Promise.all(
+    comments.map(async (comment) => {
+      const user = await UserModel.findOne({ kakaoId: comment.authorId });
+
+      return {
+        _id: comment._id,
+        authorId: comment.authorId,
+        profileImage: user.profileImage,
+        nickname: user.nickname,
+        reviewId: comment.reviewId,
+        uploadTime: comment.uploadTime,
+        content: comment.content,
+      };
+    })
+  );
+  res.status(200).json(commentList);
+}, "유저가 작성한 댓글 목록 조회");
 
 /**
  * 유저가 추천한 리뷰 ID 목록 조회 API

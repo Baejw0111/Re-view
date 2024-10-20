@@ -59,7 +59,6 @@ export const getReviewCommentList = asyncHandler(async (req, res) => {
   const commentList = await Promise.all(
     comments.map(async (comment) => {
       const user = await UserModel.findOne({ kakaoId: comment.authorId });
-      console.log(comment);
 
       return {
         _id: comment._id,
