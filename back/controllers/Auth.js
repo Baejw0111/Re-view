@@ -10,7 +10,9 @@ import asyncHandler from "../utils/ControllerUtils.js";
 
 const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = process.env;
 
-// 카카오 서버에 토큰 요청 및 클라이언트에 쿠키 설정
+/**
+ * 카카오 토큰 요청 및 클라이언트에 쿠키 설정
+ */
 export const getKakaoToken = asyncHandler(async (req, res) => {
   const { code } = req.body;
   const response = await axios.post(
@@ -55,7 +57,7 @@ export const getKakaoToken = asyncHandler(async (req, res) => {
 }, "카카오 토큰 요청");
 
 /**
- * 카카오 토큰 검증
+ * 카카오 토큰 검증 미들웨어
  * next로 다음 미들웨어 호출
  */
 export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
@@ -79,7 +81,9 @@ export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
   return next();
 }, "카카오 토큰 검증");
 
-// 카카오 액세스 토큰 재발급
+/**
+ * 카카오 액세스 토큰 재발급
+ */
 export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
@@ -134,7 +138,9 @@ export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
   return res.status(200).json({ message: "액세스 토큰 갱신 성공" });
 }, "카카오 액세스 토큰 재발급");
 
-// 카카오 유저 가입 여부 체크
+/**
+ * 카카오 유저 가입 여부 체크
+ */
 const checkNewMember = async (userId) => {
   const user = await UserModel.findOne({ kakaoId: userId });
 
@@ -144,7 +150,9 @@ const checkNewMember = async (userId) => {
   return false;
 };
 
-// 카카오 유저 정보 조회
+/**
+ * 카카오 유저 정보 조회
+ */
 export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
   const response = await axios.get(
@@ -180,7 +188,9 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   });
 }, "카카오 유저 정보 조회");
 
-// 카카오 로그아웃
+/**
+ * 카카오 로그아웃
+ */
 export const logOutKakao = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
   const response = await axios.post(
@@ -201,7 +211,9 @@ export const logOutKakao = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "로그아웃 성공" });
 }, "카카오 로그아웃");
 
-// 카카오 유저 계정 삭제
+/**
+ * 카카오 유저 계정 삭제
+ */
 export const deleteUserAccount = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
   const response = await axios.post(
