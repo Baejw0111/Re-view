@@ -4,14 +4,7 @@ import cors from "cors"; // cors 관리
 import morgan from "morgan"; // 로그 출력용
 import "dotenv/config"; // .env 파일에서 바로 환경 변수 로드
 import cookieParser from "cookie-parser";
-import {
-  getFeed,
-  getReviewsById,
-  createReview,
-  updateReview,
-  deleteReview,
-  getUserReviewList,
-} from "./controllers/Review.js";
+import { upload } from "./utils/Upload.js";
 import {
   getKakaoToken,
   verifyKakaoAccessToken,
@@ -19,24 +12,34 @@ import {
   getKakaoUserInfo,
   logOutKakao,
   deleteUserAccount,
-} from "./controllers/KakaoLogin.js";
+} from "./controllers/Auth.js";
 import {
-  getReviewCommentList,
-  addLike,
-  addComment,
-  unLike,
-  deleteComment,
+  createReview,
+  getFeed,
+  getReviewsById,
+  updateReview,
+  deleteReview,
+} from "./controllers/Review.js";
+import {
   getUserInfoById,
+  getUserReviewList,
   getUserCommentList,
-  connectNotificationSSE,
+  getUserLikedList,
+  updateUserInfo,
+} from "./controllers/User.js";
+import {
   getNotifications,
-  getCommentById,
+  connectNotificationSSE,
   updateNotificationCheckTime,
   deleteNotification,
-  getUserLikedList,
-} from "./controllers/Interaction.js";
-import { updateUserInfo } from "./controllers/UserSetting.js";
-import { upload } from "./utils/Upload.js";
+} from "./controllers/Notification.js";
+import { addLike, unLike } from "./controllers/Like.js";
+import {
+  addComment,
+  getCommentById,
+  getReviewCommentList,
+  deleteComment,
+} from "./controllers/Comment.js";
 
 const app = express(); // express 인스턴스 생성
 const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근 가능
@@ -92,14 +95,14 @@ app.put(
 ); // 유저 정보 수정 API
 
 // 알림 관련 API
-app.get("/notifications", verifyKakaoAccessToken, getNotifications); // 알림 조회 API
-app.get("/notifications/stream", connectNotificationSSE); // 알림 SSE API
+app.get("/notification", verifyKakaoAccessToken, getNotifications); // 알림 조회 API
+app.get("/notification/stream", connectNotificationSSE); // 알림 SSE API
 app.post(
-  "/notifications/check",
+  "/notification/check",
   verifyKakaoAccessToken,
   updateNotificationCheckTime
 ); // 알림 확인 시간 업데이트 API
-app.delete("/notifications/:id", verifyKakaoAccessToken, deleteNotification); // 알림 삭제 API
+app.delete("/notification/:id", verifyKakaoAccessToken, deleteNotification); // 알림 삭제 API
 
 // 댓글 관련 API
 app.get("/comment/:id", getCommentById); // 특정 댓글 조회 API

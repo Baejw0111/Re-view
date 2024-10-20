@@ -9,90 +9,6 @@ import { deleteUploadedFiles } from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 /**
- * 홈 피드에 표시될 리뷰 조회
- * @returns {string[]} 리뷰 ID 리스트
- */
-export const getFeed = asyncHandler(async (req, res) => {
-  const reviewList = await ReviewModel.find();
-  const reviewIdList = reviewList.map((review) => review._id);
-
-  return res.json(reviewIdList);
-}, "리뷰 ID 리스트 조회");
-
-/**
- * 특정 리뷰 조회
- * @returns {ReviewModel} 리뷰 데이터
- */
-export const getReviewsById = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
-  const { kakaoId } = req.query;
-  const reviewData = await ReviewModel.findById(reviewId);
-  if (!reviewData) {
-    return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
-  }
-
-  // 유저가 존재하지 않을 경우 리뷰 데이터만 반환
-  const user = await UserModel.findOne({ kakaoId });
-  if (!user) {
-    return res.status(200).json(reviewData);
-  }
-
-  // 유저가 존재할 경우 리뷰 데이터에 현재 로그인한 유저의 추천 여부 추가
-  const reviewDataWithLike = reviewData.toObject();
-  reviewDataWithLike.isLikedByUser = await ReviewLikeModel.exists({
-    kakaoId,
-    reviewId,
-  });
-
-  res.status(200).json(reviewDataWithLike);
-}, "특정 리뷰 조회");
-
-/**
- * 유저가 작성한 리뷰 목록 조회
- * @returns {string[]} 리뷰 ID 리스트
- */
-export const getUserReviewList = asyncHandler(async (req, res) => {
-  const { id: userId } = req.params;
-  const user = await UserModel.exists({ kakaoId: userId });
-  if (!user) {
-    return res.status(404).json({ message: "유저가 존재하지 않습니다." });
-  }
-
-  const reviews = await ReviewModel.find({ authorId: userId });
-  const reviewIdList = reviews.map((review) => review._id);
-  return res.json(reviewIdList);
-}, "유저가 작성한 리뷰 ID 리스트 조회");
-
-/**
- * 리뷰 등록 시 필드 검증
- * @param {string} title
- * @param {string} reviewText
- * @param {number} rating
- * @param {string[]} tags
- * @param {File[]} files
- */
-const verifyFormFields = (title, reviewText, rating, tags, files) => {
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const validExtensions = ["jpg", "jpeg", "png", "webp"];
-
-  if (title.length > 20) return false; // 제목 길이 검증
-  if (reviewText.length > 1000) return false; // 리뷰 길이 검증
-  if (rating < 0 || rating > 5) return false; // 평점 값 검증
-  if (tags.length > 5) return false; // 태그 개수 검증
-  if (files.length > 5) return false; // 이미지 개수 검증
-  if (files.some((file) => file.size > MAX_FILE_SIZE)) return false; // 이미지 크기 검증
-
-  // 파일 확장자 검증
-  const isInvalidExtension = files.some((file) => {
-    const extension = file.originalname.split(".").pop().toLowerCase();
-    return !validExtensions.includes(extension);
-  });
-  if (isInvalidExtension) return false;
-
-  return true;
-};
-
-/**
  * 리뷰 등록
  * @returns {string} 리뷰 등록 성공 메시지
  */
@@ -140,6 +56,74 @@ export const createReview = asyncHandler(async (req, res) => {
 
   res.status(201).json({ message: "리뷰가 성공적으로 등록되었습니다." });
 }, "리뷰 등록");
+
+/**
+ * 홈 피드에 표시될 리뷰 조회
+ * @returns {string[]} 리뷰 ID 리스트
+ */
+export const getFeed = asyncHandler(async (req, res) => {
+  const reviewList = await ReviewModel.find();
+  const reviewIdList = reviewList.map((review) => review._id);
+
+  return res.json(reviewIdList);
+}, "리뷰 ID 리스트 조회");
+
+/**
+ * 특정 리뷰 조회
+ * @returns {ReviewModel} 리뷰 데이터
+ */
+export const getReviewsById = asyncHandler(async (req, res) => {
+  const { id: reviewId } = req.params;
+  const { kakaoId } = req.query;
+  const reviewData = await ReviewModel.findById(reviewId);
+  if (!reviewData) {
+    return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+  }
+
+  // 유저가 존재하지 않을 경우 리뷰 데이터만 반환
+  const user = await UserModel.findOne({ kakaoId });
+  if (!user) {
+    return res.status(200).json(reviewData);
+  }
+
+  // 유저가 존재할 경우 리뷰 데이터에 현재 로그인한 유저의 추천 여부 추가
+  const reviewDataWithLike = reviewData.toObject();
+  reviewDataWithLike.isLikedByUser = await ReviewLikeModel.exists({
+    kakaoId,
+    reviewId,
+  });
+
+  res.status(200).json(reviewDataWithLike);
+}, "특정 리뷰 조회");
+
+/**
+ * 리뷰 등록 시 필드 검증
+ * @param {string} title
+ * @param {string} reviewText
+ * @param {number} rating
+ * @param {string[]} tags
+ * @param {File[]} files
+ */
+const verifyFormFields = (title, reviewText, rating, tags, files) => {
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const validExtensions = ["jpg", "jpeg", "png", "webp"];
+
+  if (title.length > 20) return false; // 제목 길이 검증
+  if (reviewText.length > 1000) return false; // 리뷰 길이 검증
+  if (rating < 0 || rating > 5) return false; // 평점 값 검증
+  if (tags.length > 5) return false; // 태그 개수 검증
+  if (files.length > 5) return false; // 이미지 개수 검증
+  if (files.some((file) => file.size > MAX_FILE_SIZE)) return false; // 이미지 크기 검증
+
+  // 파일 확장자 검증
+  const isInvalidExtension = files.some((file) => {
+    const extension = file.originalname.split(".").pop().toLowerCase();
+    return !validExtensions.includes(extension);
+  });
+  if (isInvalidExtension) return false;
+
+  return true;
+};
 
 /**
  * 리뷰 수정
