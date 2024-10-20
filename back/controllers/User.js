@@ -11,7 +11,7 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 }, "유저 정보 조회");
 
-/*
+/**
  * 유저가 작성한 리뷰 목록 조회
  * @returns {string[]} 리뷰 ID 리스트
  */
