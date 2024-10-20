@@ -1,21 +1,46 @@
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { fetchReviewCommentList } from "@/api/interaction";
 import { useQuery } from "@tanstack/react-query";
 import CommentBox from "@/features/interaction/CommentBox";
+import { CommentInfo } from "@/shared/types/interface";
 
 export default function CommentList() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const reviewId = queryParams.get("reviewId");
+  const commentId = queryParams.get("commentId");
   const {
     data: commentIdList,
     isLoading,
     error,
-  } = useQuery<string[]>({
+  } = useQuery<CommentInfo[]>({
     queryKey: ["reviewCommentList", reviewId],
     queryFn: () => fetchReviewCommentList(reviewId as string),
     enabled: !!reviewId,
   });
+
+  useEffect(() => {
+    if (commentId && commentIdList) {
+      // DOM 업데이트가 완료된 후에 스크롤 이동
+      // setHighlight(true);
+      const scrollTimer = setTimeout(() => {
+        const commentElement = document.getElementById(commentId);
+
+        if (commentElement) {
+          commentElement.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
+      }, 100);
+
+      // const highlightTimer = setTimeout(() => setHighlight(false), 1000);
+      return () => {
+        clearTimeout(scrollTimer);
+        // clearTimeout(highlightTimer);
+      };
+    }
+  }, [commentId, commentIdList]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -26,8 +51,12 @@ export default function CommentList() {
         댓글({commentIdList?.length})
       </h2>
       <div className="grid mt-4">
-        {commentIdList?.map((commentId, index) => (
-          <CommentBox key={index} commentId={commentId} />
+        {commentIdList?.map((commentInfo, index) => (
+          <CommentBox
+            key={index}
+            commentInfo={commentInfo}
+            highlight={commentId === commentInfo._id}
+          />
         ))}
       </div>
     </div>

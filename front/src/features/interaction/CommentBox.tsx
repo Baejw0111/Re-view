@@ -1,63 +1,60 @@
+import { useEffect, useState } from "react";
 import UserAvatar from "@/features/user/UserAvatar";
-import { CommentInfo, UserInfo } from "@/shared/types/interface";
-import { useQuery } from "@tanstack/react-query";
-import {
-  fetchUserInfoById,
-  fetchCommentById,
-  deleteComment,
-} from "@/api/interaction";
+import { CommentInfo } from "@/shared/types/interface";
+import { deleteComment } from "@/api/interaction";
 import { Trash, Pencil } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
-import { useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import ProfilePopOver from "@/widgets/ProfilePopOver";
 import { claculateTime } from "@/shared/lib/utils";
 
-export default function CommentBox({ commentId }: { commentId: string }) {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const reviewId = queryParams.get("reviewId");
+export default function CommentBox({
+  commentInfo,
+  highlight,
+}: {
+  commentInfo: CommentInfo;
+  highlight?: boolean;
+}) {
   const queryClient = useQueryClient();
-
-  // 댓글 정보 가져오기
-  const { data: commentInfo } = useQuery<CommentInfo>({
-    queryKey: ["commentInfo", commentId],
-    queryFn: () => fetchCommentById(commentId),
-    enabled: !!commentId,
-  });
-
-  // 댓글 작성자 정보 가져오기
-  const { data: userInfo } = useQuery<UserInfo>({
-    queryKey: ["userInfo", commentInfo?.authorId],
-    queryFn: () => fetchUserInfoById(commentInfo?.authorId as number),
-    enabled: !!commentInfo,
-  });
+  const [isHighlight, setIsHighlight] = useState(highlight);
 
   // 댓글 삭제
   const { mutate: deleteCommentMutate } = useMutation({
     mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: () => {
-      if (reviewId) {
+      if (commentInfo.reviewId) {
         queryClient.invalidateQueries({
-          queryKey: ["reviewCommentList", reviewId],
+          queryKey: ["reviewCommentList", commentInfo.reviewId],
         });
       }
       queryClient.invalidateQueries({
-        queryKey: ["userCommentList", commentInfo?.authorId],
+        queryKey: ["userCommentList", commentInfo.authorId],
       });
     },
   });
 
+  useEffect(() => {
+    if (highlight) {
+      const timer = setTimeout(() => setIsHighlight(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlight]);
+
   return (
     <>
-      {userInfo && commentInfo && (
-        <div className="py-2 flex items-start gap-2.5">
-          <ProfilePopOver userId={userInfo.kakaoId}>
+      {commentInfo && (
+        <div
+          className={`py-2 flex items-start gap-2.5 transition-colors duration-300 ${
+            isHighlight ? "bg-accent" : ""
+          }`}
+          id={commentInfo._id}
+        >
+          <ProfilePopOver userId={commentInfo.authorId}>
             <Button variant="ghost" className="h-12 w-12 rounded-full">
               <UserAvatar
-                profileImage={userInfo.profileImage}
-                nickname={userInfo.nickname}
+                profileImage={commentInfo.profileImage}
+                nickname={commentInfo.nickname}
               />
             </Button>
           </ProfilePopOver>
@@ -65,10 +62,10 @@ export default function CommentBox({ commentId }: { commentId: string }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <a
-                  href={`/profile/${userInfo.kakaoId}`}
+                  href={`/profile/${commentInfo.authorId}`}
                   className="font-semibold text-sm"
                 >
-                  {userInfo.nickname}
+                  {commentInfo.nickname}
                 </a>
                 <span className="text-xs text-muted-foreground">
                   {claculateTime(commentInfo.uploadTime)}

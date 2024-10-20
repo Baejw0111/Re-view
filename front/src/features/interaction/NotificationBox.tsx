@@ -54,7 +54,9 @@ export default function NotificationBox({
 
   return (
     <Link
-      to={`/feed?reviewId=${reviewId}`}
+      to={`/feed?reviewId=${reviewId}${
+        category === "comment" ? `&commentId=${commentId}` : ""
+      }`}
       className={cn(
         "py-3 border-b last:border-b-0 flex items-start gap-4 w-full",
         className
