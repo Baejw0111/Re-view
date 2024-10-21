@@ -69,15 +69,17 @@ export default function LikeButton({
 
   // 추천 상태 업데이트
   useEffect(() => {
-    setCurrentLikesCount(reviewInfo?.likesCount || 0); // 추천수 업데이트
-    setLikeState(reviewInfo?.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
-  }, [reviewInfo?.likesCount, reviewInfo?.isLikedByUser]);
+    if (reviewInfo) {
+      setCurrentLikesCount(reviewInfo.likesCount || 0); // 추천수 업데이트
+      setLikeState(reviewInfo.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
+    }
+  }, [reviewInfo]);
 
   // 추천 애니메이션
   useEffect(() => {
     likeControls.start({
       scale: [1, 1.3, 1],
-      transition: { duration: 0.2 },
+      transition: { duration: 0.3 },
     }),
       countControls.start(
         likeState
