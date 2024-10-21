@@ -57,7 +57,7 @@ export const sendEventToClient = (userId) => {
 export const getNotifications = asyncHandler(async (req, res) => {
   const notifications = await NotificationModel.find({
     kakaoId: req.userId,
-  });
+  }).sort({ time: -1 });
   res.status(200).json(notifications);
 }, "알림 조회");
 
