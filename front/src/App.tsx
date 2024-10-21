@@ -16,32 +16,38 @@ import ReviewDetailModal from "@/pages/ReviewDetailModal";
 import Onboarding from "@/pages/Onboarding";
 import EditReview from "@/pages/EditReview";
 import Profile from "@/pages/Profile";
+import Notification from "@/pages/Notification";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { API_URL } from "./shared/constants";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
+import { useQuery } from "@tanstack/react-query";
+import { UserInfo } from "@/shared/types/interface";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
   const dispatch = useDispatch();
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const fetchUserInfoForPageReload = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/auth/kakao/user`, {
+        withCredentials: true,
+      });
+      return response.data.userInfo;
+    } catch (error) {
+      console.error("Failed to fetch user info:", error);
+    }
+  };
+
+  const { data, isFetched } = useQuery<UserInfo>({
+    queryKey: ["loggedInUserInfo"],
+    queryFn: fetchUserInfoForPageReload,
+  });
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/auth/kakao/user`, {
-          withCredentials: true,
-        });
-        dispatch(setUserInfo(response.data.userInfo));
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, [dispatch, userInfo]);
+    if (isFetched && data) {
+      dispatch(setUserInfo(data));
+    }
+  }, [data, isFetched]);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -51,13 +57,14 @@ function App() {
         <ReviewDetailModal />
         <Routes>
           <Route path="/" element={<Navigate to="/feed" />} />
-          <Route path="/test" element={<Test />} />
+          <Route path="/oauth/kakao" element={<Authorization />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/feed" element={<Feed />} />
           <Route path="/write" element={<WriteReview />} />
           <Route path="/edit" element={<EditReview />} />
-          <Route path="/oauth/kakao" element={<Authorization />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/profile/:id/*" element={<Profile />} />
+          <Route path="/notifications" element={<Notification />} />
+          <Route path="/test" element={<Test />} />
         </Routes>
       </Router>
     </ThemeProvider>

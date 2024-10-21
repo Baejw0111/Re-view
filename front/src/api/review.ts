@@ -2,12 +2,12 @@ import { genaralApiClient, authApiClient } from "@/api/util";
 import { ReviewInfo } from "@/shared/types/interface";
 
 /**
- * 리뷰 리스트를 가져오는 함수
- * @returns 리뷰 리스트
+ * 피드에 표시할 리뷰 ID 리스트를 가져오는 함수
+ * @returns 리뷰 ID 리스트
  */
 export const fetchFeed = async (): Promise<string[]> => {
   const response = await genaralApiClient.get(`/review`);
-  console.log("리뷰 ID 리스트 조회 성공:", response.data);
+  console.log("피드 리뷰 ID 리스트 조회 성공:", response.data);
 
   return response.data;
 };

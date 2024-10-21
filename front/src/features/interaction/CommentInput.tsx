@@ -4,9 +4,9 @@ import UserAvatar from "@/features/user/UserAvatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { useMutation } from "@tanstack/react-query";
-import { addComment } from "@/api/interaction";
+import { addComment } from "@/api/comment";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { useMediaQuery } from "@/shared/hooks";
 import { Send } from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useSelector } from "react-redux";
@@ -28,7 +28,12 @@ export default function CommentInput() {
     mutationFn: () => addComment(reviewId as string, comment),
     // 댓글 등록 성공 시, 댓글 목록 갱신
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", reviewId] });
+      queryClient.invalidateQueries({
+        queryKey: ["reviewCommentList", reviewId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userCommentList", userInfo?.kakaoId],
+      });
     },
   });
 

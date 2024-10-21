@@ -11,12 +11,13 @@ import {
   CarouselContent,
 } from "@/shared/shadcn-ui/carousel";
 import ReviewActionBar from "@/widgets/ReviewActionBar";
-import { fetchUserInfoById } from "@/api/interaction";
+import { fetchUserInfoById } from "@/api/user";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import UserAvatar from "@/features/user/UserAvatar";
+import { claculateTime } from "@/shared/lib/utils";
 
 export default function ReviewDetail() {
   const location = useLocation();
@@ -46,28 +47,34 @@ export default function ReviewDetail() {
     <>
       {reviewInfo && (
         <div className="grid gap-6">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 md:gap-4">
             <div className="flex items-center justify-between">
-              <a
-                href={`/profile/${reviewInfo.authorId}`}
-                className="flex items-center gap-2"
-              >
-                <UserAvatar
-                  className="h-7 w-7"
-                  profileImage={userInfo?.profileImage}
-                  nickname={userInfo?.nickname}
-                />
-                <div className="text-sm line-clamp-1 text-gray-500 dark:text-gray-400">
-                  {userInfo?.nickname}
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/profile/${reviewInfo.authorId}`}
+                  className="flex items-center gap-2"
+                >
+                  <UserAvatar
+                    className="h-7 w-7"
+                    profileImage={userInfo?.profileImage}
+                    nickname={userInfo?.nickname}
+                  />
+                  <div className="line-clamp-1 font-semibold">
+                    {userInfo?.nickname}
+                  </div>
+                </a>
+                <div className="text-xs text-muted-foreground">
+                  {claculateTime(reviewInfo.uploadTime)}
                 </div>
-              </a>
+              </div>
+
               <ReviewRatingSign
                 className="h-7 w-9 text-xl"
                 rating={reviewInfo.rating}
               />
             </div>
-            <div className="text-2xl font-bold">{reviewInfo.title}</div>
-            <p className="text-md text-gray-500 dark:text-gray-400 whitespace-pre-wrap break-all">
+            <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
+            <p className="text-md text-muted-foreground whitespace-pre-wrap break-all">
               {reviewInfo.reviewText}
             </p>
           </div>

@@ -15,7 +15,7 @@ import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from "@/shared/constants";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { updateUserInfo } from "@/api/userSetting";
+import { updateUserInfo } from "@/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Camera, UserRound, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
@@ -177,7 +177,7 @@ export default function EditUserProfile({
                       >
                         {currentProfileImage.length > 0 ||
                         form.getValues("useDefaultProfile") ? (
-                          <Avatar className="h-24 w-24 transition-transform hover:scale-105">
+                          <Avatar className="h-24 w-24 transition-transform hover:scale-105 active:scale-105">
                             <AvatarImage
                               src={currentProfileImage}
                               alt={userInfo.nickname}
@@ -189,7 +189,7 @@ export default function EditUserProfile({
                           </Avatar>
                         ) : (
                           <UserAvatar
-                            className="h-24 w-24 transition-transform hover:scale-105"
+                            className="h-24 w-24 transition-transform hover:scale-105 active:scale-105"
                             profileImage={userInfo.profileImage}
                             nickname={userInfo.nickname}
                           />
@@ -209,7 +209,7 @@ export default function EditUserProfile({
                         <button
                           type="button"
                           onClick={handleDefaultProfileImage}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors"
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-800 active:bg-red-800 transition-colors"
                           aria-label="프로필 사진 삭제"
                         >
                           <X className="w-4 h-4" />

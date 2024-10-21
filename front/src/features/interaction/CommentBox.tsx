@@ -1,76 +1,77 @@
+import { useEffect, useState } from "react";
 import UserAvatar from "@/features/user/UserAvatar";
-import { CommentInfo, UserInfo } from "@/shared/types/interface";
-import { useQuery } from "@tanstack/react-query";
-import { fetchUserInfoById, deleteComment } from "@/api/interaction";
-import { Trash, Pencil, Heart } from "lucide-react";
+import { CommentInfo } from "@/shared/types/interface";
+import { deleteComment } from "@/api/comment";
+import { Trash, Pencil } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
-import { useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import ProfilePopOver from "@/widgets/ProfilePopOver";
+import { claculateTime } from "@/shared/lib/utils";
 
 export default function CommentBox({
   commentInfo,
+  highlight,
 }: {
   commentInfo: CommentInfo;
+  highlight?: boolean;
 }) {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const reviewId = queryParams.get("reviewId");
   const queryClient = useQueryClient();
-
-  // 댓글 작성자 정보 가져오기
-  const { data: userInfo } = useQuery<UserInfo>({
-    queryKey: ["userInfo", commentInfo.authorId],
-    queryFn: () => fetchUserInfoById(commentInfo.authorId),
-  });
+  const [isHighlight, setIsHighlight] = useState(highlight);
 
   // 댓글 삭제
   const { mutate: deleteCommentMutate } = useMutation({
     mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: () => {
-      if (reviewId) {
-        queryClient.invalidateQueries({ queryKey: ["comments", reviewId] });
+      if (commentInfo.reviewId) {
+        queryClient.invalidateQueries({
+          queryKey: ["reviewCommentList", commentInfo.reviewId],
+        });
       }
       queryClient.invalidateQueries({
-        queryKey: ["userComments", commentInfo.authorId],
+        queryKey: ["userCommentList", commentInfo.authorId],
       });
     },
   });
 
+  useEffect(() => {
+    if (highlight) {
+      const timer = setTimeout(() => setIsHighlight(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlight]);
+
   return (
     <>
-      {userInfo && (
-        <div className="flex items-start gap-4">
-          <ProfilePopOver userId={userInfo?.kakaoId}>
-            <Button variant="ghost" className="h-9 w-9 rounded-full">
+      {commentInfo && (
+        <div
+          className={`py-2 flex items-start gap-2.5 transition-colors duration-300 ${
+            isHighlight ? "bg-accent" : ""
+          }`}
+          id={commentInfo._id}
+        >
+          <ProfilePopOver userId={commentInfo.authorId}>
+            <Button variant="ghost" className="h-12 w-12 rounded-full">
               <UserAvatar
-                className="h-7 w-7"
-                profileImage={userInfo?.profileImage}
-                nickname={userInfo?.nickname}
+                profileImage={commentInfo.profileImage}
+                nickname={commentInfo.nickname}
               />
             </Button>
           </ProfilePopOver>
-          <div className="grid gap-2 flex-1">
+          <div className="flex flex-col gap-0.5 w-full">
             <div className="flex items-center justify-between">
-              <a
-                href={`/profile/${userInfo?.kakaoId}`}
-                className="font-semibold"
-              >
-                {userInfo?.nickname}
-              </a>
-              <div className="text-xs text-muted-foreground p-2">
-                {new Date(commentInfo.uploadTime).toLocaleDateString()}
-              </div>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-muted-foreground whitespace-pre-wrap break-all">
-                {commentInfo.content}
-              </p>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Heart className="w-4 h-4 text-muted-foreground" />
-                </Button>
+                <a
+                  href={`/profile/${commentInfo.authorId}`}
+                  className="font-semibold text-sm"
+                >
+                  {commentInfo.nickname}
+                </a>
+                <span className="text-xs text-muted-foreground">
+                  {claculateTime(commentInfo.uploadTime)}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon">
                   <Pencil className="w-4 h-4 text-muted-foreground" />
                 </Button>
@@ -83,6 +84,9 @@ export default function CommentBox({
                 </Button>
               </div>
             </div>
+            <p className="text-sm whitespace-pre-wrap break-all">
+              {commentInfo.content}
+            </p>
           </div>
         </div>
       )}

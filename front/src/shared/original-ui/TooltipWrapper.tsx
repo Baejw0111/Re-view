@@ -4,6 +4,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/shadcn-ui/tooltip";
+import { useMediaQuery } from "@/shared/hooks";
 
 export default function TooltipWrapper({
   children,
@@ -12,6 +13,12 @@ export default function TooltipWrapper({
   children: React.ReactNode;
   tooltipText: string;
 }) {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  if (isMobile) {
+    return <>{children}</>;
+  }
+
   return (
     <TooltipProvider delayDuration={0}>
       <Tooltip>

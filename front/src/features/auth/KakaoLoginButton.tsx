@@ -8,7 +8,7 @@ import {
 export default function KakaoLoginButton() {
   return (
     <Button
-      className="h-9 w-20 gap-1 bg-[#FEE500] hover:bg-[#FEE500]/80 text-black/85 text-xs font-semibold"
+      className="h-9 w-20 gap-1 bg-[#FEE500] hover:bg-[#FEE500]/80 active:bg-[#FEE500]/80 text-black/85 text-xs font-semibold"
       onClick={() =>
         (window.location.href = `${KAKAO_OAUTH_URL}&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}`)
       }

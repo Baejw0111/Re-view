@@ -7,7 +7,7 @@ import { UserInfo } from "@/shared/types/interface";
  */
 export const getKakaoToken = async (code: string): Promise<void> => {
   const response = await genaralApiClient.post(
-    `/login/kakao`,
+    `/auth/kakao/login`,
     { code },
     {
       withCredentials: true,
@@ -21,26 +21,23 @@ export const getKakaoToken = async (code: string): Promise<void> => {
  * 카카오 서버에서 유저 정보 조회하는 함수
  * @returns 유저 정보
  */
-export const getKakaoUserInfo = async (): Promise<{
+export const getLoginUserInfo = async (): Promise<{
   isNewMember: boolean;
   userInfo: UserInfo;
 }> => {
   const response = await authApiClient.get(`/auth/kakao/user`);
-  console.log("카카오 유저 정보 조회 성공:", response.data);
+  console.log("로그인 유저 정보 조회 성공:", response.data);
 
   return response.data;
 };
 
 // 카카오 서버에서 로그아웃 요청 후 쿠키 삭제
 export const logOutKakao = async (): Promise<void> => {
-  const response = await authApiClient.post(`/logout/kakao`, {});
+  const response = await authApiClient.post(`/auth/kakao/logout`, {});
   console.log("카카오 로그아웃 성공:", response.data);
 };
 
 export const deleteUserAccount = async (): Promise<void> => {
-  const response = await authApiClient.delete(
-    `/auth/kakao/deleteUserAccount`,
-    {}
-  );
+  const response = await authApiClient.delete(`/auth/kakao/delete`, {});
   console.log("카카오 유저 계정 삭제 성공:", response.data);
 };

@@ -1,8 +1,13 @@
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserInfoById, fetchUserComments } from "@/api/interaction";
-import { UserInfo, CommentInfo } from "@/shared/types/interface";
+import {
+  fetchUserInfoById,
+  fetchUserCommentList,
+  fetchUserReviewList,
+  fetchUserLikedList,
+} from "@/api/user";
+import { UserInfo } from "@/shared/types/interface";
 
 export default function ProfileInfo({ userId }: { userId: number }) {
   const { data: userInfo } = useQuery<UserInfo>({
@@ -10,9 +15,19 @@ export default function ProfileInfo({ userId }: { userId: number }) {
     queryFn: () => fetchUserInfoById(userId),
   });
 
-  const { data: userComments } = useQuery<CommentInfo[]>({
-    queryKey: ["userComments", userId],
-    queryFn: () => fetchUserComments(userId),
+  const { data: userCommentList } = useQuery<string[]>({
+    queryKey: ["userCommentList", userId],
+    queryFn: () => fetchUserCommentList(userId),
+  });
+
+  const { data: userReviewList } = useQuery<string[]>({
+    queryKey: ["userReviewList", userId],
+    queryFn: () => fetchUserReviewList(userId),
+  });
+
+  const { data: userLikedList } = useQuery<string[]>({
+    queryKey: ["userLikedList", userId],
+    queryFn: () => fetchUserLikedList(userId),
   });
 
   return (
@@ -22,19 +37,17 @@ export default function ProfileInfo({ userId }: { userId: number }) {
       </div>
       <div className="flex justify-center md:justify-start gap-6">
         <div className="text-center">
-          <p className="text-xl font-semibold">{userInfo?.reviews.length}</p>
+          <p className="text-xl font-semibold">{userReviewList?.length}</p>
           <p className="text-xs text-muted-foreground">리뷰</p>
         </div>
         <Separator orientation="vertical" className="h-6" />
         <div className="text-center">
-          <p className="text-xl font-semibold">{userComments?.length}</p>
+          <p className="text-xl font-semibold">{userCommentList?.length}</p>
           <p className="text-xs text-muted-foreground">댓글</p>
         </div>
         <Separator orientation="vertical" className="h-6" />
         <div className="text-center">
-          <p className="text-xl font-semibold">
-            {userInfo?.likedReviews.length}
-          </p>
+          <p className="text-xl font-semibold">{userLikedList?.length}</p>
           <p className="text-xs text-muted-foreground">추천</p>
         </div>
       </div>

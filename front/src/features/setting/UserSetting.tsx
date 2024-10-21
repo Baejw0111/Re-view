@@ -6,8 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/shadcn-ui/dropdown-menu";
-import { logOutKakao } from "@/api/kakaoAuth";
-import { deleteUserAccount } from "@/api/kakaoAuth";
+import { logOutKakao, deleteUserAccount } from "@/api/auth";
 import {
   KAKAO_REST_API_KEY,
   KAKAO_LOGOUT_REDIRECT_URI,
@@ -47,7 +46,7 @@ export default function UserSetting() {
 
   return (
     <>
-      <DropdownMenu onOpenChange={setIsDropdownOpen}>
+      <DropdownMenu onOpenChange={setIsDropdownOpen} modal={false}>
         <TooltipWrapper tooltipText="설정">
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -72,7 +71,7 @@ export default function UserSetting() {
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={handleDelete}
-            className="flex items-center justify-start gap-2 text-destructive focus:text-destructive focus:bg-destructive/20"
+            className="flex items-center justify-start gap-2 text-destructive focus:text-destructive focus:bg-destructive/20 active:text-destructive active:bg-destructive/20"
           >
             <UserRoundX />
             <span>회원 탈퇴</span>

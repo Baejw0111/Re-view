@@ -3,6 +3,9 @@ import animate from "tailwindcss-animate";
 import scrollbarHide from "tailwind-scrollbar-hide";
 
 export default {
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   prefix: "",

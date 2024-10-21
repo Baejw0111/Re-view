@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useMutation } from "@tanstack/react-query";
-import { likeReview, unlikeReview } from "@/api/interaction";
+import { likeReview, unlikeReview } from "@/api/like";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
@@ -32,6 +32,7 @@ export default function LikeButton({
     mutationFn: () => likeReview(reviewId as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
+      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
     },
     onError: () => {
       alert("추천 실패");
@@ -42,6 +43,7 @@ export default function LikeButton({
     mutationFn: () => unlikeReview(reviewId as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
+      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
     },
     onError: () => {
       alert("추천 취소 실패");
@@ -56,11 +58,30 @@ export default function LikeButton({
   const handleLikeClick = async () => {
     setCurrentLikesCount(currentLikesCount + (likeState ? -1 : 1));
 
-    await Promise.all([
-      likeControls.start({
-        scale: [1, 1.3, 1],
-        transition: { duration: 0.3 },
-      }),
+    if (likeState) {
+      unlike();
+    } else {
+      like();
+    }
+
+    setLikeState(!likeState);
+  };
+
+  // 추천 상태 업데이트
+  useEffect(() => {
+    if (reviewInfo) {
+      setCurrentLikesCount(reviewInfo.likesCount || 0); // 추천수 업데이트
+      setLikeState(reviewInfo.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
+    }
+  }, [reviewInfo]);
+
+  // 추천 애니메이션
+  useEffect(() => {
+    console.log(likeState);
+    likeControls.start({
+      scale: [1, 1.3, 1],
+      transition: { duration: 0.3 },
+    }),
       countControls.start(
         likeState
           ? {
@@ -73,23 +94,8 @@ export default function LikeButton({
               y: [-10, 0],
               transition: { duration: 0.3 },
             }
-      ),
-    ]);
-
-    if (likeState) {
-      unlike();
-    } else {
-      like();
-    }
-
-    setLikeState(!likeState);
-  };
-
-  // 좋아요 상태 업데이트
-  useEffect(() => {
-    setCurrentLikesCount(reviewInfo?.likesCount || 0); // 추천수 업데이트
-    setLikeState(reviewInfo?.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
-  }, [reviewInfo?.likesCount, reviewInfo?.isLikedByUser]);
+      );
+  }, [likeState]);
 
   return (
     <div className="flex items-center gap-1.5">
@@ -107,7 +113,7 @@ export default function LikeButton({
             ) : (
               <Heart
                 className={cn(
-                  "w-6 h-6 hover:text-[#FE0000] cursor-pointer",
+                  "w-6 h-6 hover:text-[#FE0000] active:text-[#FE0000] cursor-pointer",
                   className
                 )}
               />
