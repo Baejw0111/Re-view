@@ -77,7 +77,6 @@ export default function LikeButton({
 
   // 추천 애니메이션
   useEffect(() => {
-    console.log(likeState);
     likeControls.start({
       scale: [1, 1.3, 1],
       transition: { duration: 0.3 },
