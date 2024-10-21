@@ -12,6 +12,8 @@ import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 import { cn } from "@/shared/lib/utils";
 import { claculateTime } from "@/shared/lib/utils";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function NotificationBox({
   className,
@@ -21,11 +23,12 @@ export default function NotificationBox({
   notificationInfo: NotificationInfo;
 }) {
   const queryClient = useQueryClient();
+  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
   const { time, commentId, reviewId, category } = notificationInfo;
 
   const { data: reviewInfo } = useQuery({
     queryKey: ["reviewInfo", reviewId],
-    queryFn: () => fetchReviewById(reviewId, 0),
+    queryFn: () => fetchReviewById(reviewId, kakaoId),
   });
 
   const { data: commentInfo } = useQuery({
