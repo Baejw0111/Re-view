@@ -73,7 +73,11 @@ export default function Profile() {
 
       <Tabs
         defaultValue="posts"
-        value={location.pathname.split("/")[3]}
+        value={
+          !location.pathname.split("/")[3]
+            ? "posts"
+            : location.pathname.split("/")[3]
+        }
         className="mt-6"
       >
         <TabsList className="grid w-full grid-cols-3 md:max-w-xl mx-auto">
