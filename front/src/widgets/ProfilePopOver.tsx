@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/shared/shadcn-ui/button";
 import {
   Popover,
@@ -15,17 +16,23 @@ export default function ProfilePopOver({
   userId: number;
   children: React.ReactNode;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger
         asChild
         className="hover:bg-accent active:bg-accent rounded-md"
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
       >
         {children}
       </PopoverTrigger>
       <PopoverContent
         className="w-64 flex flex-col gap-6"
         onOpenAutoFocus={(e) => e.preventDefault()}
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
       >
         <ProfileInfo userId={userId} />
         <Link to={`/profile/${userId}`}>
