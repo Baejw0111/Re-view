@@ -4,7 +4,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/shadcn-ui/tooltip";
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { useMediaQuery } from "@/shared/hooks";
 
 export default function TooltipWrapper({
   children,

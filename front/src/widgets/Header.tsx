@@ -9,16 +9,20 @@ import { Link } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import SearchBar from "@/features/common/SearchBar";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
+import { useScrollDirection } from "@/shared/hooks";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
+  const isScrollingUp = useScrollDirection();
 
   if (window.location.pathname === "/onboarding") return null;
 
   return (
     <header
-      className="sticky p-0 top-0 left-0 w-full h-16 backdrop-blur-xl
-      text-slate-700 dark:text-slate-200 flex justify-around items-center z-50 supports-[backdrop-filter]:bg-background/40"
+      className={`sticky p-0 top-0 left-0 w-full h-16 bg-background
+      flex justify-around items-center z-50 transition-all duration-300 ease-in-out ${
+        isScrollingUp ? "translate-y-0" : "-translate-y-full"
+      }`}
     >
       <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-5">
         <Link to="/feed">

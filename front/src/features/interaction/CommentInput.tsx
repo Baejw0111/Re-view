@@ -6,7 +6,7 @@ import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { useMutation } from "@tanstack/react-query";
 import { addComment } from "@/api/comment";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { useMediaQuery } from "@/shared/hooks";
 import { Send } from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useSelector } from "react-redux";

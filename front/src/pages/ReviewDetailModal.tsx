@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
 import { setIsReviewDetailOpen } from "@/state/store/reviewDetailOpenSlice";
 import { setIsNotificationOpen } from "@/state/store/notificationOpenSlice";
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { useMediaQuery } from "@/shared/hooks";
 import {
   Dialog,
   DialogContent,
