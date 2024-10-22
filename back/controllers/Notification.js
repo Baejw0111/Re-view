@@ -4,7 +4,7 @@ import asyncHandler from "../utils/ControllerUtils.js";
 let clients = new Map(); // 사용자 ID를 키로 하는 클라이언트 맵
 
 /**
- * 알림 SSE 연결 API
+ * 알림 SSE 연결
  */
 export const connectNotificationSSE = asyncHandler((req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
@@ -51,7 +51,7 @@ export const sendEventToClient = (userId) => {
 };
 
 /**
- * 알림 조회 API
+ * 알림 조회
  * @returns 알림 리스트
  */
 export const getNotifications = asyncHandler(async (req, res) => {
@@ -61,6 +61,9 @@ export const getNotifications = asyncHandler(async (req, res) => {
   res.status(200).json(notifications);
 }, "알림 조회");
 
+/**
+ * 유저 알림 확인 시간 업데이트
+ */
 export const updateNotificationCheckTime = asyncHandler(async (req, res) => {
   const { checkTime } = req.body;
   await UserModel.findOneAndUpdate(
@@ -71,7 +74,7 @@ export const updateNotificationCheckTime = asyncHandler(async (req, res) => {
 }, "알림 확인 시간 업데이트");
 
 /**
- * 알림 삭제 API
+ * 알림 삭제
  */
 export const deleteNotification = asyncHandler(async (req, res) => {
   const { id: notificationId } = req.params;
