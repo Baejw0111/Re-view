@@ -136,7 +136,7 @@ export default function NotificationButton() {
         </ScrollArea>
         <DropdownMenuSeparator />
         <Link to="/notifications">
-          <DropdownMenuItem className="flex items-center justify-center w-full text-blue-500">
+          <DropdownMenuItem className="flex items-center justify-center w-full text-blue-500 cursor-pointer">
             모든 알림 보기
           </DropdownMenuItem>
         </Link>
