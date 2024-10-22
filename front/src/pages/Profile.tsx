@@ -111,7 +111,9 @@ export default function Profile() {
             path="posts"
             element={
               <TabsContent value="posts" className="mt-6">
-                {userReviewList && <Reviews reviewIdList={userReviewList} />}
+                {userReviewList && (
+                  <Reviews key="posts" reviewIdList={userReviewList} />
+                )}
               </TabsContent>
             }
           />
@@ -132,7 +134,9 @@ export default function Profile() {
             path="liked"
             element={
               <TabsContent value="liked" className="mt-6">
-                {userLikedList && <Reviews reviewIdList={userLikedList} />}
+                {userLikedList && (
+                  <Reviews key="liked" reviewIdList={userLikedList} />
+                )}
               </TabsContent>
             }
           />
