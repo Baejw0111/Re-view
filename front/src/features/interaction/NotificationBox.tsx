@@ -50,49 +50,56 @@ export default function NotificationBox({
     },
   });
 
+  const handleDeleteNotification = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    deleteNotificationMutate();
+  };
+
   return (
-    <Link
-      to={`/feed?reviewId=${reviewId}${
-        category === "comment" ? `&commentId=${commentId}` : ""
-      }`}
+    <div
       className={cn(
-        "py-3 border-b last:border-b-0 flex items-start gap-4 w-full",
+        "py-3 border-b last:border-b-0 flex justify-between gap-1 md:gap-2 w-full",
         className
       )}
     >
-      <UserAvatar
-        profileImage={
-          category === "like" ? `public/logo.svg` : userInfo?.profileImage
-        }
-        nickname={category === "like" ? "시스템" : userInfo?.nickname}
-      />
-      <div className="flex justify-between w-full gap-2">
-        <div className="flex flex-col gap-0.5">
-          <div className="flex items-start gap-1">
-            <div className="pt-0.5">
-              {category === "like" ? (
-                <Heart className="w-4 h-4 fill-red-500 text-red-500" />
-              ) : (
-                <MessageCircle className="w-4 h-4" />
-              )}
+      <Link
+        to={`/feed?reviewId=${reviewId}${
+          category === "comment" ? `&commentId=${commentId}` : ""
+        }`}
+        className="flex items-start gap-4 w-full"
+      >
+        <UserAvatar
+          profileImage={
+            category === "like" ? `public/logo.svg` : userInfo?.profileImage
+          }
+          nickname={category === "like" ? "시스템" : userInfo?.nickname}
+        />
+        <div className="flex justify-between w-full gap-2">
+          <div className="flex flex-col gap-0.5">
+            <div className="flex items-start gap-1">
+              <div className="pt-0.5">
+                {category === "like" ? (
+                  <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+                ) : (
+                  <MessageCircle className="w-4 h-4" />
+                )}
+              </div>
+              <h3 className="text-sm font-semibold break-words whitespace-pre-wrap">
+                {category === "like"
+                  ? `작성하신 리뷰가 인기 리뷰로 선정되었습니다.`
+                  : userInfo?.nickname}
+              </h3>
             </div>
-            <h3 className="text-sm font-semibold break-words whitespace-pre-wrap">
-              {category === "like"
-                ? `작성하신 리뷰가 인기 리뷰로 선정되었습니다.`
-                : userInfo?.nickname}
-            </h3>
+            <h4 className="text-sm text-muted-foreground line-clamp-1">
+              {reviewInfo?.title}
+            </h4>
+            <p className="text-sm whitespace-pre-wrap break-all line-clamp-3">
+              {commentInfo?.content}
+            </p>
+            <span className="text-sm text-muted-foreground">
+              {claculateTime(time)}
+            </span>
           </div>
-          <h4 className="text-sm text-muted-foreground line-clamp-1">
-            {reviewInfo?.title}
-          </h4>
-          <p className="text-sm whitespace-pre-wrap break-all line-clamp-3">
-            {commentInfo?.content}
-          </p>
-          <span className="text-sm text-muted-foreground">
-            {claculateTime(time)}
-          </span>
-        </div>
-        <div className="flex items-start gap-1 md:gap-2">
           {category === "comment" && (
             <div className="w-24 md:w-28">
               <AspectRatio ratio={16 / 9}>
@@ -104,16 +111,16 @@ export default function NotificationBox({
               </AspectRatio>
             </div>
           )}
-          <Button
-            variant="link"
-            onClick={() => deleteNotificationMutate()}
-            aria-label="알림 삭제"
-            className="p-0 w-4 h-4 opacity-70 hover:opacity-100 active:opacity-100"
-          >
-            <X className="w-4 h-4" />
-          </Button>
         </div>
-      </div>
-    </Link>
+      </Link>
+      <Button
+        variant="link"
+        onClick={handleDeleteNotification}
+        aria-label="알림 삭제"
+        className="p-0 w-4 h-4 opacity-70 hover:opacity-100 active:opacity-100"
+      >
+        <X className="w-4 h-4" />
+      </Button>
+    </div>
   );
 }
