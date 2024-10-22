@@ -5,6 +5,7 @@ import {
   ReviewModel,
   CommentModel,
   NotificationModel,
+  ReviewLikeModel,
 } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
@@ -251,6 +252,7 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   await CommentModel.deleteMany({ authorId: response.data.id });
 
   await NotificationModel.deleteMany({ kakaoId: response.data.id }); // 유저의 알림들 모두 삭제
+  await ReviewLikeModel.deleteMany({ kakaoId: response.data.id }); // 유저의 추천들 모두 삭제
 
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");

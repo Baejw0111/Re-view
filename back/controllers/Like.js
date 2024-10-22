@@ -27,6 +27,7 @@ export const addLike = asyncHandler(async (req, res) => {
   await ReviewLikeModel.create({
     kakaoId: req.userId,
     reviewId,
+    likedAt: Date.now(),
   });
 
   const review = await ReviewModel.findById(reviewId);
@@ -45,6 +46,16 @@ export const addLike = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: "추천 완료!" });
 }, "리뷰 추천");
+
+/**
+ * 유저의 리뷰 추천 여부 조회
+ */
+export const getIsLiked = asyncHandler(async (req, res) => {
+  const { id: reviewId } = req.params;
+  const { kakaoId } = req.query;
+  const isLiked = !!(await ReviewLikeModel.exists({ reviewId, kakaoId }));
+  return res.json(isLiked);
+}, "유저의 리뷰 추천 여부 조회");
 
 /**
  * 리뷰 추천 취소 API

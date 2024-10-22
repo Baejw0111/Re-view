@@ -68,7 +68,9 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
 
-  const likes = await ReviewLikeModel.find({ kakaoId: userId });
+  const likes = await ReviewLikeModel.find({ kakaoId: userId }).sort({
+    likedAt: -1,
+  });
   const reviewIdList = likes.map((like) => like.reviewId);
   res.status(200).json(reviewIdList);
 }, "유저가 추천한 리뷰 ID 목록 조회");

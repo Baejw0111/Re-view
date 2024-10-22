@@ -15,7 +15,6 @@ mongoose 6.0 버전 이상부터는 해당 옵션들이 기본값이 되어 따�
 
 const db = mongoose.connection.useDb("mainDB");
 
-// 변경 시 FE의 interface.ts도 변경할 것
 /**
  * 유저 모델
  * @type {mongoose.Model}
@@ -36,21 +35,6 @@ export const UserModel = db.model(
   })
 );
 
-const reviewSchema = new mongoose.Schema({
-  authorId: { type: Number, default: 0 },
-  uploadTime: { type: Date, default: Date.now },
-  title: { type: String, default: "" },
-  images: { type: [String], default: [] },
-  reviewText: { type: String, default: "" },
-  rating: { type: Number, default: 0 },
-  tags: { type: [String], default: [] },
-  likesCount: { type: Number, default: 0 },
-  commentsCount: { type: Number, default: 0 },
-});
-
-// 현재 사용자가 좋아요를 눌렀는지 여부를 저장하는 가상 필드
-reviewSchema.virtual("isLikedByUser");
-
 /**
  * 리뷰 모델
  * @type {mongoose.Model}
@@ -63,21 +47,35 @@ reviewSchema.virtual("isLikedByUser");
  * @property {string[]} tags - 태그
  * @property {number} likesCount - 좋아요 수
  * @property {number} commentsCount - 댓글 수
- * @property {boolean} isLikedByUser - (가상 필드)현재 사용자가 좋아요를 눌렀는지 여부
  */
-export const ReviewModel = db.model("Review", reviewSchema);
+export const ReviewModel = db.model(
+  "Review",
+  new mongoose.Schema({
+    authorId: { type: Number, default: 0 },
+    uploadTime: { type: Date, default: Date.now },
+    title: { type: String, default: "" },
+    images: { type: [String], default: [] },
+    reviewText: { type: String, default: "" },
+    rating: { type: Number, default: 0 },
+    tags: { type: [String], default: [] },
+    likesCount: { type: Number, default: 0 },
+    commentsCount: { type: Number, default: 0 },
+  })
+);
 
 /**
  * 유저 추천 모델
  * @type {mongoose.Model}
  * @property {number} kakaoId - 유저 ID
  * @property {string} reviewId - 추천된 리뷰 ID 모음
+ * @property {Date} likedAt - 추천 시간
  */
 export const ReviewLikeModel = db.model(
   "ReviewLike",
   new mongoose.Schema({
     kakaoId: { type: Number, default: 0 },
     reviewId: { type: String, default: "" },
+    likedAt: { type: Date, default: Date.now },
   })
 );
 

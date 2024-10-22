@@ -74,26 +74,12 @@ export const getFeed = asyncHandler(async (req, res) => {
  */
 export const getReviewsById = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  const { kakaoId } = req.query;
   const reviewData = await ReviewModel.findById(reviewId);
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
 
-  // 유저가 존재하지 않을 경우 리뷰 데이터만 반환
-  const user = await UserModel.findOne({ kakaoId });
-  if (!user) {
-    return res.status(200).json(reviewData);
-  }
-
-  // 유저가 존재할 경우 리뷰 데이터에 현재 로그인한 유저의 추천 여부 추가
-  const reviewDataWithLike = reviewData.toObject();
-  reviewDataWithLike.isLikedByUser = !!(await ReviewLikeModel.exists({
-    kakaoId,
-    reviewId,
-  }));
-
-  res.status(200).json(reviewDataWithLike);
+  return res.status(200).json(reviewData);
 }, "특정 리뷰 조회");
 
 /**
@@ -208,6 +194,7 @@ export const deleteReview = asyncHandler(async (req, res) => {
   ); // 유저 정보 업데이트
   await CommentModel.deleteMany({ reviewId: reviewId.toString() }); // 댓글 삭제
   await NotificationModel.deleteMany({ reviewId: reviewId.toString() }); // 알림 삭제
+  await ReviewLikeModel.deleteMany({ reviewId: reviewId.toString() }); // 추천 삭제
 
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
 }, "리뷰 삭제");
