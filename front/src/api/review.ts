@@ -31,12 +31,9 @@ export const uploadReview = async (formData: FormData): Promise<void> => {
  * @returns 리뷰 상세 정보
  */
 export const fetchReviewById = async (
-  reviewId: string,
-  kakaoId: number
+  reviewId: string
 ): Promise<ReviewInfo> => {
-  const response = await genaralApiClient.get(`/review/${reviewId}`, {
-    params: { kakaoId },
-  });
+  const response = await genaralApiClient.get(`/review/${reviewId}`);
   console.log("리뷰 상세 조회 성공:", response.data);
 
   return response.data;

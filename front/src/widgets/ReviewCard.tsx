@@ -12,8 +12,6 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchUserInfoById } from "@/api/user";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { fetchReviewById } from "@/api/review";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import LikeButton from "@/features/interaction/LikeButton";
@@ -21,10 +19,9 @@ import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import ProfilePopOver from "./ProfilePopOver";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
-  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
   const { data: reviewInfo } = useQuery({
     queryKey: ["reviewInfo", reviewId],
-    queryFn: () => fetchReviewById(reviewId, kakaoId),
+    queryFn: () => fetchReviewById(reviewId),
   });
 
   const { data: author } = useQuery({
@@ -87,7 +84,11 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   </div>
                   <Separator className="my-3" />
                   <div className="flex gap-2">
-                    <LikeButton reviewId={reviewId} className="w-5 h-5" />
+                    <LikeButton
+                      reviewId={reviewId}
+                      likesCount={reviewInfo?.likesCount || 0}
+                      className="w-5 h-5"
+                    />
                     <div className="flex items-center gap-1.5">
                       <TooltipWrapper tooltipText="댓글 보기">
                         <Link

@@ -1,4 +1,15 @@
-import { authApiClient } from "@/api/util";
+import { authApiClient, genaralApiClient } from "@/api/util";
+
+export const fetchIsLiked = async (
+  reviewId: string,
+  kakaoId: number
+): Promise<boolean> => {
+  const response = await genaralApiClient.get(`/like/${reviewId}`, {
+    params: { kakaoId },
+  });
+
+  return response.data;
+};
 
 /**
  * 리뷰 추천 함수

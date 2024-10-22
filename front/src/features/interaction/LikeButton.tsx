@@ -1,38 +1,40 @@
 import { Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchReviewById } from "@/api/review";
 import { useAnimation } from "framer-motion";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useMutation } from "@tanstack/react-query";
-import { likeReview, unlikeReview } from "@/api/like";
+import { likeReview, unlikeReview, fetchIsLiked } from "@/api/like";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-import { ReviewInfo } from "@/shared/types/interface";
 import { cn } from "@/shared/lib/utils";
 
 export default function LikeButton({
   reviewId,
+  likesCount,
   className,
 }: {
   reviewId: string;
+  likesCount: number;
   className?: string;
 }) {
   const queryClient = useQueryClient();
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
-  const { data: reviewInfo } = useQuery<ReviewInfo, Error>({
-    queryKey: ["reviewInfo", reviewId],
-    queryFn: () => fetchReviewById(reviewId as string, kakaoId),
+  const { data: isLiked } = useQuery<boolean, Error>({
+    queryKey: ["isLiked", reviewId],
+    queryFn: () => fetchIsLiked(reviewId as string, kakaoId),
+    enabled: !!kakaoId,
   });
 
   const { mutate: like } = useMutation({
     mutationFn: () => likeReview(reviewId as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
-      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
+      queryClient.invalidateQueries({ queryKey: ["isLiked", kakaoId] });
+      // queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
     },
     onError: () => {
       alert("추천 실패");
@@ -43,7 +45,8 @@ export default function LikeButton({
     mutationFn: () => unlikeReview(reviewId as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
-      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
+      queryClient.invalidateQueries({ queryKey: ["isLiked", kakaoId] });
+      // queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
     },
     onError: () => {
       alert("추천 취소 실패");
@@ -52,7 +55,7 @@ export default function LikeButton({
 
   const [likeState, setLikeState] = useState(false);
   const likeControls = useAnimation();
-  const [currentLikesCount, setCurrentLikesCount] = useState(0);
+  const [currentLikesCount, setCurrentLikesCount] = useState(likesCount);
   const countControls = useAnimation();
 
   const handleLikeClick = async () => {
@@ -69,11 +72,10 @@ export default function LikeButton({
 
   // 추천 상태 업데이트
   useEffect(() => {
-    if (reviewInfo) {
-      setCurrentLikesCount(reviewInfo.likesCount || 0); // 추천수 업데이트
-      setLikeState(reviewInfo.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
+    if (isLiked) {
+      setLikeState(isLiked || false); // 로그인한 유저가 추천했는지 여부 업데이트
     }
-  }, [reviewInfo]);
+  }, [isLiked]);
 
   // 추천 애니메이션
   useEffect(() => {

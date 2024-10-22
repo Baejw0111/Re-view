@@ -30,7 +30,7 @@ export default function ReviewDetail() {
     error,
   } = useQuery<ReviewInfo, Error>({
     queryKey: ["reviewInfo", reviewId],
-    queryFn: () => fetchReviewById(reviewId as string, kakaoId),
+    queryFn: () => fetchReviewById(reviewId as string),
     enabled: !!reviewId,
   });
 
@@ -101,7 +101,10 @@ export default function ReviewDetail() {
               <CarouselPrevious className="left-1" />
               <CarouselNext className="right-1" />
             </Carousel>
-            <ReviewActionBar isAuthor={reviewInfo.authorId === kakaoId} />
+            <ReviewActionBar
+              isAuthor={reviewInfo.authorId === kakaoId}
+              likesCount={reviewInfo.likesCount}
+            />
           </div>
         </div>
       )}
