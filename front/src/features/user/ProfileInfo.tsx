@@ -7,7 +7,7 @@ import {
   fetchUserReviewList,
   fetchUserLikedList,
 } from "@/api/user";
-import { UserInfo } from "@/shared/types/interface";
+import { UserInfo, CommentInfo } from "@/shared/types/interface";
 
 export default function ProfileInfo({ userId }: { userId: number }) {
   const { data: userInfo } = useQuery<UserInfo>({
@@ -15,7 +15,7 @@ export default function ProfileInfo({ userId }: { userId: number }) {
     queryFn: () => fetchUserInfoById(userId),
   });
 
-  const { data: userCommentList } = useQuery<string[]>({
+  const { data: userCommentList } = useQuery<CommentInfo[]>({
     queryKey: ["userCommentList", userId],
     queryFn: () => fetchUserCommentList(userId),
   });
