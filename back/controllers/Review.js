@@ -59,13 +59,22 @@ export const createReview = asyncHandler(async (req, res) => {
 
 /**
  * 홈 피드에 표시될 리뷰 조회
- * @returns {string[]} 리뷰 ID 리스트
+ * @returns {ReviewModel[]} 리뷰 데이터 리스트
  */
 export const getFeed = asyncHandler(async (req, res) => {
-  const reviewList = await ReviewModel.find();
-  const reviewIdList = reviewList.map((review) => review._id);
+  const { lastReviewId } = req.query;
 
-  return res.json(reviewIdList);
+  const lastReview =
+    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
+  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+
+  const reviewList = await ReviewModel.find({
+    uploadTime: { $lt: lastReviewUploadTime },
+  })
+    .sort({ uploadTime: -1 })
+    .limit(20);
+
+  return res.json(reviewList);
 }, "리뷰 ID 리스트 조회");
 
 /**

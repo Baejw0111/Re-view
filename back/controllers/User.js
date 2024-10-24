@@ -9,6 +9,7 @@ import { deleteUploadedFiles } from "../utils/Upload.js";
 
 /**
  * 유저 정보 조회
+ * @returns {UserModel} 유저 데이터
  */
 export const getUserInfoById = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
@@ -18,23 +19,33 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
 
 /**
  * 유저가 작성한 리뷰 목록 조회
- * @returns {string[]} 리뷰 ID 리스트
+ * @returns {ReviewModel[]} 리뷰 데이터 리스트
  */
 export const getUserReviewList = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
+  const { lastReviewId } = req.query;
+
   const user = await UserModel.exists({ kakaoId: userId });
   if (!user) {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
 
-  const reviews = await ReviewModel.find({ authorId: userId });
-  const reviewIdList = reviews.map((review) => review._id);
-  return res.json(reviewIdList);
-}, "유저가 작성한 리뷰 ID 리스트 조회");
+  const lastReview =
+    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
+  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+
+  const reviewList = await ReviewModel.find({
+    authorId: userId,
+    uploadTime: { $lt: lastReviewUploadTime },
+  })
+    .sort({ uploadTime: -1 })
+    .limit(20);
+  return res.json(reviewList);
+}, "유저가 작성한 리뷰 목록 조회");
 
 /**
  * 유저가 작성한 댓글 목록 조회
- * @returns 유저가 작성한 댓글 목록
+ * @returns {CommentModel[]} 댓글 데이터 리스트
  */
 export const getUserCommentList = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
@@ -58,25 +69,47 @@ export const getUserCommentList = asyncHandler(async (req, res) => {
 }, "유저가 작성한 댓글 목록 조회");
 
 /**
- * 유저가 추천한 리뷰 ID 목록 조회 API
- * @returns 유저가 추천한 리뷰 ID 목록
+ * 유저가 추천한 리뷰 목록 조회
+ * @returns {ReviewModel[]} 유저가 추천한 리뷰 데이터 리스트
  */
 export const getUserLikedList = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
+  const { lastReviewId } = req.query;
+
   const user = await UserModel.exists({ kakaoId: userId });
   if (!user) {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
 
-  const likes = await ReviewLikeModel.find({ kakaoId: userId }).sort({
-    likedAt: -1,
-  });
-  const reviewIdList = likes.map((like) => like.reviewId);
-  res.status(200).json(reviewIdList);
-}, "유저가 추천한 리뷰 ID 목록 조회");
+  const lastReview =
+    lastReviewId === ""
+      ? null
+      : await ReviewLikeModel.findOne({
+          reviewId: lastReviewId,
+          kakaoId: userId,
+        });
+  const lastReviewLikedAt = lastReview ? lastReview.likedAt : new Date();
+
+  const likedList = await ReviewLikeModel.find({
+    kakaoId: userId,
+    likedAt: { $lt: lastReviewLikedAt },
+  })
+    .sort({
+      likedAt: -1,
+    })
+    .limit(20);
+
+  const reviewList = await Promise.all(
+    likedList.map(async (liked) => {
+      return await ReviewModel.findById(liked.reviewId);
+    })
+  );
+  res.status(200).json(reviewList);
+}, "유저가 추천한 리뷰 목록 조회");
 
 /**
  * 유저 정보 수정
+ * @returns {UserModel} 수정된 유저 데이터
  */
 export const updateUserInfo = asyncHandler(async (req, res) => {
   const { newNickname, useDefaultProfile } = req.body; // 기본 프로필 사용 여부 추가
