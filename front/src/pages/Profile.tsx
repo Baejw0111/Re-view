@@ -8,7 +8,7 @@ import {
 } from "@/shared/shadcn-ui/tabs";
 import { Grid, MessageCircle, Heart } from "lucide-react";
 import { Link, Route, Routes, useParams, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import {
   fetchUserInfoById,
   fetchUserCommentList,
@@ -42,16 +42,24 @@ export default function Profile() {
   });
 
   // 사용자가 작성한 리뷰 가져오기
-  const { data: userReviewList } = useQuery<string[]>({
-    queryKey: ["userReviewList", Number(userId)],
-    queryFn: () => fetchUserReviewList(Number(userId)),
-  });
+  const { data: userReviewList, fetchNextPage: fetchNextUserReviewList } =
+    useInfiniteQuery({
+      queryKey: ["userReviewList", Number(userId)],
+      initialPageParam: "",
+      queryFn: ({ pageParam }: { pageParam: string }) =>
+        fetchUserReviewList(Number(userId), pageParam),
+      getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]._id,
+    });
 
   // 사용자가 추천한 리뷰 가져오기
-  const { data: userLikedList } = useQuery<string[]>({
-    queryKey: ["userLikedList", Number(userId)],
-    queryFn: () => fetchUserLikedList(Number(userId)),
-  });
+  const { data: userLikedList, fetchNextPage: fetchNextUserLikedList } =
+    useInfiniteQuery({
+      queryKey: ["userLikedList", Number(userId)],
+      initialPageParam: "",
+      queryFn: ({ pageParam }: { pageParam: string }) =>
+        fetchUserLikedList(Number(userId), pageParam),
+      getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]._id,
+    });
 
   return (
     <PageTemplate pageName="프로필">
@@ -103,7 +111,12 @@ export default function Profile() {
             path=""
             element={
               <TabsContent value="posts" className="mt-6">
-                {userReviewList && <Reviews reviewIdList={userReviewList} />}
+                {userReviewList && (
+                  <Reviews
+                    reviewList={userReviewList.pages.flatMap((page) => page)}
+                    callback={fetchNextUserReviewList}
+                  />
+                )}
               </TabsContent>
             }
           />
@@ -111,7 +124,12 @@ export default function Profile() {
             path="posts"
             element={
               <TabsContent value="posts" className="mt-6">
-                {userReviewList && <Reviews reviewIdList={userReviewList} />}
+                {userReviewList && (
+                  <Reviews
+                    reviewList={userReviewList.pages.flatMap((page) => page)}
+                    callback={fetchNextUserReviewList}
+                  />
+                )}
               </TabsContent>
             }
           />
@@ -132,7 +150,12 @@ export default function Profile() {
             path="liked"
             element={
               <TabsContent value="liked" className="mt-6">
-                {userLikedList && <Reviews reviewIdList={userLikedList} />}
+                {userLikedList && (
+                  <Reviews
+                    reviewList={userLikedList.pages.flatMap((page) => page)}
+                    callback={fetchNextUserLikedList}
+                  />
+                )}
               </TabsContent>
             }
           />

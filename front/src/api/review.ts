@@ -2,12 +2,17 @@ import { genaralApiClient, authApiClient } from "@/api/util";
 import { ReviewInfo } from "@/shared/types/interface";
 
 /**
- * 피드에 표시할 리뷰 ID 리스트를 가져오는 함수
- * @returns 리뷰 ID 리스트
+ * 피드에 표시할 리뷰 목록 조회 함수
+ * @param lastReviewId 마지막 리뷰 ID
+ * @returns 리뷰 목록
  */
-export const fetchFeed = async (): Promise<string[]> => {
-  const response = await genaralApiClient.get(`/review`);
-  console.log("피드 리뷰 ID 리스트 조회 성공:", response.data);
+export const fetchFeed = async (
+  lastReviewId: string
+): Promise<ReviewInfo[]> => {
+  const response = await genaralApiClient.get(`/review`, {
+    params: { lastReviewId },
+  });
+  console.log("피드 리뷰 목록 조회 성공:", response.data);
 
   return response.data;
 };
@@ -34,7 +39,7 @@ export const fetchReviewById = async (
   reviewId: string
 ): Promise<ReviewInfo> => {
   const response = await genaralApiClient.get(`/review/${reviewId}`);
-  console.log("리뷰 상세 조회 성공:", response.data);
+  // console.log("리뷰 상세 조회 성공:", response.data);
 
   return response.data;
 };

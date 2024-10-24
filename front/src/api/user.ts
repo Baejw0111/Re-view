@@ -1,5 +1,5 @@
 import { genaralApiClient, authApiClient } from "@/api/util";
-import { UserInfo, CommentInfo } from "@/shared/types/interface";
+import { UserInfo, CommentInfo, ReviewInfo } from "@/shared/types/interface";
 
 /**
  * 유저 조회 함수
@@ -26,27 +26,36 @@ export const fetchUserCommentList = async (
 };
 
 /**
- * 유저가 작성한 리뷰 ID 리스트를 가져오는 함수
+ * 유저가 작성한 리뷰 목록 조회 함수
  * @param userId 유저 ID
- * @returns 리뷰 ID 리스트
+ * @returns 리뷰 목록
  */
 export const fetchUserReviewList = async (
-  userId: number
-): Promise<string[]> => {
-  const response = await genaralApiClient.get(`/user/${userId}/reviews`);
-  console.log("유저가 작성한 리뷰 ID 리스트 조회 성공:", response.data);
+  userId: number,
+  lastReviewId: string
+): Promise<ReviewInfo[]> => {
+  const response = await genaralApiClient.get(`/user/${userId}/reviews`, {
+    params: { lastReviewId },
+  });
+  console.log("유저가 작성한 리뷰 목록 조회 성공:", response.data);
 
   return response.data;
 };
 
 /**
- * 유저가 추천한 리뷰 ID 리스트를 가져오는 함수
+ * 유저가 추천한 리뷰 목록 조회 함수
  * @param userId 유저 ID
- * @returns 리뷰 ID 리스트
+ * @param lastReviewId 마지막 리뷰 ID
+ * @returns 리뷰 목록
  */
-export const fetchUserLikedList = async (userId: number): Promise<string[]> => {
-  const response = await genaralApiClient.get(`/user/${userId}/liked`);
-  console.log("유저가 추천한 리뷰 ID 리스트 조회 성공:", response.data);
+export const fetchUserLikedList = async (
+  userId: number,
+  lastReviewId: string
+): Promise<ReviewInfo[]> => {
+  const response = await genaralApiClient.get(`/user/${userId}/liked`, {
+    params: { lastReviewId },
+  });
+  console.log("유저가 추천한 리뷰 목록 조회 성공:", response.data);
 
   return response.data;
 };
