@@ -34,7 +34,12 @@ export default function ReviewDetail() {
     enabled: !!reviewId,
   });
 
-  const { data: userInfo } = useQuery<UserInfo>({
+  const { data: userInfo } = useQuery<{
+    userInfo: UserInfo;
+    reviewCount: number;
+    commentCount: number;
+    likedReviewCount: number;
+  }>({
     queryKey: ["userInfo", reviewInfo?.authorId],
     queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
     enabled: !!reviewInfo, // reviewInfo가 있을 때만 쿼리 실행
@@ -56,11 +61,11 @@ export default function ReviewDetail() {
                 >
                   <UserAvatar
                     className="h-7 w-7"
-                    profileImage={userInfo?.profileImage}
-                    nickname={userInfo?.nickname}
+                    profileImage={userInfo?.userInfo.profileImage}
+                    nickname={userInfo?.userInfo.nickname}
                   />
                   <div className="line-clamp-1 font-semibold">
-                    {userInfo?.nickname}
+                    {userInfo?.userInfo.nickname}
                   </div>
                 </a>
                 <div className="text-xs text-muted-foreground">

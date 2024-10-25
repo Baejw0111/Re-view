@@ -17,14 +17,12 @@ export default function Reviews({
   const reviewListRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    console.log(reviewListRef);
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             if (callback) callback();
           }
-          console.log("하단 도달");
         });
       },
       { threshold: 0.5 } // 50%가 보일 때 트리거

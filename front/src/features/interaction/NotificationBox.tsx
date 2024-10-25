@@ -70,9 +70,13 @@ export default function NotificationBox({
       >
         <UserAvatar
           profileImage={
-            category === "like" ? `public/logo.svg` : userInfo?.profileImage
+            category === "like"
+              ? `public/logo.svg`
+              : userInfo?.userInfo.profileImage
           }
-          nickname={category === "like" ? "시스템" : userInfo?.nickname}
+          nickname={
+            category === "like" ? "시스템" : userInfo?.userInfo.nickname
+          }
         />
         <div className="flex justify-between w-full gap-2">
           <div className="flex flex-col gap-0.5">
@@ -87,7 +91,7 @@ export default function NotificationBox({
               <h3 className="text-sm font-semibold break-words whitespace-pre-wrap">
                 {category === "like"
                   ? `작성하신 리뷰가 인기 리뷰로 선정되었습니다.`
-                  : userInfo?.nickname}
+                  : userInfo?.userInfo.nickname}
               </h3>
             </div>
             <h4 className="text-sm text-muted-foreground line-clamp-1">

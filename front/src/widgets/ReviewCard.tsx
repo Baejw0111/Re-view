@@ -38,15 +38,17 @@ export default function ReviewCard({ reviewInfo }: { reviewInfo: ReviewInfo }) {
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     {author && (
-                      <ProfilePopOver userId={author.kakaoId as number}>
+                      <ProfilePopOver
+                        userId={author.userInfo.kakaoId as number}
+                      >
                         <div role="button" className="flex items-center gap-2">
                           <UserAvatar
                             className="h-6 w-6"
-                            profileImage={author.profileImage}
-                            nickname={author.nickname}
+                            profileImage={author.userInfo.profileImage}
+                            nickname={author.userInfo.nickname}
                           />
                           <div className="text-sm line-clamp-1 text-muted-foreground font-semibold">
-                            {author.nickname}
+                            {author.userInfo.nickname}
                           </div>
                         </div>
                       </ProfilePopOver>

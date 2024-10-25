@@ -30,7 +30,12 @@ export default function Profile() {
 
   // 사용자 정보 가져오기
   const { id: userId } = useParams();
-  const { data: userInfo } = useQuery<UserInfo>({
+  const { data: userInfo } = useQuery<{
+    userInfo: UserInfo;
+    reviewCount: number;
+    commentCount: number;
+    likedReviewCount: number;
+  }>({
     queryKey: ["userInfo", Number(userId)],
     queryFn: () => fetchUserInfoById(Number(userId)),
   });
@@ -67,8 +72,8 @@ export default function Profile() {
         <div className="flex flex-row items-center md:items-start gap-4 md:gap-6">
           <UserAvatar
             className="h-24 w-24 md:h-32 md:w-32 my-auto"
-            profileImage={userInfo?.profileImage}
-            nickname={userInfo?.nickname}
+            profileImage={userInfo?.userInfo.profileImage}
+            nickname={userInfo?.userInfo.nickname}
           />
           <ProfileInfo userId={Number(userId)} />
         </div>
