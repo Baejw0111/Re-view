@@ -13,8 +13,15 @@ import { deleteUploadedFiles } from "../utils/Upload.js";
  */
 export const getUserInfoById = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
-  const user = await UserModel.findOne({ kakaoId: userId });
-  res.status(200).json(user);
+  const userInfo = await UserModel.findOne({ kakaoId: userId });
+  const reviewCount = await ReviewModel.countDocuments({ authorId: userId });
+  const commentCount = await CommentModel.countDocuments({ authorId: userId });
+  const likedReviewCount = await ReviewLikeModel.countDocuments({
+    kakaoId: userId,
+  });
+  res
+    .status(200)
+    .json({ userInfo, reviewCount, commentCount, likedReviewCount });
 }, "유저 정보 조회");
 
 /**
