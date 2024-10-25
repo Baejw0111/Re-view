@@ -79,17 +79,27 @@ export interface CommentInfo {
 /**
  * @description 알림 정보
  * @property {string} _id - 알림 ID
- * @property {number} kakaoId - 알림을 받을 유저의 카카오 ID
  * @property {string} time - 알림 생성 시간
  * @property {string} commentId - 알림과 관련된 댓글 ID
  * @property {string} reviewId - 알림과 관련된 리뷰 ID
  * @property {string} category - 알림 종류
+ * @property {string} profileImage - 알림 작성자 프로필 이미지
+ * @property {string} nickname - 알림 작성자 닉네임
+ * @property {string} title - 알림 제목
+ * @property {string} reviewTitle - 알림과 관련된 리뷰 제목
+ * @property {string} content - 알림 내용
+ * @property {string} reviewThumbnail - 알림과 관련된 리뷰 썸네일
  */
 export interface NotificationInfo {
   _id: string;
-  kakaoId: number;
   time: string;
   commentId: string;
   reviewId: string;
   category: string;
+  profileImage: string;
+  nickname: string;
+  title: string;
+  reviewTitle: string;
+  content: string;
+  reviewThumbnail: string;
 }

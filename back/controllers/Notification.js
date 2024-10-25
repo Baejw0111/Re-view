@@ -1,4 +1,9 @@
-import { UserModel, NotificationModel } from "../utils/Model.js";
+import {
+  UserModel,
+  NotificationModel,
+  CommentModel,
+  ReviewModel,
+} from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 let clients = new Map(); // 사용자 ID를 키로 하는 클라이언트 맵
@@ -58,7 +63,44 @@ export const getNotifications = asyncHandler(async (req, res) => {
   const notifications = await NotificationModel.find({
     kakaoId: req.userId,
   }).sort({ time: -1 });
-  res.status(200).json(notifications);
+
+  const notificationList = await Promise.all(
+    notifications.map(async (notification) => {
+      const comment =
+        notification.commentId !== ""
+          ? await CommentModel.findById(notification.commentId)
+          : null;
+      const author = comment
+        ? await UserModel.findOne({ kakaoId: comment.authorId })
+        : null;
+      const profileImage = author ? author.profileImage : `public/logo.svg`;
+      const nickname = author ? author.nickname : "시스템";
+      const title =
+        notification.category === "like" ? "인기 리뷰 선정!" : nickname;
+      const review = await ReviewModel.findById(notification.reviewId);
+      const reviewTitle = review.title;
+      const content =
+        notification.category === "like"
+          ? "작성하신 리뷰가 인기 리뷰로 선정되었습니다."
+          : comment.content;
+      const reviewThumbnail = review.images[0];
+
+      return {
+        _id: notification._id,
+        time: notification.time,
+        commentId: notification.commentId,
+        reviewId: notification.reviewId,
+        category: notification.category,
+        profileImage,
+        nickname,
+        title,
+        reviewTitle,
+        content,
+        reviewThumbnail,
+      };
+    })
+  );
+  res.status(200).json(notificationList);
 }, "알림 조회");
 
 /**
