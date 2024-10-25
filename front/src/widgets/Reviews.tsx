@@ -25,7 +25,7 @@ export default function Reviews({
           }
         });
       },
-      { threshold: 0.5 } // 50%가 보일 때 트리거
+      { threshold: 0.1 } // 10%가 보일 때 트리거
     );
 
     const observingElement = reviewListRef.current;
