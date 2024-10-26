@@ -14,7 +14,7 @@ export default function PageTemplate({
     <>
       <div
         className={`sticky top-16 left-0 z-40 w-full backdrop-blur-xl supports-[backdrop-filter]:bg-background/40 transition-all duration-300 ease-in-out ${
-          isScrollingUp ? "translate-y-0" : "-translate-y-full"
+          isScrollingUp ? "translate-y-0" : "-translate-y-16"
         }`}
       >
         <div className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 md:px-6 py-2 md:py-4 border-b border-border">
