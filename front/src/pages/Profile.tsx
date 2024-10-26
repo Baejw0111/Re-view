@@ -53,7 +53,10 @@ export default function Profile() {
       initialPageParam: "",
       queryFn: ({ pageParam }: { pageParam: string }) =>
         fetchUserReviewList(Number(userId), pageParam),
-      getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]._id,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.length < 20) return undefined;
+        return lastPage[lastPage.length - 1]._id;
+      },
     });
 
   // 사용자가 추천한 리뷰 가져오기
@@ -63,7 +66,10 @@ export default function Profile() {
       initialPageParam: "",
       queryFn: ({ pageParam }: { pageParam: string }) =>
         fetchUserLikedList(Number(userId), pageParam),
-      getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]._id,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.length < 20) return undefined;
+        return lastPage[lastPage.length - 1]._id;
+      },
     });
 
   return (

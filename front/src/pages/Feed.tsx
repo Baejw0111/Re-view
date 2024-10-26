@@ -14,7 +14,10 @@ export default function Feed() {
     queryKey: ["feed"],
     initialPageParam: "",
     queryFn: ({ pageParam }: { pageParam: string }) => fetchFeed(pageParam),
-    getNextPageParam: (lastPage) => lastPage[lastPage.length - 1]._id,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < 20) return undefined;
+      return lastPage[lastPage.length - 1]._id;
+    },
   });
 
   if (error) return <div>에러: {error.message}</div>;
