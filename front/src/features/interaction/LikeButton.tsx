@@ -34,7 +34,6 @@ export default function LikeButton({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
       queryClient.invalidateQueries({ queryKey: ["isLiked", reviewId] });
-      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
     },
     onError: () => {
       alert("추천 실패");
@@ -46,7 +45,6 @@ export default function LikeButton({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
       queryClient.invalidateQueries({ queryKey: ["isLiked", reviewId] });
-      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
     },
     onError: () => {
       alert("추천 취소 실패");
@@ -82,21 +80,25 @@ export default function LikeButton({
     likeControls.start({
       scale: [1, 1.3, 1],
       transition: { duration: 0.3 },
-    }),
-      countControls.start(
-        likeState
-          ? {
-              opacity: [0, 1],
-              y: [10, 0],
-              transition: { duration: 0.3 },
-            }
-          : {
-              opacity: [0, 1],
-              y: [-10, 0],
-              transition: { duration: 0.3 },
-            }
-      );
+    });
   }, [likeState]);
+
+  // 추천 수 애니메이션
+  useEffect(() => {
+    countControls.start(
+      likeState
+        ? {
+            opacity: [0, 1],
+            y: [10, 0],
+            transition: { duration: 0.3 },
+          }
+        : {
+            opacity: [0, 1],
+            y: [-10, 0],
+            transition: { duration: 0.3 },
+          }
+    );
+  }, [likesCount, currentLikesCount]);
 
   return (
     <div className="flex items-center gap-1.5">
