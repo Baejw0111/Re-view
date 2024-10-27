@@ -41,36 +41,44 @@ export default function Profile() {
   });
 
   // 사용자가 작성한 댓글 가져오기
-  const { data: userCommentList } = useQuery<CommentInfo[]>({
+  const { data: userCommentList, refetch: refetchUserCommentList } = useQuery<
+    CommentInfo[]
+  >({
     queryKey: ["userCommentList", Number(userId)],
     queryFn: () => fetchUserCommentList(Number(userId)),
   });
 
   // 사용자가 작성한 리뷰 가져오기
-  const { data: userReviewList, fetchNextPage: fetchNextUserReviewList } =
-    useInfiniteQuery({
-      queryKey: ["userReviewList", Number(userId)],
-      initialPageParam: "",
-      queryFn: ({ pageParam }: { pageParam: string }) =>
-        fetchUserReviewList(Number(userId), pageParam),
-      getNextPageParam: (lastPage) => {
-        if (lastPage.length < 20) return undefined;
-        return lastPage[lastPage.length - 1]._id;
-      },
-    });
+  const {
+    data: userReviewList,
+    fetchNextPage: fetchNextUserReviewList,
+    refetch: refetchUserReviewList,
+  } = useInfiniteQuery({
+    queryKey: ["userReviewList", Number(userId)],
+    initialPageParam: "",
+    queryFn: ({ pageParam }: { pageParam: string }) =>
+      fetchUserReviewList(Number(userId), pageParam),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < 20) return undefined;
+      return lastPage[lastPage.length - 1]._id;
+    },
+  });
 
   // 사용자가 추천한 리뷰 가져오기
-  const { data: userLikedList, fetchNextPage: fetchNextUserLikedList } =
-    useInfiniteQuery({
-      queryKey: ["userLikedList", Number(userId)],
-      initialPageParam: "",
-      queryFn: ({ pageParam }: { pageParam: string }) =>
-        fetchUserLikedList(Number(userId), pageParam),
-      getNextPageParam: (lastPage) => {
-        if (lastPage.length < 20) return undefined;
-        return lastPage[lastPage.length - 1]._id;
-      },
-    });
+  const {
+    data: userLikedList,
+    fetchNextPage: fetchNextUserLikedList,
+    refetch: refetchUserLikedList,
+  } = useInfiniteQuery({
+    queryKey: ["userLikedList", Number(userId)],
+    initialPageParam: "",
+    queryFn: ({ pageParam }: { pageParam: string }) =>
+      fetchUserLikedList(Number(userId), pageParam),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < 20) return undefined;
+      return lastPage[lastPage.length - 1]._id;
+    },
+  });
 
   return (
     <PageTemplate pageName="프로필">
@@ -100,17 +108,17 @@ export default function Profile() {
         className="mt-6"
       >
         <TabsList className="grid w-full grid-cols-3 md:max-w-xl mx-auto">
-          <Link to="posts">
+          <Link to="posts" onClick={() => refetchUserReviewList()}>
             <TabsTrigger className="w-full" value="posts">
               <Grid className="h-4 w-4 mr-2" /> 리뷰
             </TabsTrigger>
           </Link>
-          <Link to="comments">
+          <Link to="comments" onClick={() => refetchUserCommentList()}>
             <TabsTrigger className="w-full" value="comments">
               <MessageCircle className="h-4 w-4 mr-2" /> 댓글
             </TabsTrigger>
           </Link>
-          <Link to="liked">
+          <Link to="liked" onClick={() => refetchUserLikedList()}>
             <TabsTrigger className="w-full" value="liked">
               <Heart className="text-red-500 fill-red-500 h-4 w-4 mr-2" /> 추천
             </TabsTrigger>
