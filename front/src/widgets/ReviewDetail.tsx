@@ -18,6 +18,7 @@ import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import UserAvatar from "@/features/user/UserAvatar";
 import { claculateTime } from "@/shared/lib/utils";
+import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 
 export default function ReviewDetail() {
   const location = useLocation();
@@ -95,11 +96,13 @@ export default function ReviewDetail() {
               <CarouselContent className="py-1">
                 {reviewInfo.images.map((image, index) => (
                   <CarouselItem key={index}>
-                    <img
-                      src={`${API_URL}/${image}`}
-                      alt={`review Image-${index}`}
-                      className="w-full h-full object-contain bg-muted rounded-md"
-                    />
+                    <AspectRatio ratio={16 / 9}>
+                      <img
+                        className="w-full h-full object-contain bg-muted rounded-md border-0"
+                        src={`${API_URL}/${image}`}
+                        alt={`review Image-${index}`}
+                      />
+                    </AspectRatio>
                   </CarouselItem>
                 ))}
               </CarouselContent>
