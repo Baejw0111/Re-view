@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
 import ReviewCard from "@/widgets/ReviewCard";
 import { ReviewInfo } from "@/shared/types/interface";
+import { useIntersectionObserver } from "@/shared/hooks";
 
 /**
  * @description 리뷰 카드 목록을 반환하는 컴포넌트
@@ -12,32 +12,12 @@ export default function Reviews({
   callback,
 }: {
   reviewList: ReviewInfo[];
-  callback?: () => void;
+  callback: () => void;
 }) {
-  const reviewListRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            if (callback) callback();
-          }
-        });
-      },
-      { threshold: 0.1 } // 10%가 보일 때 트리거
-    );
-
-    const observingElement = reviewListRef.current;
-
-    if (observingElement) {
-      observer.observe(observingElement);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [reviewList]);
+  const reviewListRef = useIntersectionObserver<ReviewInfo>(
+    reviewList,
+    callback
+  );
 
   return (
     <>
