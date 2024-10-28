@@ -32,7 +32,7 @@ export default function CommentInput() {
         queryKey: ["reviewCommentList", reviewId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["userCommentList", userInfo?.kakaoId],
+        queryKey: ["commentCount", reviewId],
       });
     },
   });
