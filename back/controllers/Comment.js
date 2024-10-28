@@ -41,6 +41,15 @@ export const addComment = asyncHandler(async (req, res) => {
 }, "리뷰 댓글 추가");
 
 /**
+ * 리뷰 댓글 수 조회
+ */
+export const getCommentCount = asyncHandler(async (req, res) => {
+  const { id: reviewId } = req.params;
+  const commentCount = await CommentModel.countDocuments({ reviewId });
+  res.status(200).json(commentCount);
+}, "리뷰 댓글 수 조회");
+
+/**
  * 특정 댓글 조회
  */
 export const getCommentById = asyncHandler(async (req, res) => {

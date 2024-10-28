@@ -38,6 +38,7 @@ import {
   addComment,
   getCommentById,
   getReviewCommentList,
+  getCommentCount,
   deleteComment,
 } from "./controllers/Comment.js";
 
@@ -67,6 +68,7 @@ app.delete("/auth/kakao/delete", verifyKakaoAccessToken, deleteUserAccount); // 
 // 리뷰 관련 API
 app.get("/review", getFeed); // 리뷰 전체 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
+app.get("/review/:id/comments/count", getCommentCount); // 리뷰의 댓글 수 조회 API
 app.get("/review/:id/comments", getReviewCommentList); // 리뷰의 댓글 목록 조회 API
 app.post(
   "/review",
