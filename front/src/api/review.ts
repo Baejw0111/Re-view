@@ -6,9 +6,7 @@ import { ReviewInfo } from "@/shared/types/interface";
  * @param lastReviewId 마지막 리뷰 ID
  * @returns 리뷰 목록
  */
-export const fetchFeed = async (
-  lastReviewId: string
-): Promise<ReviewInfo[]> => {
+export const fetchFeed = async (lastReviewId: string): Promise<string[]> => {
   const response = await genaralApiClient.get(`/review`, {
     params: { lastReviewId },
   });
@@ -39,7 +37,7 @@ export const fetchReviewById = async (
   reviewId: string
 ): Promise<ReviewInfo> => {
   const response = await genaralApiClient.get(`/review/${reviewId}`);
-  // console.log("리뷰 상세 조회 성공:", response.data);
+  console.log("리뷰 상세 조회 성공:", response.data);
 
   return response.data;
 };
