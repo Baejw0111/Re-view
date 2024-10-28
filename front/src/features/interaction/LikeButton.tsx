@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { cn } from "@/shared/lib/utils";
+import { useCountingAnimation } from "@/shared/hooks";
 
 export default function LikeButton({
   reviewId,
@@ -21,6 +22,7 @@ export default function LikeButton({
   const queryClient = useQueryClient();
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
+  // 추천 상태 조회
   const { data: likeStatus } = useQuery<
     { isLiked: boolean; likesCount: number },
     Error
@@ -30,6 +32,7 @@ export default function LikeButton({
     enabled: !!kakaoId,
   });
 
+  // 추천 추가
   const { mutate: like } = useMutation({
     mutationFn: () => likeReview(reviewId as string),
     onSuccess: () => {
@@ -40,6 +43,7 @@ export default function LikeButton({
     },
   });
 
+  // 추천 취소
   const { mutate: unlike } = useMutation({
     mutationFn: () => unlikeReview(reviewId as string),
     onSuccess: () => {
@@ -52,10 +56,8 @@ export default function LikeButton({
 
   const [likeState, setLikeState] = useState(false);
   const likeControls = useAnimation();
-  const [currentLikesCount, setCurrentLikesCount] = useState(
-    likeStatus?.likesCount || 0
-  );
-  const countControls = useAnimation();
+  const [currentLikesCount, setCurrentLikesCount, countControls] =
+    useCountingAnimation(0); // 추천 수 애니메이션
 
   const handleLikeClick = async () => {
     setCurrentLikesCount(currentLikesCount + (likeState ? -1 : 1));
@@ -72,8 +74,8 @@ export default function LikeButton({
   // 추천 상태 업데이트
   useEffect(() => {
     if (likeStatus) {
-      setLikeState(likeStatus.isLiked || false); // 로그인한 유저가 추천했는지 여부 업데이트
-      setCurrentLikesCount(likeStatus.likesCount);
+      setLikeState(likeStatus.isLiked); // 로그인한 유저의 리뷰 추천 여부 업데이트
+      setCurrentLikesCount(likeStatus.likesCount); // 추천 수 업데이트
     }
   }, [likeStatus]);
 
@@ -84,23 +86,6 @@ export default function LikeButton({
       transition: { duration: 0.3 },
     });
   }, [likeState]);
-
-  // 추천 수 애니메이션
-  useEffect(() => {
-    countControls.start(
-      likeState
-        ? {
-            opacity: [0, 1],
-            y: [10, 0],
-            transition: { duration: 0.3 },
-          }
-        : {
-            opacity: [0, 1],
-            y: [-10, 0],
-            transition: { duration: 0.3 },
-          }
-    );
-  }, [likeStatus?.likesCount, currentLikesCount]);
 
   return (
     <div className="flex items-center gap-1.5">
