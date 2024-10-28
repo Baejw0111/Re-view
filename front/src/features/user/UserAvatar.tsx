@@ -14,11 +14,13 @@ export default function UserAvatar({
 }) {
   return (
     <Avatar className={cn("w-9 h-9", className)}>
-      <AvatarImage
-        src={`${API_URL}/${profileImage}`}
-        alt={nickname}
-        className="object-cover"
-      />
+      {profileImage && (
+        <AvatarImage
+          src={`${API_URL}/${profileImage}`}
+          alt={nickname}
+          className="object-cover"
+        />
+      )}
       <AvatarFallback>
         <UserRound className="w-[70%] h-[70%]" />
       </AvatarFallback>
