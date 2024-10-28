@@ -29,7 +29,7 @@ export default function SkeletonReviewCard() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>
-          <Skeleton className="w-full h-full" />
+          <Skeleton className="w-full h-full rounded-none" />
         </ResizablePanel>
       </ResizablePanelGroup>
     </Card>
