@@ -1,5 +1,5 @@
 import UserAvatar from "@/features/user/UserAvatar";
-import { MessageCircle, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Card } from "@/shared/shadcn-ui/card";
 import {
   ResizableHandle,
@@ -15,9 +15,9 @@ import { Separator } from "@/shared/shadcn-ui/separator";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import LikeButton from "@/features/interaction/LikeButton";
-import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import ProfilePopOver from "./ProfilePopOver";
 import SkeletonReviewCard from "@/shared/skeleton/SkeletonReviewCard";
+import CommentButton from "@/features/interaction/CommentButton";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
   const { data: reviewInfo, isFetching: isReviewInfoFetching } = useQuery({
@@ -93,19 +93,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   <Separator className="my-3" />
                   <div className="flex gap-2">
                     <LikeButton reviewId={reviewInfo._id} className="w-5 h-5" />
-                    <div className="flex items-center gap-1.5">
-                      <TooltipWrapper tooltipText="댓글 보기">
-                        <Link
-                          to={`?reviewId=${reviewInfo._id}`}
-                          className="hover:text-muted-foreground active:text-muted-foreground"
-                        >
-                          <MessageCircle className="w-5 h-5" />
-                        </Link>
-                      </TooltipWrapper>
-                      <span className="text-sm text-muted-foreground">
-                        {reviewInfo.commentsCount}
-                      </span>
-                    </div>
+                    <CommentButton reviewId={reviewInfo._id} />
                   </div>
                 </div>
               </div>
