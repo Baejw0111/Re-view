@@ -26,7 +26,7 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
 
 /**
  * 유저가 작성한 리뷰 목록 조회
- * @returns {ReviewModel[]} 리뷰 데이터 리스트
+ * @returns {string[]} 리뷰 ID 리스트
  */
 export const getUserReviewList = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
@@ -47,7 +47,9 @@ export const getUserReviewList = asyncHandler(async (req, res) => {
   })
     .sort({ uploadTime: -1 })
     .limit(20);
-  return res.json(reviewList);
+
+  const reviewIdList = reviewList.map((review) => review._id);
+  res.status(200).json(reviewIdList);
 }, "유저가 작성한 리뷰 목록 조회");
 
 /**
@@ -77,7 +79,7 @@ export const getUserCommentList = asyncHandler(async (req, res) => {
 
 /**
  * 유저가 추천한 리뷰 목록 조회
- * @returns {ReviewModel[]} 유저가 추천한 리뷰 데이터 리스트
+ * @returns {string[]} 리뷰 ID 리스트
  */
 export const getUserLikedList = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
@@ -111,7 +113,9 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
       return await ReviewModel.findById(liked.reviewId);
     })
   );
-  res.status(200).json(reviewList);
+
+  const reviewIdList = reviewList.map((review) => review._id);
+  res.status(200).json(reviewIdList);
 }, "유저가 추천한 리뷰 목록 조회");
 
 /**

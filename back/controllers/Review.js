@@ -59,11 +59,13 @@ export const createReview = asyncHandler(async (req, res) => {
 
 /**
  * 홈 피드에 표시될 리뷰 조회
- * @returns {ReviewModel[]} 리뷰 데이터 리스트
+ * @returns {string[]} 리뷰 ID 리스트
  */
 export const getFeed = asyncHandler(async (req, res) => {
   const { lastReviewId } = req.query;
 
+  // 클라이언트에서 마지막으로 받은 리뷰 ID의 업로드 시간을 통해 다음 리뷰 목록 조회
+  // 마지막 리뷰 ID가 없으면 처음 요청을 보내는 것이므로, 최근 업로드된 리뷰 20개 조회
   const lastReview =
     lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
   const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
@@ -74,7 +76,9 @@ export const getFeed = asyncHandler(async (req, res) => {
     .sort({ uploadTime: -1 })
     .limit(20);
 
-  return res.json(reviewList);
+  const reviewIdList = reviewList.map((review) => review._id);
+
+  res.status(200).json(reviewIdList);
 }, "리뷰 ID 리스트 조회");
 
 /**
