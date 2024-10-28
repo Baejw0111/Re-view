@@ -1,5 +1,4 @@
 import ReviewCard from "@/widgets/ReviewCard";
-import { ReviewInfo } from "@/shared/types/interface";
 import { useIntersectionObserver } from "@/shared/hooks";
 
 /**
@@ -8,27 +7,24 @@ import { useIntersectionObserver } from "@/shared/hooks";
  * @returns 리뷰 카드 목록
  */
 export default function Reviews({
-  reviewList,
+  reviewIdList,
   callback,
 }: {
-  reviewList: ReviewInfo[];
+  reviewIdList: string[];
   callback: () => void;
 }) {
-  const reviewListRef = useIntersectionObserver<ReviewInfo>(
-    reviewList,
-    callback
-  );
+  const reviewListRef = useIntersectionObserver<string>(reviewIdList, callback);
 
   return (
     <>
-      {reviewList && (
+      {reviewIdList && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
-          {reviewList.map((review, index) => (
+          {reviewIdList.map((reviewId, index) => (
             <div
-              key={review._id}
-              ref={index === reviewList.length - 5 ? reviewListRef : null}
+              key={reviewId}
+              ref={index === reviewIdList.length - 5 ? reviewListRef : null}
             >
-              <ReviewCard reviewInfo={review} />
+              <ReviewCard reviewId={reviewId} />
             </div>
           ))}
         </div>

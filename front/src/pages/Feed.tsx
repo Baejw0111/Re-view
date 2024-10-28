@@ -16,7 +16,7 @@ export default function Feed() {
     queryFn: ({ pageParam }: { pageParam: string }) => fetchFeed(pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
-      return lastPage[lastPage.length - 1]._id;
+      return lastPage[lastPage.length - 1];
     },
   });
 
@@ -27,7 +27,7 @@ export default function Feed() {
     <PageTemplate pageName="피드">
       {isSuccess && (
         <Reviews
-          reviewList={feedData.pages.flatMap((page) => page)}
+          reviewIdList={feedData.pages.flatMap((page) => page)}
           callback={fetchNextPage}
         />
       )}

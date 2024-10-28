@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { API_URL } from "@/shared/constants";
 import { useQuery } from "@tanstack/react-query";
+import { fetchReviewById } from "@/api/review";
 import { fetchUserInfoById } from "@/api/user";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
@@ -16,14 +17,22 @@ import { Badge } from "@/shared/shadcn-ui/badge";
 import LikeButton from "@/features/interaction/LikeButton";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import ProfilePopOver from "./ProfilePopOver";
-import { ReviewInfo } from "@/shared/types/interface";
+import SkeletonReviewCard from "@/shared/skeleton/SkeletonReviewCard";
 
-export default function ReviewCard({ reviewInfo }: { reviewInfo: ReviewInfo }) {
-  const { data: author } = useQuery({
-    queryKey: ["userInfo", reviewInfo.authorId],
-    queryFn: () => fetchUserInfoById(reviewInfo.authorId as number),
+export default function ReviewCard({ reviewId }: { reviewId: string }) {
+  const { data: reviewInfo, isFetching: isReviewInfoFetching } = useQuery({
+    queryKey: ["reviewInfo", reviewId],
+    queryFn: () => fetchReviewById(reviewId),
+    enabled: !!reviewId,
+  });
+
+  const { data: author, isFetching: isAuthorFetching } = useQuery({
+    queryKey: ["userInfo", reviewInfo?.authorId],
+    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
     enabled: !!reviewInfo,
   });
+
+  if (isReviewInfoFetching || isAuthorFetching) return <SkeletonReviewCard />;
 
   return (
     <>

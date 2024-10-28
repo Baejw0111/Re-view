@@ -60,7 +60,7 @@ export default function Profile() {
       fetchUserReviewList(Number(userId), pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
-      return lastPage[lastPage.length - 1]._id;
+      return lastPage[lastPage.length - 1];
     },
   });
 
@@ -76,7 +76,7 @@ export default function Profile() {
       fetchUserLikedList(Number(userId), pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
-      return lastPage[lastPage.length - 1]._id;
+      return lastPage[lastPage.length - 1];
     },
   });
 
@@ -132,7 +132,7 @@ export default function Profile() {
               <TabsContent value="posts" className="mt-6">
                 {userReviewList && (
                   <Reviews
-                    reviewList={userReviewList.pages.flatMap((page) => page)}
+                    reviewIdList={userReviewList.pages.flatMap((page) => page)}
                     callback={fetchNextUserReviewList}
                   />
                 )}
@@ -145,7 +145,7 @@ export default function Profile() {
               <TabsContent value="posts" className="mt-6">
                 {userReviewList && (
                   <Reviews
-                    reviewList={userReviewList.pages.flatMap((page) => page)}
+                    reviewIdList={userReviewList.pages.flatMap((page) => page)}
                     callback={fetchNextUserReviewList}
                   />
                 )}
@@ -171,7 +171,7 @@ export default function Profile() {
               <TabsContent value="liked" className="mt-6">
                 {userLikedList && (
                   <Reviews
-                    reviewList={userLikedList.pages.flatMap((page) => page)}
+                    reviewIdList={userLikedList.pages.flatMap((page) => page)}
                     callback={fetchNextUserLikedList}
                   />
                 )}
