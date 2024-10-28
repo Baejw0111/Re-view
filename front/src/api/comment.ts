@@ -16,6 +16,14 @@ export const addComment = async (
   console.log("댓글 추가 성공:", response.data);
 };
 
+export const fetchCommentCount = async (reviewId: string): Promise<number> => {
+  const response = await genaralApiClient.get(
+    `/review/${reviewId}/comments/count`
+  );
+  console.log("리뷰 댓글 수 조회 성공:", response.data);
+  return response.data;
+};
+
 /**
  * 특정 댓글 조회 함수
  * @param commentId 댓글 ID
