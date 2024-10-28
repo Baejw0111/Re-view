@@ -74,7 +74,9 @@ export default function LikeButton({
   // 추천 상태 업데이트
   useEffect(() => {
     if (likeStatus) {
-      setLikeState(likeStatus.isLiked); // 로그인한 유저의 리뷰 추천 여부 업데이트
+      if (likeStatus.isLiked !== likeState) {
+        setLikeState(likeStatus.isLiked); // 로그인한 유저의 리뷰 추천 여부 업데이트
+      }
       setCurrentLikesCount(likeStatus.likesCount); // 추천 수 업데이트
     }
   }, [likeStatus]);
@@ -112,8 +114,11 @@ export default function LikeButton({
           </button>
         </motion.div>
       </TooltipWrapper>
-      <motion.div animate={countControls}>
-        <div className="text-sm text-muted-foreground">{currentLikesCount}</div>
+      <motion.div
+        animate={countControls}
+        className="text-sm text-muted-foreground"
+      >
+        {currentLikesCount}
       </motion.div>
     </div>
   );
