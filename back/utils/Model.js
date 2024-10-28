@@ -45,7 +45,6 @@ export const UserModel = db.model(
  * @property {string} reviewText - 리뷰 내용
  * @property {number} rating - 평점
  * @property {string[]} tags - 태그
- * @property {number} likesCount - 좋아요 수
  * @property {number} commentsCount - 댓글 수
  */
 export const ReviewModel = db.model(
@@ -58,7 +57,6 @@ export const ReviewModel = db.model(
     reviewText: { type: String, default: "" },
     rating: { type: Number, default: 0 },
     tags: { type: [String], default: [] },
-    likesCount: { type: Number, default: 0 },
     commentsCount: { type: Number, default: 0 },
   })
 );

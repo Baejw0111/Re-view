@@ -6,13 +6,7 @@ import { useLocation } from "react-router-dom";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 
-export default function ReviewActionBar({
-  isAuthor,
-  likesCount,
-}: {
-  isAuthor: boolean;
-  likesCount: number;
-}) {
+export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const reviewId = queryParams.get("reviewId");
@@ -29,7 +23,7 @@ export default function ReviewActionBar({
 
   return (
     <div className="flex items-center gap-2">
-      <LikeButton reviewId={reviewId as string} likesCount={likesCount} />
+      <LikeButton reviewId={reviewId as string} />
       <TooltipWrapper tooltipText="공유">
         <Button
           variant="ghost"

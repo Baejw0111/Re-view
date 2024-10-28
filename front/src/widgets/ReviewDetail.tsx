@@ -109,10 +109,7 @@ export default function ReviewDetail() {
               <CarouselPrevious className="left-1" />
               <CarouselNext className="right-1" />
             </Carousel>
-            <ReviewActionBar
-              isAuthor={reviewInfo.authorId === kakaoId}
-              likesCount={reviewInfo.likesCount}
-            />
+            <ReviewActionBar isAuthor={reviewInfo.authorId === kakaoId} />
           </div>
         </div>
       )}

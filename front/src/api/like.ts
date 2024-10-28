@@ -1,9 +1,9 @@
 import { authApiClient, genaralApiClient } from "@/api/util";
 
-export const fetchIsLiked = async (
+export const fetchLikeStatus = async (
   reviewId: string,
   kakaoId: number
-): Promise<boolean> => {
+): Promise<{ isLiked: boolean; likesCount: number }> => {
   const response = await genaralApiClient.get(`/like/${reviewId}`, {
     params: { kakaoId },
   });

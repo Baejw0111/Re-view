@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useMutation } from "@tanstack/react-query";
-import { likeReview, unlikeReview, fetchIsLiked } from "@/api/like";
+import { likeReview, unlikeReview, fetchLikeStatus } from "@/api/like";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
@@ -13,27 +13,27 @@ import { cn } from "@/shared/lib/utils";
 
 export default function LikeButton({
   reviewId,
-  likesCount,
   className,
 }: {
   reviewId: string;
-  likesCount: number;
   className?: string;
 }) {
   const queryClient = useQueryClient();
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
-  const { data: isLiked } = useQuery<boolean, Error>({
-    queryKey: ["isLiked", reviewId],
-    queryFn: () => fetchIsLiked(reviewId as string, kakaoId),
+  const { data: likeStatus } = useQuery<
+    { isLiked: boolean; likesCount: number },
+    Error
+  >({
+    queryKey: ["likeStatus", reviewId],
+    queryFn: () => fetchLikeStatus(reviewId as string, kakaoId),
     enabled: !!kakaoId,
   });
 
   const { mutate: like } = useMutation({
     mutationFn: () => likeReview(reviewId as string),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
-      queryClient.invalidateQueries({ queryKey: ["isLiked", reviewId] });
+      queryClient.invalidateQueries({ queryKey: ["likeStatus", reviewId] });
     },
     onError: () => {
       alert("추천 실패");
@@ -43,8 +43,7 @@ export default function LikeButton({
   const { mutate: unlike } = useMutation({
     mutationFn: () => unlikeReview(reviewId as string),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
-      queryClient.invalidateQueries({ queryKey: ["isLiked", reviewId] });
+      queryClient.invalidateQueries({ queryKey: ["likeStatus", reviewId] });
     },
     onError: () => {
       alert("추천 취소 실패");
@@ -53,7 +52,9 @@ export default function LikeButton({
 
   const [likeState, setLikeState] = useState(false);
   const likeControls = useAnimation();
-  const [currentLikesCount, setCurrentLikesCount] = useState(likesCount);
+  const [currentLikesCount, setCurrentLikesCount] = useState(
+    likeStatus?.likesCount || 0
+  );
   const countControls = useAnimation();
 
   const handleLikeClick = async () => {
@@ -70,10 +71,11 @@ export default function LikeButton({
 
   // 추천 상태 업데이트
   useEffect(() => {
-    if (isLiked) {
-      setLikeState(isLiked || false); // 로그인한 유저가 추천했는지 여부 업데이트
+    if (likeStatus) {
+      setLikeState(likeStatus.isLiked || false); // 로그인한 유저가 추천했는지 여부 업데이트
+      setCurrentLikesCount(likeStatus.likesCount);
     }
-  }, [isLiked]);
+  }, [likeStatus]);
 
   // 추천 애니메이션
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function LikeButton({
             transition: { duration: 0.3 },
           }
     );
-  }, [likesCount, currentLikesCount]);
+  }, [likeStatus?.likesCount, currentLikesCount]);
 
   return (
     <div className="flex items-center gap-1.5">

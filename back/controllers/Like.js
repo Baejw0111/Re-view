@@ -3,6 +3,7 @@ import {
   ReviewModel,
   ReviewLikeModel,
   NotificationModel,
+  CommentModel,
 } from "../utils/Model.js";
 import { sendEventToClient } from "./Notification.js";
 
@@ -48,14 +49,16 @@ export const addLike = asyncHandler(async (req, res) => {
 }, "리뷰 추천");
 
 /**
- * 유저의 리뷰 추천 여부 조회
+ * 리뷰 추천 관련 정보 조회
  */
-export const getIsLiked = asyncHandler(async (req, res) => {
+export const getLikeStatus = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const { kakaoId } = req.query;
+
   const isLiked = !!(await ReviewLikeModel.exists({ reviewId, kakaoId }));
-  return res.json(isLiked);
-}, "유저의 리뷰 추천 여부 조회");
+  const likesCount = await ReviewLikeModel.countDocuments({ reviewId });
+  return res.json({ isLiked, likesCount });
+}, "리뷰 추천 관련 정보 조회");
 
 /**
  * 리뷰 추천 취소 API

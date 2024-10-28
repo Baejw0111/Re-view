@@ -92,11 +92,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   </div>
                   <Separator className="my-3" />
                   <div className="flex gap-2">
-                    <LikeButton
-                      reviewId={reviewInfo._id}
-                      likesCount={reviewInfo.likesCount || 0}
-                      className="w-5 h-5"
-                    />
+                    <LikeButton reviewId={reviewInfo._id} className="w-5 h-5" />
                     <div className="flex items-center gap-1.5">
                       <TooltipWrapper tooltipText="댓글 보기">
                         <Link
