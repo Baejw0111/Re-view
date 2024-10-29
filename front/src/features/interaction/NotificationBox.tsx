@@ -50,7 +50,7 @@ export default function NotificationBox({
   return (
     <div
       className={cn(
-        "py-3 border-b last:border-b-0 flex justify-between gap-1 md:gap-2 w-full",
+        "py-3 border-b last:border-b-0 first:pt-4 flex justify-between gap-1 md:gap-2 w-full",
         className
       )}
     >
