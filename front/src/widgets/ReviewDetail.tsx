@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
@@ -9,6 +10,7 @@ import {
   CarouselPrevious,
   CarouselNext,
   CarouselContent,
+  CarouselApi,
 } from "@/shared/shadcn-ui/carousel";
 import ReviewActionBar from "@/widgets/ReviewActionBar";
 import { fetchUserInfoById } from "@/api/user";
@@ -25,6 +27,27 @@ export default function ReviewDetail() {
   const queryParams = new URLSearchParams(location.search);
   const reviewId = queryParams.get("reviewId");
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
+
+  // 캐러셀 넘버링
+  // 참고: https://ui.shadcn.com/docs/components/carousel#api
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
+  // 리뷰 정보
   const {
     data: reviewInfo,
     isLoading,
@@ -35,6 +58,7 @@ export default function ReviewDetail() {
     enabled: !!reviewId,
   });
 
+  // 유저 정보
   const { data: userInfo } = useQuery<{
     userInfo: UserInfo;
     reviewCount: number;
@@ -52,9 +76,12 @@ export default function ReviewDetail() {
   return (
     <>
       {reviewInfo && (
-        <div className="grid gap-6">
+        <div className="flex flex-col gap-6">
+          {/* 리뷰 정보*/}
           <div className="flex flex-col gap-2 md:gap-4">
+            {/* 리뷰 정보 상단(유저 프로필 + 평점) */}
             <div className="flex items-center justify-between">
+              {/* 유저 프로필 링크 */}
               <div className="flex items-center gap-2">
                 <a
                   href={`/profile/${reviewInfo.authorId}`}
@@ -74,16 +101,23 @@ export default function ReviewDetail() {
                 </div>
               </div>
 
+              {/* 평점 */}
               <ReviewRatingSign
                 className="h-7 w-9 text-xl"
                 rating={reviewInfo.rating}
               />
             </div>
+
+            {/* 리뷰 제목 */}
             <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
+
+            {/* 리뷰 내용 */}
             <p className="text-md text-muted-foreground whitespace-pre-wrap break-all">
               {reviewInfo.reviewText}
             </p>
           </div>
+
+          {/* 리뷰 태그 */}
           <div className="flex flex-wrap items-start gap-1.5">
             {reviewInfo?.tags.map((tag, index) => (
               <Badge key={index} className="cursor-pointer">
@@ -91,24 +125,33 @@ export default function ReviewDetail() {
               </Badge>
             ))}
           </div>
-          <div className="grid gap-4">
-            <Carousel>
-              <CarouselContent className="py-1">
-                {reviewInfo.images.map((image, index) => (
-                  <CarouselItem key={index}>
-                    <AspectRatio ratio={16 / 9}>
-                      <img
-                        className="w-full h-full object-contain bg-muted rounded-md border-0"
-                        src={`${API_URL}/${image}`}
-                        alt={`review Image-${index}`}
-                      />
-                    </AspectRatio>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-1" />
-              <CarouselNext className="right-1" />
-            </Carousel>
+
+          <div className="flex flex-col gap-4">
+            {/* 리뷰 이미지 */}
+            <div className="flex flex-col">
+              <Carousel setApi={setApi}>
+                <CarouselContent className="py-1">
+                  {reviewInfo.images.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <AspectRatio ratio={16 / 9}>
+                        <img
+                          className="w-full h-full object-contain rounded-md bg-black border-0"
+                          src={`${API_URL}/${image}`}
+                          alt={`review Image-${index}`}
+                        />
+                      </AspectRatio>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-1" />
+                <CarouselNext className="right-1" />
+              </Carousel>
+              <div className="w-12 mx-auto bg-primary text-primary-foreground text-center text-sm rounded-md">
+                {current} / {count}
+              </div>
+            </div>
+
+            {/* 리뷰 관련 상호작용 버튼들 */}
             <ReviewActionBar isAuthor={reviewInfo.authorId === kakaoId} />
           </div>
         </div>
