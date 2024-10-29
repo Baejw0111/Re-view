@@ -24,6 +24,7 @@ export default function SkeletonReviewCard() {
                 <Skeleton className="h-6 w-20" />
               </div>
               <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-1/2" />
             </div>
           </div>
         </ResizablePanel>
