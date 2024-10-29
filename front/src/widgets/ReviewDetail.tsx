@@ -146,7 +146,7 @@ export default function ReviewDetail() {
                 <CarouselPrevious className="left-1" />
                 <CarouselNext className="right-1" />
               </Carousel>
-              <div className="w-12 mx-auto bg-primary text-primary-foreground text-center text-sm rounded-md">
+              <div className="w-12 mx-auto bg-muted text-muted-foreground text-center text-sm rounded-md">
                 {current} / {count}
               </div>
             </div>
