@@ -156,12 +156,17 @@ export default function Profile() {
             path="comments"
             element={
               <TabsContent value="comments" className="mt-6 max-w-3xl mx-auto">
-                {userCommentList &&
-                  userCommentList.map((commentInfo, index) => (
-                    <div key={index} className="border-b last:border-b-0 pb-1">
-                      <CommentBox key={index} commentInfo={commentInfo} />
-                    </div>
-                  ))}
+                <div className="bg-background rounded-lg">
+                  {userCommentList &&
+                    userCommentList.map((commentInfo, index) => (
+                      <div
+                        key={index}
+                        className="border-b last:border-b-0 pb-1"
+                      >
+                        <CommentBox key={index} commentInfo={commentInfo} />
+                      </div>
+                    ))}
+                </div>
               </TabsContent>
             }
           />
