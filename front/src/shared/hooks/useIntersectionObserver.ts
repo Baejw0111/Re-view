@@ -1,8 +1,15 @@
 import { useEffect, useRef } from "react";
 
+/**
+ * 지정된 요소가 뷰포트에 들어올 때 콜백 함수를 호출하는 훅
+ * @param callback - 요소가 뷰포트에 들어올 때 호출될 콜백 함수
+ * @param list - 관찰할 요소가 속한 목록. 목록이 갱신될 때 관찰할 요소도 바뀐다.
+ * @param threshold - 콜백 실행을 트리거할 요소의 가시성 비율
+ * @returns 관찰될 요소에 대한 ref
+ */
 export default function useIntersectionObserver<T>(
-  list: T[],
   callback: () => void,
+  list?: T[],
   threshold: number = 0.1
 ) {
   const elementRef = useRef<HTMLDivElement | null>(null);
