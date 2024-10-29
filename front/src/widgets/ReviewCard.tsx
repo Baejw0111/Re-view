@@ -44,8 +44,11 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={55} collapsible={true}>
               <div className="p-4 flex flex-col justify-between h-full">
+                {/* 리뷰 카드 상단 */}
                 <div className="flex flex-col gap-2">
+                  {/*작성자 정보 및 평점 */}
                   <div className="flex items-center justify-between">
+                    {/* 작성자 정보 및 프로필 팝오버 버튼*/}
                     {author && (
                       <ProfilePopOver
                         userId={author.userInfo.kakaoId as number}
@@ -62,8 +65,12 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                         </div>
                       </ProfilePopOver>
                     )}
+
+                    {/* 평점 */}
                     <ReviewRatingSign rating={reviewInfo.rating as number} />
                   </div>
+
+                  {/* 리뷰 제목 및 상세 페이지 링크 */}
                   <div className="flex items-center justify-start">
                     <Link
                       to={`?reviewId=${reviewInfo._id}`}
@@ -75,11 +82,16 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                       <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 group-active:translate-x-1 transition-transform" />
                     </Link>
                   </div>
+
+                  {/* 리뷰 내용 */}
                   <p className="text-sm text-left text-muted-foreground line-clamp-3 whitespace-pre-wrap break-all">
                     {reviewInfo.reviewText}
                   </p>
                 </div>
+
+                {/* 리뷰 카드 하단 */}
                 <div className="flex flex-col items-start">
+                  {/* 태그 */}
                   <div className="flex gap-1.5 w-full overflow-x-auto scrollbar-hide">
                     {reviewInfo.tags.map((tag, index) => (
                       <Badge
@@ -91,6 +103,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                     ))}
                   </div>
                   <Separator className="my-3" />
+                  {/* 좋아요 버튼 및 댓글 버튼 */}
                   <div className="flex gap-2">
                     <LikeButton reviewId={reviewInfo._id} className="w-5 h-5" />
                     <CommentButton reviewId={reviewInfo._id} />
@@ -100,6 +113,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel>
+              {/* 리뷰 썸네일 이미지 */}
               <img
                 src={`${API_URL}/${reviewInfo.images[0]}`}
                 alt="Review Thumbnail Image"
