@@ -139,7 +139,7 @@ export default function ReviewForm({
   const { mutate: uploadReviewMutation } = useMutation({
     mutationFn: uploadReview,
     onSuccess: () => {
-      navigate("/");
+      window.location.href = "/";
     },
     onError: () => {
       alert(
