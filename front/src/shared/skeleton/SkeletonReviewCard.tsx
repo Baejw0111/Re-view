@@ -5,6 +5,7 @@ import {
   ResizableHandle,
 } from "@/shared/shadcn-ui/resizable";
 import { Skeleton } from "@/shared/shadcn-ui/skeleton";
+import { Separator } from "@/shared/shadcn-ui/separator";
 
 export default function SkeletonReviewCard() {
   return (
@@ -20,11 +21,21 @@ export default function SkeletonReviewCard() {
                 </div>
                 <Skeleton className="h-6 w-8 rounded-sm" />
               </div>
-              <div className="flex items-center justify-start">
-                <Skeleton className="h-6 w-20" />
+              <Skeleton className="h-6 w-20" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+            <div className="flex flex-col items-start">
+              <div className="flex gap-1.5 w-full">
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-5 w-20" />
               </div>
-              <Skeleton className="h-5 w-full" />
-              <Skeleton className="h-5 w-1/2" />
+              <Separator className="my-3" />
+              <div className="flex gap-6">
+                <Skeleton className="rounded-full h-5 w-5" />
+                <Skeleton className="rounded-full h-5 w-5" />
+              </div>
             </div>
           </div>
         </ResizablePanel>
