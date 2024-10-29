@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { cn } from "@/shared/lib/utils";
 import { useCountingAnimation } from "@/shared/hooks";
+import { useIntersectionObserver } from "@/shared/hooks";
 
 export default function LikeButton({
   reviewId,
@@ -23,7 +24,7 @@ export default function LikeButton({
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
   // 추천 상태 조회
-  const { data: likeStatus } = useQuery<
+  const { data: likeStatus, refetch } = useQuery<
     { isLiked: boolean; likesCount: number },
     Error
   >({
@@ -31,6 +32,8 @@ export default function LikeButton({
     queryFn: () => fetchLikeStatus(reviewId as string, kakaoId),
     enabled: !!kakaoId,
   });
+
+  const likeButtonRef = useIntersectionObserver(refetch, undefined, 1);
 
   // 추천 추가
   const { mutate: like } = useMutation({
@@ -90,7 +93,7 @@ export default function LikeButton({
   }, [likeState]);
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5" ref={likeButtonRef}>
       <TooltipWrapper tooltipText="추천">
         <motion.div animate={likeControls}>
           <button onClick={handleLikeClick} className="flex items-center">

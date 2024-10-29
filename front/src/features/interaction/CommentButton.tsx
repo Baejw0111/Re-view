@@ -6,13 +6,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useCountingAnimation } from "@/shared/hooks";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useIntersectionObserver } from "@/shared/hooks";
 
 export default function CommentButton({ reviewId }: { reviewId: string }) {
-  const { data: commentCount } = useQuery({
+  const { data: commentCount, refetch } = useQuery({
     queryKey: ["commentCount", reviewId],
     queryFn: () => fetchCommentCount(reviewId),
     enabled: !!reviewId,
   });
+
+  const commentButtonRef = useIntersectionObserver(refetch, undefined, 1);
 
   const [currentCommentCount, setCurrentCommentCount, countControls] =
     useCountingAnimation(0);
@@ -22,7 +25,7 @@ export default function CommentButton({ reviewId }: { reviewId: string }) {
   }, [commentCount]);
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5" ref={commentButtonRef}>
       <TooltipWrapper tooltipText="댓글 보기">
         <Link
           to={`?reviewId=${reviewId}`}
