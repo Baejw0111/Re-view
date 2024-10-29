@@ -19,11 +19,13 @@ export function useCountingAnimation(initialCount: number) {
             y: [10, 0],
             transition: { duration: 0.3 },
           }
-        : {
+        : currentCount < previousCount
+        ? {
             opacity: [0, 1],
             y: [-10, 0],
             transition: { duration: 0.3 },
           }
+        : {}
     );
 
     setPreviousCount(currentCount);
