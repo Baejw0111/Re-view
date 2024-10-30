@@ -29,8 +29,8 @@ export const addLike = asyncHandler(async (req, res) => {
     $inc: { likesCount: 1 },
   });
 
-  // 리뷰의 추천 수가 10개가 될 경우 알림 생성
-  if (review.likesCount === 10) {
+  // 추천 수 갱신 후 10개가 될 경우 알림 생성
+  if (review.likesCount === 9) {
     await NotificationModel.create({
       kakaoId: review.authorId,
       reviewId,
@@ -78,8 +78,8 @@ export const unLike = asyncHandler(async (req, res) => {
     $inc: { likesCount: -1 },
   });
 
-  // 리뷰의 추천 수가 9개가 될 경우 알림 삭제
-  if (review.likesCount === 9) {
+  // 추천 수 갱신 후 9개가 될 경우 알림 삭제
+  if (review.likesCount === 10) {
     await NotificationModel.findOneAndDelete({ reviewId });
 
     // 알림 이벤트 전송
