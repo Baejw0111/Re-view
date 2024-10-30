@@ -25,10 +25,12 @@ export const addLike = asyncHandler(async (req, res) => {
     likedAt: Date.now(),
   });
 
-  const likesCount = await ReviewLikeModel.countDocuments({ reviewId });
+  await ReviewModel.findByIdAndUpdate(reviewId, {
+    $inc: { likesCount: 1 },
+  });
 
   // 리뷰의 추천 수가 10개가 될 경우 알림 생성
-  if (likesCount === 10) {
+  if (review.likesCount === 10) {
     await NotificationModel.create({
       kakaoId: review.authorId,
       reviewId,
@@ -50,7 +52,7 @@ export const getLikeStatus = asyncHandler(async (req, res) => {
   const { kakaoId } = req.query;
 
   const isLiked = !!(await ReviewLikeModel.exists({ reviewId, kakaoId }));
-  const likesCount = await ReviewLikeModel.countDocuments({ reviewId });
+  const likesCount = await ReviewModel.findById(reviewId).likesCount;
   return res.json({ isLiked, likesCount });
 }, "리뷰 추천 관련 정보 조회");
 
@@ -71,10 +73,12 @@ export const unLike = asyncHandler(async (req, res) => {
     reviewId,
   });
 
-  const likesCount = await ReviewLikeModel.countDocuments({ reviewId });
+  await ReviewModel.findByIdAndUpdate(reviewId, {
+    $inc: { likesCount: -1 },
+  });
 
   // 리뷰의 추천 수가 9개가 될 경우 알림 삭제
-  if (likesCount === 9) {
+  if (review.likesCount === 9) {
     await NotificationModel.findOneAndDelete({ reviewId });
 
     // 알림 이벤트 전송

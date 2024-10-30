@@ -27,6 +27,10 @@ export const addComment = asyncHandler(async (req, res) => {
     content: req.body.comment,
   });
 
+  await ReviewModel.findByIdAndUpdate(reviewId, {
+    $inc: { commentsCount: 1 },
+  });
+
   // 알림 생성
   await NotificationModel.create({
     kakaoId: review.authorId,
@@ -47,14 +51,13 @@ export const addComment = asyncHandler(async (req, res) => {
 export const getCommentCount = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
 
-  const reviewExists = await ReviewModel.exists({ _id: reviewId });
+  const review = await ReviewModel.findById(reviewId);
 
-  if (!reviewExists) {
+  if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
 
-  const commentCount = await CommentModel.countDocuments({ reviewId });
-  res.status(200).json(commentCount);
+  res.status(200).json(review.commentsCount);
 }, "리뷰 댓글 수 조회");
 
 /**
@@ -105,6 +108,9 @@ export const deleteComment = asyncHandler(async (req, res) => {
 
   await CommentModel.findByIdAndDelete(commentId); // 댓글 삭제
   await NotificationModel.findOneAndDelete({ commentId }); // 알림 삭제
+  await ReviewModel.findByIdAndUpdate(comment.reviewId, {
+    $inc: { commentsCount: -1 },
+  }); // 리뷰 댓글 수 감소
 
   // 알림 이벤트 전송
   const review = await ReviewModel.findById(comment.reviewId);
