@@ -101,8 +101,8 @@ export default function Profile() {
       <Tabs
         defaultValue="posts"
         value={
-          !location.pathname.split("/")[3]
-            ? "posts"
+          !location.pathname.split("/")[3] // 경로에 따라 기본값 설정
+            ? "posts" // 기본값은 posts
             : location.pathname.split("/")[3]
         }
         className="mt-6"
