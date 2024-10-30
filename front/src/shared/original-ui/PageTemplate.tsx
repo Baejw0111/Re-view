@@ -30,7 +30,7 @@ export default function PageTemplate({
               <Tabs
                 defaultValue="latest"
                 value={
-                  pathname.split("/")[1] === "latest" ? "latest" : "popular"
+                  pathname.split("/")[1] === "popular" ? "popular" : "latest"
                 }
               >
                 <TabsList>
