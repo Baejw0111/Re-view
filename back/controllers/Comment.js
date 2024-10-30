@@ -14,16 +14,17 @@ export const addComment = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const authorId = req.userId;
 
+  const review = await ReviewModel.findById(reviewId);
+
+  if (!review) {
+    return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+  }
+
   // 댓글 생성
   const comment = await CommentModel.create({
     authorId,
     reviewId,
     content: req.body.comment,
-  });
-
-  // 리뷰 댓글 수 증가
-  const review = await ReviewModel.findByIdAndUpdate(reviewId, {
-    $inc: { commentsCount: 1 },
   });
 
   // 알림 생성
@@ -45,6 +46,13 @@ export const addComment = asyncHandler(async (req, res) => {
  */
 export const getCommentCount = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
+
+  const reviewExists = await ReviewModel.exists({ _id: reviewId });
+
+  if (!reviewExists) {
+    return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+  }
+
   const commentCount = await CommentModel.countDocuments({ reviewId });
   res.status(200).json(commentCount);
 }, "리뷰 댓글 수 조회");
@@ -88,17 +96,19 @@ export const getReviewCommentList = asyncHandler(async (req, res) => {
  */
 export const deleteComment = asyncHandler(async (req, res) => {
   const { id: commentId } = req.params;
-  const { reviewId } = await CommentModel.findById(commentId);
+
+  const comment = await CommentModel.findById(commentId);
+
+  if (!comment) {
+    return res.status(404).json({ message: "댓글이 존재하지 않습니다." });
+  }
 
   await CommentModel.findByIdAndDelete(commentId); // 댓글 삭제
+  await NotificationModel.findOneAndDelete({ commentId }); // 알림 삭제
 
-  // 리뷰 댓글 수 감소
-  await ReviewModel.findByIdAndUpdate(reviewId, {
-    $inc: { commentsCount: -1 },
-  });
-
-  // 알림 삭제
-  await NotificationModel.findOneAndDelete({ commentId });
+  // 알림 이벤트 전송
+  const review = await ReviewModel.findById(comment.reviewId);
+  sendEventToClient(review.authorId);
 
   res.status(200).json({ message: "댓글 삭제 완료" });
 }, "리뷰 댓글 삭제");
