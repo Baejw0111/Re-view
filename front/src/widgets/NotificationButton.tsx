@@ -111,7 +111,7 @@ export default function NotificationButton() {
         </DropdownMenuTrigger>
       </TooltipWrapper>
       <DropdownMenuContent
-        className="max-w-xs md:max-w-md"
+        className="w-80 md:w-96"
         align="end"
         collisionPadding={20}
         onCloseAutoFocus={(e) => e.preventDefault()}

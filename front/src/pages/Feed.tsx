@@ -1,9 +1,24 @@
 import Reviews from "@/widgets/Reviews";
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchFeed } from "@/api/review";
+import { fetchLatestFeed, fetchPopularFeed } from "@/api/review";
+import { useLocation } from "react-router-dom";
 
 export default function Feed() {
+  const { pathname } = useLocation();
+
+  const getQueryFn = (path: string) => {
+    switch (path) {
+      case "/":
+      case "/latest":
+        return ({ pageParam }: { pageParam: string }) =>
+          fetchLatestFeed(pageParam);
+      case "/popular":
+        return ({ pageParam }: { pageParam: string }) =>
+          fetchPopularFeed(pageParam);
+    }
+  };
+
   const {
     data: feedData,
     isSuccess,
@@ -11,13 +26,14 @@ export default function Feed() {
     fetchNextPage,
     error,
   } = useInfiniteQuery({
-    queryKey: ["feed"],
+    queryKey: ["feed", pathname === "/popular" ? "popular" : "latest"],
     initialPageParam: "",
-    queryFn: ({ pageParam }: { pageParam: string }) => fetchFeed(pageParam),
+    queryFn: getQueryFn(pathname),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
       return lastPage[lastPage.length - 1];
     },
+    enabled: !!pathname,
   });
 
   if (error) return <div>에러: {error.message}</div>;
@@ -27,6 +43,7 @@ export default function Feed() {
     <PageTemplate pageName="피드">
       {isSuccess && (
         <Reviews
+          key={pathname}
           reviewIdList={feedData.pages.flatMap((page) => page)}
           callback={fetchNextPage}
         />
