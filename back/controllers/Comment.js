@@ -75,22 +75,33 @@ export const getCommentById = asyncHandler(async (req, res) => {
  */
 export const getReviewCommentList = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  const comments = await CommentModel.find({ reviewId });
-  const commentList = await Promise.all(
-    comments.map(async (comment) => {
-      const user = await UserModel.findOne({ kakaoId: comment.authorId });
 
-      return {
-        _id: comment._id,
-        authorId: comment.authorId,
-        profileImage: user.profileImage,
-        nickname: user.nickname,
-        reviewId: comment.reviewId,
-        uploadTime: comment.uploadTime,
-        content: comment.content,
-      };
-    })
-  );
+  // 댓글 목록 조회
+  const comments = await CommentModel.find({ reviewId });
+
+  // 고유한 작성자 ID 목록 추출
+  const authorIds = [...new Set(comments.map((comment) => comment.authorId))];
+
+  // 한 번의 쿼리로 모든 사용자 정보 조회
+  const users = await UserModel.find({ kakaoId: { $in: authorIds } });
+
+  // 사용자 정보를 Map으로 변환하여 빠른 조회 가능하게 함
+  const userMap = new Map(users.map((user) => [user.kakaoId, user]));
+
+  // 댓글 목록 매핑
+  const commentList = comments.map((comment) => {
+    const user = userMap.get(comment.authorId);
+    return {
+      _id: comment._id,
+      authorId: comment.authorId,
+      profileImage: user.profileImage,
+      nickname: user.nickname,
+      reviewId: comment.reviewId,
+      uploadTime: comment.uploadTime,
+      content: comment.content,
+    };
+  });
+
   res.status(200).json(commentList);
 }, "리뷰 댓글 목록 조회");
 

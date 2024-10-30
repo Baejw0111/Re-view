@@ -5,7 +5,11 @@ import {
   NotificationModel,
   ReviewLikeModel,
 } from "../utils/Model.js";
-import { deleteUploadedFiles, verifyFormFields } from "../utils/Upload.js";
+import {
+  deleteUploadedFiles,
+  checkFormFieldsExistence,
+  verifyFormFields,
+} from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 /**
@@ -17,6 +21,24 @@ export const createReview = asyncHandler(async (req, res) => {
 
   // 필드 검증
   const { title, reviewText, rating, tags } = req.body;
+
+  const checkFields = checkFormFieldsExistence(
+    title,
+    reviewText,
+    rating,
+    tags,
+    req.files
+  );
+
+  if (!checkFields.result) {
+    deleteUploadedFiles(req.files.map((file) => file.path));
+
+    return res.status(400).json({
+      message: checkFields.message,
+      req: req.body,
+      files: req.files,
+    });
+  }
 
   const verifyResult = verifyFormFields(
     title,
@@ -60,10 +82,10 @@ export const createReview = asyncHandler(async (req, res) => {
 }, "리뷰 등록");
 
 /**
- * 홈 피드에 표시될 리뷰 조회
+ * 최신 리뷰 조회
  * @returns {string[]} 리뷰 ID 리스트
  */
-export const getFeed = asyncHandler(async (req, res) => {
+export const getLatestFeed = asyncHandler(async (req, res) => {
   const { lastReviewId } = req.query;
 
   // 클라이언트에서 마지막으로 받은 리뷰 ID의 업로드 시간을 통해 다음 리뷰 목록 조회
@@ -81,7 +103,29 @@ export const getFeed = asyncHandler(async (req, res) => {
   const reviewIdList = reviewList.map((review) => review._id);
 
   res.status(200).json(reviewIdList);
-}, "리뷰 ID 리스트 조회");
+}, "최신 리뷰 조회");
+
+/**
+ * 인기 리뷰 조회
+ * @returns {string[]} 리뷰 ID 리스트
+ */
+export const getPopularFeed = asyncHandler(async (req, res) => {
+  const { lastReviewId } = req.query;
+
+  const lastReview =
+    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
+  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+
+  const reviewList = await ReviewModel.find({
+    uploadTime: { $lt: lastReviewUploadTime },
+    likesCount: { $gte: 10 },
+  })
+    .sort({ likesCount: -1 })
+    .limit(20);
+  const reviewIdList = reviewList.map((review) => review._id);
+
+  res.status(200).json(reviewIdList);
+}, "인기 리뷰 조회");
 
 /**
  * 특정 리뷰 조회

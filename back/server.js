@@ -15,7 +15,8 @@ import {
 } from "./controllers/Auth.js";
 import {
   createReview,
-  getFeed,
+  getLatestFeed,
+  getPopularFeed,
   getReviewsById,
   updateReview,
   deleteReview,
@@ -66,7 +67,8 @@ app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카
 app.delete("/auth/kakao/delete", verifyKakaoAccessToken, deleteUserAccount); // 카카오 유저 계정 삭제 API
 
 // 리뷰 관련 API
-app.get("/review", getFeed); // 리뷰 전체 조회 API
+app.get("/review/latest", getLatestFeed); // 최신 리뷰 조회 API
+app.get("/review/popular", getPopularFeed); // 인기 리뷰 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
 app.get("/review/:id/comments/count", getCommentCount); // 리뷰의 댓글 수 조회 API
 app.get("/review/:id/comments", getReviewCommentList); // 리뷰의 댓글 목록 조회 API

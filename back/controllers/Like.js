@@ -52,8 +52,9 @@ export const getLikeStatus = asyncHandler(async (req, res) => {
   const { kakaoId } = req.query;
 
   const isLiked = !!(await ReviewLikeModel.exists({ reviewId, kakaoId }));
-  const likesCount = await ReviewModel.findById(reviewId).likesCount;
-  return res.json({ isLiked, likesCount });
+  const review = await ReviewModel.findById(reviewId);
+
+  return res.json({ isLiked, likesCount: review.likesCount });
 }, "리뷰 추천 관련 정보 조회");
 
 /**
