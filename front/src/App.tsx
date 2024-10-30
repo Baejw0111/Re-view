@@ -1,10 +1,5 @@
 import { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ThemeProvider from "@/state/theme/ThemeProvider";
 import Feed from "@/pages/Feed";
@@ -56,10 +51,9 @@ function App() {
         <Header />
         <ReviewDetailModal />
         <Routes>
-          <Route path="/" element={<Navigate to="/feed" />} />
+          <Route path="/*" element={<Feed />} />
           <Route path="/oauth/kakao" element={<Authorization />} />
           <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/feed" element={<Feed />} />
           <Route path="/write" element={<WriteReview />} />
           <Route path="/edit" element={<EditReview />} />
           <Route path="/profile/:id/*" element={<Profile />} />

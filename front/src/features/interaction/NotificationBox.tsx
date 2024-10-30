@@ -55,7 +55,7 @@ export default function NotificationBox({
       )}
     >
       <Link
-        to={`/feed?reviewId=${reviewId}${
+        to={`/?reviewId=${reviewId}${
           category === "comment" ? `&commentId=${commentId}` : ""
         }`}
         className="flex items-start gap-4 w-full"
