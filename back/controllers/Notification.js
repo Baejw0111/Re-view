@@ -6,7 +6,7 @@ import {
 } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
-let clients = new Map(); // 사용자 ID를 키로 하는 클라이언트 맵
+const clients = new Map(); // 사용자 ID를 키로 하는 클라이언트 맵
 
 /**
  * 알림 SSE 연결
@@ -64,42 +64,47 @@ export const getNotifications = asyncHandler(async (req, res) => {
     kakaoId: req.userId,
   }).sort({ time: -1 });
 
-  const notificationList = await Promise.all(
-    notifications.map(async (notification) => {
-      const comment =
-        notification.commentId !== ""
-          ? await CommentModel.findById(notification.commentId)
-          : null;
-      const author = comment
-        ? await UserModel.findOne({ kakaoId: comment.authorId })
-        : null;
-      const profileImage = author ? author.profileImage : `public/logo.svg`;
-      const nickname = author ? author.nickname : "시스템";
-      const title =
-        notification.category === "like" ? "인기 리뷰 선정!" : nickname;
-      const review = await ReviewModel.findById(notification.reviewId);
-      const reviewTitle = review.title;
-      const content =
-        notification.category === "like"
-          ? "작성하신 리뷰가 인기 리뷰로 선정되었습니다."
-          : comment.content;
-      const reviewThumbnail = review.images[0];
+  /**
+   * 알림 포맷팅
+   * @param {Notification} notification - 알림 객체
+   * @returns {Promise<Object>} - 포맷팅된 알림 객체
+   */
+  const formatNotification = async (notification) => {
+    const comment = notification.commentId
+      ? await CommentModel.findById(notification.commentId)
+      : null;
 
-      return {
-        _id: notification._id,
-        time: notification.time,
-        commentId: notification.commentId,
-        reviewId: notification.reviewId,
-        category: notification.category,
-        profileImage,
-        nickname,
-        title,
-        reviewTitle,
-        content,
-        reviewThumbnail,
-      };
-    })
+    const author = comment
+      ? await UserModel.findOne({ kakaoId: comment.authorId })
+      : null;
+
+    const review = await ReviewModel.findById(notification.reviewId);
+
+    const isLikeNotification = notification.category === "like";
+
+    return {
+      _id: notification._id,
+      time: notification.time,
+      commentId: notification.commentId,
+      reviewId: notification.reviewId,
+      category: notification.category,
+      profileImage: author ? author.profileImage : "public/logo.svg",
+      nickname: author ? author.nickname : "시스템",
+      title: isLikeNotification
+        ? "인기 리뷰 선정!"
+        : author?.nickname || "시스템",
+      reviewTitle: review.title,
+      content: isLikeNotification
+        ? "작성하신 리뷰가 인기 리뷰로 선정되었습니다."
+        : comment?.content,
+      reviewThumbnail: review.images[0],
+    };
+  };
+
+  const notificationList = await Promise.all(
+    notifications.map(formatNotification)
   );
+
   res.status(200).json(notificationList);
 }, "알림 조회");
 
