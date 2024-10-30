@@ -43,7 +43,6 @@ export default function Feed() {
     <PageTemplate pageName="피드">
       {isSuccess && (
         <Reviews
-          key={pathname}
           reviewIdList={feedData.pages.flatMap((page) => page)}
           callback={fetchNextPage}
         />
