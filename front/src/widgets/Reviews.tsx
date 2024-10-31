@@ -13,7 +13,10 @@ export default function Reviews({
   reviewIdList: string[];
   callback: () => void;
 }) {
-  const reviewListRef = useIntersectionObserver<string>(callback, reviewIdList);
+  const reviewListRef = useIntersectionObserver<string>({
+    callback,
+    list: reviewIdList,
+  });
 
   return (
     <>

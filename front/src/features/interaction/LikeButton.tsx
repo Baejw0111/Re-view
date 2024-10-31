@@ -33,7 +33,10 @@ export default function LikeButton({
     enabled: !!kakaoId,
   });
 
-  const likeButtonRef = useIntersectionObserver(refetch, undefined, 1);
+  const likeButtonRef = useIntersectionObserver({
+    callback: refetch,
+    threshold: 1,
+  });
 
   // 추천 추가
   const { mutate: like } = useMutation({

@@ -15,7 +15,10 @@ export default function CommentButton({ reviewId }: { reviewId: string }) {
     enabled: !!reviewId,
   });
 
-  const commentButtonRef = useIntersectionObserver(refetch, undefined, 1);
+  const commentButtonRef = useIntersectionObserver({
+    callback: refetch,
+    threshold: 1,
+  });
 
   const [currentCommentCount, setCurrentCommentCount, countControls] =
     useCountingAnimation(0);
