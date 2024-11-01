@@ -4,7 +4,6 @@ interface UseIntersectionObserverOptions<T> {
   callback: () => void;
   list?: T[];
   threshold?: number;
-  inView?: boolean;
 }
 
 /**
