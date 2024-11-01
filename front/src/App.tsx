@@ -51,7 +51,9 @@ function App() {
         <Header />
         <ReviewDetailModal />
         <Routes>
-          <Route path="/*" element={<Feed />} />
+          <Route path="/" element={<Feed />} />
+          <Route path="/latest" element={<Feed />} />
+          <Route path="/popular" element={<Feed />} />
           <Route path="/oauth/kakao" element={<Authorization />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/write" element={<WriteReview />} />
