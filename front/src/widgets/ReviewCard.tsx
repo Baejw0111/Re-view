@@ -38,14 +38,14 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
     <>
       {reviewInfo && (
         <Card
-          className="overflow-hidden shadow-lg transition-shadow h-60 relative hover:shadow-xl active:shadow-xl"
+          className="overflow-hidden shadow-lg transition-shadow aspect-[1.618] relative hover:shadow-xl active:shadow-xl"
           aria-label={`리뷰: ${reviewInfo.title}`}
         >
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={55} collapsible={true}>
               <div className="p-4 flex flex-col justify-between h-full">
                 {/* 리뷰 카드 상단 */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 min-h-0">
                   {/*작성자 정보 및 평점 */}
                   <div className="flex items-center justify-between">
                     {/* 작성자 정보 및 프로필 팝오버 버튼*/}
@@ -84,7 +84,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   </div>
 
                   {/* 리뷰 내용 */}
-                  <p className="text-sm text-left text-muted-foreground line-clamp-3 whitespace-pre-wrap break-all">
+                  <p className="text-sm text-left text-muted-foreground line-clamp-2 whitespace-pre-wrap break-all flex-1 min-h-0">
                     {reviewInfo.reviewText}
                   </p>
                 </div>
