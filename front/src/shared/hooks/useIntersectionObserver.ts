@@ -41,7 +41,7 @@ export default function useIntersectionObserver<T>({
     return () => {
       observer.disconnect();
     };
-  }, [list]);
+  }, [list, callback, threshold]);
 
   return elementRef;
 }
