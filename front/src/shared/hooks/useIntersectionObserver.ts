@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 interface UseIntersectionObserverOptions<T> {
   callback: () => void;
-  list?: T[];
+  dependency?: T[];
   threshold?: number;
 }
 
@@ -15,7 +15,7 @@ interface UseIntersectionObserverOptions<T> {
  */
 export default function useIntersectionObserver<T>({
   callback,
-  list,
+  dependency,
   threshold = 0.1,
 }: UseIntersectionObserverOptions<T>) {
   const elementRef = useRef<HTMLDivElement | null>(null);
@@ -41,7 +41,7 @@ export default function useIntersectionObserver<T>({
     return () => {
       observer.disconnect();
     };
-  }, [list, callback, threshold]);
+  }, [dependency, callback, threshold]);
 
   return elementRef;
 }
