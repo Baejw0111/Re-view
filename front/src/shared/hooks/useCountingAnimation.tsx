@@ -6,7 +6,7 @@ import { useAnimation } from "framer-motion";
  * @param initialCount 초기 카운트 값
  * @returns 현재 카운트, 현재 카운트 설정 함수, 카운트 애니메이션 컨트롤
  */
-export function useCountingAnimation(initialCount: number) {
+export default function useCountingAnimation(initialCount: number) {
   const [currentCount, setCurrentCount] = useState(initialCount);
   const [previousCount, setPreviousCount] = useState(initialCount);
   const countControls = useAnimation();
