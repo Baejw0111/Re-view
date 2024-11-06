@@ -27,7 +27,7 @@ const db = mongoose.connection.useDb("mainDB");
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
-    kakaoId: { type: Number, default: 0 },
+    kakaoId: { type: Number, default: 0, index: true },
     nickname: { type: String, default: "" },
     profileImage: { type: String, default: "" },
     favoriteTags: { type: [String], default: [] },
@@ -60,7 +60,7 @@ export const ReviewModel = db.model(
     tags: { type: [String], default: [] },
     likesCount: { type: Number, default: 0 },
     commentsCount: { type: Number, default: 0 },
-  })
+  }).index({ uploadTime: -1, likesCount: 1, authorId: 1 })
 );
 
 /**
@@ -76,7 +76,7 @@ export const ReviewLikeModel = db.model(
     kakaoId: { type: Number, default: 0 },
     reviewId: { type: String, default: "" },
     likedAt: { type: Date, default: Date.now },
-  })
+  }).index({ kakaoId: 1, likedAt: -1, reviewId: 1 })
 );
 
 /**
@@ -104,9 +104,9 @@ export const TagModel = db.model(
 export const CommentModel = db.model(
   "Comment",
   new mongoose.Schema({
-    authorId: { type: Number, default: 0 },
+    authorId: { type: Number, default: 0, index: true },
     uploadTime: { type: Date, default: Date.now },
-    reviewId: { type: String, default: "" },
+    reviewId: { type: String, default: "", index: true },
     content: { type: String, default: "" },
   })
 );
@@ -126,8 +126,8 @@ export const NotificationModel = db.model(
   new mongoose.Schema({
     kakaoId: { type: Number, default: 0 },
     time: { type: Date, default: Date.now },
-    commentId: { type: String, default: "" },
-    reviewId: { type: String, default: "" },
+    commentId: { type: String, default: "", index: true },
+    reviewId: { type: String, default: "", index: true },
     category: { type: String, default: "" },
-  })
+  }).index({ kakaoId: 1, time: -1 })
 );
