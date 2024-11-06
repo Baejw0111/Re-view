@@ -4,6 +4,7 @@ import {
   ReviewModel,
   NotificationModel,
   UserModel,
+  TagModel,
 } from "../utils/Model.js";
 import { sendEventToClient } from "./Notification.js";
 
@@ -30,6 +31,16 @@ export const addComment = asyncHandler(async (req, res) => {
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { commentsCount: 1 },
   });
+
+  const bulkOps = review.tags.map((tagName) => ({
+    updateOne: {
+      filter: { tagName, kakaoId: authorId },
+      update: { $inc: { preference: 1 } },
+      upsert: true,
+    },
+  }));
+
+  await TagModel.bulkWrite(bulkOps);
 
   // 알림 생성
   await NotificationModel.create({
@@ -126,6 +137,16 @@ export const deleteComment = asyncHandler(async (req, res) => {
   // 알림 이벤트 전송
   const review = await ReviewModel.findById(comment.reviewId);
   sendEventToClient(review.authorId);
+
+  await TagModel.updateMany(
+    { tagName: { $in: review.tags }, kakaoId: comment.authorId },
+    { $inc: { preference: -1 } }
+  );
+
+  await TagModel.deleteMany({
+    kakaoId: comment.authorId,
+    preference: { $lte: 0 },
+  });
 
   res.status(200).json({ message: "댓글 삭제 완료" });
 }, "리뷰 댓글 삭제");

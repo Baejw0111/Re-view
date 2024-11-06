@@ -3,6 +3,7 @@ import {
   ReviewModel,
   ReviewLikeModel,
   NotificationModel,
+  TagModel,
 } from "../utils/Model.js";
 import { sendEventToClient } from "./Notification.js";
 
@@ -11,6 +12,7 @@ import { sendEventToClient } from "./Notification.js";
  */
 export const addLike = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
+  const userId = req.userId;
 
   const review = await ReviewModel.findById(reviewId);
 
@@ -20,7 +22,7 @@ export const addLike = asyncHandler(async (req, res) => {
 
   // 리뷰 추천 데이터 생성
   await ReviewLikeModel.create({
-    kakaoId: req.userId,
+    kakaoId: userId,
     reviewId,
     likedAt: Date.now(),
   });
@@ -28,6 +30,16 @@ export const addLike = asyncHandler(async (req, res) => {
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { likesCount: 1 },
   });
+
+  const bulkOps = review.tags.map((tagName) => ({
+    updateOne: {
+      filter: { tagName, kakaoId: userId },
+      update: { $inc: { preference: 3 } },
+      upsert: true,
+    },
+  }));
+
+  await TagModel.bulkWrite(bulkOps);
 
   // 추천 수 갱신 후 10개가 될 경우 알림 생성
   if (review.likesCount === 9) {
@@ -62,6 +74,7 @@ export const getLikeStatus = asyncHandler(async (req, res) => {
  */
 export const unLike = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
+  const userId = req.userId;
 
   const review = await ReviewModel.findById(reviewId);
 
@@ -70,12 +83,22 @@ export const unLike = asyncHandler(async (req, res) => {
   }
 
   await ReviewLikeModel.findOneAndDelete({
-    kakaoId: req.userId,
+    kakaoId: userId,
     reviewId,
   });
 
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { likesCount: -1 },
+  });
+
+  await TagModel.updateMany(
+    { tagName: { $in: review.tags }, kakaoId: userId },
+    { $inc: { preference: -3 } }
+  );
+
+  await TagModel.deleteMany({
+    kakaoId: userId,
+    preference: { $lte: 0 },
   });
 
   // 추천 수 갱신 후 9개가 될 경우 알림 삭제

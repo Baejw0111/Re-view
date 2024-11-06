@@ -4,6 +4,7 @@ import {
   CommentModel,
   NotificationModel,
   ReviewLikeModel,
+  TagModel,
 } from "../utils/Model.js";
 import {
   deleteUploadedFiles,
@@ -58,6 +59,8 @@ export const createReview = asyncHandler(async (req, res) => {
     });
   }
 
+  const tagList = typeof tags === "string" ? [tags] : [...tags];
+
   const reviewData = new ReviewModel({
     authorId,
     images: req.files.map((file) => file.path), // 여러 이미지 경로 저장
@@ -65,16 +68,21 @@ export const createReview = asyncHandler(async (req, res) => {
     title,
     reviewText,
     rating,
-    tags,
-    likes: 0,
-    comments: 0,
+    tags: tagList,
+    likesCount: 0,
+    commentsCount: 0,
   });
   await reviewData.save();
 
-  await UserModel.findOneAndUpdate(
-    { kakaoId: authorId },
-    { $push: { reviews: reviewData._id } }
-  );
+  const bulkOps = tagList.map((tagName) => ({
+    updateOne: {
+      filter: { tagName, kakaoId: authorId },
+      update: { $inc: { preference: 5 } },
+      upsert: true,
+    },
+  }));
+
+  await TagModel.bulkWrite(bulkOps);
 
   res.status(201).json({
     message: "리뷰가 성공적으로 등록되었습니다.",
@@ -182,6 +190,34 @@ export const updateReview = asyncHandler(async (req, res) => {
     if (key === "deletedImages") {
       continue;
     }
+
+    if (key === "tags") {
+      const tagList =
+        typeof updateData.tags === "string"
+          ? [updateData.tags]
+          : [...updateData.tags];
+
+      await TagModel.updateMany(
+        { tagName: { $in: reviewData.tags }, kakaoId: req.userId },
+        { $inc: { preference: -5 } }
+      );
+
+      await TagModel.deleteMany({
+        kakaoId: req.userId,
+        preference: { $lte: 0 },
+      });
+
+      const bulkOps = updateData.tags.map((tagName) => ({
+        updateOne: {
+          filter: { tagName, kakaoId: req.userId },
+          update: { $inc: { preference: 5 } },
+          upsert: true,
+        },
+      }));
+
+      await TagModel.bulkWrite(bulkOps);
+    }
+
     reviewData[key] = updateData[key];
   }
 
@@ -219,14 +255,24 @@ export const deleteReview = asyncHandler(async (req, res) => {
 
   deleteUploadedFiles(review.images); // 모든 이미지 파일 삭제
 
+  await TagModel.updateMany(
+    { tagName: { $in: review.tags }, kakaoId: review.authorId },
+    { $inc: { preference: -5 } }
+  );
+
+  await TagModel.deleteMany({
+    kakaoId: req.userId,
+    preference: { $lte: 0 },
+  });
+
   await ReviewModel.findByIdAndDelete(reviewId); // 리뷰 삭제
   await UserModel.findOneAndUpdate(
     { kakaoId: review.authorId },
-    { $pull: { reviews: reviewId.toString() } }
+    { $pull: { reviews: reviewId } }
   ); // 유저 정보 업데이트
-  await CommentModel.deleteMany({ reviewId: reviewId.toString() }); // 댓글 삭제
-  await NotificationModel.deleteMany({ reviewId: reviewId.toString() }); // 알림 삭제
-  await ReviewLikeModel.deleteMany({ reviewId: reviewId.toString() }); // 추천 삭제
+  await CommentModel.deleteMany({ reviewId: reviewId }); // 댓글 삭제
+  await NotificationModel.deleteMany({ reviewId: reviewId }); // 알림 삭제
+  await ReviewLikeModel.deleteMany({ reviewId: reviewId }); // 추천 삭제
 
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
 }, "리뷰 삭제");
