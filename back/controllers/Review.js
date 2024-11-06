@@ -120,7 +120,7 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
     uploadTime: { $lt: lastReviewUploadTime },
     likesCount: { $gte: 10 },
   })
-    .sort({ likesCount: -1 })
+    .sort({ uploadTime: -1 })
     .limit(20);
   const reviewIdList = reviewList.map((review) => review._id);
 
