@@ -19,7 +19,7 @@ export default function CommentInput() {
   const reviewId = queryParams.get("reviewId");
 
   const [comment, setComment] = useState("");
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -40,7 +40,7 @@ export default function CommentInput() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim()) {
-      setIsExpanded(false);
+      setIsFocused(false);
       await mutation.mutateAsync();
       setComment("");
     }
@@ -48,11 +48,14 @@ export default function CommentInput() {
 
   const handleCancel = () => {
     setComment("");
-    setIsExpanded(false);
+    setIsFocused(false);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "2.25rem";
+    }
   };
 
   const handleFocus = () => {
-    setIsExpanded(true);
+    setIsFocused(true);
   };
 
   if (isDesktop === null) return;
@@ -72,11 +75,18 @@ export default function CommentInput() {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               onFocus={handleFocus}
-              className={`resize-none transition-all duration-200 ease-in-out ${
-                isExpanded ? "min-h-[80px]" : "overflow-hidden"
+              style={{ height: "2.25rem" }}
+              className={`rounded-none border-0 outline-none resize-none focus-visible:ring-0 border-b-2
+                min-h-9 px-1 overflow-hidden focus-visible:border-b-foreground
+              transition-all duration-300 ease-in-out ${
+                isFocused ? "min-h-14" : ""
               }`}
+              onInput={(e) => {
+                e.currentTarget.style.height = "auto";
+                e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`; // 내용에 맞게 높이 조정
+              }}
             />
-            {isExpanded && (
+            {isFocused && (
               <div className="flex justify-end gap-2 mt-2">
                 <Button type="button" variant="ghost" onClick={handleCancel}>
                   취소
@@ -109,9 +119,9 @@ export default function CommentInput() {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             onFocus={handleFocus}
-            onBlur={() => setIsExpanded(false)}
+            onBlur={() => setIsFocused(false)}
             className={`min-h-9 h-9 resize-none transition-all duration-200 ease-in-out ${
-              isExpanded ? "min-h-[80px]" : "overflow-hidden"
+              isFocused ? "min-h-[80px]" : "overflow-hidden"
             }`}
           />
           <TooltipWrapper tooltipText="등록">
