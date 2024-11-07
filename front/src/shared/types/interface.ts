@@ -6,8 +6,7 @@
  * @property {string[]} favoriteTags - 선호하는 태그 목록
  * @property {string} notificationCheckTime - 알림 확인 시간
  * @property {number} reviewCount - 작성한 리뷰 개수
- * @property {number} commentCount - 작성한 댓글 수
- * @property {number} likedReviewCount - 추천한 리뷰 수
+ * @property {number} totalRating - 총 평점
  */
 export interface UserInfo {
   kakaoId: number;
@@ -16,8 +15,7 @@ export interface UserInfo {
   favoriteTags: string[];
   notificationCheckTime: string;
   reviewCount: number;
-  commentCount: number;
-  likedReviewCount: number;
+  totalRating: number;
 }
 
 /**

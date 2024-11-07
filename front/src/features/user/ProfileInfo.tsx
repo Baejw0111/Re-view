@@ -23,15 +23,12 @@ export default function ProfileInfo({ userId }: { userId: number }) {
             </div>
             <Separator orientation="vertical" className="h-6" />
             <div className="text-center">
-              <p className="text-xl font-semibold">{userInfo.commentCount}</p>
-              <p className="text-xs text-muted-foreground">댓글</p>
-            </div>
-            <Separator orientation="vertical" className="h-6" />
-            <div className="text-center">
               <p className="text-xl font-semibold">
-                {userInfo.likedReviewCount}
+                {userInfo.reviewCount === 0
+                  ? 0
+                  : (userInfo.totalRating / userInfo.reviewCount).toFixed(1)}
               </p>
-              <p className="text-xs text-muted-foreground">추천</p>
+              <p className="text-xs text-muted-foreground">평균 평점</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 justify-center md:justify-start">

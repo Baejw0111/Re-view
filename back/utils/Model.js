@@ -24,8 +24,7 @@ const db = mongoose.connection.useDb("mainDB");
  * @property {string[]} favoriteTags - 선호하는 태그 목록
  * @property {Date} notificationCheckTime - 알림 확인 시간
  * @property {number} reviewCount - 작성한 리뷰 수
- * @property {number} commentCount - 작성한 댓글 수
- * @property {number} likedReviewCount - 추천한 리뷰 수
+ * @property {number} totalRating - 총 평점
  */
 export const UserModel = db.model(
   "User",
@@ -36,8 +35,7 @@ export const UserModel = db.model(
     favoriteTags: { type: [String], default: [] },
     notificationCheckTime: { type: Date, default: Date.now },
     reviewCount: { type: Number, default: 0 },
-    commentCount: { type: Number, default: 0 },
-    likedReviewCount: { type: Number, default: 0 },
+    totalRating: { type: Number, default: 0 },
   })
 );
 
