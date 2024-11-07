@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo } from "@/shared/types/interface";
@@ -78,8 +78,8 @@ export default function ReviewDetail() {
             <div className="flex items-center justify-between">
               {/* 유저 프로필 링크 */}
               <div className="flex items-center gap-2">
-                <a
-                  href={`/profile/${reviewInfo.authorId}`}
+                <Link
+                  to={`/profile/${reviewInfo.authorId}`}
                   className="flex items-center gap-2"
                 >
                   <UserAvatar
@@ -90,7 +90,7 @@ export default function ReviewDetail() {
                   <div className="line-clamp-1 font-semibold">
                     {userInfo?.nickname}
                   </div>
-                </a>
+                </Link>
                 <div className="text-xs text-muted-foreground">
                   {claculateTime(reviewInfo.uploadTime)}
                 </div>
