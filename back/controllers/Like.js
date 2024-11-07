@@ -21,42 +21,50 @@ export const addLike = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
 
-  // 리뷰 추천 데이터 생성
-  await ReviewLikeModel.create({
-    kakaoId: userId,
+  // 참고: find 보다는 exists가 더 효율적임
+  const isLiked = !!(await ReviewLikeModel.exists({
     reviewId,
-    likedAt: Date.now(),
-  });
-
-  await ReviewModel.findByIdAndUpdate(reviewId, {
-    $inc: { likesCount: 1 },
-  });
-
-  const bulkOps = review.tags.map((tagName) => ({
-    updateOne: {
-      filter: { tagName, kakaoId: userId },
-      update: { $inc: { preference: 3 } },
-      upsert: true,
-    },
+    kakaoId: userId,
   }));
 
-  await TagModel.bulkWrite(bulkOps);
-
-  await UserModel.updateOne(
-    { kakaoId: userId },
-    { $inc: { likedReviewCount: 1 } }
-  ); // 유저 정보 업데이트
-
-  // 추천 수 갱신 후 10개가 될 경우 알림 생성
-  if (review.likesCount === 9) {
-    await NotificationModel.create({
-      kakaoId: review.authorId,
+  if (!isLiked) {
+    // 리뷰 추천 데이터 생성
+    await ReviewLikeModel.create({
+      kakaoId: userId,
       reviewId,
-      category: "like",
+      likedAt: Date.now(),
     });
 
-    // 알림 이벤트 전송
-    sendEventToClient(review.authorId);
+    await ReviewModel.findByIdAndUpdate(reviewId, {
+      $inc: { likesCount: 1 },
+    });
+
+    const bulkOps = review.tags.map((tagName) => ({
+      updateOne: {
+        filter: { tagName, kakaoId: userId },
+        update: { $inc: { preference: 3 } },
+        upsert: true,
+      },
+    }));
+
+    await TagModel.bulkWrite(bulkOps);
+
+    await UserModel.updateOne(
+      { kakaoId: userId },
+      { $inc: { likedReviewCount: 1 } }
+    ); // 유저 정보 업데이트
+
+    // 추천 수 갱신 후 10개가 될 경우 알림 생성
+    if (review.likesCount === 9) {
+      await NotificationModel.create({
+        kakaoId: review.authorId,
+        reviewId,
+        category: "like",
+      });
+
+      // 알림 이벤트 전송
+      sendEventToClient(review.authorId);
+    }
   }
 
   res.status(200).json({ message: "추천 완료!" });
@@ -88,36 +96,43 @@ export const unLike = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
 
-  await ReviewLikeModel.findOneAndDelete({
-    kakaoId: userId,
+  const isLiked = !!(await ReviewLikeModel.exists({
     reviewId,
-  });
-
-  await ReviewModel.findByIdAndUpdate(reviewId, {
-    $inc: { likesCount: -1 },
-  });
-
-  await TagModel.updateMany(
-    { tagName: { $in: review.tags }, kakaoId: userId },
-    { $inc: { preference: -3 } }
-  );
-
-  await TagModel.deleteMany({
     kakaoId: userId,
-    preference: { $lte: 0 },
-  });
+  }));
 
-  await UserModel.updateOne(
-    { kakaoId: userId },
-    { $inc: { likedReviewCount: -1 } }
-  ); // 유저 정보 업데이트
+  if (isLiked) {
+    await ReviewLikeModel.findOneAndDelete({
+      kakaoId: userId,
+      reviewId,
+    });
 
-  // 추천 수 갱신 후 9개가 될 경우 알림 삭제
-  if (review.likesCount === 10) {
-    await NotificationModel.findOneAndDelete({ reviewId });
+    await ReviewModel.findByIdAndUpdate(reviewId, {
+      $inc: { likesCount: -1 },
+    });
 
-    // 알림 이벤트 전송
-    sendEventToClient(review.authorId);
+    await TagModel.updateMany(
+      { tagName: { $in: review.tags }, kakaoId: userId },
+      { $inc: { preference: -3 } }
+    );
+
+    await TagModel.deleteMany({
+      kakaoId: userId,
+      preference: { $lte: 0 },
+    });
+
+    await UserModel.updateOne(
+      { kakaoId: userId },
+      { $inc: { likedReviewCount: -1 } }
+    ); // 유저 정보 업데이트
+
+    // 추천 수 갱신 후 9개가 될 경우 알림 삭제
+    if (review.likesCount === 10) {
+      await NotificationModel.findOneAndDelete({ reviewId });
+
+      // 알림 이벤트 전송
+      sendEventToClient(review.authorId);
+    }
   }
 
   res.status(200).json({ message: "추천 삭제 완료" });
