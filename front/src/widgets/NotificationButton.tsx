@@ -74,8 +74,10 @@ export default function NotificationButton() {
 
   useEffect(() => {
     if (userInfo && userInfo.kakaoId && notifications) {
+      // 알림 창이 열려있으면 알림 개수 초기화
       if (isNotificationOpen) setUnCheckedNotifications(0);
       else {
+        // 알림 창이 닫혀있으면 알림 개수 계산
         const unChecked = notifications?.filter(
           (notification) =>
             new Date(notification.time).getTime() >
@@ -118,22 +120,24 @@ export default function NotificationButton() {
       >
         <DropdownMenuLabel>알림</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <ScrollArea className="h-[300px]">
-          {notifications ? (
-            notifications.map((notification, index) => (
-              <DropdownMenuItem
-                key={index}
-                className="flex flex-col items-start"
-              >
-                <NotificationBox notificationInfo={notification} />
-              </DropdownMenuItem>
-            ))
+        <div className="h-[300px]">
+          {notifications && notifications.length > 0 ? (
+            <ScrollArea className="h-full">
+              {notifications.map((notification, index) => (
+                <DropdownMenuItem
+                  key={index}
+                  className="flex flex-col items-start"
+                >
+                  <NotificationBox notificationInfo={notification} />
+                </DropdownMenuItem>
+              ))}
+            </ScrollArea>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="h-full flex justify-center items-center text-muted-foreground">
               알림이 없습니다.
             </div>
           )}
-        </ScrollArea>
+        </div>
         <DropdownMenuSeparator />
         <Link to="/notifications">
           <DropdownMenuItem className="flex items-center justify-center w-full text-blue-500 cursor-pointer">
