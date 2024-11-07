@@ -21,8 +21,11 @@ const db = mongoose.connection.useDb("mainDB");
  * @property {number} kakaoId - 카카오 ID
  * @property {string} nickname - 닉네임
  * @property {string} profileImage - 프로필 이미지 경로
- * @property {string[]} favoriteTags - 자주 찾는 태그 모음
+ * @property {string[]} favoriteTags - 선호하는 태그 목록
  * @property {Date} notificationCheckTime - 알림 확인 시간
+ * @property {number} reviewCount - 작성한 리뷰 수
+ * @property {number} commentCount - 작성한 댓글 수
+ * @property {number} likedReviewCount - 추천한 리뷰 수
  */
 export const UserModel = db.model(
   "User",
@@ -32,6 +35,9 @@ export const UserModel = db.model(
     profileImage: { type: String, default: "" },
     favoriteTags: { type: [String], default: [] },
     notificationCheckTime: { type: Date, default: Date.now },
+    reviewCount: { type: Number, default: 0 },
+    commentCount: { type: Number, default: 0 },
+    likedReviewCount: { type: Number, default: 0 },
   })
 );
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
-import { ReviewInfo, UserInfo } from "@/shared/types/interface";
+import { ReviewInfo } from "@/shared/types/interface";
 import { API_URL } from "@/shared/constants";
 import {
   Carousel,
@@ -59,12 +59,7 @@ export default function ReviewDetail() {
   });
 
   // 유저 정보
-  const { data: userInfo } = useQuery<{
-    userInfo: UserInfo;
-    reviewCount: number;
-    commentCount: number;
-    likedReviewCount: number;
-  }>({
+  const { data: userInfo } = useQuery({
     queryKey: ["userInfo", reviewInfo?.authorId],
     queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
     enabled: !!reviewInfo, // reviewInfo가 있을 때만 쿼리 실행
@@ -89,11 +84,11 @@ export default function ReviewDetail() {
                 >
                   <UserAvatar
                     className="h-7 w-7"
-                    profileImage={userInfo?.userInfo.profileImage}
-                    nickname={userInfo?.userInfo.nickname}
+                    profileImage={userInfo?.profileImage}
+                    nickname={userInfo?.nickname}
                   />
                   <div className="line-clamp-1 font-semibold">
-                    {userInfo?.userInfo.nickname}
+                    {userInfo?.nickname}
                   </div>
                 </a>
                 <div className="text-xs text-muted-foreground">

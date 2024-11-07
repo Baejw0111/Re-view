@@ -3,19 +3,21 @@
  * @property {number} kakaoId - 카카오 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
- * @property {string[]} reviews - 유저 리뷰 목록
- * @property {string[]} likedReviews - 유저 좋아요한 리뷰 목록
- * @property {string[]} favoriteTags - 유저 즐겨찾기 태그
- * @property {string} notificationCheckTime - 유저 알림 확인 시간
+ * @property {string[]} favoriteTags - 선호하는 태그 목록
+ * @property {string} notificationCheckTime - 알림 확인 시간
+ * @property {number} reviewCount - 작성한 리뷰 개수
+ * @property {number} commentCount - 작성한 댓글 수
+ * @property {number} likedReviewCount - 추천한 리뷰 수
  */
 export interface UserInfo {
   kakaoId: number;
   nickname: string;
   profileImage: string;
-  reviews: string[];
-  likedReviews: string[];
   favoriteTags: string[];
   notificationCheckTime: string;
+  reviewCount: number;
+  commentCount: number;
+  likedReviewCount: number;
 }
 
 /**

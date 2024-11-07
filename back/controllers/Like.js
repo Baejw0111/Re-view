@@ -1,5 +1,6 @@
 import asyncHandler from "../utils/ControllerUtils.js";
 import {
+  UserModel,
   ReviewModel,
   ReviewLikeModel,
   NotificationModel,
@@ -40,6 +41,11 @@ export const addLike = asyncHandler(async (req, res) => {
   }));
 
   await TagModel.bulkWrite(bulkOps);
+
+  await UserModel.updateOne(
+    { kakaoId: userId },
+    { $inc: { likedReviewCount: 1 } }
+  ); // 유저 정보 업데이트
 
   // 추천 수 갱신 후 10개가 될 경우 알림 생성
   if (review.likesCount === 9) {
@@ -100,6 +106,11 @@ export const unLike = asyncHandler(async (req, res) => {
     kakaoId: userId,
     preference: { $lte: 0 },
   });
+
+  await UserModel.updateOne(
+    { kakaoId: userId },
+    { $inc: { likedReviewCount: -1 } }
+  ); // 유저 정보 업데이트
 
   // 추천 수 갱신 후 9개가 될 경우 알림 삭제
   if (review.likesCount === 10) {

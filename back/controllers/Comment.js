@@ -41,6 +41,10 @@ export const addComment = asyncHandler(async (req, res) => {
   }));
 
   await TagModel.bulkWrite(bulkOps);
+  await UserModel.updateOne(
+    { kakaoId: authorId },
+    { $inc: { commentCount: 1 } }
+  ); // 유저 정보 업데이트
 
   // 알림 생성
   await NotificationModel.create({
@@ -147,6 +151,11 @@ export const deleteComment = asyncHandler(async (req, res) => {
     kakaoId: comment.authorId,
     preference: { $lte: 0 },
   });
+
+  await UserModel.updateOne(
+    { kakaoId: comment.authorId },
+    { $inc: { commentCount: -1 } }
+  ); // 유저 정보 업데이트
 
   res.status(200).json({ message: "댓글 삭제 완료" });
 }, "리뷰 댓글 삭제");

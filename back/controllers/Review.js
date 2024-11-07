@@ -83,6 +83,10 @@ export const createReview = asyncHandler(async (req, res) => {
   }));
 
   await TagModel.bulkWrite(bulkOps);
+  await UserModel.updateOne(
+    { kakaoId: authorId },
+    { $inc: { reviewCount: 1 } }
+  );
 
   res.status(201).json({
     message: "리뷰가 성공적으로 등록되었습니다.",
@@ -273,6 +277,10 @@ export const deleteReview = asyncHandler(async (req, res) => {
   await CommentModel.deleteMany({ reviewId: reviewId }); // 댓글 삭제
   await NotificationModel.deleteMany({ reviewId: reviewId }); // 알림 삭제
   await ReviewLikeModel.deleteMany({ reviewId: reviewId }); // 추천 삭제
+  await UserModel.updateOne(
+    { kakaoId: review.authorId },
+    { $inc: { reviewCount: -1 } }
+  ); // 유저 정보 업데이트
 
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
 }, "리뷰 삭제");

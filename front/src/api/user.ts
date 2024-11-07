@@ -6,14 +6,7 @@ import { UserInfo, CommentInfo } from "@/shared/types/interface";
  * @param userId 유저 ID
  * @returns 유저 정보
  */
-export const fetchUserInfoById = async (
-  userId: number
-): Promise<{
-  userInfo: UserInfo;
-  reviewCount: number;
-  commentCount: number;
-  likedReviewCount: number;
-}> => {
+export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
   const response = await genaralApiClient.get(`/user/${userId}`);
   console.log("유저 조회 성공:", response.data);
   return response.data;

@@ -50,17 +50,15 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   <div className="flex items-center justify-between">
                     {/* 작성자 정보 및 프로필 팝오버 버튼*/}
                     {author && (
-                      <ProfilePopOver
-                        userId={author.userInfo.kakaoId as number}
-                      >
+                      <ProfilePopOver userId={author.kakaoId as number}>
                         <div role="button" className="flex items-center gap-2">
                           <UserAvatar
                             className="h-6 w-6"
-                            profileImage={author.userInfo.profileImage}
-                            nickname={author.userInfo.nickname}
+                            profileImage={author.profileImage}
+                            nickname={author.nickname}
                           />
                           <div className="text-sm line-clamp-1 text-muted-foreground font-semibold">
-                            {author.userInfo.nickname}
+                            {author.nickname}
                           </div>
                         </div>
                       </ProfilePopOver>

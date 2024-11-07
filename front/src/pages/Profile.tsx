@@ -15,7 +15,7 @@ import {
   fetchUserReviewList,
   fetchUserLikedList,
 } from "@/api/user";
-import { CommentInfo, UserInfo } from "@/shared/types/interface";
+import { CommentInfo } from "@/shared/types/interface";
 import Reviews from "@/widgets/Reviews";
 import CommentBox from "@/features/interaction/CommentBox";
 import UserSetting from "@/features/setting/UserSetting";
@@ -30,12 +30,7 @@ export default function Profile() {
 
   // 사용자 정보 가져오기
   const { id: userId } = useParams();
-  const { data: userInfo } = useQuery<{
-    userInfo: UserInfo;
-    reviewCount: number;
-    commentCount: number;
-    likedReviewCount: number;
-  }>({
+  const { data: userInfo } = useQuery({
     queryKey: ["userInfo", Number(userId)],
     queryFn: () => fetchUserInfoById(Number(userId)),
   });
@@ -86,8 +81,8 @@ export default function Profile() {
         <div className="flex flex-row items-center md:items-start gap-4 md:gap-6">
           <UserAvatar
             className="h-24 w-24 md:h-32 md:w-32 my-auto"
-            profileImage={userInfo?.userInfo.profileImage}
-            nickname={userInfo?.userInfo.nickname}
+            profileImage={userInfo?.profileImage}
+            nickname={userInfo?.nickname}
           />
           <ProfileInfo userId={Number(userId)} />
         </div>
