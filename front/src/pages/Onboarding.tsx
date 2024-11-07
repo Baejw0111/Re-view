@@ -72,7 +72,7 @@ export default function OnboardingPage() {
                         <span className="relative z-10">프로필 설정 완료</span>
                         <span
                           className="absolute inset-0 bg-gradient-to-r from-red-500 via-green-500 to-blue-500
-                      opacity-0 group-hover:opacity-100 group-active:opacity-100 animate-shimmer transition-opacity duration-300"
+                      opacity-0 group-hover:opacity-100 group-active:opacity-100 group-focus:opacity-100 animate-shimmer transition-opacity duration-300"
                         ></span>
                       </Button>
                       <style>{`
