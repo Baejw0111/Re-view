@@ -6,6 +6,7 @@ import {
   ReviewLikeModel,
 } from "../utils/Model.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
+import { getTop4TagsPerUser } from "./Tag.js";
 
 /**
  * 유저 정보 조회
@@ -14,7 +15,16 @@ import { deleteUploadedFiles } from "../utils/Upload.js";
 export const getUserInfoById = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
   const userInfo = await UserModel.findOne({ kakaoId: userId });
-  res.status(200).json(userInfo);
+  const topTags = await getTop4TagsPerUser(Number(userId));
+  res.status(200).json({
+    kakaoId: userInfo.kakaoId,
+    nickname: userInfo.nickname,
+    profileImage: userInfo.profileImage,
+    totalRating: userInfo.totalRating,
+    reviewCount: userInfo.reviewCount,
+    notificationCheckTime: userInfo.notificationCheckTime,
+    favoriteTags: topTags,
+  });
 }, "유저 정보 조회");
 
 /**

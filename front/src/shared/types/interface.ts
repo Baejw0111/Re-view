@@ -43,16 +43,6 @@ export interface ReviewInfo {
 }
 
 /**
- * @description 태그 정보
- * @property {string} tagName - 태그 이름
- * @property {number} appliedCount - 태그 적용 횟수
- */
-export interface TagInfo {
-  tagName: string;
-  appliedCount: number;
-}
-
-/**
  * @description 댓글 정보
  * @property {string} _id - 댓글 ID
  * @property {number} authorId - 댓글 작성자 ID

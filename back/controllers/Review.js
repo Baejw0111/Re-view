@@ -12,6 +12,7 @@ import {
   verifyFormFields,
 } from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
+import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
 
 /**
  * 리뷰 등록
@@ -74,15 +75,8 @@ export const createReview = asyncHandler(async (req, res) => {
   });
   await reviewData.save();
 
-  const bulkOps = tagList.map((tagName) => ({
-    updateOne: {
-      filter: { tagName, kakaoId: authorId },
-      update: { $inc: { preference: 5 } },
-      upsert: true,
-    },
-  }));
+  await increaseTagPreference(authorId, tagList, 5);
 
-  await TagModel.bulkWrite(bulkOps);
   await UserModel.updateOne(
     { kakaoId: authorId },
     { $inc: { reviewCount: 1, totalRating: rating } }
@@ -203,30 +197,8 @@ export const updateReview = asyncHandler(async (req, res) => {
     }
 
     if (key === "tags") {
-      const tagList =
-        typeof updateData.tags === "string"
-          ? [updateData.tags]
-          : [...updateData.tags];
-
-      await TagModel.updateMany(
-        { tagName: { $in: reviewData.tags }, kakaoId: req.userId },
-        { $inc: { preference: -5 } }
-      );
-
-      await TagModel.deleteMany({
-        kakaoId: req.userId,
-        preference: { $lte: 0 },
-      });
-
-      const bulkOps = updateData.tags.map((tagName) => ({
-        updateOne: {
-          filter: { tagName, kakaoId: req.userId },
-          update: { $inc: { preference: 5 } },
-          upsert: true,
-        },
-      }));
-
-      await TagModel.bulkWrite(bulkOps);
+      await decreaseTagPreference(req.userId, reviewData.tags, 5);
+      await increaseTagPreference(req.userId, updateData.tags, 5);
     }
 
     reviewData[key] = updateData[key];
@@ -266,15 +238,7 @@ export const deleteReview = asyncHandler(async (req, res) => {
 
   deleteUploadedFiles(review.images); // 모든 이미지 파일 삭제
 
-  await TagModel.updateMany(
-    { tagName: { $in: review.tags }, kakaoId: review.authorId },
-    { $inc: { preference: -5 } }
-  );
-
-  await TagModel.deleteMany({
-    kakaoId: req.userId,
-    preference: { $lte: 0 },
-  });
+  await decreaseTagPreference(review.authorId, review.tags, 5);
 
   await ReviewModel.findByIdAndDelete(reviewId); // 리뷰 삭제
   await UserModel.findOneAndUpdate(

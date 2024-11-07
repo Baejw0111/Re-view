@@ -7,6 +7,7 @@ import {
   TagModel,
 } from "../utils/Model.js";
 import { sendEventToClient } from "./Notification.js";
+import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
 
 /**
  * 리뷰 댓글 추가
@@ -32,15 +33,8 @@ export const addComment = asyncHandler(async (req, res) => {
     $inc: { commentsCount: 1 },
   });
 
-  const bulkOps = review.tags.map((tagName) => ({
-    updateOne: {
-      filter: { tagName, kakaoId: authorId },
-      update: { $inc: { preference: 1 } },
-      upsert: true,
-    },
-  }));
+  await increaseTagPreference(authorId, review.tags, 1);
 
-  await TagModel.bulkWrite(bulkOps);
   await UserModel.updateOne(
     { kakaoId: authorId },
     { $inc: { commentCount: 1 } }
@@ -142,15 +136,7 @@ export const deleteComment = asyncHandler(async (req, res) => {
   const review = await ReviewModel.findById(comment.reviewId);
   sendEventToClient(review.authorId);
 
-  await TagModel.updateMany(
-    { tagName: { $in: review.tags }, kakaoId: comment.authorId },
-    { $inc: { preference: -1 } }
-  );
-
-  await TagModel.deleteMany({
-    kakaoId: comment.authorId,
-    preference: { $lte: 0 },
-  });
+  await decreaseTagPreference(comment.authorId, review.tags, 1);
 
   await UserModel.updateOne(
     { kakaoId: comment.authorId },

@@ -7,6 +7,7 @@ import {
   TagModel,
 } from "../utils/Model.js";
 import { sendEventToClient } from "./Notification.js";
+import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
 
 /**
  * 리뷰 추천 API
@@ -39,15 +40,7 @@ export const addLike = asyncHandler(async (req, res) => {
       $inc: { likesCount: 1 },
     });
 
-    const bulkOps = review.tags.map((tagName) => ({
-      updateOne: {
-        filter: { tagName, kakaoId: userId },
-        update: { $inc: { preference: 3 } },
-        upsert: true,
-      },
-    }));
-
-    await TagModel.bulkWrite(bulkOps);
+    await increaseTagPreference(userId, review.tags, 3);
 
     await UserModel.updateOne(
       { kakaoId: userId },
@@ -111,15 +104,7 @@ export const unLike = asyncHandler(async (req, res) => {
       $inc: { likesCount: -1 },
     });
 
-    await TagModel.updateMany(
-      { tagName: { $in: review.tags }, kakaoId: userId },
-      { $inc: { preference: -3 } }
-    );
-
-    await TagModel.deleteMany({
-      kakaoId: userId,
-      preference: { $lte: 0 },
-    });
+    await decreaseTagPreference(userId, review.tags, 3);
 
     await UserModel.updateOne(
       { kakaoId: userId },

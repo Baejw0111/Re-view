@@ -21,7 +21,6 @@ const db = mongoose.connection.useDb("mainDB");
  * @property {number} kakaoId - 카카오 ID
  * @property {string} nickname - 닉네임
  * @property {string} profileImage - 프로필 이미지 경로
- * @property {string[]} favoriteTags - 선호하는 태그 목록
  * @property {Date} notificationCheckTime - 알림 확인 시간
  * @property {number} reviewCount - 작성한 리뷰 수
  * @property {number} totalRating - 총 평점
@@ -32,7 +31,6 @@ export const UserModel = db.model(
     kakaoId: { type: Number, default: 0, index: true },
     nickname: { type: String, default: "" },
     profileImage: { type: String, default: "" },
-    favoriteTags: { type: [String], default: [] },
     notificationCheckTime: { type: Date, default: Date.now },
     reviewCount: { type: Number, default: 0 },
     totalRating: { type: Number, default: 0 },
@@ -88,6 +86,7 @@ export const ReviewLikeModel = db.model(
  * @type {mongoose.Model}
  * @property {string} tagName - 태그 이름
  * @property {number} kakaoId - 유저 ID
+ * @property {Date} lastInteractedAt - 마지막으로 태그와 상호작용한 시간
  * @property {number} preference - 유저의 태그에 대한 선호도
  */
 export const TagModel = db.model(
@@ -95,8 +94,9 @@ export const TagModel = db.model(
   new mongoose.Schema({
     tagName: { type: String, default: "" },
     kakaoId: { type: Number, default: 0 },
+    lastInteractedAt: { type: Date, default: Date.now },
     preference: { type: Number, default: 0 },
-  }).index({ kakaoId: 1, tagName: 1, preference: -1 })
+  }).index({ kakaoId: 1, tagName: 1, preference: -1, lastInteractedAt: -1 })
 );
 
 /**
