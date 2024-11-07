@@ -65,7 +65,7 @@ export default function ReviewDetailModal() {
         onOpenChange={handleClose}
       >
         <DialogContent
-          className="block md:max-w-[760px] lg:max-w-[860px] h-[90vh] p-20 overflow-y-auto scrollbar-hide"
+          className="block md:max-w-[760px] lg:max-w-[860px] h-[90vh] p-20 overflow-y-auto scrollbar-hide focus-visible:outline-none"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogTitle hidden></DialogTitle>
@@ -81,7 +81,7 @@ export default function ReviewDetailModal() {
 
   return (
     <Drawer open={isModalOpen && !isNotificationOpen} onClose={handleClose}>
-      <DrawerContent className="h-[90vh]">
+      <DrawerContent className="h-[90vh] focus-visible:outline-none">
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>
         <div className="p-5 pb-20 overflow-y-auto scrollbar-hide">
