@@ -75,20 +75,27 @@ export default function Reviews({
                   }
                 >
                   {Array.from({ length: gridColumnCount[breakpoint] }).map(
-                    (_, index) => (
-                      <ReviewCard
-                        key={
-                          reviewIdList[
-                            item.index * gridColumnCount[breakpoint] + index
-                          ]
-                        }
-                        reviewId={
-                          reviewIdList[
-                            item.index * gridColumnCount[breakpoint] + index
-                          ]
-                        }
-                      />
-                    )
+                    (_, index) => {
+                      if (
+                        item.index * gridColumnCount[breakpoint] + index <
+                        reviewIdList.length
+                      ) {
+                        return (
+                          <ReviewCard
+                            key={
+                              reviewIdList[
+                                item.index * gridColumnCount[breakpoint] + index
+                              ]
+                            }
+                            reviewId={
+                              reviewIdList[
+                                item.index * gridColumnCount[breakpoint] + index
+                              ]
+                            }
+                          />
+                        );
+                      }
+                    }
                   )}
                 </div>
               </div>
