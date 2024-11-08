@@ -1,10 +1,15 @@
-import { UserModel, NotificationModel } from "../utils/Model.js";
+import {
+  UserModel,
+  NotificationModel,
+  CommentModel,
+  ReviewModel,
+} from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
-let clients = new Map(); // 사용자 ID를 키로 하는 클라이언트 맵
+const clients = new Map(); // 사용자 ID를 키로 하는 클라이언트 맵
 
 /**
- * 알림 SSE 연결 API
+ * 알림 SSE 연결
  */
 export const connectNotificationSSE = asyncHandler((req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
@@ -51,16 +56,61 @@ export const sendEventToClient = (userId) => {
 };
 
 /**
- * 알림 조회 API
+ * 알림 조회
  * @returns 알림 리스트
  */
 export const getNotifications = asyncHandler(async (req, res) => {
   const notifications = await NotificationModel.find({
     kakaoId: req.userId,
   }).sort({ time: -1 });
-  res.status(200).json(notifications);
+
+  /**
+   * 알림 포맷팅
+   * @param {Notification} notification - 알림 객체
+   * @returns {Promise<Object>} - 포맷팅된 알림 객체
+   */
+  const formatNotification = async (notification) => {
+    const comment = notification.commentId
+      ? await CommentModel.findById(notification.commentId)
+      : null;
+
+    const author = comment
+      ? await UserModel.findOne({ kakaoId: comment.authorId })
+      : null;
+
+    const review = await ReviewModel.findById(notification.reviewId);
+
+    const isLikeNotification = notification.category === "like";
+
+    return {
+      _id: notification._id,
+      time: notification.time,
+      commentId: notification.commentId,
+      reviewId: notification.reviewId,
+      category: notification.category,
+      profileImage: author ? author.profileImage : "public/logo.svg",
+      nickname: author ? author.nickname : "시스템",
+      title: isLikeNotification
+        ? "인기 리뷰 선정!"
+        : author?.nickname || "시스템",
+      reviewTitle: review.title,
+      content: isLikeNotification
+        ? "작성하신 리뷰가 인기 리뷰로 선정되었습니다."
+        : comment?.content,
+      reviewThumbnail: review.images[0],
+    };
+  };
+
+  const notificationList = await Promise.all(
+    notifications.map(formatNotification)
+  );
+
+  res.status(200).json(notificationList);
 }, "알림 조회");
 
+/**
+ * 유저 알림 확인 시간 업데이트
+ */
 export const updateNotificationCheckTime = asyncHandler(async (req, res) => {
   const { checkTime } = req.body;
   await UserModel.findOneAndUpdate(
@@ -71,7 +121,7 @@ export const updateNotificationCheckTime = asyncHandler(async (req, res) => {
 }, "알림 확인 시간 업데이트");
 
 /**
- * 알림 삭제 API
+ * 알림 삭제
  */
 export const deleteNotification = asyncHandler(async (req, res) => {
   const { id: notificationId } = req.params;

@@ -3,19 +3,19 @@
  * @property {number} kakaoId - 카카오 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
- * @property {string[]} reviews - 유저 리뷰 목록
- * @property {string[]} likedReviews - 유저 좋아요한 리뷰 목록
- * @property {string[]} favoriteTags - 유저 즐겨찾기 태그
- * @property {string} notificationCheckTime - 유저 알림 확인 시간
+ * @property {string[]} favoriteTags - 선호하는 태그 목록
+ * @property {string} notificationCheckTime - 알림 확인 시간
+ * @property {number} reviewCount - 작성한 리뷰 개수
+ * @property {number} totalRating - 총 평점
  */
 export interface UserInfo {
   kakaoId: number;
   nickname: string;
   profileImage: string;
-  reviews: string[];
-  likedReviews: string[];
   favoriteTags: string[];
   notificationCheckTime: string;
+  reviewCount: number;
+  totalRating: number;
 }
 
 /**
@@ -27,11 +27,8 @@ export interface UserInfo {
  * @property {string} reviewText - 리뷰 내용
  * @property {number} rating - 리뷰 평점
  * @property {string[]} tags - 리뷰 태그
- * @property {number} likesCount - 리뷰 좋아요 수
- * @property {number} commentsCount - 리뷰 댓글 수
  * @property {string} _id - 리뷰 ID
  * @property {number} __v - 리뷰 버전
- * @property {boolean} isLikedByUser - 리뷰 좋아요 여부
  */
 export interface ReviewInfo {
   authorId: number;
@@ -41,21 +38,8 @@ export interface ReviewInfo {
   reviewText: string;
   rating: number;
   tags: string[];
-  likesCount: number;
-  commentsCount: number;
   _id: string;
   __v: number;
-  isLikedByUser: boolean;
-}
-
-/**
- * @description 태그 정보
- * @property {string} tagName - 태그 이름
- * @property {number} appliedCount - 태그 적용 횟수
- */
-export interface TagInfo {
-  tagName: string;
-  appliedCount: number;
 }
 
 /**
@@ -81,17 +65,27 @@ export interface CommentInfo {
 /**
  * @description 알림 정보
  * @property {string} _id - 알림 ID
- * @property {number} kakaoId - 알림을 받을 유저의 카카오 ID
  * @property {string} time - 알림 생성 시간
  * @property {string} commentId - 알림과 관련된 댓글 ID
  * @property {string} reviewId - 알림과 관련된 리뷰 ID
  * @property {string} category - 알림 종류
+ * @property {string} profileImage - 알림 작성자 프로필 이미지
+ * @property {string} nickname - 알림 작성자 닉네임
+ * @property {string} title - 알림 제목
+ * @property {string} reviewTitle - 알림과 관련된 리뷰 제목
+ * @property {string} content - 알림 내용
+ * @property {string} reviewThumbnail - 알림과 관련된 리뷰 썸네일
  */
 export interface NotificationInfo {
   _id: string;
-  kakaoId: number;
   time: string;
   commentId: string;
   reviewId: string;
   category: string;
+  profileImage: string;
+  nickname: string;
+  title: string;
+  reviewTitle: string;
+  content: string;
+  reviewThumbnail: string;
 }

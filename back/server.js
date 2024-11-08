@@ -15,7 +15,8 @@ import {
 } from "./controllers/Auth.js";
 import {
   createReview,
-  getFeed,
+  getLatestFeed,
+  getPopularFeed,
   getReviewsById,
   updateReview,
   deleteReview,
@@ -33,11 +34,12 @@ import {
   updateNotificationCheckTime,
   deleteNotification,
 } from "./controllers/Notification.js";
-import { addLike, unLike } from "./controllers/Like.js";
+import { getLikeStatus, addLike, unLike } from "./controllers/Like.js";
 import {
   addComment,
   getCommentById,
   getReviewCommentList,
+  getCommentCount,
   deleteComment,
 } from "./controllers/Comment.js";
 
@@ -65,8 +67,10 @@ app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카
 app.delete("/auth/kakao/delete", verifyKakaoAccessToken, deleteUserAccount); // 카카오 유저 계정 삭제 API
 
 // 리뷰 관련 API
-app.get("/review", getFeed); // 리뷰 전체 조회 API
+app.get("/review/latest", getLatestFeed); // 최신 리뷰 조회 API
+app.get("/review/popular", getPopularFeed); // 인기 리뷰 조회 API
 app.get("/review/:id", getReviewsById); // 특정 리뷰 조회 API
+app.get("/review/:id/comments/count", getCommentCount); // 리뷰의 댓글 수 조회 API
 app.get("/review/:id/comments", getReviewCommentList); // 리뷰의 댓글 목록 조회 API
 app.post(
   "/review",
@@ -110,6 +114,7 @@ app.post("/comment/:id", verifyKakaoAccessToken, addComment); // 리뷰 댓글 �
 app.delete("/comment/:id", verifyKakaoAccessToken, deleteComment); // 리뷰 댓글 삭제 API
 
 // 추천 관련 API
+app.get("/like/:id", getLikeStatus); // 리뷰 추천 관련 정보 조회 API
 app.patch("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
 app.patch("/unlike/:id", verifyKakaoAccessToken, unLike); // 리뷰 추천 취소 API
 

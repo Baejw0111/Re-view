@@ -30,6 +30,7 @@ export default function ProfilePopOver({
       </PopoverTrigger>
       <PopoverContent
         className="w-64 flex flex-col gap-6"
+        sideOffset={0}
         onOpenAutoFocus={(e) => e.preventDefault()}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}

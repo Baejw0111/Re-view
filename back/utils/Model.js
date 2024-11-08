@@ -15,41 +15,27 @@ mongoose 6.0 버전 이상부터는 해당 옵션들이 기본값이 되어 따�
 
 const db = mongoose.connection.useDb("mainDB");
 
-// 변경 시 FE의 interface.ts도 변경할 것
 /**
  * 유저 모델
  * @type {mongoose.Model}
  * @property {number} kakaoId - 카카오 ID
  * @property {string} nickname - 닉네임
  * @property {string} profileImage - 프로필 이미지 경로
- * @property {string[]} favoriteTags - 자주 찾는 태그 모음
  * @property {Date} notificationCheckTime - 알림 확인 시간
+ * @property {number} reviewCount - 작성한 리뷰 수
+ * @property {number} totalRating - 총 평점
  */
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
-    kakaoId: { type: Number, default: 0 },
+    kakaoId: { type: Number, default: 0, index: true },
     nickname: { type: String, default: "" },
     profileImage: { type: String, default: "" },
-    favoriteTags: { type: [String], default: [] },
     notificationCheckTime: { type: Date, default: Date.now },
+    reviewCount: { type: Number, default: 0 },
+    totalRating: { type: Number, default: 0 },
   })
 );
-
-const reviewSchema = new mongoose.Schema({
-  authorId: { type: Number, default: 0 },
-  uploadTime: { type: Date, default: Date.now },
-  title: { type: String, default: "" },
-  images: { type: [String], default: [] },
-  reviewText: { type: String, default: "" },
-  rating: { type: Number, default: 0 },
-  tags: { type: [String], default: [] },
-  likesCount: { type: Number, default: 0 },
-  commentsCount: { type: Number, default: 0 },
-});
-
-// 현재 사용자가 좋아요를 눌렀는지 여부를 저장하는 가상 필드
-reviewSchema.virtual("isLikedByUser");
 
 /**
  * 리뷰 모델
@@ -61,38 +47,56 @@ reviewSchema.virtual("isLikedByUser");
  * @property {string} reviewText - 리뷰 내용
  * @property {number} rating - 평점
  * @property {string[]} tags - 태그
- * @property {number} likesCount - 좋아요 수
+ * @property {number} likesCount - 추천 수
  * @property {number} commentsCount - 댓글 수
- * @property {boolean} isLikedByUser - (가상 필드)현재 사용자가 좋아요를 눌렀는지 여부
  */
-export const ReviewModel = db.model("Review", reviewSchema);
+export const ReviewModel = db.model(
+  "Review",
+  new mongoose.Schema({
+    authorId: { type: Number, default: 0 },
+    uploadTime: { type: Date, default: Date.now },
+    title: { type: String, default: "" },
+    images: { type: [String], default: [] },
+    reviewText: { type: String, default: "" },
+    rating: { type: Number, default: 0 },
+    tags: { type: [String], default: [] },
+    likesCount: { type: Number, default: 0 },
+    commentsCount: { type: Number, default: 0 },
+  }).index({ uploadTime: -1, likesCount: 1, authorId: 1 })
+);
 
 /**
  * 유저 추천 모델
  * @type {mongoose.Model}
  * @property {number} kakaoId - 유저 ID
  * @property {string} reviewId - 추천된 리뷰 ID 모음
+ * @property {Date} likedAt - 추천 시간
  */
 export const ReviewLikeModel = db.model(
   "ReviewLike",
   new mongoose.Schema({
     kakaoId: { type: Number, default: 0 },
     reviewId: { type: String, default: "" },
-  })
+    likedAt: { type: Date, default: Date.now },
+  }).index({ kakaoId: 1, likedAt: -1, reviewId: 1 })
 );
 
 /**
  * 태그 모델
  * @type {mongoose.Model}
  * @property {string} tagName - 태그 이름
- * @property {number} appliedCount - 적용된 횟수
+ * @property {number} kakaoId - 유저 ID
+ * @property {Date} lastInteractedAt - 마지막으로 태그와 상호작용한 시간
+ * @property {number} preference - 유저의 태그에 대한 선호도
  */
 export const TagModel = db.model(
   "Tag",
   new mongoose.Schema({
     tagName: { type: String, default: "" },
-    appliedCount: { type: Number, default: 0 },
-  })
+    kakaoId: { type: Number, default: 0 },
+    lastInteractedAt: { type: Date, default: Date.now },
+    preference: { type: Number, default: 0 },
+  }).index({ kakaoId: 1, tagName: 1, preference: -1, lastInteractedAt: -1 })
 );
 
 /**
@@ -106,9 +110,9 @@ export const TagModel = db.model(
 export const CommentModel = db.model(
   "Comment",
   new mongoose.Schema({
-    authorId: { type: Number, default: 0 },
+    authorId: { type: Number, default: 0, index: true },
     uploadTime: { type: Date, default: Date.now },
-    reviewId: { type: String, default: "" },
+    reviewId: { type: String, default: "", index: true },
     content: { type: String, default: "" },
   })
 );
@@ -128,8 +132,8 @@ export const NotificationModel = db.model(
   new mongoose.Schema({
     kakaoId: { type: Number, default: 0 },
     time: { type: Date, default: Date.now },
-    commentId: { type: String, default: "" },
-    reviewId: { type: String, default: "" },
+    commentId: { type: String, default: "", index: true },
+    reviewId: { type: String, default: "", index: true },
     category: { type: String, default: "" },
-  })
+  }).index({ kakaoId: 1, time: -1 })
 );

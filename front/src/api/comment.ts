@@ -16,6 +16,14 @@ export const addComment = async (
   console.log("댓글 추가 성공:", response.data);
 };
 
+export const fetchCommentCount = async (reviewId: string): Promise<number> => {
+  const response = await genaralApiClient.get(
+    `/review/${reviewId}/comments/count`
+  );
+
+  return response.data;
+};
+
 /**
  * 특정 댓글 조회 함수
  * @param commentId 댓글 ID
@@ -25,7 +33,7 @@ export const fetchCommentById = async (
   commentId: string
 ): Promise<CommentInfo> => {
   const response = await genaralApiClient.get(`/comment/${commentId}`);
-  console.log("특정 댓글 조회 성공:", response.data);
+
   return response.data;
 };
 
@@ -38,7 +46,7 @@ export const fetchReviewCommentList = async (
   reviewId: string
 ): Promise<CommentInfo[]> => {
   const response = await genaralApiClient.get(`/review/${reviewId}/comments`);
-  console.log("리뷰 댓글 목록 조회 성공:", response.data);
+
   return response.data;
 };
 

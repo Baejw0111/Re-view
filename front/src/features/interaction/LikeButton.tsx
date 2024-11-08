@@ -1,17 +1,17 @@
 import { Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchReviewById } from "@/api/review";
 import { useAnimation } from "framer-motion";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useMutation } from "@tanstack/react-query";
-import { likeReview, unlikeReview } from "@/api/like";
+import { likeReview, unlikeReview, fetchLikeStatus } from "@/api/like";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-import { ReviewInfo } from "@/shared/types/interface";
 import { cn } from "@/shared/lib/utils";
+import { useCountingAnimation } from "@/shared/hooks";
+import { useIntersectionObserver } from "@/shared/hooks";
 
 export default function LikeButton({
   reviewId,
@@ -23,27 +23,37 @@ export default function LikeButton({
   const queryClient = useQueryClient();
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
-  const { data: reviewInfo } = useQuery<ReviewInfo, Error>({
-    queryKey: ["reviewInfo", reviewId],
-    queryFn: () => fetchReviewById(reviewId as string, kakaoId),
+  // 추천 상태 조회
+  const { data: likeStatus, refetch } = useQuery<
+    { isLiked: boolean; likesCount: number },
+    Error
+  >({
+    queryKey: ["likeStatus", reviewId],
+    queryFn: () => fetchLikeStatus(reviewId as string, kakaoId),
+    enabled: !!kakaoId,
   });
 
+  const likeButtonRef = useIntersectionObserver({
+    callback: refetch,
+    threshold: 1,
+  });
+
+  // 추천 추가
   const { mutate: like } = useMutation({
     mutationFn: () => likeReview(reviewId as string),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
-      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
+      queryClient.invalidateQueries({ queryKey: ["likeStatus", reviewId] });
     },
     onError: () => {
       alert("추천 실패");
     },
   });
 
+  // 추천 취소
   const { mutate: unlike } = useMutation({
     mutationFn: () => unlikeReview(reviewId as string),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reviewInfo", reviewId] });
-      queryClient.invalidateQueries({ queryKey: ["userLikedList", kakaoId] });
+      queryClient.invalidateQueries({ queryKey: ["likeStatus", reviewId] });
     },
     onError: () => {
       alert("추천 취소 실패");
@@ -52,8 +62,8 @@ export default function LikeButton({
 
   const [likeState, setLikeState] = useState(false);
   const likeControls = useAnimation();
-  const [currentLikesCount, setCurrentLikesCount] = useState(0);
-  const countControls = useAnimation();
+  const [currentLikesCount, setCurrentLikesCount, countControls] =
+    useCountingAnimation(0); // 추천 수 애니메이션
 
   const handleLikeClick = async () => {
     setCurrentLikesCount(currentLikesCount + (likeState ? -1 : 1));
@@ -69,36 +79,26 @@ export default function LikeButton({
 
   // 추천 상태 업데이트
   useEffect(() => {
-    if (reviewInfo) {
-      setCurrentLikesCount(reviewInfo.likesCount || 0); // 추천수 업데이트
-      setLikeState(reviewInfo.isLikedByUser || false); // 로그인한 유저가 추천했는지 여부 업데이트
+    if (likeStatus) {
+      if (likeStatus.isLiked !== likeState) {
+        setLikeState(likeStatus.isLiked); // 로그인한 유저의 리뷰 추천 여부 업데이트
+      }
+      setCurrentLikesCount(likeStatus.likesCount); // 추천 수 업데이트
     }
-  }, [reviewInfo]);
+  }, [likeStatus]);
 
   // 추천 애니메이션
   useEffect(() => {
-    console.log(likeState);
-    likeControls.start({
-      scale: [1, 1.3, 1],
-      transition: { duration: 0.3 },
-    }),
-      countControls.start(
-        likeState
-          ? {
-              opacity: [0, 1],
-              y: [10, 0],
-              transition: { duration: 0.3 },
-            }
-          : {
-              opacity: [0, 1],
-              y: [-10, 0],
-              transition: { duration: 0.3 },
-            }
-      );
+    if (likeState) {
+      likeControls.start({
+        scale: [1, 1.3, 1],
+        transition: { duration: 0.3 },
+      });
+    }
   }, [likeState]);
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5" ref={likeButtonRef}>
       <TooltipWrapper tooltipText="추천">
         <motion.div animate={likeControls}>
           <button onClick={handleLikeClick} className="flex items-center">
@@ -122,8 +122,11 @@ export default function LikeButton({
           </button>
         </motion.div>
       </TooltipWrapper>
-      <motion.div animate={countControls}>
-        <div className="text-sm text-muted-foreground">{currentLikesCount}</div>
+      <motion.div
+        animate={countControls}
+        className="text-sm text-muted-foreground"
+      >
+        {currentLikesCount}
       </motion.div>
     </div>
   );

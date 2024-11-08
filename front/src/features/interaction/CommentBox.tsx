@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import ProfilePopOver from "@/widgets/ProfilePopOver";
 import { claculateTime } from "@/shared/lib/utils";
+import { Link } from "react-router-dom";
 
 export default function CommentBox({
   commentInfo,
@@ -61,12 +62,12 @@ export default function CommentBox({
           <div className="flex flex-col gap-0.5 w-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <a
-                  href={`/profile/${commentInfo.authorId}`}
+                <Link
+                  to={`/profile/${commentInfo.authorId}`}
                   className="font-semibold text-sm"
                 >
                   {commentInfo.nickname}
-                </a>
+                </Link>
                 <span className="text-xs text-muted-foreground">
                   {claculateTime(commentInfo.uploadTime)}
                 </span>

@@ -8,21 +8,21 @@ import {
 } from "@/shared/shadcn-ui/tabs";
 import { Grid, MessageCircle, Heart } from "lucide-react";
 import { Link, Route, Routes, useParams, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import {
   fetchUserInfoById,
   fetchUserCommentList,
   fetchUserReviewList,
   fetchUserLikedList,
 } from "@/api/user";
-import { CommentInfo, UserInfo } from "@/shared/types/interface";
+import { CommentInfo } from "@/shared/types/interface";
 import Reviews from "@/widgets/Reviews";
-import CommentBox from "@/features/interaction/CommentBox";
 import UserSetting from "@/features/setting/UserSetting";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ProfileInfo from "@/features/user/ProfileInfo";
 import UserAvatar from "@/features/user/UserAvatar";
+import { claculateTime } from "@/shared/lib/utils";
 
 export default function Profile() {
   const location = useLocation();
@@ -30,27 +30,49 @@ export default function Profile() {
 
   // 사용자 정보 가져오기
   const { id: userId } = useParams();
-  const { data: userInfo } = useQuery<UserInfo>({
+  const { data: userInfo } = useQuery({
     queryKey: ["userInfo", Number(userId)],
     queryFn: () => fetchUserInfoById(Number(userId)),
   });
 
   // 사용자가 작성한 댓글 가져오기
-  const { data: userCommentList } = useQuery<CommentInfo[]>({
+  const { data: userCommentList, refetch: refetchUserCommentList } = useQuery<
+    CommentInfo[]
+  >({
     queryKey: ["userCommentList", Number(userId)],
     queryFn: () => fetchUserCommentList(Number(userId)),
   });
 
   // 사용자가 작성한 리뷰 가져오기
-  const { data: userReviewList } = useQuery<string[]>({
+  const {
+    data: userReviewList,
+    fetchNextPage: fetchNextUserReviewList,
+    refetch: refetchUserReviewList,
+  } = useInfiniteQuery({
     queryKey: ["userReviewList", Number(userId)],
-    queryFn: () => fetchUserReviewList(Number(userId)),
+    initialPageParam: "",
+    queryFn: ({ pageParam }: { pageParam: string }) =>
+      fetchUserReviewList(Number(userId), pageParam),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < 20) return undefined;
+      return lastPage[lastPage.length - 1];
+    },
   });
 
   // 사용자가 추천한 리뷰 가져오기
-  const { data: userLikedList } = useQuery<string[]>({
+  const {
+    data: userLikedList,
+    fetchNextPage: fetchNextUserLikedList,
+    refetch: refetchUserLikedList,
+  } = useInfiniteQuery({
     queryKey: ["userLikedList", Number(userId)],
-    queryFn: () => fetchUserLikedList(Number(userId)),
+    initialPageParam: "",
+    queryFn: ({ pageParam }: { pageParam: string }) =>
+      fetchUserLikedList(Number(userId), pageParam),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < 20) return undefined;
+      return lastPage[lastPage.length - 1];
+    },
   });
 
   return (
@@ -74,24 +96,24 @@ export default function Profile() {
       <Tabs
         defaultValue="posts"
         value={
-          !location.pathname.split("/")[3]
-            ? "posts"
+          !location.pathname.split("/")[3] // 경로에 따라 기본값 설정
+            ? "posts" // 기본값은 posts
             : location.pathname.split("/")[3]
         }
         className="mt-6"
       >
         <TabsList className="grid w-full grid-cols-3 md:max-w-xl mx-auto">
-          <Link to="posts">
+          <Link to="posts" onClick={() => refetchUserReviewList()}>
             <TabsTrigger className="w-full" value="posts">
               <Grid className="h-4 w-4 mr-2" /> 리뷰
             </TabsTrigger>
           </Link>
-          <Link to="comments">
+          <Link to="comments" onClick={() => refetchUserCommentList()}>
             <TabsTrigger className="w-full" value="comments">
               <MessageCircle className="h-4 w-4 mr-2" /> 댓글
             </TabsTrigger>
           </Link>
-          <Link to="liked">
+          <Link to="liked" onClick={() => refetchUserLikedList()}>
             <TabsTrigger className="w-full" value="liked">
               <Heart className="text-red-500 fill-red-500 h-4 w-4 mr-2" /> 추천
             </TabsTrigger>
@@ -103,7 +125,12 @@ export default function Profile() {
             path=""
             element={
               <TabsContent value="posts" className="mt-6">
-                {userReviewList && <Reviews reviewIdList={userReviewList} />}
+                {userReviewList && (
+                  <Reviews
+                    reviewIdList={userReviewList.pages.flatMap((page) => page)}
+                    callback={fetchNextUserReviewList}
+                  />
+                )}
               </TabsContent>
             }
           />
@@ -111,20 +138,36 @@ export default function Profile() {
             path="posts"
             element={
               <TabsContent value="posts" className="mt-6">
-                {userReviewList && <Reviews reviewIdList={userReviewList} />}
+                {userReviewList && (
+                  <Reviews
+                    reviewIdList={userReviewList.pages.flatMap((page) => page)}
+                    callback={fetchNextUserReviewList}
+                  />
+                )}
               </TabsContent>
             }
           />
           <Route
             path="comments"
             element={
-              <TabsContent value="comments" className="mt-6 max-w-3xl mx-auto">
-                {userCommentList &&
-                  userCommentList.map((commentInfo, index) => (
-                    <div key={index} className="border-b last:border-b-0 pb-1">
-                      <CommentBox key={index} commentInfo={commentInfo} />
-                    </div>
-                  ))}
+              <TabsContent value="comments" className="mt-6 max-w-xl mx-auto">
+                <div className="bg-background rounded-lg">
+                  {userCommentList &&
+                    userCommentList.map((commentInfo, index) => (
+                      <div className="border-b last:border-b-0 p-4 flex justify-between">
+                        <Link
+                          key={index}
+                          to={`/?reviewId=${commentInfo.reviewId}&commentId=${commentInfo._id}`}
+                          className="hover:underline text-sm whitespace-pre-wrap break-all"
+                        >
+                          {commentInfo.content}
+                        </Link>
+                        <span className="text-xs text-muted-foreground">
+                          {claculateTime(commentInfo.uploadTime)}
+                        </span>
+                      </div>
+                    ))}
+                </div>
               </TabsContent>
             }
           />
@@ -132,7 +175,12 @@ export default function Profile() {
             path="liked"
             element={
               <TabsContent value="liked" className="mt-6">
-                {userLikedList && <Reviews reviewIdList={userLikedList} />}
+                {userLikedList && (
+                  <Reviews
+                    reviewIdList={userLikedList.pages.flatMap((page) => page)}
+                    callback={fetchNextUserLikedList}
+                  />
+                )}
               </TabsContent>
             }
           />

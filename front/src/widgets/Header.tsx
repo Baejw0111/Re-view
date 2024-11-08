@@ -25,7 +25,7 @@ export default function Header() {
       }`}
     >
       <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-5">
-        <Link to="/feed">
+        <Link to="/">
           <Logo />
         </Link>
         <div className="flex flex-1 md:justify-end items-center gap-2">

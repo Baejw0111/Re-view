@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -49,6 +49,7 @@ export default function ReviewForm({
   reviewInfo?: ReviewInfo;
 }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [tagInput, setTagInput] = useState(""); // 태그 입력 상태
   const [previewImages, setPreviewImages] = useState<string[]>([]); // 미리보기 이미지
   const [initialImages, setInitialImages] = useState<string[]>([]); // 초기 이미지
@@ -139,7 +140,7 @@ export default function ReviewForm({
   const { mutate: uploadReviewMutation } = useMutation({
     mutationFn: uploadReview,
     onSuccess: () => {
-      navigate("/");
+      window.location.href = "/";
     },
     onError: () => {
       alert(
@@ -153,6 +154,9 @@ export default function ReviewForm({
     mutationFn: (formData: FormData) =>
       editReview(reviewInfo?._id as string, formData),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["reviewInfo", reviewInfo?._id],
+      });
       navigate(-1);
     },
     onError: () => {

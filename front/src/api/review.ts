@@ -2,12 +2,33 @@ import { genaralApiClient, authApiClient } from "@/api/util";
 import { ReviewInfo } from "@/shared/types/interface";
 
 /**
- * 피드에 표시할 리뷰 ID 리스트를 가져오는 함수
- * @returns 리뷰 ID 리스트
+ * 최신 리뷰 목록 조회 함수
+ * @param lastReviewId 마지막 리뷰 ID
+ * @returns 리뷰 목록
  */
-export const fetchFeed = async (): Promise<string[]> => {
-  const response = await genaralApiClient.get(`/review`);
-  console.log("피드 리뷰 ID 리스트 조회 성공:", response.data);
+export const fetchLatestFeed = async (
+  lastReviewId: string
+): Promise<string[]> => {
+  const response = await genaralApiClient.get(`/review/latest`, {
+    params: { lastReviewId },
+  });
+  console.log("최신 리뷰 목록 조회 성공:", response.data);
+
+  return response.data;
+};
+
+/**
+ * 인기 리뷰 목록 조회 함수
+ * @param lastReviewId 마지막 리뷰 ID
+ * @returns 리뷰 목록
+ */
+export const fetchPopularFeed = async (
+  lastReviewId: string
+): Promise<string[]> => {
+  const response = await genaralApiClient.get(`/review/popular`, {
+    params: { lastReviewId },
+  });
+  console.log("인기 리뷰 목록 조회 성공:", response.data);
 
   return response.data;
 };
@@ -31,13 +52,9 @@ export const uploadReview = async (formData: FormData): Promise<void> => {
  * @returns 리뷰 상세 정보
  */
 export const fetchReviewById = async (
-  reviewId: string,
-  kakaoId: number
+  reviewId: string
 ): Promise<ReviewInfo> => {
-  const response = await genaralApiClient.get(`/review/${reviewId}`, {
-    params: { kakaoId },
-  });
-  console.log("리뷰 상세 조회 성공:", response.data);
+  const response = await genaralApiClient.get(`/review/${reviewId}`);
 
   return response.data;
 };

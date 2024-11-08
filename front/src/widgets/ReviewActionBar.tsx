@@ -1,8 +1,8 @@
 import { Button } from "@/shared/shadcn-ui/button";
-import { Share2, Trash2, Flag, FilePenLine } from "lucide-react";
+import { Share2, Trash2, FilePenLine, Siren } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteReview } from "@/api/review";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 
@@ -41,12 +41,12 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
         {isAuthor ? (
           <>
             <TooltipWrapper tooltipText="수정">
-              <a href={`/edit?reviewId=${reviewId}`}>
+              <Link to={`/edit?reviewId=${reviewId}`}>
                 <Button variant="ghost" size="icon">
                   <FilePenLine className="w-6 h-6" />
                   <span className="sr-only">수정</span>
                 </Button>
-              </a>
+              </Link>
             </TooltipWrapper>
             <TooltipWrapper tooltipText="삭제">
               <Button
@@ -63,7 +63,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
         ) : (
           <TooltipWrapper tooltipText="신고">
             <Button variant="ghost" size="icon">
-              <Flag className="w-6 h-6" />
+              <Siren className="w-6 h-6" />
               <span className="sr-only">신고</span>
             </Button>
           </TooltipWrapper>
