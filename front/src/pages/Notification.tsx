@@ -34,7 +34,7 @@ export default function Notification() {
 
   return (
     <PageTemplate pageName="모든 알림">
-      <div className="max-w-3xl mx-auto bg-background rounded-lg overflow-hidden">
+      <div className="max-w-xl mx-auto bg-background rounded-lg overflow-hidden">
         {notifications ? (
           notifications.map((notification, index) => (
             <NotificationBox
