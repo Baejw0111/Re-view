@@ -1,4 +1,4 @@
-import { genaralApiClient, authApiClient } from "@/api/util";
+import { generalApiClient, authApiClient } from "@/api/util";
 import { ReviewInfo } from "@/shared/types/interface";
 
 /**
@@ -9,7 +9,7 @@ import { ReviewInfo } from "@/shared/types/interface";
 export const fetchLatestFeed = async (
   lastReviewId: string
 ): Promise<string[]> => {
-  const response = await genaralApiClient.get(`/review/latest`, {
+  const response = await generalApiClient.get(`/review/latest`, {
     params: { lastReviewId },
   });
   console.log("최신 리뷰 목록 조회 성공:", response.data);
@@ -25,7 +25,7 @@ export const fetchLatestFeed = async (
 export const fetchPopularFeed = async (
   lastReviewId: string
 ): Promise<string[]> => {
-  const response = await genaralApiClient.get(`/review/popular`, {
+  const response = await generalApiClient.get(`/review/popular`, {
     params: { lastReviewId },
   });
   console.log("인기 리뷰 목록 조회 성공:", response.data);
@@ -54,7 +54,7 @@ export const uploadReview = async (formData: FormData): Promise<void> => {
 export const fetchReviewById = async (
   reviewId: string
 ): Promise<ReviewInfo> => {
-  const response = await genaralApiClient.get(`/review/${reviewId}`);
+  const response = await generalApiClient.get(`/review/${reviewId}`);
 
   return response.data;
 };
