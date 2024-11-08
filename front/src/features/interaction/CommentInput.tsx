@@ -39,6 +39,9 @@ export default function CommentInput() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "2.25rem";
+    }
     if (comment.trim()) {
       setIsFocused(false);
       await mutation.mutateAsync();
