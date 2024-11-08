@@ -17,12 +17,12 @@ import {
 } from "@/api/user";
 import { CommentInfo } from "@/shared/types/interface";
 import Reviews from "@/widgets/Reviews";
-import CommentBox from "@/features/interaction/CommentBox";
 import UserSetting from "@/features/setting/UserSetting";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ProfileInfo from "@/features/user/ProfileInfo";
 import UserAvatar from "@/features/user/UserAvatar";
+import { claculateTime } from "@/shared/lib/utils";
 
 export default function Profile() {
   const location = useLocation();
@@ -150,15 +150,21 @@ export default function Profile() {
           <Route
             path="comments"
             element={
-              <TabsContent value="comments" className="mt-6 max-w-3xl mx-auto">
+              <TabsContent value="comments" className="mt-6 max-w-xl mx-auto">
                 <div className="bg-background rounded-lg">
                   {userCommentList &&
                     userCommentList.map((commentInfo, index) => (
-                      <div
-                        key={index}
-                        className="border-b last:border-b-0 pb-1"
-                      >
-                        <CommentBox key={index} commentInfo={commentInfo} />
+                      <div className="border-b last:border-b-0 p-4 flex justify-between">
+                        <Link
+                          key={index}
+                          to={`/?reviewId=${commentInfo.reviewId}&commentId=${commentInfo._id}`}
+                          className="hover:underline text-sm whitespace-pre-wrap break-all"
+                        >
+                          {commentInfo.content}
+                        </Link>
+                        <span className="text-xs text-muted-foreground">
+                          {claculateTime(commentInfo.uploadTime)}
+                        </span>
                       </div>
                     ))}
                 </div>
