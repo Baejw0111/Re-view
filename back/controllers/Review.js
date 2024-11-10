@@ -112,6 +112,37 @@ export const getLatestFeed = asyncHandler(async (req, res) => {
 }, "최신 리뷰 조회");
 
 /**
+ * 리뷰 검색 결과 조회 API
+ * @param {string} query - 검색어
+ * @returns {Object[]} 리뷰 검색 결과 배열
+ */
+export const getSearchReviews = asyncHandler(async (req, res) => {
+  const { query, lastReviewId } = req.query;
+  const queryWithoutSpace = query.replace(/\s/g, "");
+
+  const lastReview =
+    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
+  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+
+  const reviews = await ReviewModel.find({
+    $or: [
+      { title: { $regex: query, $options: "i" } },
+      { title: { $regex: queryWithoutSpace, $options: "i" } },
+      { reviewText: { $regex: query, $options: "i" } },
+      { reviewText: { $regex: queryWithoutSpace, $options: "i" } },
+      { tags: { $in: [query] } },
+    ],
+    uploadTime: { $lt: lastReviewUploadTime },
+  })
+    .sort({ uploadTime: -1 })
+    .limit(20);
+
+  const reviewIdList = reviews.map((review) => review._id);
+
+  res.status(200).json(reviewIdList);
+}, "리뷰 검색");
+
+/**
  * 인기 리뷰 조회
  * @returns {string[]} 리뷰 ID 리스트
  */

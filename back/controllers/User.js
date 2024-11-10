@@ -28,6 +28,29 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
 }, "유저 정보 조회");
 
 /**
+ * 유저 검색 결과 조회 API
+ * @param {string} query - 검색어
+ * @returns {Object[]} 유저 검색 결과 배열
+ */
+export const getSearchUsers = asyncHandler(async (req, res) => {
+  const { query, lastUserId } = req.query;
+  const queryWithoutSpace = query.replace(/\s/g, "");
+
+  const users = await UserModel.find({
+    $or: [
+      { nickname: { $regex: query, $options: "i" } },
+      { nickname: { $regex: queryWithoutSpace, $options: "i" } },
+    ],
+    kakaoId: { $lt: lastUserId },
+  })
+    .sort({ kakaoId: -1 })
+    .limit(20);
+  const userIdList = users.map((user) => user._id);
+
+  res.status(200).json(userIdList);
+}, "유저 검색");
+
+/**
  * 유저가 작성한 리뷰 목록 조회
  * @returns {string[]} 리뷰 ID 리스트
  */

@@ -13,6 +13,23 @@ export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
 };
 
 /**
+ * 유저 검색 함수
+ * @param query 검색어
+ * @param lastUserId 마지막 유저 ID
+ * @returns 유저 목록
+ */
+export const getSearchUsers = async (
+  query: string,
+  lastUserId: number
+): Promise<string[]> => {
+  const response = await generalApiClient.get(`/search/users`, {
+    params: { query, lastUserId },
+  });
+
+  return response.data;
+};
+
+/**
  * 유저가 작성한 댓글 목록 조회 함수
  * @param userId 유저 ID
  * @returns 댓글 목록

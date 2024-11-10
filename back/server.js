@@ -20,9 +20,11 @@ import {
   getReviewsById,
   updateReview,
   deleteReview,
+  getSearchReviews,
 } from "./controllers/Review.js";
 import {
   getUserInfoById,
+  getSearchUsers,
   getUserReviewList,
   getUserCommentList,
   getUserLikedList,
@@ -122,5 +124,9 @@ app.patch("/unlike/:id", verifyKakaoAccessToken, unLike); // 리뷰 추천 취�
 // 태그 관련 API
 app.get("/tag/popular", getPopularTags); // 인기 태그 조회 API
 app.get("/tag/search", getSearchRelatedTags); // 검색어 연관 태그 조회 API
+
+// 검색 관련 API
+app.get("/search/reviews", getSearchReviews); // 리뷰 검색 결과 조회 API
+app.get("/search/users", getSearchUsers); // 유저 검색 결과 조회 API
 
 app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));

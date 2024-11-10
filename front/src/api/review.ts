@@ -34,6 +34,22 @@ export const fetchPopularFeed = async (
 };
 
 /**
+ * 리뷰 검색 함수
+ * @param query 검색어
+ * @param lastReviewId 마지막 리뷰 ID
+ * @returns 리뷰 목록
+ */
+export const getSearchReviews = async (
+  query: string,
+  lastReviewId: string
+): Promise<string[]> => {
+  const response = await generalApiClient.get(`/search/reviews`, {
+    params: { query, lastReviewId },
+  });
+  return response.data;
+};
+
+/**
  * 리뷰 업로드 함수
  * @param formData 전송할 리뷰 정보
  */
