@@ -2,6 +2,7 @@ import { Separator } from "@/shared/shadcn-ui/separator";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserInfoById } from "@/api/user";
+import TagBadge from "@/features/review/TagBadge";
 
 export default function ProfileInfo({ userId }: { userId: number }) {
   const { data: userInfo } = useQuery({
@@ -35,7 +36,9 @@ export default function ProfileInfo({ userId }: { userId: number }) {
             {userInfo.favoriteTags.length === 0 ? (
               <Badge>선호 태그가 없습니다.</Badge>
             ) : (
-              userInfo.favoriteTags.map((tag) => <Badge key={tag}>{tag}</Badge>)
+              userInfo.favoriteTags.map((tag) => (
+                <TagBadge key={tag} tag={tag} />
+              ))
             )}
           </div>
         </div>

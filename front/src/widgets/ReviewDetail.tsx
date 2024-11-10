@@ -17,10 +17,10 @@ import { fetchUserInfoById } from "@/api/user";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import UserAvatar from "@/features/user/UserAvatar";
 import { claculateTime } from "@/shared/lib/utils";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
+import TagBadge from "@/features/review/TagBadge";
 
 export default function ReviewDetail() {
   const [queryParams] = useSearchParams();
@@ -114,9 +114,7 @@ export default function ReviewDetail() {
           {/* 리뷰 태그 */}
           <div className="flex flex-wrap items-start gap-1.5">
             {reviewInfo?.tags.map((tag, index) => (
-              <Badge key={index} className="cursor-pointer">
-                {tag}
-              </Badge>
+              <TagBadge key={index} tag={tag} />
             ))}
           </div>
 

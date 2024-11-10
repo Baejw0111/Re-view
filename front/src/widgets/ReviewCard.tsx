@@ -13,11 +13,11 @@ import { fetchReviewById } from "@/api/review";
 import { fetchUserInfoById } from "@/api/user";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import LikeButton from "@/features/interaction/LikeButton";
 import ProfilePopOver from "./ProfilePopOver";
 import SkeletonReviewCard from "@/shared/skeleton/SkeletonReviewCard";
 import CommentButton from "@/features/interaction/CommentButton";
+import TagBadge from "@/features/review/TagBadge";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
   const { data: reviewInfo, isFetching: isReviewInfoFetching } = useQuery({
@@ -92,12 +92,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   {/* 태그 */}
                   <div className="flex gap-1.5 w-full overflow-x-auto scrollbar-hide">
                     {reviewInfo.tags.map((tag, index) => (
-                      <Badge
-                        key={index}
-                        className="whitespace-nowrap cursor-pointer"
-                      >
-                        {tag}
-                      </Badge>
+                      <TagBadge key={index} tag={tag} />
                     ))}
                   </div>
                   <Separator className="my-3" />
