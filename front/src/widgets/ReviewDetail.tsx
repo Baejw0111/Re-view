@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo } from "@/shared/types/interface";
@@ -23,8 +23,7 @@ import { claculateTime } from "@/shared/lib/utils";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 
 export default function ReviewDetail() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
+  const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
