@@ -25,6 +25,7 @@ export default function ProfilePopOver({
         className="hover:bg-accent active:bg-accent rounded-md"
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
+        onFocus={() => setIsOpen(true)}
       >
         {children}
       </PopoverTrigger>
