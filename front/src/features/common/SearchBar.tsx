@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/shared/shadcn-ui/button";
-import { Search } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import {
   CommandDialog,
   CommandInput,
   CommandList,
-  CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandSeparator,
@@ -63,7 +62,12 @@ export default function SearchBar() {
         <CommandList>
           {searchQuery && (
             <>
-              <CommandGroup heading="연관 태그">
+              <CommandGroup heading="">
+                <CommandItem key={searchQuery}>
+                  "{searchQuery}" 검색 <ChevronRight />
+                </CommandItem>
+              </CommandGroup>
+              <CommandGroup heading="">
                 {searchRelatedTags &&
                   searchRelatedTags.map((tag: string) => (
                     <CommandItem key={tag}>{tag}</CommandItem>
@@ -72,7 +76,6 @@ export default function SearchBar() {
               <CommandSeparator />
             </>
           )}
-          <CommandEmpty>"검색어와 관련된 태그가 없습니다."</CommandEmpty>
           {!searchQuery && (
             <>
               <CommandGroup heading="최근 검색어">
