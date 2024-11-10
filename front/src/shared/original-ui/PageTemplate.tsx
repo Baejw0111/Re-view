@@ -34,26 +34,30 @@ export default function PageTemplate({
                 }
               >
                 <TabsList>
-                  <Link
-                    to="/latest"
-                    onClick={() =>
-                      queryClient.invalidateQueries({
-                        queryKey: ["feed", "latest"],
-                      })
-                    }
-                  >
-                    <TabsTrigger value="latest">최신글</TabsTrigger>
-                  </Link>
-                  <Link
-                    to="/popular"
-                    onClick={() =>
-                      queryClient.invalidateQueries({
-                        queryKey: ["feed", "popular"],
-                      })
-                    }
-                  >
-                    <TabsTrigger value="popular">인기글</TabsTrigger>
-                  </Link>
+                  <TabsTrigger value="latest" asChild>
+                    <Link
+                      to="/latest"
+                      onClick={() =>
+                        queryClient.invalidateQueries({
+                          queryKey: ["feed", "latest"],
+                        })
+                      }
+                    >
+                      최신글
+                    </Link>
+                  </TabsTrigger>
+                  <TabsTrigger value="popular" asChild>
+                    <Link
+                      to="/popular"
+                      onClick={() =>
+                        queryClient.invalidateQueries({
+                          queryKey: ["feed", "popular"],
+                        })
+                      }
+                    >
+                      인기글
+                    </Link>
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
             )}

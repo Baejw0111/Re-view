@@ -36,12 +36,12 @@ export default function ProfilePopOver({
         onMouseLeave={() => setIsOpen(false)}
       >
         <ProfileInfo userId={userId} />
-        <Link to={`/profile/${userId}`}>
-          <Button className="w-full ">
+        <Button className="w-full" asChild>
+          <Link to={`/profile/${userId}`}>
             <User className="mr-2 h-4 w-4" />
             프로필 보기
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </PopoverContent>
     </Popover>
   );

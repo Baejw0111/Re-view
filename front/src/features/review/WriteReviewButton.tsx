@@ -6,11 +6,11 @@ import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 export default function WriteReviewButton() {
   return (
     <TooltipWrapper tooltipText="리뷰 작성">
-      <Link to="/write">
-        <Button variant="ghost" size="icon">
+      <Button variant="ghost" size="icon" asChild>
+        <Link to="/write">
           <PencilLine />
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     </TooltipWrapper>
   );
 }

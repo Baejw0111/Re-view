@@ -41,12 +41,12 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
         {isAuthor ? (
           <>
             <TooltipWrapper tooltipText="수정">
-              <Link to={`/edit?reviewId=${reviewId}`}>
-                <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" asChild>
+                <Link to={`/edit?reviewId=${reviewId}`}>
                   <FilePenLine className="w-6 h-6" />
                   <span className="sr-only">수정</span>
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </TooltipWrapper>
             <TooltipWrapper tooltipText="삭제">
               <Button

@@ -103,21 +103,21 @@ export default function Profile() {
         className="mt-6"
       >
         <TabsList className="grid w-full grid-cols-3 md:max-w-xl mx-auto">
-          <Link to="posts" onClick={() => refetchUserReviewList()}>
-            <TabsTrigger className="w-full" value="posts">
+          <TabsTrigger className="w-full" value="posts" asChild>
+            <Link to="posts" onClick={() => refetchUserReviewList()}>
               <Grid className="h-4 w-4 mr-2" /> 리뷰
-            </TabsTrigger>
-          </Link>
-          <Link to="comments" onClick={() => refetchUserCommentList()}>
-            <TabsTrigger className="w-full" value="comments">
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger className="w-full" value="comments" asChild>
+            <Link to="comments" onClick={() => refetchUserCommentList()}>
               <MessageCircle className="h-4 w-4 mr-2" /> 댓글
-            </TabsTrigger>
-          </Link>
-          <Link to="liked" onClick={() => refetchUserLikedList()}>
-            <TabsTrigger className="w-full" value="liked">
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger className="w-full" value="liked" asChild>
+            <Link to="liked" onClick={() => refetchUserLikedList()}>
               <Heart className="text-red-500 fill-red-500 h-4 w-4 mr-2" /> 추천
-            </TabsTrigger>
-          </Link>
+            </Link>
+          </TabsTrigger>
         </TabsList>
 
         <Routes>

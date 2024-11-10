@@ -36,15 +36,19 @@ export default function Header() {
             <>
               <NotificationButton />
               <TooltipWrapper tooltipText="프로필">
-                <Link to={`/profile/${userInfo.kakaoId}`}>
-                  <Button variant="ghost" className="h-9 w-9 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="h-9 w-9 rounded-full"
+                  asChild
+                >
+                  <Link to={`/profile/${userInfo.kakaoId}`}>
                     <UserAvatar
                       className="h-7 w-7"
                       profileImage={userInfo.profileImage}
                       nickname={userInfo.nickname}
                     />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </TooltipWrapper>
             </>
           ) : (
