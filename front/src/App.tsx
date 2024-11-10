@@ -12,6 +12,7 @@ import Onboarding from "@/pages/Onboarding";
 import EditReview from "@/pages/EditReview";
 import Profile from "@/pages/Profile";
 import Notification from "@/pages/Notification";
+import Search from "@/pages/Search";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
@@ -60,6 +61,7 @@ function App() {
           <Route path="/edit" element={<EditReview />} />
           <Route path="/profile/:id/*" element={<Profile />} />
           <Route path="/notifications" element={<Notification />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/test" element={<Test />} />
         </Routes>
       </Router>
