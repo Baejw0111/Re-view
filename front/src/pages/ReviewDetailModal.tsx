@@ -67,6 +67,15 @@ export default function ReviewDetailModal() {
         <DialogContent
           className="block md:max-w-[760px] lg:max-w-[860px] h-[90vh] p-20 overflow-y-auto scrollbar-hide focus-visible:outline-none"
           onOpenAutoFocus={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => {
+            // 마우스 뒤로가기 버튼 또는 앞으로 가기 버튼 클릭 시 클릭 이벤트 방지
+            if (
+              e.detail.originalEvent.button === 3 ||
+              e.detail.originalEvent.button === 4
+            ) {
+              e.preventDefault();
+            }
+          }}
         >
           <DialogTitle hidden></DialogTitle>
           <DialogDescription hidden></DialogDescription>
