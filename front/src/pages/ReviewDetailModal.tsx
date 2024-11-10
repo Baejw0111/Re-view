@@ -81,7 +81,10 @@ export default function ReviewDetailModal() {
 
   return (
     <Drawer open={isModalOpen && !isNotificationOpen} onClose={handleClose}>
-      <DrawerContent className="h-[90vh] focus-visible:outline-none">
+      <DrawerContent
+        className="h-[90vh] focus-visible:outline-none"
+        onInteractOutside={handleClose}
+      >
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>
         <div className="p-5 pb-20 overflow-y-auto scrollbar-hide">
