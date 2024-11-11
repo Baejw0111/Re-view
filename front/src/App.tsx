@@ -19,6 +19,7 @@ import { setUserInfo } from "@/state/store/userInfoSlice";
 import { API_URL } from "./shared/constants";
 import { useQuery } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
+import SearchDialog from "./features/common/SearchDialog";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
@@ -51,6 +52,7 @@ function App() {
         <ReactQueryDevtools initialIsOpen={false} />
         <Header />
         <ReviewDetailModal />
+        <SearchDialog />
         <Routes>
           <Route path="/" element={<Feed />} />
           <Route path="/latest" element={<Feed />} />
