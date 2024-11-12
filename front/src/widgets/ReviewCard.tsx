@@ -39,7 +39,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
     <>
       {reviewInfo && (
         <Card
-          className="overflow-hidden shadow-lg transition-shadow aspect-[1.618] relative hover:shadow-xl active:shadow-xl"
+          className="overflow-hidden shadow-lg transition-shadow h-60 relative hover:shadow-xl active:shadow-xl"
           aria-label={`리뷰: ${reviewInfo.title}`}
         >
           <ResizablePanelGroup direction="horizontal">
@@ -86,7 +86,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   </div>
 
                   {/* 리뷰 내용 */}
-                  <p className="text-sm text-left text-muted-foreground line-clamp-2 whitespace-pre-wrap break-all flex-1 min-h-0">
+                  <p className="text-sm text-left text-muted-foreground line-clamp-3 whitespace-pre-wrap break-all flex-1 min-h-0">
                     {reviewInfo.reviewText}
                   </p>
                 </div>

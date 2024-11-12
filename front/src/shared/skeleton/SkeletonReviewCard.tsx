@@ -9,7 +9,7 @@ import { Separator } from "@/shared/shadcn-ui/separator";
 
 export default function SkeletonReviewCard() {
   return (
-    <Card className="overflow-hidden shadow-lg transition-shadow aspect-[1.618] relative hover:shadow-xl active:shadow-xl">
+    <Card className="overflow-hidden shadow-lg transition-shadow h-60 relative hover:shadow-xl active:shadow-xl">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={55} collapsible={true}>
           <div className="p-4 flex flex-col justify-between h-full">

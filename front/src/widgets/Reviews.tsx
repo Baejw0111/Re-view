@@ -55,7 +55,6 @@ export default function Reviews({
                 key={reviewIdList[item.index]}
                 className="absolute top-0 left-0 w-full"
                 data-index={item.index}
-                ref={virtualizer.measureElement}
                 style={{
                   transform: `translateY(${
                     item.start - virtualizer.options.scrollMargin
