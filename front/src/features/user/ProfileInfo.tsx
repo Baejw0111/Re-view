@@ -22,7 +22,7 @@ export default function ProfileInfo({
   return (
     <>
       {userInfo && (
-        <div className="flex flex-row w-full items-center gap-4 md:gap-6">
+        <div className="flex flex-row w-full items-center gap-6">
           <div className="w-2/5 flex justify-center items-center">
             <UserAvatar
               className={`${
