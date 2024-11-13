@@ -14,10 +14,11 @@ import { fetchUserInfoById } from "@/api/user";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import LikeButton from "@/features/interaction/LikeButton";
-import ProfilePopOver from "./ProfilePopOver";
+import ProfilePopOver from "@/widgets/ProfilePopOver";
 import SkeletonReviewCard from "@/shared/skeleton/SkeletonReviewCard";
 import CommentButton from "@/features/interaction/CommentButton";
 import TagBadge from "@/features/review/TagBadge";
+import { Button } from "@/shared/shadcn-ui/button";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
   const [searchParams] = useSearchParams();
@@ -52,7 +53,10 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                     {/* 작성자 정보 및 프로필 팝오버 버튼*/}
                     {author && (
                       <ProfilePopOver userId={author.kakaoId as number}>
-                        <div role="button" className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          className="flex items-center gap-2 p-0 h-auto"
+                        >
                           <UserAvatar
                             className="h-6 w-6"
                             profileImage={author.profileImage}
@@ -61,7 +65,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                           <div className="text-sm line-clamp-1 text-muted-foreground font-semibold">
                             {author.nickname}
                           </div>
-                        </div>
+                        </Button>
                       </ProfilePopOver>
                     )}
 
