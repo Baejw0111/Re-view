@@ -1,15 +1,16 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { fetchReviewCommentList } from "@/api/comment";
 import { useQuery } from "@tanstack/react-query";
 import CommentBox from "@/features/interaction/CommentBox";
 import { CommentInfo } from "@/shared/types/interface";
 
 export default function CommentList() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
+  const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
-  const commentId = queryParams.get("commentId");
+  const { hash } = useLocation();
+  const commentId = hash.replace("#", "");
+
   const {
     data: commentIdList,
     isLoading,
