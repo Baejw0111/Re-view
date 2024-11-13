@@ -1,3 +1,4 @@
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Heart, MessageCircle, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
@@ -8,7 +9,6 @@ import { API_URL } from "@/shared/constants";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 import { cn } from "@/shared/lib/utils";
 import { claculateTime } from "@/shared/lib/utils";
-import { Link } from "react-router-dom";
 
 export default function NotificationBox({
   className,
@@ -17,7 +17,9 @@ export default function NotificationBox({
   className?: string;
   notificationInfo: NotificationInfo;
 }) {
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const { pathname } = useLocation();
   const {
     _id,
     time,
@@ -55,9 +57,14 @@ export default function NotificationBox({
       )}
     >
       <Link
-        to={`/?reviewId=${reviewId}${
-          category === "comment" ? `#${commentId}` : ""
-        }`}
+        to={
+          pathname === "/edit"
+            ? `/?reviewId=${reviewId}`
+            : `?${new URLSearchParams({
+                ...Object.fromEntries(searchParams),
+                reviewId: reviewId,
+              })}` + `${category === "comment" ? `#${commentId}` : ""}`
+        }
         className="flex items-start gap-4 w-full"
       >
         <UserAvatar profileImage={profileImage} nickname={nickname} />
