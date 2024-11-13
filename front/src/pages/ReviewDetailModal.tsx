@@ -16,7 +16,6 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from "@/shared/shadcn-ui/drawer";
-import { useNavigate } from "react-router-dom";
 import ReviewDetail from "@/widgets/ReviewDetail";
 import CommentInput from "@/features/interaction/CommentInput";
 import CommentList from "@/widgets/CommentList";
@@ -25,7 +24,7 @@ import { useLocation, useSearchParams } from "react-router-dom";
 
 export default function ReviewDetailModal() {
   const dispatch = useDispatch();
-  const [queryParams] = useSearchParams();
+  const [queryParams, setQueryParams] = useSearchParams();
   const { pathname } = useLocation();
   const isDesktop = useMediaQuery("(min-width: 768px)"); // md(768px) 아래의 너비는 모바일 환경으로 간주
   const isModalOpen = useSelector(
@@ -34,7 +33,6 @@ export default function ReviewDetailModal() {
   const isNotificationOpen = useSelector(
     (state: RootState) => state.notificationOpen.isNotificationOpen
   );
-  const navigate = useNavigate();
 
   const handleClose = () => {
     if (isModalOpen) {
@@ -43,7 +41,9 @@ export default function ReviewDetailModal() {
        * 코드에 의해 isOpen이 false가 될 경우 아래의 코드는 동작하지 않는다.
        */
       dispatch(setIsReviewDetailOpen(false));
-      navigate(-1);
+      // navigate(-1);
+      queryParams.delete("reviewId");
+      setQueryParams(queryParams);
     }
   };
 
