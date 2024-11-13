@@ -1,5 +1,4 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
-import { Card } from "@/shared/shadcn-ui/card";
 import {
   Tabs,
   TabsContent,
@@ -10,19 +9,18 @@ import { Grid, MessageCircle, Heart } from "lucide-react";
 import { Link, Route, Routes, useParams, useLocation } from "react-router-dom";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import {
-  fetchUserInfoById,
   fetchUserCommentList,
   fetchUserReviewList,
   fetchUserLikedList,
 } from "@/api/user";
 import { CommentInfo } from "@/shared/types/interface";
 import Reviews from "@/widgets/Reviews";
+import { claculateTime } from "@/shared/lib/utils";
 import UserSetting from "@/features/setting/UserSetting";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import { Card } from "@/shared/shadcn-ui/card";
 import ProfileInfo from "@/features/user/ProfileInfo";
-import UserAvatar from "@/features/user/UserAvatar";
-import { claculateTime } from "@/shared/lib/utils";
 
 export default function Profile() {
   const location = useLocation();
@@ -30,10 +28,6 @@ export default function Profile() {
 
   // 사용자 정보 가져오기
   const { id: userId } = useParams();
-  const { data: userInfo } = useQuery({
-    queryKey: ["userInfo", Number(userId)],
-    queryFn: () => fetchUserInfoById(Number(userId)),
-  });
 
   // 사용자가 작성한 댓글 가져오기
   const { data: userCommentList, refetch: refetchUserCommentList } = useQuery<
@@ -77,17 +71,10 @@ export default function Profile() {
 
   return (
     <PageTemplate pageName="프로필">
-      <Card className="relative p-4 md:p-6 md:px-16 md:max-w-xl mx-auto">
-        <div className="flex flex-row items-center md:items-start gap-4 md:gap-6">
-          <UserAvatar
-            className="h-24 w-24 md:h-32 md:w-32 my-auto"
-            profileImage={userInfo?.profileImage}
-            nickname={userInfo?.nickname}
-          />
-          <ProfileInfo userId={Number(userId)} />
-        </div>
-        {loginedUserInfo?.kakaoId === Number(userId) && (
-          <div className="absolute right-4 top-4 md:right-6 md:top-6">
+      <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
+        <ProfileInfo userId={Number(userId)} tags profileImageSize="lg" />
+        {loginedUserInfo.kakaoId === Number(userId) && (
+          <div className="absolute right-8 top-8 md:right-8 md:top-8">
             <UserSetting />
           </div>
         )}
@@ -154,9 +141,11 @@ export default function Profile() {
                 <div className="bg-background rounded-lg">
                   {userCommentList &&
                     userCommentList.map((commentInfo, index) => (
-                      <div className="border-b last:border-b-0 p-4 flex justify-between">
+                      <div
+                        key={index}
+                        className="border-b last:border-b-0 p-4 flex justify-between"
+                      >
                         <Link
-                          key={index}
                           to={`/?reviewId=${commentInfo.reviewId}&commentId=${commentInfo._id}`}
                           className="hover:underline text-sm whitespace-pre-wrap break-all"
                         >
