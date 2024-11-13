@@ -21,11 +21,12 @@ import ReviewDetail from "@/widgets/ReviewDetail";
 import CommentInput from "@/features/interaction/CommentInput";
 import CommentList from "@/widgets/CommentList";
 import { Separator } from "@/shared/shadcn-ui/separator";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 export default function ReviewDetailModal() {
   const dispatch = useDispatch();
-  const location = useLocation();
+  const [queryParams] = useSearchParams();
+  const { pathname } = useLocation();
   const isDesktop = useMediaQuery("(min-width: 768px)"); // md(768px) 아래의 너비는 모바일 환경으로 간주
   const isModalOpen = useSelector(
     (state: RootState) => state.reviewDetailOpen.isReviewDetailOpen
@@ -47,14 +48,13 @@ export default function ReviewDetailModal() {
   };
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    if (queryParams.get("reviewId") === null || location.pathname === "/edit") {
+    if (queryParams.get("reviewId") === null || pathname === "/edit") {
       dispatch(setIsReviewDetailOpen(false));
     } else {
       dispatch(setIsNotificationOpen(false));
       dispatch(setIsReviewDetailOpen(true));
     }
-  }, [location.search, location.pathname]);
+  }, [queryParams, pathname]);
 
   if (isDesktop === null) return;
 

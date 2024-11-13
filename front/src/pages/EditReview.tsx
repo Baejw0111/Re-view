@@ -1,12 +1,11 @@
 import PageTemplate from "../shared/original-ui/PageTemplate";
 import ReviewForm from "@/widgets/ReviewForm";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 
 export default function EditReview() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
+  const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
 
   const { data: reviewInfo } = useQuery({
