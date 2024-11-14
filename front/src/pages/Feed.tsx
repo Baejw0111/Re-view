@@ -1,4 +1,4 @@
-import Reviews from "@/widgets/Reviews";
+import CardList from "@/widgets/CardList";
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchLatestFeed, fetchPopularFeed } from "@/api/review";
@@ -42,9 +42,10 @@ export default function Feed() {
   return (
     <PageTemplate pageName="피드">
       {isSuccess && (
-        <Reviews
-          reviewIdList={feedData.pages.flatMap((page) => page)}
+        <CardList
+          idList={feedData.pages.flatMap((page) => page)}
           callback={fetchNextPage}
+          cardType="review"
         />
       )}
     </PageTemplate>

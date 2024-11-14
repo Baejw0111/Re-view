@@ -4,18 +4,23 @@ import { useIntersectionObserver } from "@/shared/hooks";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { VirtualItem } from "@tanstack/react-virtual";
 import { useTailwindBreakpoint } from "@/shared/hooks";
+import UserCard from "@/widgets/UserCard";
 
 /**
- * @description 리뷰 카드 목록을 반환하는 컴포넌트
- * @param reviewIdList 리뷰 ID 리스트
- * @returns 리뷰 카드 목록
+ * @description 카드 목록을 반환하는 컴포넌트
+ * @param idList 카드 ID 리스트
+ * @param callback 무한 스크롤 콜백 함수
+ * @param cardType 카드 타입(리뷰 카드 또는 유저 프로필 카드)
+ * @returns 카드 목록
  */
-export default function Reviews({
-  reviewIdList,
+export default function CardList({
+  idList,
   callback,
+  cardType,
 }: {
-  reviewIdList: string[];
+  idList: string[] | number[];
   callback: () => void;
+  cardType: "review" | "userProfile";
 }) {
   const breakpoint = useTailwindBreakpoint(); // 현재 화면 너비
   const listRef = useRef<HTMLDivElement>(null);
@@ -29,7 +34,7 @@ export default function Reviews({
   }; // 현재 화면 너비에 따른 그리드 칼럼 수
 
   const virtualizer = useWindowVirtualizer({
-    count: Math.ceil(reviewIdList.length / gridColumnCount[breakpoint]),
+    count: Math.ceil(idList.length / gridColumnCount[breakpoint]),
     estimateSize: () => 240,
     gap: 24,
     overscan: 2,
@@ -42,7 +47,7 @@ export default function Reviews({
 
   return (
     <>
-      {reviewIdList && (
+      {idList && (
         <div ref={listRef}>
           <div
             className="relative w-full"
@@ -52,7 +57,8 @@ export default function Reviews({
           >
             {virtualizer.getVirtualItems().map((item) => (
               <div
-                key={reviewIdList[item.index]}
+                key={idList[item.index]}
+                ref={virtualizer.measureElement}
                 className="absolute top-0 left-0 w-full"
                 data-index={item.index}
                 style={{
@@ -65,10 +71,7 @@ export default function Reviews({
                   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
                   ref={
                     item.index ===
-                    Math.ceil(
-                      reviewIdList.length / gridColumnCount[breakpoint]
-                    ) -
-                      2
+                    Math.ceil(idList.length / gridColumnCount[breakpoint]) - 2
                       ? infiniteScrollRef
                       : null
                   }
@@ -77,17 +80,30 @@ export default function Reviews({
                     (_, index) => {
                       if (
                         item.index * gridColumnCount[breakpoint] + index <
-                        reviewIdList.length
+                        idList.length
                       ) {
-                        return (
+                        return cardType === "review" ? (
                           <ReviewCard
                             key={
-                              reviewIdList[
+                              idList[
                                 item.index * gridColumnCount[breakpoint] + index
                               ]
                             }
-                            reviewId={
-                              reviewIdList[
+                            reviewId={String(
+                              idList[
+                                item.index * gridColumnCount[breakpoint] + index
+                              ]
+                            )}
+                          />
+                        ) : (
+                          <UserCard
+                            userId={Number(
+                              idList[
+                                item.index * gridColumnCount[breakpoint] + index
+                              ]
+                            )}
+                            key={
+                              idList[
                                 item.index * gridColumnCount[breakpoint] + index
                               ]
                             }

@@ -14,7 +14,7 @@ import {
   fetchUserLikedList,
 } from "@/api/user";
 import { CommentInfo } from "@/shared/types/interface";
-import Reviews from "@/widgets/Reviews";
+import CardList from "@/widgets/CardList";
 import { claculateTime } from "@/shared/lib/utils";
 import UserSetting from "@/features/setting/UserSetting";
 import { useSelector } from "react-redux";
@@ -113,9 +113,10 @@ export default function Profile() {
             element={
               <TabsContent value="posts" className="mt-6">
                 {userReviewList && (
-                  <Reviews
-                    reviewIdList={userReviewList.pages.flatMap((page) => page)}
+                  <CardList
+                    idList={userReviewList.pages.flatMap((page) => page)}
                     callback={fetchNextUserReviewList}
+                    cardType="review"
                   />
                 )}
               </TabsContent>
@@ -126,9 +127,10 @@ export default function Profile() {
             element={
               <TabsContent value="posts" className="mt-6">
                 {userReviewList && (
-                  <Reviews
-                    reviewIdList={userReviewList.pages.flatMap((page) => page)}
+                  <CardList
+                    idList={userReviewList.pages.flatMap((page) => page)}
                     callback={fetchNextUserReviewList}
+                    cardType="review"
                   />
                 )}
               </TabsContent>
@@ -165,9 +167,10 @@ export default function Profile() {
             element={
               <TabsContent value="liked" className="mt-6">
                 {userLikedList && (
-                  <Reviews
-                    reviewIdList={userLikedList.pages.flatMap((page) => page)}
+                  <CardList
+                    idList={userLikedList.pages.flatMap((page) => page)}
                     callback={fetchNextUserLikedList}
+                    cardType="review"
                   />
                 )}
               </TabsContent>
