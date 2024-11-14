@@ -46,6 +46,9 @@ export const getSearchReviews = async (
   const response = await generalApiClient.get(`/search/reviews`, {
     params: { query, lastReviewId },
   });
+
+  console.log("리뷰 검색 성공:", response.data);
+
   return response.data;
 };
 

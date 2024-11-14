@@ -21,10 +21,12 @@ export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
 export const getSearchUsers = async (
   query: string,
   lastUserId: number
-): Promise<string[]> => {
+): Promise<number[]> => {
   const response = await generalApiClient.get(`/search/users`, {
     params: { query, lastUserId },
   });
+
+  console.log("유저 검색 성공:", response.data);
 
   return response.data;
 };
