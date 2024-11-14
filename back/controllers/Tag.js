@@ -87,47 +87,58 @@ export const getPopularTags = asyncHandler(async (req, res) => {
   // 지난 6시간 동안 추천된 리뷰 ID 가져오기
   const likedReviews = await ReviewLikeModel.aggregate([
     {
-      $match: { likedAt: { $gte: sixHourAgo } }, // 6시간 이내에 추천된 리뷰만 선택
+      $match: { likedAt: { $gte: sixHourAgo } },
     },
     {
       $group: {
-        _id: "$reviewId", // 리뷰 ID별로 그룹화
-        count: { $sum: 1 }, // 추천 횟수 계산
+        _id: "$reviewId",
+        count: { $sum: 1 },
       },
-    },
-    {
-      $sort: { count: -1 }, // 추천 횟수 기준으로 내림차순 정렬
     },
   ]);
 
-  // 추천된 리뷰 ID 목록
   const likedReviewIds = likedReviews.map(
     (review) => new Types.ObjectId(review._id)
   );
 
-  // 추천된 리뷰의 태그 집계
-  const popularTags = await ReviewModel.aggregate([
+  // 추천된 리뷰의 태그와 최근 작성된 리뷰의 태그를 한번에 집계
+  const combinedTags = await ReviewModel.aggregate([
     {
-      $match: { _id: { $in: likedReviewIds } }, // 추천된 리뷰 ID에 해당하는 리뷰만 선택
-    },
-    {
-      $unwind: "$tags", // tags 배열을 펼침
-    },
-    {
-      $group: {
-        _id: "$tags", // 태그별로 그룹화
-        count: { $sum: 1 }, // 태그 추천 횟수 계산
+      $facet: {
+        likedTags: [
+          { $match: { _id: { $in: likedReviewIds } } },
+          { $unwind: "$tags" },
+          { $group: { _id: "$tags", count: { $sum: 3 } } }, // 추천된 리뷰의 태그는 5점
+        ],
+        recentTags: [
+          { $match: { uploadTime: { $gte: sixHourAgo } } },
+          { $unwind: "$tags" },
+          { $group: { _id: "$tags", count: { $sum: 1 } } }, // 최근 작성된 리뷰의 태그는 1점
+        ],
       },
     },
     {
-      $sort: { count: -1 }, // 추천 횟수 기준으로 내림차순 정렬
+      $project: {
+        allTags: {
+          $concatArrays: ["$likedTags", "$recentTags"],
+        },
+      },
     },
+    { $unwind: "$allTags" },
     {
-      $limit: 5, // 상위 5개 태그만 선택
+      $group: {
+        _id: "$allTags._id",
+        totalCount: { $sum: "$allTags.count" },
+      },
     },
+    { $sort: { totalCount: -1 } },
+    { $limit: 5 },
+    { $project: { _id: 1, totalCount: 1 } },
   ]);
 
-  const popularTagList = popularTags.map((tag) => tag._id);
+  console.log(combinedTags);
+
+  const popularTagList = combinedTags.map((tag) => tag._id);
 
   res.status(200).json(popularTagList);
 });
