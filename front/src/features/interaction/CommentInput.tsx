@@ -1,5 +1,5 @@
-import { useLocation } from "react-router-dom";
 import { useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import UserAvatar from "@/features/user/UserAvatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
@@ -14,8 +14,7 @@ import { RootState } from "@/state/store";
 
 export default function CommentInput() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
+  const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
 
   const [comment, setComment] = useState("");

@@ -1,4 +1,4 @@
-import { genaralApiClient, authApiClient } from "@/api/util";
+import { generalApiClient, authApiClient } from "@/api/util";
 import { UserInfo } from "@/shared/types/interface";
 
 /**
@@ -6,7 +6,7 @@ import { UserInfo } from "@/shared/types/interface";
  * @param code 카카오 인증 코드
  */
 export const getKakaoToken = async (code: string): Promise<void> => {
-  const response = await genaralApiClient.post(
+  const response = await generalApiClient.post(
     `/auth/kakao/login`,
     { code },
     {

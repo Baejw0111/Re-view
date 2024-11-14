@@ -32,7 +32,7 @@ const createApiClient = (clientConfig?: CreateAxiosDefaults): AxiosInstance => {
 /**
  * 일반 인스턴스
  */
-export const genaralApiClient: AxiosInstance = createApiClient({
+export const generalApiClient: AxiosInstance = createApiClient({
   baseURL: API_URL,
 });
 
@@ -50,7 +50,7 @@ export const authApiClient: AxiosInstance = createApiClient({
  */
 export const refreshKakaoAccessToken = async (): Promise<void> => {
   // 인터셉터로 인한 무한 루프 방지를 위해 generalApiClient 사용
-  const response = await genaralApiClient.post(
+  const response = await generalApiClient.post(
     `/auth/kakao/refresh`,
     {},
     {

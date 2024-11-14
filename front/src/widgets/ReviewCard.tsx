@@ -6,20 +6,22 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/shared/shadcn-ui/resizable";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { API_URL } from "@/shared/constants";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { fetchUserInfoById } from "@/api/user";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import LikeButton from "@/features/interaction/LikeButton";
-import ProfilePopOver from "./ProfilePopOver";
+import ProfilePopOver from "@/widgets/ProfilePopOver";
 import SkeletonReviewCard from "@/shared/skeleton/SkeletonReviewCard";
 import CommentButton from "@/features/interaction/CommentButton";
+import TagBadge from "@/features/review/TagBadge";
+import { Button } from "@/shared/shadcn-ui/button";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
+  const [searchParams] = useSearchParams();
   const { data: reviewInfo, isFetching: isReviewInfoFetching } = useQuery({
     queryKey: ["reviewInfo", reviewId],
     queryFn: () => fetchReviewById(reviewId),
@@ -38,7 +40,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
     <>
       {reviewInfo && (
         <Card
-          className="overflow-hidden shadow-lg transition-shadow aspect-[1.618] relative hover:shadow-xl active:shadow-xl"
+          className="overflow-hidden shadow-lg transition-shadow h-60 relative hover:shadow-xl active:shadow-xl"
           aria-label={`리뷰: ${reviewInfo.title}`}
         >
           <ResizablePanelGroup direction="horizontal">
@@ -51,7 +53,10 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                     {/* 작성자 정보 및 프로필 팝오버 버튼*/}
                     {author && (
                       <ProfilePopOver userId={author.kakaoId as number}>
-                        <div role="button" className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          className="flex items-center gap-2 p-0 h-auto"
+                        >
                           <UserAvatar
                             className="h-6 w-6"
                             profileImage={author.profileImage}
@@ -60,7 +65,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                           <div className="text-sm line-clamp-1 text-muted-foreground font-semibold">
                             {author.nickname}
                           </div>
-                        </div>
+                        </Button>
                       </ProfilePopOver>
                     )}
 
@@ -71,7 +76,10 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   {/* 리뷰 제목 및 상세 페이지 링크 */}
                   <div className="flex items-center justify-start">
                     <Link
-                      to={`?reviewId=${reviewInfo._id}`}
+                      to={`?${new URLSearchParams({
+                        ...Object.fromEntries(searchParams),
+                        reviewId: reviewInfo._id,
+                      })}`}
                       className="group flex items-center gap-1 cursor-pointer hover:text-blue-500 active:text-blue-500 transition-colors"
                     >
                       <h2 className="font-semibold line-clamp-1">
@@ -82,7 +90,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   </div>
 
                   {/* 리뷰 내용 */}
-                  <p className="text-sm text-left text-muted-foreground line-clamp-2 whitespace-pre-wrap break-all flex-1 min-h-0">
+                  <p className="text-sm text-left text-muted-foreground line-clamp-3 whitespace-pre-wrap break-all flex-1 min-h-0">
                     {reviewInfo.reviewText}
                   </p>
                 </div>
@@ -92,12 +100,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                   {/* 태그 */}
                   <div className="flex gap-1.5 w-full overflow-x-auto scrollbar-hide">
                     {reviewInfo.tags.map((tag, index) => (
-                      <Badge
-                        key={index}
-                        className="whitespace-nowrap cursor-pointer"
-                      >
-                        {tag}
-                      </Badge>
+                      <TagBadge key={index} tag={tag} />
                     ))}
                   </div>
                   <Separator className="my-3" />

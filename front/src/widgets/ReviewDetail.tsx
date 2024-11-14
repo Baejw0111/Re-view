@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo } from "@/shared/types/interface";
@@ -17,14 +17,13 @@ import { fetchUserInfoById } from "@/api/user";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import UserAvatar from "@/features/user/UserAvatar";
 import { claculateTime } from "@/shared/lib/utils";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
+import TagBadge from "@/features/review/TagBadge";
 
 export default function ReviewDetail() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
+  const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
   const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
@@ -115,9 +114,7 @@ export default function ReviewDetail() {
           {/* 리뷰 태그 */}
           <div className="flex flex-wrap items-start gap-1.5">
             {reviewInfo?.tags.map((tag, index) => (
-              <Badge key={index} className="cursor-pointer">
-                {tag}
-              </Badge>
+              <TagBadge key={index} tag={tag} />
             ))}
           </div>
 

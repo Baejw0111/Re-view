@@ -16,16 +16,16 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from "@/shared/shadcn-ui/drawer";
-import { useNavigate } from "react-router-dom";
 import ReviewDetail from "@/widgets/ReviewDetail";
 import CommentInput from "@/features/interaction/CommentInput";
 import CommentList from "@/widgets/CommentList";
 import { Separator } from "@/shared/shadcn-ui/separator";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 export default function ReviewDetailModal() {
   const dispatch = useDispatch();
-  const location = useLocation();
+  const [queryParams, setQueryParams] = useSearchParams();
+  const { pathname } = useLocation();
   const isDesktop = useMediaQuery("(min-width: 768px)"); // md(768px) 아래의 너비는 모바일 환경으로 간주
   const isModalOpen = useSelector(
     (state: RootState) => state.reviewDetailOpen.isReviewDetailOpen
@@ -33,7 +33,6 @@ export default function ReviewDetailModal() {
   const isNotificationOpen = useSelector(
     (state: RootState) => state.notificationOpen.isNotificationOpen
   );
-  const navigate = useNavigate();
 
   const handleClose = () => {
     if (isModalOpen) {
@@ -42,19 +41,20 @@ export default function ReviewDetailModal() {
        * 코드에 의해 isOpen이 false가 될 경우 아래의 코드는 동작하지 않는다.
        */
       dispatch(setIsReviewDetailOpen(false));
-      navigate(location.pathname);
+      // navigate(-1);
+      queryParams.delete("reviewId");
+      setQueryParams(queryParams);
     }
   };
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    if (queryParams.get("reviewId") === null || location.pathname === "/edit") {
+    if (queryParams.get("reviewId") === null || pathname === "/edit") {
       dispatch(setIsReviewDetailOpen(false));
     } else {
       dispatch(setIsNotificationOpen(false));
       dispatch(setIsReviewDetailOpen(true));
     }
-  }, [location.search, location.pathname]);
+  }, [queryParams, pathname]);
 
   if (isDesktop === null) return;
 
@@ -67,6 +67,15 @@ export default function ReviewDetailModal() {
         <DialogContent
           className="block md:max-w-[760px] lg:max-w-[860px] h-[90vh] p-20 overflow-y-auto scrollbar-hide focus-visible:outline-none"
           onOpenAutoFocus={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => {
+            // 마우스 뒤로가기 버튼 또는 앞으로 가기 버튼 클릭 시 클릭 이벤트 방지
+            if (
+              e.detail.originalEvent.button === 3 ||
+              e.detail.originalEvent.button === 4
+            ) {
+              e.preventDefault();
+            }
+          }}
         >
           <DialogTitle hidden></DialogTitle>
           <DialogDescription hidden></DialogDescription>
@@ -81,7 +90,10 @@ export default function ReviewDetailModal() {
 
   return (
     <Drawer open={isModalOpen && !isNotificationOpen} onClose={handleClose}>
-      <DrawerContent className="h-[90vh] focus-visible:outline-none">
+      <DrawerContent
+        className="h-[90vh] focus-visible:outline-none"
+        onInteractOutside={handleClose}
+      >
         <DrawerTitle hidden></DrawerTitle>
         <DrawerDescription hidden></DrawerDescription>
         <div className="p-5 pb-20 overflow-y-auto scrollbar-hide">

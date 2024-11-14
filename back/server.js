@@ -20,9 +20,11 @@ import {
   getReviewsById,
   updateReview,
   deleteReview,
+  getSearchReviews,
 } from "./controllers/Review.js";
 import {
   getUserInfoById,
+  getSearchUsers,
   getUserReviewList,
   getUserCommentList,
   getUserLikedList,
@@ -42,6 +44,7 @@ import {
   getCommentCount,
   deleteComment,
 } from "./controllers/Comment.js";
+import { getPopularTags, getSearchRelatedTags } from "./controllers/Tag.js";
 
 const app = express(); // express 인스턴스 생성
 const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근 가능
@@ -117,5 +120,13 @@ app.delete("/comment/:id", verifyKakaoAccessToken, deleteComment); // 리뷰 댓
 app.get("/like/:id", getLikeStatus); // 리뷰 추천 관련 정보 조회 API
 app.patch("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
 app.patch("/unlike/:id", verifyKakaoAccessToken, unLike); // 리뷰 추천 취소 API
+
+// 태그 관련 API
+app.get("/tag/popular", getPopularTags); // 인기 태그 조회 API
+app.get("/tag/search", getSearchRelatedTags); // 검색어 연관 태그 조회 API
+
+// 검색 관련 API
+app.get("/search/reviews", getSearchReviews); // 리뷰 검색 결과 조회 API
+app.get("/search/users", getSearchUsers); // 유저 검색 결과 조회 API
 
 app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));

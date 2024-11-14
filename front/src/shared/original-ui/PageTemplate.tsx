@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import WriteReviewButton from "@/features/review/WriteReviewButton";
 import { useScrollDirection } from "@/shared/hooks";
 import { Tabs, TabsTrigger, TabsList } from "@/shared/shadcn-ui/tabs";
@@ -15,6 +15,7 @@ export default function PageTemplate({
   const isScrollingUp = useScrollDirection();
   const queryClient = useQueryClient();
   const { pathname } = useLocation();
+  const [queryParams] = useSearchParams();
 
   return (
     <>
@@ -24,8 +25,8 @@ export default function PageTemplate({
         }`}
       >
         <div className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 md:px-6 py-2 md:py-4 border-b border-border">
+          <h1 className="text-2xl md:text-3xl font-bold">{pageName}</h1>
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl md:text-3xl font-bold">{pageName}</h1>
             {pageName === "피드" && (
               <Tabs
                 defaultValue="latest"
@@ -34,31 +35,76 @@ export default function PageTemplate({
                 }
               >
                 <TabsList>
-                  <Link
-                    to="/latest"
-                    onClick={() =>
-                      queryClient.invalidateQueries({
-                        queryKey: ["feed", "latest"],
-                      })
-                    }
-                  >
-                    <TabsTrigger value="latest">최신글</TabsTrigger>
-                  </Link>
-                  <Link
-                    to="/popular"
-                    onClick={() =>
-                      queryClient.invalidateQueries({
-                        queryKey: ["feed", "popular"],
-                      })
-                    }
-                  >
-                    <TabsTrigger value="popular">인기글</TabsTrigger>
-                  </Link>
+                  <TabsTrigger value="latest" asChild>
+                    <Link
+                      to="/latest"
+                      onClick={() =>
+                        queryClient.invalidateQueries({
+                          queryKey: ["feed", "latest"],
+                        })
+                      }
+                    >
+                      최신글
+                    </Link>
+                  </TabsTrigger>
+                  <TabsTrigger value="popular" asChild>
+                    <Link
+                      to="/popular"
+                      onClick={() =>
+                        queryClient.invalidateQueries({
+                          queryKey: ["feed", "popular"],
+                        })
+                      }
+                    >
+                      인기글
+                    </Link>
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
             )}
+            {pageName.includes("검색 결과") && (
+              <Tabs
+                defaultValue="reviews"
+                value={
+                  queryParams.get("category") === "users" ? "users" : "reviews"
+                }
+              >
+                <TabsList>
+                  <TabsTrigger value="reviews" asChild>
+                    <Link
+                      to={`?${new URLSearchParams({
+                        ...Object.fromEntries(queryParams),
+                        category: "reviews",
+                      })}`}
+                      onClick={() =>
+                        queryClient.invalidateQueries({
+                          queryKey: ["search", "reviews"],
+                        })
+                      }
+                    >
+                      리뷰
+                    </Link>
+                  </TabsTrigger>
+                  <TabsTrigger value="users" asChild>
+                    <Link
+                      to={`?${new URLSearchParams({
+                        ...Object.fromEntries(queryParams),
+                        category: "users",
+                      })}`}
+                      onClick={() =>
+                        queryClient.invalidateQueries({
+                          queryKey: ["search", "users"],
+                        })
+                      }
+                    >
+                      유저
+                    </Link>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            )}
+            {pageName === "피드" && <WriteReviewButton />}
           </div>
-          {pageName === "피드" && <WriteReviewButton />}
         </div>
       </div>
       <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8">

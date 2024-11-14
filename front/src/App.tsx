@@ -12,12 +12,14 @@ import Onboarding from "@/pages/Onboarding";
 import EditReview from "@/pages/EditReview";
 import Profile from "@/pages/Profile";
 import Notification from "@/pages/Notification";
+import Search from "@/pages/Search";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { API_URL } from "./shared/constants";
 import { useQuery } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
+import SearchDialog from "./features/common/SearchDialog";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
@@ -50,6 +52,7 @@ function App() {
         <ReactQueryDevtools initialIsOpen={false} />
         <Header />
         <ReviewDetailModal />
+        <SearchDialog />
         <Routes>
           <Route path="/" element={<Feed />} />
           <Route path="/latest" element={<Feed />} />
@@ -60,6 +63,7 @@ function App() {
           <Route path="/edit" element={<EditReview />} />
           <Route path="/profile/:id/*" element={<Profile />} />
           <Route path="/notifications" element={<Notification />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/test" element={<Test />} />
         </Routes>
       </Router>

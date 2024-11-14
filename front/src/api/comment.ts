@@ -1,4 +1,4 @@
-import { authApiClient, genaralApiClient } from "@/api/util.ts";
+import { authApiClient, generalApiClient } from "@/api/util.ts";
 import { CommentInfo } from "@/shared/types/interface";
 
 /**
@@ -17,7 +17,7 @@ export const addComment = async (
 };
 
 export const fetchCommentCount = async (reviewId: string): Promise<number> => {
-  const response = await genaralApiClient.get(
+  const response = await generalApiClient.get(
     `/review/${reviewId}/comments/count`
   );
 
@@ -32,7 +32,7 @@ export const fetchCommentCount = async (reviewId: string): Promise<number> => {
 export const fetchCommentById = async (
   commentId: string
 ): Promise<CommentInfo> => {
-  const response = await genaralApiClient.get(`/comment/${commentId}`);
+  const response = await generalApiClient.get(`/comment/${commentId}`);
 
   return response.data;
 };
@@ -45,7 +45,7 @@ export const fetchCommentById = async (
 export const fetchReviewCommentList = async (
   reviewId: string
 ): Promise<CommentInfo[]> => {
-  const response = await genaralApiClient.get(`/review/${reviewId}/comments`);
+  const response = await generalApiClient.get(`/review/${reviewId}/comments`);
 
   return response.data;
 };

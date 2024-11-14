@@ -86,6 +86,7 @@ export const ReviewLikeModel = db.model(
  * @type {mongoose.Model}
  * @property {string} tagName - 태그 이름
  * @property {number} kakaoId - 유저 ID
+ * @property {string} koreanInitials - 태그 이름이 한글일 경우 초성 저장
  * @property {Date} lastInteractedAt - 마지막으로 태그와 상호작용한 시간
  * @property {number} preference - 유저의 태그에 대한 선호도
  */
@@ -94,6 +95,7 @@ export const TagModel = db.model(
   new mongoose.Schema({
     tagName: { type: String, default: "" },
     kakaoId: { type: Number, default: 0 },
+    koreanInitials: { type: String, default: "" },
     lastInteractedAt: { type: Date, default: Date.now },
     preference: { type: Number, default: 0 },
   }).index({ kakaoId: 1, tagName: 1, preference: -1, lastInteractedAt: -1 })

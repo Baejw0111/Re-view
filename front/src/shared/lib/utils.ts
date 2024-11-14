@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { getChoseong } from "es-hangul";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -68,4 +69,39 @@ export const claculateTime = (time: string) => {
   if (days < 30) return `${days}일 전`;
   if (months < 12) return `${months}달 전`;
   return `${years}년 전`;
+};
+
+/**
+ * 검색 필터
+ * @param {string} value - 검색 값
+ * @param {string} searchQuery - 검색 쿼리
+ * @returns {number} 검색 필터 결과
+ */
+export const filterCommand = (value: string, searchQuery: string) => {
+  const cleanValue = value.replace(/^(recent-search-|related-tag-)/, ""); // 진짜 value 값만 추출
+  const searchQueryWithoutSpace = searchQuery.replace(/\s/g, ""); // 공백 제거한 버전의 검색 쿼리
+
+  const koreanInitialsValue = getChoseong(cleanValue); // value에서 한글 초성 추출
+
+  const koreanInitialsSearchQuery = getChoseong(searchQuery); // 검색 쿼리에서 한글 초성 추출
+  const koreanInitialsSearchQueryWithoutSpace =
+    koreanInitialsSearchQuery.replace(/\s/g, ""); // 공백 제거한 버전의 검색 쿼리에서 한글 초성 추출
+
+  if (
+    cleanValue.includes(searchQuery) ||
+    cleanValue.includes(searchQueryWithoutSpace)
+  ) {
+    // 검색 쿼리가 포함된 경우
+    return 1;
+  } else if (
+    koreanInitialsValue &&
+    koreanInitialsSearchQuery &&
+    (koreanInitialsValue.includes(koreanInitialsSearchQuery) ||
+      koreanInitialsValue.includes(koreanInitialsSearchQueryWithoutSpace))
+  ) {
+    // 검색 쿼리의 한글 초성이 포함된 경우
+    return 1;
+  }
+
+  return 0;
 };

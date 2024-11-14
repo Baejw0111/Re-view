@@ -29,19 +29,19 @@ export default function ProfilePopOver({
         {children}
       </PopoverTrigger>
       <PopoverContent
-        className="w-64 flex flex-col gap-6"
+        className="flex flex-col gap-6 w-80"
         sideOffset={0}
         onOpenAutoFocus={(e) => e.preventDefault()}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
-        <ProfileInfo userId={userId} />
-        <Link to={`/profile/${userId}`}>
-          <Button className="w-full ">
+        <ProfileInfo userId={userId} profileImageSize="sm" />
+        <Button className="w-full" asChild>
+          <Link to={`/profile/${userId}`}>
             <User className="mr-2 h-4 w-4" />
             프로필 보기
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </PopoverContent>
     </Popover>
   );
