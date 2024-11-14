@@ -30,7 +30,7 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
 /**
  * 유저 검색 결과 조회 API
  * @param {string} query - 검색어
- * @returns {Object[]} 유저 검색 결과 배열
+ * @returns {number[]} 유저 ID 리스트
  */
 export const getSearchUsers = asyncHandler(async (req, res) => {
   const { query, lastUserId } = req.query;
@@ -41,11 +41,11 @@ export const getSearchUsers = asyncHandler(async (req, res) => {
       { nickname: { $regex: query, $options: "i" } },
       { nickname: { $regex: queryWithoutSpace, $options: "i" } },
     ],
-    kakaoId: { $lt: lastUserId },
+    kakaoId: { $gt: lastUserId },
   })
-    .sort({ kakaoId: -1 })
+    .sort({ kakaoId: 1 })
     .limit(20);
-  const userIdList = users.map((user) => user._id);
+  const userIdList = users.map((user) => user.kakaoId);
 
   res.status(200).json(userIdList);
 }, "유저 검색");
