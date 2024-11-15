@@ -1,10 +1,11 @@
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, FilePenLine, Siren } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteReview } from "@/api/review";
-import { Link, useSearchParams } from "react-router-dom";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
+import { VITE_CLIENT_URL } from "@/shared/constants";
 
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
@@ -28,7 +29,9 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
           variant="ghost"
           size="icon"
           onClick={() => {
-            navigator.clipboard.writeText(window.location.href);
+            navigator.clipboard.writeText(
+              `${VITE_CLIENT_URL}/?reviewId=${reviewId}`
+            );
             alert("링크가 복사되었습니다.");
           }}
         >
