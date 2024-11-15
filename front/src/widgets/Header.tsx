@@ -10,6 +10,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import SearchBar from "@/features/common/SearchBar";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useScrollDirection } from "@/shared/hooks";
+import WriteReviewButton from "@/features/review/WriteReviewButton";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -34,6 +35,7 @@ export default function Header() {
           {userInfo.nickname ? (
             // 닉네임이 있으면(로그인을 했을 경우) 유저가 사용 가능한 버튼 보여주기
             <>
+              <WriteReviewButton />
               <NotificationButton />
               <TooltipWrapper tooltipText="프로필">
                 <Button
