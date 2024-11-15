@@ -55,14 +55,14 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                       <ProfilePopOver userId={author.kakaoId as number}>
                         <Button
                           variant="ghost"
-                          className="flex items-center gap-2 p-0 h-auto"
+                          className="flex items-center gap-2 p-0 h-auto min-w-8"
                         >
                           <UserAvatar
                             className="h-6 w-6"
                             profileImage={author.profileImage}
                             nickname={author.nickname}
                           />
-                          <div className="text-sm line-clamp-1 text-muted-foreground font-semibold">
+                          <div className="text-sm text-muted-foreground font-semibold truncate">
                             {author.nickname}
                           </div>
                         </Button>
