@@ -56,6 +56,19 @@ export default function ReviewDetailModal() {
     }
   }, [queryParams, pathname]);
 
+  useEffect(() => {
+    // 모달이 열리고 scrollToComments가 true일 때 스크롤
+    if (isModalOpen && queryParams.get("scrollToComments") === "true") {
+      setTimeout(() => {
+        const commentSection = document.getElementById("comment-list");
+        commentSection?.scrollIntoView({ behavior: "smooth" });
+        // 스크롤 후 파라미터 제거
+        queryParams.delete("scrollToComments");
+        setQueryParams(queryParams);
+      }, 100); // 모달이 완전히 열린 후 스크롤하기 위해 약간의 딜레이 추가
+    }
+  }, [isModalOpen]);
+
   if (isDesktop === null) return;
 
   if (isDesktop) {

@@ -35,6 +35,7 @@ export default function CommentButton({ reviewId }: { reviewId: string }) {
           to={`?${new URLSearchParams({
             ...Object.fromEntries(searchParams),
             reviewId: reviewId,
+            scrollToComments: "true",
           })}`}
           className="hover:text-muted-foreground active:text-muted-foreground"
         >

@@ -37,7 +37,7 @@ export default function CommentList() {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div>
+    <div id="comment-list">
       <h2 className="pt-6 text-lg font-semibold">
         댓글({commentIdList?.length})
       </h2>
