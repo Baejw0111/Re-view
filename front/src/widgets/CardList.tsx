@@ -35,7 +35,7 @@ export default function CardList({
 
   const virtualizer = useWindowVirtualizer({
     count: Math.ceil(idList.length / gridColumnCount[breakpoint]),
-    estimateSize: () => 240,
+    estimateSize: cardType === "review" ? () => 240 : () => 192,
     gap: 24,
     overscan: 2,
   });
@@ -58,7 +58,6 @@ export default function CardList({
             {virtualizer.getVirtualItems().map((item) => (
               <div
                 key={idList[item.index]}
-                ref={virtualizer.measureElement}
                 className="absolute top-0 left-0 w-full"
                 data-index={item.index}
                 style={{
