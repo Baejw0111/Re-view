@@ -38,7 +38,7 @@ export default function CommentList() {
 
   return (
     <div>
-      <h2 className="pt-2 text-lg font-semibold">
+      <h2 className="pt-6 text-lg font-semibold">
         댓글({commentIdList?.length})
       </h2>
       <div className="grid mt-4">
