@@ -35,6 +35,8 @@ function App() {
   const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["loggedInUserInfo"],
     queryFn: fetchUserInfoForPageReload,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
