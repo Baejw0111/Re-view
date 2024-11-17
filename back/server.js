@@ -62,11 +62,22 @@ app.use(morgan("dev")); // 로그 출력
 app.use("/public", express.static("public")); // url을 통해 public 폴더의 파일들에 접근 가능하게 함
 app.use(cookieParser()); // cookie 파싱
 
+// 캐시 비활성화(로그아웃 후 뒤로가기를 하면 캐시 때문에 사용자 정보가 복원되는 것을 방지)
+const getKakaoUserInfoWithoutCache = (req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+};
+
 // 카카오 로그인 관련 API
 app.post("/auth/kakao/login", getKakaoToken); // 카카오 토큰 요청 API
 app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
 app.post("/auth/kakao/logout", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
-app.get("/auth/kakao/user", verifyKakaoAccessToken, getKakaoUserInfo); // 카카오 유저 정보 조회 API
+app.get(
+  "/auth/kakao/user",
+  verifyKakaoAccessToken,
+  getKakaoUserInfoWithoutCache,
+  getKakaoUserInfo
+); // 카카오 유저 정보 조회 API
 app.delete("/auth/kakao/delete", verifyKakaoAccessToken, deleteUserAccount); // 카카오 유저 계정 삭제 API
 
 // 리뷰 관련 API
