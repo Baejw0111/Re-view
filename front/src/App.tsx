@@ -25,26 +25,23 @@ function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
   const dispatch = useDispatch();
   const fetchUserInfoForPageReload = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/auth/kakao/user`, {
-        withCredentials: true,
-      });
-      return response.data.userInfo;
-    } catch (error) {
-      console.error("Failed to fetch user info:", error);
-    }
+    const { data } = await axios.get(`${API_URL}/auth/kakao/user`, {
+      withCredentials: true,
+    });
+
+    return data.userInfo;
   };
 
-  const { data, isFetched } = useQuery<UserInfo>({
+  const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["loggedInUserInfo"],
     queryFn: fetchUserInfoForPageReload,
   });
 
   useEffect(() => {
-    if (isFetched && data) {
-      dispatch(setUserInfo(data));
+    if (userInfo) {
+      dispatch(setUserInfo(userInfo));
     }
-  }, [data, isFetched]);
+  }, [userInfo]);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
