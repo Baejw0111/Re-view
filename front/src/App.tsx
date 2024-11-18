@@ -41,7 +41,11 @@ function App() {
 
   useEffect(() => {
     if (userInfo) {
-      dispatch(setUserInfo(userInfo));
+      if (!userInfo.nickname && window.location.pathname !== "/onboarding") {
+        window.location.href = `/onboarding`;
+      } else {
+        dispatch(setUserInfo(userInfo));
+      }
     }
   }, [userInfo]);
 
