@@ -13,8 +13,6 @@ export const getKakaoToken = async (code: string): Promise<void> => {
       withCredentials: true,
     }
   );
-
-  console.log("카카오 토큰 요청 성공:", response.data);
 };
 
 /**
@@ -26,18 +24,16 @@ export const getLoginUserInfo = async (): Promise<{
   userInfo: UserInfo;
 }> => {
   const response = await authApiClient.get(`/auth/kakao/user`);
-  console.log("로그인 유저 정보 조회 성공:", response.data);
 
   return response.data;
 };
 
 // 카카오 서버에서 로그아웃 요청 후 쿠키 삭제
 export const logOutKakao = async (): Promise<void> => {
-  const response = await authApiClient.post(`/auth/kakao/logout`, {});
-  console.log("카카오 로그아웃 성공:", response.data);
+  await authApiClient.post(`/auth/kakao/logout`, {});
 };
 
+// 카카오 서버에서 유저 계정 삭제 요청
 export const deleteUserAccount = async (): Promise<void> => {
-  const response = await authApiClient.delete(`/auth/kakao/delete`, {});
-  console.log("카카오 유저 계정 삭제 성공:", response.data);
+  await authApiClient.delete(`/auth/kakao/delete`, {});
 };

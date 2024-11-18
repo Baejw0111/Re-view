@@ -119,16 +119,6 @@ export default function EditUserProfile({
   ) => {
     const newFiles = e.target.files;
     if (newFiles) {
-      console.log(
-        "업로드된 파일:",
-        Array.from(newFiles).map((f) => ({
-          name: f.name,
-          type: f.type,
-          size: f.size,
-        })),
-        form.getValues("newNickname")
-      );
-
       const previewImage = await createPreviewImages(newFiles);
       setCurrentProfileImage(previewImage[0]);
       form.setValue("profileImage", newFiles);

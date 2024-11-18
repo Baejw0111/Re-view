@@ -10,10 +10,9 @@ export const addComment = async (
   reviewId: string,
   comment: string
 ): Promise<void> => {
-  const response = await authApiClient.post(`/comment/${reviewId}`, {
+  await authApiClient.post(`/comment/${reviewId}`, {
     comment,
   });
-  console.log("댓글 추가 성공:", response.data);
 };
 
 export const fetchCommentCount = async (reviewId: string): Promise<number> => {
@@ -55,6 +54,5 @@ export const fetchReviewCommentList = async (
  * @param commentId 댓글 ID
  */
 export const deleteComment = async (commentId: string): Promise<void> => {
-  const response = await authApiClient.delete(`/comment/${commentId}`);
-  console.log("댓글 삭제 성공:", response.data);
+  await authApiClient.delete(`/comment/${commentId}`);
 };

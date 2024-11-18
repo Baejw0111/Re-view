@@ -7,7 +7,6 @@ import { NotificationInfo } from "@/shared/types/interface";
  */
 export const fetchNotifications = async (): Promise<NotificationInfo[]> => {
   const response = await authApiClient.get("/notification");
-  console.log("알림 조회 성공:", response.data);
   return response.data;
 };
 
@@ -16,10 +15,9 @@ export const fetchNotifications = async (): Promise<NotificationInfo[]> => {
  */
 export const updateNotificationCheckTime = async (): Promise<void> => {
   const checkTime = new Date().toISOString();
-  const response = await authApiClient.post("/notification/check", {
+  await authApiClient.post("/notification/check", {
     checkTime,
   });
-  console.log("알림 확인 시간 업데이트 성공:", response.data);
 };
 
 /**
@@ -29,8 +27,5 @@ export const updateNotificationCheckTime = async (): Promise<void> => {
 export const deleteNotification = async (
   notificationId: string
 ): Promise<void> => {
-  const response = await authApiClient.delete(
-    `/notification/${notificationId}`
-  );
-  console.log("알림 삭제 성공:", response.data);
+  await authApiClient.delete(`/notification/${notificationId}`);
 };

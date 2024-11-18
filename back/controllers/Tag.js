@@ -136,8 +136,6 @@ export const getPopularTags = asyncHandler(async (req, res) => {
     { $project: { _id: 1, totalCount: 1 } },
   ]);
 
-  console.log(combinedTags);
-
   const popularTagList = combinedTags.map((tag) => tag._id);
 
   res.status(200).json(popularTagList);

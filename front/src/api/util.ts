@@ -50,15 +50,13 @@ export const authApiClient: AxiosInstance = createApiClient({
  */
 export const refreshKakaoAccessToken = async (): Promise<void> => {
   // 인터셉터로 인한 무한 루프 방지를 위해 generalApiClient 사용
-  const response = await generalApiClient.post(
+  await generalApiClient.post(
     `/auth/kakao/refresh`,
     {},
     {
       withCredentials: true,
     }
   );
-
-  console.log(response.data);
 };
 
 // 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도하도록 authApiClient에 인터셉터 추가

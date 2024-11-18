@@ -23,7 +23,6 @@ export default function Notification() {
     );
 
     eventSource.onmessage = () => {
-      console.log("새로운 알림");
       refetch(); // 새로운 알림이 올 때마다 fetchNotifications API 요청
     };
 

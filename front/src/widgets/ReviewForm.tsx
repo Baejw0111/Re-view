@@ -251,15 +251,6 @@ export default function ReviewForm({
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = e.target.files;
     if (newFiles) {
-      console.log(
-        "업로드된 파일:",
-        Array.from(newFiles).map((f) => ({
-          name: f.name,
-          type: f.type,
-          size: f.size,
-        }))
-      );
-
       const currentPreviewImages = [...previewImages]; // 현재 미리보기 이미지 상태
 
       // 스켈레톤 표시
@@ -295,15 +286,6 @@ export default function ReviewForm({
       Array.from(currentFiles)
         .filter((_, i) => i !== index)
         .forEach((file) => dataTransfer.items.add(file));
-
-      console.log(
-        "업로드된 파일:",
-        Array.from(dataTransfer.files).map((f) => ({
-          name: f.name,
-          type: f.type,
-          size: f.size,
-        }))
-      );
 
       form.setValue("images", dataTransfer.files);
     }

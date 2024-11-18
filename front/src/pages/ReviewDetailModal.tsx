@@ -94,8 +94,8 @@ export default function ReviewDetailModal() {
           <DialogDescription hidden></DialogDescription>
           <ReviewDetail />
           <Separator className="my-4" />
-          <CommentInput />
           <CommentList />
+          <CommentInput />
         </DialogContent>
       </Dialog>
     );

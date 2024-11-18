@@ -8,7 +8,6 @@ import { UserInfo, CommentInfo } from "@/shared/types/interface";
  */
 export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
   const response = await generalApiClient.get(`/user/${userId}`);
-  console.log("유저 조회 성공:", response.data);
   return response.data;
 };
 
@@ -26,8 +25,6 @@ export const getSearchUsers = async (
     params: { query, lastUserId },
   });
 
-  console.log("유저 검색 성공:", response.data);
-
   return response.data;
 };
 
@@ -40,7 +37,6 @@ export const fetchUserCommentList = async (
   userId: number
 ): Promise<CommentInfo[]> => {
   const response = await generalApiClient.get(`/user/${userId}/comments`);
-  console.log("유저가 작성한 댓글 목록 조회 성공:", response.data);
   return response.data;
 };
 
@@ -56,7 +52,6 @@ export const fetchUserReviewList = async (
   const response = await generalApiClient.get(`/user/${userId}/reviews`, {
     params: { lastReviewId },
   });
-  console.log("유저가 작성한 리뷰 목록 조회 성공:", response.data);
 
   return response.data;
 };
@@ -74,7 +69,6 @@ export const fetchUserLikedList = async (
   const response = await generalApiClient.get(`/user/${userId}/liked`, {
     params: { lastReviewId },
   });
-  console.log("유저가 추천한 리뷰 목록 조회 성공:", response.data);
 
   return response.data;
 };
@@ -84,10 +78,9 @@ export const fetchUserLikedList = async (
  * @param formData 전송할 유저 정보
  */
 export const updateUserInfo = async (formData: FormData): Promise<void> => {
-  const response = await authApiClient.put(`/user/info`, formData, {
+  await authApiClient.put(`/user/info`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
-  console.log("유저 정보 수정 성공:", response.data);
 };
