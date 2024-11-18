@@ -27,6 +27,7 @@ export interface UserInfo {
  * @property {string} reviewText - 리뷰 내용
  * @property {number} rating - 리뷰 평점
  * @property {string[]} tags - 리뷰 태그
+ * @property {boolean} isSpoiler - 스포일러 여부
  * @property {string} _id - 리뷰 ID
  * @property {number} __v - 리뷰 버전
  */
@@ -38,6 +39,7 @@ export interface ReviewInfo {
   reviewText: string;
   rating: number;
   tags: string[];
+  isSpoiler: boolean;
   _id: string;
   __v: number;
 }

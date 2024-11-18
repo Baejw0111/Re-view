@@ -4,7 +4,6 @@ import {
   CommentModel,
   NotificationModel,
   ReviewLikeModel,
-  TagModel,
 } from "../utils/Model.js";
 import {
   deleteUploadedFiles,
@@ -22,7 +21,7 @@ export const createReview = asyncHandler(async (req, res) => {
   const authorId = req.userId;
 
   // 필드 검증
-  const { title, reviewText, rating, tags } = req.body;
+  const { title, reviewText, rating, tags, isSpoiler } = req.body;
 
   const checkFields = checkFormFieldsExistence(
     title,
@@ -65,13 +64,11 @@ export const createReview = asyncHandler(async (req, res) => {
   const reviewData = new ReviewModel({
     authorId,
     images: req.files.map((file) => file.path), // 여러 이미지 경로 저장
-    uploadTime: new Date(),
     title,
     reviewText,
     rating,
     tags: tagList,
-    likesCount: 0,
-    commentsCount: 0,
+    isSpoiler,
   });
   await reviewData.save();
 

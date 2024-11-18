@@ -49,6 +49,7 @@ export const UserModel = db.model(
  * @property {string[]} tags - 태그
  * @property {number} likesCount - 추천 수
  * @property {number} commentsCount - 댓글 수
+ * @property {boolean} isSpoiler - 스포일러 여부
  */
 export const ReviewModel = db.model(
   "Review",
@@ -62,6 +63,7 @@ export const ReviewModel = db.model(
     tags: { type: [String], default: [] },
     likesCount: { type: Number, default: 0 },
     commentsCount: { type: Number, default: 0 },
+    isSpoiler: { type: Boolean, default: false },
   }).index({ uploadTime: -1, likesCount: 1, authorId: 1 })
 );
 
