@@ -13,30 +13,25 @@ import EditReview from "@/pages/EditReview";
 import Profile from "@/pages/Profile";
 import Notification from "@/pages/Notification";
 import Search from "@/pages/Search";
-import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
-import { API_URL } from "./shared/constants";
 import { useQuery } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
 import SearchDialog from "./features/common/SearchDialog";
+import useAuth from "@/shared/hooks/useAuth";
+import { getLoginUserInfo } from "@/api/auth";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
   const dispatch = useDispatch();
-  const fetchUserInfoForPageReload = async () => {
-    const { data } = await axios.get(`${API_URL}/auth/kakao/user`, {
-      withCredentials: true,
-    });
-
-    return data.userInfo;
-  };
+  const { isPending, isError } = useAuth();
 
   const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["loggedInUserInfo"],
-    queryFn: fetchUserInfoForPageReload,
+    queryFn: getLoginUserInfo,
     retry: false,
     refetchOnWindowFocus: false,
+    enabled: !isPending && !isError,
   });
 
   useEffect(() => {
