@@ -32,8 +32,8 @@ export default function Header() {
         <div className="flex flex-1 md:justify-end items-center gap-2">
           <SearchBar />
           <ThemeToggleButton />
-          {userInfo.nickname ? (
-            // 닉네임이 있으면(로그인을 했을 경우) 유저가 사용 가능한 버튼 보여주기
+          {userInfo.kakaoId ? (
+            // 로그인을 했을 경우 유저가 사용 가능한 버튼 보여주기
             <>
               <WriteReviewButton />
               <NotificationButton />
