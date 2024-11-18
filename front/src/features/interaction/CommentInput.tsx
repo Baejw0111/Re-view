@@ -64,7 +64,7 @@ export default function CommentInput() {
 
   if (isDesktop) {
     return (
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="mt-4">
         <div className="flex gap-4">
           <UserAvatar
             profileImage={userInfo?.profileImage}
