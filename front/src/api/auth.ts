@@ -6,7 +6,7 @@ import { UserInfo } from "@/shared/types/interface";
  * @param code 카카오 인증 코드
  */
 export const getKakaoToken = async (code: string): Promise<void> => {
-  const response = await generalApiClient.post(
+  await generalApiClient.post(
     `/auth/kakao/login`,
     { code },
     {
@@ -16,13 +16,10 @@ export const getKakaoToken = async (code: string): Promise<void> => {
 };
 
 /**
- * 카카오 서버에서 유저 정보 조회하는 함수
+ * 로그인한 유저의 정보를 조회하는 함수
  * @returns 유저 정보
  */
-export const getLoginUserInfo = async (): Promise<{
-  isNewMember: boolean;
-  userInfo: UserInfo;
-}> => {
+export const getLoginUserInfo = async (): Promise<UserInfo> => {
   const response = await authApiClient.get(`/auth/kakao/user`);
 
   return response.data;

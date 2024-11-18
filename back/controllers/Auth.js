@@ -141,16 +141,15 @@ export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
 }, "카카오 액세스 토큰 재발급");
 
 /**
- * 카카오 유저 가입 여부 체크
+ * 로그인 여부 확인
  */
-const checkNewMember = async (userId) => {
-  const user = await UserModel.findOne({ kakaoId: userId });
-
-  if (!user) {
-    return true;
+export const checkAuth = asyncHandler(async (req, res) => {
+  const accessToken = req.cookies.accessToken;
+  if (!accessToken) {
+    return res.status(401).json({ message: "로그인이 필요합니다." });
   }
-  return false;
-};
+  return res.status(200).json({ message: "로그인 상태입니다." });
+}, "로그인 여부 확인");
 
 /**
  * 카카오 유저 정보 조회
@@ -170,10 +169,9 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   console.log(`func: getKakaoUserInfo`);
   console.log(response.data);
 
-  const isNewMember = await checkNewMember(response.data.id);
-  console.log(`isNewMember: ${isNewMember}`);
+  const user = await UserModel.findOne({ kakaoId: response.data.id });
 
-  if (isNewMember) {
+  if (!user) {
     const newMember = new UserModel({
       kakaoId: response.data.id,
     });
@@ -185,8 +183,12 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   });
 
   return res.status(200).json({
-    isNewMember: isNewMember,
-    userInfo: userInfo,
+    kakaoId: userInfo.kakaoId,
+    nickname: userInfo.nickname,
+    profileImage: userInfo.profileImage,
+    totalRating: userInfo.totalRating,
+    reviewCount: userInfo.reviewCount,
+    notificationCheckTime: userInfo.notificationCheckTime,
   });
 }, "카카오 유저 정보 조회");
 

@@ -16,12 +16,11 @@ export default function Authorization() {
       await getKakaoToken(AUTHORIZATION_CODE);
       return await getLoginUserInfo();
     },
-    onSuccess: (responseData) => {
-      const { isNewMember } = responseData;
-      if (isNewMember) {
-        window.location.href = "/onboarding";
-      } else {
+    onSuccess: (userInfo) => {
+      if (userInfo.nickname) {
         window.location.href = "/";
+      } else {
+        window.location.href = "/onboarding";
       }
     },
   });
