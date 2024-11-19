@@ -4,7 +4,6 @@ import {
   ReviewModel,
   NotificationModel,
   UserModel,
-  TagModel,
 } from "../utils/Model.js";
 import { sendEventToClient } from "./Notification.js";
 import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
