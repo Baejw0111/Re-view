@@ -62,48 +62,48 @@ export const sendEventToClient = (userId) => {
 export const getNotifications = asyncHandler(async (req, res) => {
   const notifications = await NotificationModel.find({
     kakaoId: req.userId,
-  }).sort({ time: -1 });
+  })
+    .sort({ time: -1 })
+    .populate("commentId")
+    .populate("reviewId"); // reviewId를 통해 Review 데이터를 가져옴
 
-  /**
-   * 알림 포맷팅
-   * @param {Notification} notification - 알림 객체
-   * @returns {Promise<Object>} - 포맷팅된 알림 객체
-   */
-  const formatNotification = async (notification) => {
-    const comment = notification.commentId
-      ? await CommentModel.findById(notification.commentId)
-      : null;
+  // 모든 authorId를 수집
+  const authorIds = notifications
+    .map((n) => n.commentId?.authorId)
+    .filter(Boolean);
 
-    const author = comment
-      ? await UserModel.findOne({ kakaoId: comment.authorId })
-      : null;
+  // 중복 제거 후 User 데이터를 한 번에 가져옴
+  const authors = await UserModel.find({
+    kakaoId: { $in: authorIds },
+  }).select("nickname profileImage kakaoId");
 
-    const review = await ReviewModel.findById(notification.reviewId);
+  const authorsMap = new Map(authors.map((author) => [author.kakaoId, author]));
+
+  const notificationList = notifications.map((notification) => {
+    const comment = notification.commentId;
+    const review = notification.reviewId;
+    const author = authorsMap.get(comment?.authorId);
 
     const isLikeNotification = notification.category === "like";
 
     return {
       _id: notification._id,
       time: notification.time,
-      commentId: notification.commentId,
-      reviewId: notification.reviewId,
+      commentId: notification.commentId?._id,
+      reviewId: notification.reviewId?._id,
       category: notification.category,
       profileImage: author ? author.profileImage : "public/logo.svg",
       nickname: author ? author.nickname : "시스템",
       title: isLikeNotification
         ? "인기 리뷰 선정!"
         : author?.nickname || "시스템",
-      reviewTitle: review.title,
+      reviewTitle: review?.title,
       content: isLikeNotification
         ? "작성하신 리뷰가 인기 리뷰로 선정되었습니다."
         : comment?.content,
-      reviewThumbnail: review.images[0],
+      reviewThumbnail: review?.images[0],
     };
-  };
-
-  const notificationList = await Promise.all(
-    notifications.map(formatNotification)
-  );
+  });
 
   res.status(200).json(notificationList);
 }, "알림 조회");

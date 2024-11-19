@@ -1,5 +1,4 @@
 // MongoDB 연결 설정 및 스키마 정의
-
 import mongoose from "mongoose"; // MongoDB와 연결
 
 const { MONGO_URI } = process.env;
@@ -78,7 +77,11 @@ export const ReviewLikeModel = db.model(
   "ReviewLike",
   new mongoose.Schema({
     kakaoId: { type: Number, default: 0 },
-    reviewId: { type: String, default: "" },
+    reviewId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: "",
+      index: true,
+    },
     likedAt: { type: Date, default: Date.now },
   }).index({ kakaoId: 1, likedAt: -1, reviewId: 1 })
 );
@@ -116,7 +119,11 @@ export const CommentModel = db.model(
   new mongoose.Schema({
     authorId: { type: Number, default: 0, index: true },
     uploadTime: { type: Date, default: Date.now },
-    reviewId: { type: String, default: "", index: true },
+    reviewId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: "",
+      index: true,
+    },
     content: { type: String, default: "" },
   })
 );
@@ -136,8 +143,18 @@ export const NotificationModel = db.model(
   new mongoose.Schema({
     kakaoId: { type: Number, default: 0 },
     time: { type: Date, default: Date.now },
-    commentId: { type: String, default: "", index: true },
-    reviewId: { type: String, default: "", index: true },
+    commentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: "",
+      index: true,
+      ref: "Comment",
+    },
+    reviewId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: "",
+      index: true,
+      ref: "Review",
+    },
     category: { type: String, default: "" },
   }).index({ kakaoId: 1, time: -1 })
 );

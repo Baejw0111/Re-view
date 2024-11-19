@@ -97,9 +97,7 @@ export const getPopularTags = asyncHandler(async (req, res) => {
     },
   ]);
 
-  const likedReviewIds = likedReviews.map(
-    (review) => new Types.ObjectId(review._id)
-  );
+  const likedReviewIds = likedReviews.map((review) => review._id);
 
   // 추천된 리뷰의 태그와 최근 작성된 리뷰의 태그를 한번에 집계
   const combinedTags = await ReviewModel.aggregate([

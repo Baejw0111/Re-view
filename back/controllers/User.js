@@ -85,21 +85,31 @@ export const getUserReviewList = asyncHandler(async (req, res) => {
 export const getUserCommentList = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
   const comments = await CommentModel.find({ authorId: userId });
-  const commentList = await Promise.all(
-    comments.map(async (comment) => {
-      const user = await UserModel.findOne({ kakaoId: comment.authorId });
 
-      return {
-        _id: comment._id,
-        authorId: comment.authorId,
-        profileImage: user.profileImage,
-        nickname: user.nickname,
-        reviewId: comment.reviewId,
-        uploadTime: comment.uploadTime,
-        content: comment.content,
-      };
-    })
-  );
+  // 모든 authorId를 수집
+  const authorIds = comments.map((comment) => comment.authorId);
+
+  // 중복 제거 후 User 데이터를 한 번에 가져옴
+  const users = await UserModel.find({
+    kakaoId: { $in: authorIds },
+  }).select("nickname profileImage kakaoId");
+
+  const usersMap = new Map(users.map((user) => [user.kakaoId, user]));
+
+  const commentList = comments.map((comment) => {
+    const user = usersMap.get(comment.authorId);
+
+    return {
+      _id: comment._id,
+      authorId: comment.authorId,
+      profileImage: user ? user.profileImage : "",
+      nickname: user ? user.nickname : "",
+      reviewId: comment.reviewId,
+      uploadTime: comment.uploadTime,
+      content: comment.content,
+    };
+  });
+
   res.status(200).json(commentList);
 }, "유저가 작성한 댓글 목록 조회");
 
@@ -134,11 +144,13 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
     })
     .limit(20);
 
-  const reviewList = await Promise.all(
-    likedList.map(async (liked) => {
-      return await ReviewModel.findById(liked.reviewId);
-    })
-  );
+  // 모든 reviewId를 수집
+  const reviewIds = likedList.map((liked) => liked.reviewId);
+
+  // Review 데이터를 한 번에 가져옴
+  const reviewList = await ReviewModel.find({
+    _id: { $in: reviewIds },
+  });
 
   const reviewIdList = reviewList.map((review) => review._id);
   res.status(200).json(reviewIdList);
