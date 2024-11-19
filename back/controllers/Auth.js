@@ -152,6 +152,14 @@ export const checkAuth = asyncHandler(async (req, res) => {
 }, "로그인 여부 확인");
 
 /**
+ * 캐시 비활성화(로그아웃 후 뒤로가기를 하면 캐시 때문에 사용자 정보가 복원되는 것을 방지)
+ */
+export const getKakaoUserInfoWithoutCache = (req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+};
+
+/**
  * 카카오 유저 정보 조회
  */
 export const getKakaoUserInfo = asyncHandler(async (req, res) => {
