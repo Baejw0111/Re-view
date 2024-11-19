@@ -16,6 +16,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormLabel,
 } from "@/shared/shadcn-ui/form";
 import { Card } from "@/shared/shadcn-ui/card";
 import {
@@ -42,6 +43,7 @@ import {
   ACCEPTED_IMAGE_TYPES,
 } from "@/shared/constants";
 import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
+import { Switch } from "@/shared/shadcn-ui/switch";
 
 export default function ReviewForm({
   reviewInfo,
@@ -112,6 +114,7 @@ export default function ReviewForm({
       .max(5, {
         message: "태그는 최대 5개까지 입력할 수 있습니다.",
       }),
+    isSpoiler: z.boolean(),
   });
 
   // 폼 정의
@@ -123,6 +126,7 @@ export default function ReviewForm({
       reviewText: "",
       rating: -1,
       tags: [],
+      isSpoiler: false,
     },
   });
 
@@ -132,6 +136,7 @@ export default function ReviewForm({
       form.setValue("reviewText", reviewInfo.reviewText);
       form.setValue("rating", reviewInfo.rating);
       form.setValue("tags", reviewInfo.tags);
+      form.setValue("isSpoiler", reviewInfo.isSpoiler);
       setInitialImages(reviewInfo.images);
     }
   }, [reviewInfo, form]);
@@ -140,7 +145,7 @@ export default function ReviewForm({
   const { mutate: uploadReviewMutation } = useMutation({
     mutationFn: uploadReview,
     onSuccess: () => {
-      window.location.href = "/";
+      // window.location.href = "/";
     },
     onError: () => {
       alert(
@@ -169,7 +174,7 @@ export default function ReviewForm({
   // 업로드 제출 시 실행될 작업
   const onUploadSubmit = async (values: z.infer<typeof formSchema>) => {
     // 폼 값 처리
-    const { title, reviewText, rating, tags, images } = values;
+    const { title, reviewText, rating, tags, images, isSpoiler } = values;
 
     const formData = new FormData();
     formData.append("uploadTime", new Date().toISOString());
@@ -178,6 +183,7 @@ export default function ReviewForm({
     formData.append("rating", rating.toString());
     tags.forEach((tag) => formData.append("tags", tag));
     [...images].forEach((image) => formData.append("images", image));
+    formData.append("isSpoiler", isSpoiler.toString());
 
     uploadReviewMutation(formData);
   };
@@ -526,9 +532,31 @@ export default function ReviewForm({
               </>
             )}
           />
-          <Button type="submit" className="md:self-end">
-            {reviewInfo ? "리뷰 수정" : "리뷰 업로드"}
-          </Button>
+          <div className="flex items-center gap-4 justify-end">
+            <FormField
+              control={form.control}
+              name="isSpoiler"
+              render={({ field }) => (
+                <>
+                  <FormItem>
+                    <div className="flex items-center gap-2">
+                      <FormControl>
+                        <Switch
+                          id="isSpoiler"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel htmlFor="isSpoiler">스포일러</FormLabel>
+                    </div>
+                  </FormItem>
+                </>
+              )}
+            />
+            <Button type="submit">
+              {reviewInfo ? "리뷰 수정" : "리뷰 업로드"}
+            </Button>
+          </div>
         </form>
       </Form>
     </Card>
