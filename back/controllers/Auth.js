@@ -177,18 +177,14 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   console.log(`func: getKakaoUserInfo`);
   console.log(response.data);
 
-  const user = await UserModel.findOne({ kakaoId: response.data.id });
+  let userInfo = await UserModel.findOne({ kakaoId: response.data.id });
 
-  if (!user) {
-    const newMember = new UserModel({
+  if (!userInfo) {
+    userInfo = new UserModel({
       kakaoId: response.data.id,
     });
-    await newMember.save();
+    await userInfo.save();
   }
-
-  const userInfo = await UserModel.findOne({
-    kakaoId: response.data.id,
-  });
 
   return res.status(200).json({
     kakaoId: userInfo.kakaoId,
