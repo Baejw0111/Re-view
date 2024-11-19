@@ -5,11 +5,7 @@ import {
   NotificationModel,
   ReviewLikeModel,
 } from "../utils/Model.js";
-import {
-  deleteUploadedFiles,
-  checkFormFieldsExistence,
-  verifyFormFields,
-} from "../utils/Upload.js";
+import { deleteUploadedFiles } from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
 
