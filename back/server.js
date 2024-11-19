@@ -4,7 +4,11 @@ import cors from "cors"; // cors 관리
 import morgan from "morgan"; // 로그 출력용
 import "dotenv/config"; // .env 파일에서 바로 환경 변수 로드
 import cookieParser from "cookie-parser";
-import { upload } from "./utils/Upload.js";
+import {
+  upload,
+  checkFormFieldsExistence,
+  verifyFormFields,
+} from "./utils/Upload.js";
 import {
   getKakaoToken,
   verifyKakaoAccessToken,
@@ -92,12 +96,15 @@ app.post(
   "/review",
   verifyKakaoAccessToken,
   upload.array("images", 5),
+  checkFormFieldsExistence,
+  verifyFormFields,
   createReview
 ); // 리뷰 등록 API
 app.patch(
   "/review/:id",
   verifyKakaoAccessToken,
   upload.array("images", 5),
+  verifyFormFields,
   updateReview
 ); // 리뷰 수정 API
 app.delete("/review/:id", verifyKakaoAccessToken, deleteReview); // 리뷰 삭제 API

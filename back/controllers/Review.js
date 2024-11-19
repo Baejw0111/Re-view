@@ -18,47 +18,8 @@ import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
  * @returns {string} 리뷰 등록 성공 메시지
  */
 export const createReview = asyncHandler(async (req, res) => {
-  const authorId = req.userId;
-
-  // 필드 검증
   const { title, reviewText, rating, tags, isSpoiler } = req.body;
-
-  const checkFields = checkFormFieldsExistence(
-    title,
-    reviewText,
-    rating,
-    tags,
-    req.files
-  );
-
-  if (!checkFields.result) {
-    deleteUploadedFiles(req.files.map((file) => file.path));
-
-    return res.status(400).json({
-      message: checkFields.message,
-      req: req.body,
-      files: req.files,
-    });
-  }
-
-  const verifyResult = verifyFormFields(
-    title,
-    reviewText,
-    rating,
-    tags,
-    req.files
-  );
-
-  if (!verifyResult.result) {
-    deleteUploadedFiles(req.files.map((file) => file.path));
-
-    return res.status(400).json({
-      message: verifyResult.message,
-      req: req.body,
-      files: req.files,
-    });
-  }
-
+  const authorId = req.userId;
   const tagList = typeof tags === "string" ? [tags] : [...tags];
 
   const reviewData = new ReviewModel({
@@ -189,25 +150,6 @@ export const updateReview = asyncHandler(async (req, res) => {
   } else if (reviewData.authorId !== req.userId) {
     deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(403).json({ message: "리뷰 수정 권한이 없습니다." });
-  }
-
-  // 필드 검증
-  const { title, reviewText, rating, tags } = req.body;
-  const verifyResult = verifyFormFields(
-    title,
-    reviewText,
-    rating,
-    tags,
-    req.files
-  );
-
-  if (!verifyResult.result) {
-    deleteUploadedFiles(req.files.map((file) => file.path));
-    return res.status(400).json({
-      message: verifyResult.message,
-      req: req.body,
-      files: req.files,
-    });
   }
 
   // 받은 필드만 업데이트
