@@ -64,7 +64,14 @@ export const getNotifications = asyncHandler(async (req, res) => {
     userId: req.userId,
   })
     .sort({ time: -1 })
-    .populate("commentId", "authorId")
+    .populate({
+      path: "commentId",
+      populate: {
+        path: "authorId",
+        model: "User",
+        select: "nickname profileImage", // 필요한 필드만 선택
+      },
+    })
     .populate("reviewId"); // reviewId를 통해 Review 데이터를 가져옴
 
   const notificationList = notifications.map((notification) => {
