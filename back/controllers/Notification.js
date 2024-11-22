@@ -17,7 +17,7 @@ export const connectNotificationSSE = asyncHandler((req, res) => {
   res.setHeader("Connection", "keep-alive");
 
   // 클라이언트를 Map에 추가
-  const userId = Number(req.query.userId); // 클라이언트에서 사용자 ID를 쿼리 파라미터로 전달
+  const userId = req.userId;
   if (userId) {
     if (!clients.has(userId)) {
       clients.set(userId, []); // 같은 사용자가 여러 클라이언트로 접속할 수 있도록 사용자 ID를 키로 하는 배열을 생성
@@ -61,28 +61,16 @@ export const sendEventToClient = (userId) => {
  */
 export const getNotifications = asyncHandler(async (req, res) => {
   const notifications = await NotificationModel.find({
-    kakaoId: req.userId,
+    userId: req.userId,
   })
     .sort({ time: -1 })
-    .populate("commentId")
+    .populate("commentId", "authorId")
     .populate("reviewId"); // reviewId를 통해 Review 데이터를 가져옴
-
-  // 모든 authorId를 수집
-  const authorIds = notifications
-    .map((n) => n.commentId?.authorId)
-    .filter(Boolean);
-
-  // 중복 제거 후 User 데이터를 한 번에 가져옴
-  const authors = await UserModel.find({
-    kakaoId: { $in: authorIds },
-  }).select("nickname profileImage kakaoId");
-
-  const authorsMap = new Map(authors.map((author) => [author.kakaoId, author]));
 
   const notificationList = notifications.map((notification) => {
     const comment = notification.commentId;
     const review = notification.reviewId;
-    const author = authorsMap.get(comment?.authorId);
+    const author = comment?.authorId;
 
     const isLikeNotification = notification.category === "like";
 
@@ -92,7 +80,7 @@ export const getNotifications = asyncHandler(async (req, res) => {
       commentId: notification.commentId?._id,
       reviewId: notification.reviewId?._id,
       category: notification.category,
-      profileImage: author ? author.profileImage : "public/logo.svg",
+      profileImage: author ? author.profileImage : "public/logo.svg", // 시스템 알림일 경우 기본 이미지 사용
       nickname: author ? author.nickname : "시스템",
       title: isLikeNotification
         ? "인기 리뷰 선정!"
@@ -113,10 +101,9 @@ export const getNotifications = asyncHandler(async (req, res) => {
  */
 export const updateNotificationCheckTime = asyncHandler(async (req, res) => {
   const { checkTime } = req.body;
-  await UserModel.findOneAndUpdate(
-    { kakaoId: req.userId },
-    { $set: { notificationCheckTime: checkTime } }
-  );
+  await UserModel.findByIdAndUpdate(req.userId, {
+    $set: { notificationCheckTime: checkTime },
+  });
   res.status(200).json({ message: "알림 확인 시간 업데이트 완료" });
 }, "알림 확인 시간 업데이트");
 

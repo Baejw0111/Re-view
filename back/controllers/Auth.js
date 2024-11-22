@@ -60,7 +60,6 @@ export const getKakaoToken = asyncHandler(async (req, res) => {
 
 /**
  * 카카오 토큰 검증 미들웨어
- * next로 다음 미들웨어 호출
  */
 export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
   const accessToken = req.cookies.accessToken;
@@ -79,7 +78,11 @@ export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
   console.log(`func: verifyKakaoAccessToken`);
   console.table(response.data);
 
-  req.userId = response.data.id; // 카카오 유저 ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
+  const kakaoId = response.data.id; // 카카오 유저 ID
+
+  const userInfo = await UserModel.findOne({ kakaoId }); // 유저 DB ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
+  req.userId = userInfo?._id.toString();
+
   return next();
 }, "카카오 토큰 검증");
 
@@ -137,7 +140,7 @@ export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
       .json({ message: "액세스 토큰, 리프레시 토큰 갱신 성공" });
   }
 
-  return res.status(200).json({ message: "액세스 토큰 갱신 성공" });
+  return res.status(200).json({ message: "액세스 토��� 갱신 성공" });
 }, "카카오 액세스 토큰 재발급");
 
 /**
@@ -152,9 +155,9 @@ export const checkAuth = asyncHandler(async (req, res) => {
 }, "로그인 여부 확인");
 
 /**
- * 캐시 비활성화(로그아웃 후 뒤로가기를 하면 캐시 때문에 사용자 정보가 복원되는 것을 방지)
+ * 브라우저 캐시 비활성화 미들웨어
  */
-export const getKakaoUserInfoWithoutCache = (req, res, next) => {
+export const disableCache = (req, res, next) => {
   res.set("Cache-Control", "no-store");
   next();
 };
@@ -164,15 +167,12 @@ export const getKakaoUserInfoWithoutCache = (req, res, next) => {
  */
 export const getKakaoUserInfo = asyncHandler(async (req, res) => {
   const accessToken = req.cookies.accessToken;
-  const response = await axios.get(
-    "https://kapi.kakao.com/v2/user/me?secure_resource=true",
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    }
-  );
+  const response = await axios.get("https://kapi.kakao.com/v2/user/me", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+    },
+  });
 
   console.log(`func: getKakaoUserInfo`);
   console.log(response.data);
@@ -238,10 +238,14 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   console.log(`func: deleteUserAccount`);
   console.table(response.data);
 
-  await UserModel.findOneAndDelete({ kakaoId: response.data.id }); // 유저 데이터 삭제
+  const user = await UserModel.findOneAndDelete({ kakaoId: response.data.id }); // 유저 데이터 삭제 및 반환
+
+  if (!user) {
+    return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+  }
 
   // 리뷰 관련 데이터 모두 삭제
-  const reviews = await ReviewModel.find({ authorId: response.data.id });
+  const reviews = await ReviewModel.find({ authorId: user._id });
   for (const review of reviews) {
     if (review.images) {
       review.images.forEach((imagePath) => fs.unlinkSync(imagePath)); // 모든 이미지 파일 삭제
@@ -249,18 +253,18 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
     await CommentModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 댓글들 모두 삭제
     await NotificationModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 알림들 모두 삭제
   }
-  await ReviewModel.deleteMany({ authorId: response.data.id });
+  await ReviewModel.deleteMany({ authorId: user._id });
 
   // 댓글 관련 데이터 모두 삭제
-  const comments = await CommentModel.find({ authorId: response.data.id });
+  const comments = await CommentModel.find({ authorId: user._id });
   for (const comment of comments) {
     await NotificationModel.deleteMany({ commentId: comment._id }); // 댓글에 달린 알림들 모두 삭제
   }
-  await CommentModel.deleteMany({ authorId: response.data.id });
+  await CommentModel.deleteMany({ authorId: user._id });
 
-  await NotificationModel.deleteMany({ kakaoId: response.data.id }); // 유저의 알림들 모두 삭제
-  await ReviewLikeModel.deleteMany({ kakaoId: response.data.id }); // 유저의 추천들 모두 삭제
-  await TagModel.deleteMany({ kakaoId: response.data.id }); // 유저의 태그들 모두 삭제
+  await NotificationModel.deleteMany({ userId: user._id }); // 유저의 알림들 모두 삭제
+  await ReviewLikeModel.deleteMany({ userId: user._id }); // 유저의 추천들 모두 삭제
+  await TagModel.deleteMany({ userId: user._id }); // 유저의 태그들 모두 삭제
 
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");

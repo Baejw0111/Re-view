@@ -17,7 +17,7 @@ const db = mongoose.connection.useDb("mainDB");
 /**
  * 유저 모델
  * @type {mongoose.Model}
- * @property {number} kakaoId - 카카오 ID
+ * @property {number} kakaoId - 유저 카카오 ID
  * @property {string} nickname - 닉네임
  * @property {string} profileImage - 프로필 이미지 경로
  * @property {Date} notificationCheckTime - 알림 확인 시간
@@ -39,7 +39,7 @@ export const UserModel = db.model(
 /**
  * 리뷰 모델
  * @type {mongoose.Model}
- * @property {number} authorId - 작성자 카카오 ID
+ * @property {string} authorId - 작성자 DB ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
  * @property {string[]} images - 이미지 파일 경로 모음
@@ -53,7 +53,11 @@ export const UserModel = db.model(
 export const ReviewModel = db.model(
   "Review",
   new mongoose.Schema({
-    authorId: { type: Number, default: 0 },
+    authorId: {
+      type: String,
+      ref: "User",
+      index: true,
+    },
     uploadTime: { type: Date, default: Date.now },
     title: { type: String, default: "" },
     images: { type: [String], default: [] },
@@ -69,28 +73,32 @@ export const ReviewModel = db.model(
 /**
  * 유저 추천 모델
  * @type {mongoose.Model}
- * @property {number} kakaoId - 유저 ID
- * @property {string} reviewId - 추천된 리뷰 ID 모음
+ * @property {string} userId - 유저 DB ID
+ * @property {string} reviewId - 추천된 리뷰 ID
  * @property {Date} likedAt - 추천 시간
  */
 export const ReviewLikeModel = db.model(
   "ReviewLike",
   new mongoose.Schema({
-    kakaoId: { type: Number, default: 0 },
+    userId: {
+      type: String,
+      ref: "User",
+      index: true,
+    },
     reviewId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       default: "",
       index: true,
     },
     likedAt: { type: Date, default: Date.now },
-  }).index({ kakaoId: 1, likedAt: -1, reviewId: 1 })
+  }).index({ userId: 1, likedAt: -1, reviewId: 1 })
 );
 
 /**
  * 태그 모델
  * @type {mongoose.Model}
  * @property {string} tagName - 태그 이름
- * @property {number} kakaoId - 유저 ID
+ * @property {string} userId - 유저 DB ID
  * @property {string} koreanInitials - 태그 이름이 한글일 경우 초성 저장
  * @property {Date} lastInteractedAt - 마지막으로 태그와 상호작용한 시간
  * @property {number} preference - 유저의 태그에 대한 선호도
@@ -99,17 +107,21 @@ export const TagModel = db.model(
   "Tag",
   new mongoose.Schema({
     tagName: { type: String, default: "" },
-    kakaoId: { type: Number, default: 0 },
+    userId: {
+      type: String,
+      ref: "User",
+      index: true,
+    },
     koreanInitials: { type: String, default: "" },
     lastInteractedAt: { type: Date, default: Date.now },
     preference: { type: Number, default: 0 },
-  }).index({ kakaoId: 1, tagName: 1, preference: -1, lastInteractedAt: -1 })
+  }).index({ userId: 1, tagName: 1, preference: -1, lastInteractedAt: -1 })
 );
 
 /**
  * 댓글 모델
  * @type {mongoose.Model}
- * @property {number} authorId - 작성자 카카오 ID
+ * @property {string} authorId - 작성자 DB ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} reviewId - 댓글이 작성된 리뷰의 ID
  * @property {string} content - 댓글 내용
@@ -117,10 +129,14 @@ export const TagModel = db.model(
 export const CommentModel = db.model(
   "Comment",
   new mongoose.Schema({
-    authorId: { type: Number, default: 0, index: true },
+    authorId: {
+      type: String,
+      ref: "User",
+      index: true,
+    },
     uploadTime: { type: Date, default: Date.now },
     reviewId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       default: "",
       index: true,
     },
@@ -131,7 +147,7 @@ export const CommentModel = db.model(
 /**
  * 알림 모델
  * @type {mongoose.Model}
- * @property {number} kakaoId - 알림을 받을 유저의 카카오 ID
+ * @property {string} userId - 알림을 받을 유저의 DB ID
  * @property {Date} time - 알림 생성 시간
  * @property {string} commentId - 알림과 관련된 댓글 ID
  * @property {string} reviewId - 알림과 관련된 리뷰 ID
@@ -141,20 +157,24 @@ export const CommentModel = db.model(
 export const NotificationModel = db.model(
   "Notification",
   new mongoose.Schema({
-    kakaoId: { type: Number, default: 0 },
+    userId: {
+      type: String,
+      ref: "User",
+      index: true,
+    },
     time: { type: Date, default: Date.now },
     commentId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       default: "",
       index: true,
       ref: "Comment",
     },
     reviewId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       default: "",
       index: true,
       ref: "Review",
     },
     category: { type: String, default: "" },
-  }).index({ kakaoId: 1, time: -1 })
+  }).index({ userId: 1, time: -1 })
 );

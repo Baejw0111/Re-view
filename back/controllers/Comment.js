@@ -28,20 +28,22 @@ export const addComment = asyncHandler(async (req, res) => {
     content: req.body.comment,
   });
 
+  // 리뷰 댓글 수 증가
   await ReviewModel.findByIdAndUpdate(reviewId, {
     $inc: { commentsCount: 1 },
   });
 
+  // 태그 선호도 증가
   await increaseTagPreference(authorId, review.tags, 1);
 
-  await UserModel.updateOne(
-    { kakaoId: authorId },
-    { $inc: { commentCount: 1 } }
-  ); // 유저 정보 업데이트
+  // 유저 정보 업데이트
+  await UserModel.findByIdAndUpdate(authorId, {
+    $inc: { commentCount: 1 },
+  });
 
   // 알림 생성
   await NotificationModel.create({
-    kakaoId: review.authorId,
+    userId: review.authorId,
     commentId: comment._id,
     reviewId,
     category: "comment",
@@ -73,8 +75,20 @@ export const getCommentCount = asyncHandler(async (req, res) => {
  */
 export const getCommentById = asyncHandler(async (req, res) => {
   const { id: commentId } = req.params;
-  const comment = await CommentModel.findById(commentId);
-  res.status(200).json(comment);
+  const comment = await CommentModel.findById(commentId).populate(
+    "authorId",
+    "kakaoId"
+  );
+
+  res.status(200).json({
+    _id: comment._id,
+    authorId: comment.authorId.kakaoId,
+    profileImage: comment.authorId.profileImage,
+    nickname: comment.authorId.nickname,
+    reviewId: comment.reviewId,
+    uploadTime: comment.uploadTime,
+    content: comment.content,
+  });
 }, "특정 댓글 조회");
 
 /**
@@ -84,31 +98,22 @@ export const getCommentById = asyncHandler(async (req, res) => {
 export const getReviewCommentList = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
 
-  // 댓글 목록 조회
-  const comments = await CommentModel.find({ reviewId });
+  // 댓글 목록 조회 및 작성자 정보 함께 가져오기
+  const comments = await CommentModel.find({ reviewId }).populate(
+    "authorId",
+    "kakaoId profileImage nickname"
+  );
 
-  // 고유한 작성자 ID 목록 추출
-  const authorIds = [...new Set(comments.map((comment) => comment.authorId))];
-
-  // 한 번의 쿼리로 모든 사용자 정보 조회
-  const users = await UserModel.find({ kakaoId: { $in: authorIds } });
-
-  // 사용자 정보를 Map으로 변환하여 빠른 조회 가능하게 함
-  const userMap = new Map(users.map((user) => [user.kakaoId, user]));
-
-  // 댓글 목록 매핑
-  const commentList = comments.map((comment) => {
-    const user = userMap.get(comment.authorId);
-    return {
-      _id: comment._id,
-      authorId: comment.authorId,
-      profileImage: user.profileImage,
-      nickname: user.nickname,
-      reviewId: comment.reviewId,
-      uploadTime: comment.uploadTime,
-      content: comment.content,
-    };
-  });
+  // 댓글 목록 생성
+  const commentList = comments.map((comment) => ({
+    _id: comment._id,
+    authorId: comment.authorId.kakaoId,
+    profileImage: comment.authorId.profileImage,
+    nickname: comment.authorId.nickname,
+    reviewId: comment.reviewId,
+    uploadTime: comment.uploadTime,
+    content: comment.content,
+  }));
 
   res.status(200).json(commentList);
 }, "리뷰 댓글 목록 조회");
@@ -137,10 +142,9 @@ export const deleteComment = asyncHandler(async (req, res) => {
 
   await decreaseTagPreference(comment.authorId, review.tags, 1);
 
-  await UserModel.updateOne(
-    { kakaoId: comment.authorId },
-    { $inc: { commentCount: -1 } }
-  ); // 유저 정보 업데이트
+  await UserModel.findByIdAndUpdate(comment.authorId, {
+    $inc: { commentCount: -1 },
+  }); // 유저 정보 업데이트
 
   res.status(200).json({ message: "댓글 삭제 완료" });
 }, "리뷰 댓글 삭제");

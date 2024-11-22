@@ -8,6 +8,7 @@ import { UserInfo, CommentInfo } from "@/shared/types/interface";
  */
 export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
   const response = await generalApiClient.get(`/user/${userId}`);
+  console.log(response.data);
   return response.data;
 };
 
@@ -17,12 +18,12 @@ export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
  * @param lastUserId 마지막 유저 ID
  * @returns 유저 목록
  */
-export const getSearchUsers = async (
+export const searchUsers = async (
   query: string,
-  lastUserId: number
+  lastUserKakaoId: number
 ): Promise<number[]> => {
   const response = await generalApiClient.get(`/search/users`, {
-    params: { query, lastUserId },
+    params: { query, lastUserKakaoId },
   });
 
   return response.data;

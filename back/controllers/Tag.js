@@ -1,18 +1,17 @@
 import { getChoseong } from "es-hangul";
-import { Types } from "mongoose";
 import { TagModel, ReviewModel, ReviewLikeModel } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 /**
- * 사용자의 상위 4개 선호 태그를 가져오는 함수
- * @param {number} userId - 사용자 ID
- * @returns {Object[]} 사용자별 상위 4개 선호 태그 목록
+ * 유저의 상위 4개 선호 태그를 가져오는 함수
+ * @param {string} userId - 유저 ID
+ * @returns {Object[]} 유저의 상위 4개 선호 태그 목록
  */
 export async function getTop4TagsPerUser(userId) {
   try {
     const topTagsPerUser = await TagModel.aggregate([
       {
-        $match: { kakaoId: userId }, // userId로 매칭
+        $match: { userId }, // userId로 매칭
       },
       {
         $sort: { preference: -1, lastInteractedAt: -1 }, // 선호도, 마지막 상호작용 시간 기준으로 내림차순 정렬
@@ -28,6 +27,8 @@ export async function getTop4TagsPerUser(userId) {
       },
     ]);
 
+    console.log(topTagsPerUser);
+
     const tagList = topTagsPerUser.map((tag) => tag.tagName);
     return tagList;
   } catch (error) {
@@ -37,7 +38,7 @@ export async function getTop4TagsPerUser(userId) {
 
 /**
  * 태그 선호도 업데이트 함수
- * @param {number} userId - 사용자 ID
+ * @param {mongoose.Schema.Types.ObjectId} userId - 유저 ID
  * @param {string[]} tagList - 태그 리스트
  * @param {number} increment - 선호도 증가량
  */
@@ -45,7 +46,7 @@ export async function increaseTagPreference(userId, tagList, increment) {
   const bulkOps = tagList.map((tagName) => {
     return {
       updateOne: {
-        filter: { tagName, kakaoId: userId },
+        filter: { tagName, userId },
         update: {
           $inc: { preference: increment },
           lastInteractedAt: Date.now(),
@@ -61,18 +62,18 @@ export async function increaseTagPreference(userId, tagList, increment) {
 
 /**
  * 태그 선호도 감소 함수
- * @param {number} userId - 사용자 ID
+ * @param {mongoose.Schema.Types.ObjectId} userId - 유저 ID
  * @param {string[]} tagList - 태그 리스트
  * @param {number} decrement - 선호도 감소량
  */
 export async function decreaseTagPreference(userId, tagList, decrement) {
   await TagModel.updateMany(
-    { tagName: { $in: tagList }, kakaoId: userId },
+    { tagName: { $in: tagList }, userId },
     { $inc: { preference: -1 * decrement } }
   );
 
   await TagModel.deleteMany({
-    kakaoId: userId,
+    userId,
     preference: { $lte: 0 },
   });
 }
@@ -142,7 +143,7 @@ export const getPopularTags = asyncHandler(async (req, res) => {
 /**
  * 검색어 연관 태그 조회
  */
-export const getSearchRelatedTags = asyncHandler(async (req, res) => {
+export const searchRelatedTags = asyncHandler(async (req, res) => {
   const { query } = req.query;
   const queryWithoutSpace = query.replace(/\s/g, "");
 

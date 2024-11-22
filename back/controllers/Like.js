@@ -24,13 +24,13 @@ export const addLike = asyncHandler(async (req, res) => {
   // 참고: find 보다는 exists가 더 효율적임
   const isLiked = !!(await ReviewLikeModel.exists({
     reviewId,
-    kakaoId: userId,
+    userId,
   }));
 
   if (!isLiked) {
     // 리뷰 추천 데이터 생성
     await ReviewLikeModel.create({
-      kakaoId: userId,
+      userId,
       reviewId,
       likedAt: Date.now(),
     });
@@ -41,15 +41,14 @@ export const addLike = asyncHandler(async (req, res) => {
 
     await increaseTagPreference(userId, review.tags, 3);
 
-    await UserModel.updateOne(
-      { kakaoId: userId },
-      { $inc: { likedReviewCount: 1 } }
-    ); // 유저 정보 업데이트
+    await UserModel.findByIdAndUpdate(userId, {
+      $inc: { likedReviewCount: 1 },
+    }); // 유저 정보 업데이트
 
     // 추천 수 갱신 후 10개가 될 경우 알림 생성
     if (review.likesCount === 9) {
       await NotificationModel.create({
-        kakaoId: review.authorId,
+        userId: review.authorId,
         reviewId,
         category: "like",
       });
@@ -69,10 +68,21 @@ export const getLikeStatus = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const { kakaoId } = req.query;
 
-  const isLiked = !!(await ReviewLikeModel.exists({ reviewId, kakaoId }));
+  const user = await UserModel.findOne({ kakaoId });
+
+  let isLiked = false;
+
+  // 유저가 존재할 경우 추천 여부 확인
+  if (user) {
+    isLiked = !!(await ReviewLikeModel.exists({
+      reviewId,
+      userId: user._id,
+    }));
+  }
+
   const review = await ReviewModel.findById(reviewId);
 
-  return res.json({ isLiked, likesCount: review.likesCount });
+  return res.status(200).json({ isLiked, likesCount: review.likesCount });
 }, "리뷰 추천 관련 정보 조회");
 
 /**
@@ -90,12 +100,12 @@ export const unLike = asyncHandler(async (req, res) => {
 
   const isLiked = !!(await ReviewLikeModel.exists({
     reviewId,
-    kakaoId: userId,
+    userId,
   }));
 
   if (isLiked) {
     await ReviewLikeModel.findOneAndDelete({
-      kakaoId: userId,
+      userId,
       reviewId,
     });
 
@@ -105,10 +115,9 @@ export const unLike = asyncHandler(async (req, res) => {
 
     await decreaseTagPreference(userId, review.tags, 3);
 
-    await UserModel.updateOne(
-      { kakaoId: userId },
-      { $inc: { likedReviewCount: -1 } }
-    ); // 유저 정보 업데이트
+    await UserModel.findByIdAndUpdate(userId, {
+      $inc: { likedReviewCount: -1 },
+    }); // 유저 정보 업데이트
 
     // 추천 수 갱신 후 9개가 될 경우 알림 삭제
     if (review.likesCount === 10) {

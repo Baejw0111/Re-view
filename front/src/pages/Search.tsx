@@ -1,8 +1,8 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { useSearchParams } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getSearchReviews } from "@/api/review";
-import { getSearchUsers } from "@/api/user";
+import { searchReviews } from "@/api/review";
+import { searchUsers } from "@/api/user";
 import CardList from "@/widgets/CardList";
 
 export default function Search() {
@@ -20,7 +20,7 @@ export default function Search() {
     queryKey: ["search", "reviews", searchQuery],
     initialPageParam: "",
     queryFn: ({ pageParam }: { pageParam: string }) =>
-      getSearchReviews(searchQuery ?? "", pageParam),
+      searchReviews(searchQuery ?? "", pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
       return lastPage[lastPage.length - 1];
@@ -38,7 +38,7 @@ export default function Search() {
     queryKey: ["search", "users", searchQuery],
     initialPageParam: 0,
     queryFn: ({ pageParam }: { pageParam: number }) =>
-      getSearchUsers(searchQuery ?? "", pageParam),
+      searchUsers(searchQuery ?? "", pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
       return lastPage[lastPage.length - 1];

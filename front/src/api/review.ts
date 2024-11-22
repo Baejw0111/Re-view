@@ -37,7 +37,7 @@ export const fetchPopularFeed = async (
  * @param lastReviewId 마지막 리뷰 ID
  * @returns 리뷰 목록
  */
-export const getSearchReviews = async (
+export const searchReviews = async (
   query: string,
   lastReviewId: string
 ): Promise<string[]> => {
@@ -69,6 +69,8 @@ export const fetchReviewById = async (
   reviewId: string
 ): Promise<ReviewInfo> => {
   const response = await generalApiClient.get(`/review/${reviewId}`);
+
+  console.log(response.data);
 
   return response.data;
 };

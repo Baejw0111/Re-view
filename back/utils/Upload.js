@@ -79,6 +79,18 @@ export const checkFormFieldsExistence = (req, res, next) => {
 };
 
 /**
+ * 리뷰 업로드 시 필드 제한 값
+ */
+const fieldLimits = {
+  title: 20,
+  reviewText: 1000,
+  tags: 5,
+  files: 5,
+  maxFileSize: 5, // MB 단위
+  validExtensions: ["jpg", "jpeg", "png", "webp"],
+};
+
+/**
  * 리뷰 업로드 시 필드 검증 함수
  * @param {object} req - 요청 객체
  * @param {object} res - 응답 객체
@@ -89,38 +101,47 @@ export const verifyFormFields = (req, res, next) => {
   const { title, reviewText, rating, tags } = req.body;
   const files = req.files;
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const validExtensions = ["jpg", "jpeg", "png", "webp"];
   let invalidMessages = [];
 
   // 제목 검증
-  if (title && title.length > 20) {
-    invalidMessages.push("제목은 20자 이하여야 합니다.");
+  if (title && title.length > fieldLimits.title) {
+    invalidMessages.push(`제목은 ${fieldLimits.title}자 이하여야 합니다.`);
   }
 
   // 리뷰 내용 검증
-  if (reviewText && reviewText.length > 1000) {
-    invalidMessages.push("리뷰 내용은 1000자 이하여야 합니다.");
+  if (reviewText && reviewText.length > fieldLimits.reviewText) {
+    invalidMessages.push(
+      `리뷰 내용은 ${fieldLimits.reviewText}자 이하여야 합니다.`
+    );
   }
 
   // 평점 검증
   if (rating && (rating < 0 || rating > 5)) {
-    invalidMessages.push("평점 값은 0점 이상, 5점 이하여야 합니다.");
+    invalidMessages.push(`평점 값은 0점 이상, 5점 이하여야 합니다.`);
   }
 
   // 태그 검증
-  if (tags && typeof tags === "object" && tags.length > 5) {
-    invalidMessages.push("태그는 최대 5개까지 등록할 수 있습니다.");
+  if (tags && typeof tags === "object" && tags.length > fieldLimits.tags) {
+    invalidMessages.push(
+      `태그는 ${fieldLimits.tags}개까지 등록할 수 있습니다.`
+    );
   }
 
   // 이미지 검증
-  if (files && files.length > 5) {
-    invalidMessages.push("이미지는 최대 5개까지 등록할 수 있습니다.");
+  if (files && files.length > fieldLimits.files) {
+    invalidMessages.push(
+      `이미지는 ${fieldLimits.files}개까지 등록할 수 있습니다.`
+    );
   }
 
   // 파일 크기 검증
-  if (files && files.some((file) => file.size > MAX_FILE_SIZE)) {
-    invalidMessages.push("파일 크기는 최대 5MB까지 업로드할 수 있습니다.");
+  if (
+    files &&
+    files.some((file) => file.size > fieldLimits.maxFileSize * 1024 * 1024)
+  ) {
+    invalidMessages.push(
+      `파일 크기는 최대 ${fieldLimits.maxFileSize}MB까지 업로드할 수 있습니다.`
+    );
   }
 
   // 파일 확장자 검증
@@ -128,12 +149,14 @@ export const verifyFormFields = (req, res, next) => {
     files &&
     files.some((file) => {
       const extension = file.originalname.split(".").pop().toLowerCase();
-      return !validExtensions.includes(extension);
+      return !fieldLimits.validExtensions.includes(extension);
     });
 
   if (isInvalidExtension) {
     invalidMessages.push(
-      "파일 확장자는 jpg, jpeg, png, webp만 업로드할 수 있습니다."
+      `파일 확장자는 ${fieldLimits.validExtensions.join(
+        ", "
+      )}만 업로드할 수 있습니다.`
     );
   }
 

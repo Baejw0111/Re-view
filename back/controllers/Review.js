@@ -18,6 +18,8 @@ export const createReview = asyncHandler(async (req, res) => {
   const authorId = req.userId;
   const tagList = typeof tags === "string" ? [tags] : [...tags];
 
+  console.log(authorId);
+
   const reviewData = new ReviewModel({
     authorId,
     images: req.files.map((file) => file.path), // 여러 이미지 경로 저장
@@ -31,10 +33,9 @@ export const createReview = asyncHandler(async (req, res) => {
 
   await increaseTagPreference(authorId, tagList, 5);
 
-  await UserModel.updateOne(
-    { kakaoId: authorId },
-    { $inc: { reviewCount: 1, totalRating: rating } }
-  );
+  await UserModel.findByIdAndUpdate(authorId, {
+    $inc: { reviewCount: 1, totalRating: rating },
+  });
 
   res.status(201).json({
     message: "리뷰가 성공적으로 등록되었습니다.",
@@ -70,7 +71,7 @@ export const getLatestFeed = asyncHandler(async (req, res) => {
  * @param {string} query - 검색어
  * @returns {Object[]} 리뷰 검색 결과 배열
  */
-export const getSearchReviews = asyncHandler(async (req, res) => {
+export const searchReviews = asyncHandler(async (req, res) => {
   const { query, lastReviewId } = req.query;
   const queryWithoutSpace = query.replace(/\s/g, "");
 
@@ -84,7 +85,7 @@ export const getSearchReviews = asyncHandler(async (req, res) => {
       { title: { $regex: queryWithoutSpace, $options: "i" } },
       { reviewText: { $regex: query, $options: "i" } },
       { reviewText: { $regex: queryWithoutSpace, $options: "i" } },
-      { tags: { $in: [query] } },
+      { tags: { $in: [query, queryWithoutSpace] } },
     ],
     uploadTime: { $lt: lastReviewUploadTime },
   })
@@ -122,14 +123,30 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
  * 특정 리뷰 조회
  * @returns {ReviewModel} 리뷰 데이터
  */
-export const getReviewsById = asyncHandler(async (req, res) => {
+export const getReviewById = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  const reviewData = await ReviewModel.findById(reviewId);
+  const reviewData = await ReviewModel.findById(reviewId).populate(
+    "authorId",
+    "kakaoId"
+  );
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
 
-  return res.status(200).json(reviewData);
+  console.log(reviewData);
+
+  return res.status(200).json({
+    _id: reviewData._id,
+    __v: reviewData.__v,
+    authorId: reviewData.authorId.kakaoId,
+    uploadTime: reviewData.uploadTime,
+    title: reviewData.title,
+    images: reviewData.images,
+    reviewText: reviewData.reviewText,
+    rating: reviewData.rating,
+    tags: reviewData.tags,
+    isSpoiler: reviewData.isSpoiler,
+  });
 }, "특정 리뷰 조회");
 
 /**
@@ -143,7 +160,7 @@ export const updateReview = asyncHandler(async (req, res) => {
   if (!reviewData) {
     deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
-  } else if (reviewData.authorId !== req.userId) {
+  } else if (reviewData.authorId.toString() !== req.userId) {
     deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(403).json({ message: "리뷰 수정 권한이 없습니다." });
   }
@@ -156,10 +173,9 @@ export const updateReview = asyncHandler(async (req, res) => {
     }
 
     if (key === "rating") {
-      await UserModel.updateOne(
-        { kakaoId: req.userId },
-        { $inc: { totalRating: updateData.rating - reviewData.rating } }
-      );
+      await UserModel.findByIdAndUpdate(req.userId, {
+        $inc: { totalRating: updateData.rating - reviewData.rating },
+      });
     }
 
     if (key === "tags") {
@@ -198,26 +214,21 @@ export const deleteReview = asyncHandler(async (req, res) => {
   const review = await ReviewModel.findById(reviewId);
   if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
-  } else if (review.authorId !== req.userId) {
+  } else if (review.authorId.toString() !== req.userId) {
     return res.status(403).json({ message: "리뷰 삭제 권한이 없습니다." });
   }
 
   deleteUploadedFiles(review.images); // 모든 이미지 파일 삭제
 
-  await decreaseTagPreference(review.authorId, review.tags, 5);
+  await decreaseTagPreference(review.authorId, review.tags, 5); // 태그 선호도 감소
 
   await ReviewModel.findByIdAndDelete(reviewId); // 리뷰 삭제
-  await UserModel.findOneAndUpdate(
-    { kakaoId: review.authorId },
-    { $pull: { reviews: reviewId } }
-  ); // 유저 정보 업데이트
   await CommentModel.deleteMany({ reviewId: reviewId }); // 댓글 삭제
   await NotificationModel.deleteMany({ reviewId: reviewId }); // 알림 삭제
   await ReviewLikeModel.deleteMany({ reviewId: reviewId }); // 추천 삭제
-  await UserModel.updateOne(
-    { kakaoId: review.authorId },
-    { $inc: { reviewCount: -1, totalRating: -review.rating } }
-  ); // 유저 정보 업데이트
+  await UserModel.findByIdAndUpdate(review.authorId, {
+    $inc: { reviewCount: -1, totalRating: -review.rating },
+  }); // 유저 정보 업데이트
 
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
 }, "리뷰 삭제");
