@@ -58,9 +58,9 @@ export default function NotificationButton() {
   useEffect(() => {
     if (!userInfo || !userInfo.kakaoId) return;
 
-    const eventSource = new EventSource(
-      `${API_URL}/notification/stream?userId=${userInfo.kakaoId}`
-    );
+    const eventSource = new EventSource(`${API_URL}/notification/stream`, {
+      withCredentials: true,
+    });
 
     eventSource.onmessage = () => {
       refetch(); // 새로운 알림이 올 때마다 fetchNotifications API 요청
