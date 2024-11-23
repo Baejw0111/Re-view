@@ -69,9 +69,6 @@ export const fetchReviewById = async (
   reviewId: string
 ): Promise<ReviewInfo> => {
   const response = await generalApiClient.get(`/review/${reviewId}`);
-
-  console.log(response.data);
-
   return response.data;
 };
 

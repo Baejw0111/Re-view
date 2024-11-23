@@ -8,7 +8,6 @@ import { UserInfo, CommentInfo } from "@/shared/types/interface";
  */
 export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
   const response = await generalApiClient.get(`/user/${userId}`);
-  console.log(response.data);
   return response.data;
 };
 
