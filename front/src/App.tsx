@@ -21,11 +21,12 @@ import SearchDialog from "./features/common/SearchDialog";
 import useAuth from "@/shared/hooks/useAuth";
 import { getLoginUserInfo } from "@/api/auth";
 import { API_URL } from "@/shared/constants";
+import PrivateRoute from "./pages/PrivateRoute";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
   const dispatch = useDispatch();
-  const { isPending, isError } = useAuth();
+  const isAuth = useAuth();
   const queryClient = useQueryClient();
 
   const { data: userInfo } = useQuery<UserInfo>({
@@ -33,7 +34,7 @@ function App() {
     queryFn: getLoginUserInfo,
     retry: false,
     refetchOnWindowFocus: false,
-    enabled: !isPending && !isError,
+    enabled: isAuth,
   });
 
   useEffect(() => {
@@ -76,7 +77,14 @@ function App() {
           <Route path="/popular" element={<Feed />} />
           <Route path="/oauth/kakao" element={<Authorization />} />
           <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/write" element={<WriteReview />} />
+          <Route
+            path="/write"
+            element={
+              <PrivateRoute authenticated={isAuth}>
+                <WriteReview />
+              </PrivateRoute>
+            }
+          />
           <Route path="/edit" element={<EditReview />} />
           <Route path="/profile/:id/*" element={<Profile />} />
           <Route path="/notifications" element={<Notification />} />
