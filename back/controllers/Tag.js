@@ -1,5 +1,11 @@
 import { getChoseong } from "es-hangul";
-import { TagModel, ReviewModel, ReviewLikeModel } from "../utils/Model.js";
+import mongoose from "mongoose";
+import {
+  TagModel,
+  ReviewModel,
+  ReviewLikeModel,
+  CommentModel,
+} from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 /**
@@ -26,8 +32,6 @@ export async function getTop4TagsPerUser(userId) {
         },
       },
     ]);
-
-    console.log(topTagsPerUser);
 
     const tagList = topTagsPerUser.map((tag) => tag.tagName);
     return tagList;
@@ -83,61 +87,69 @@ export async function decreaseTagPreference(userId, tagList, decrement) {
  * @returns {Object[]} 인기 태그 목록
  */
 export const getPopularTags = asyncHandler(async (req, res) => {
-  const sixHourAgo = new Date(Date.now() - 6 * 60 * 60 * 1000); // 6시간 전 시간 계산
+  const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
 
-  // 지난 6시간 동안 추천된 리뷰 ID 가져오기
-  const likedReviews = await ReviewLikeModel.aggregate([
+  // 추천 점수 계산
+  const likes = await ReviewLikeModel.aggregate([
+    { $match: { likedAt: { $gte: sixHoursAgo } } },
     {
-      $match: { likedAt: { $gte: sixHourAgo } },
-    },
-    {
-      $group: {
-        _id: "$reviewId",
-        count: { $sum: 1 },
+      $lookup: {
+        from: "reviews",
+        // localField: "reviewId",
+        // foreignField: "_id",
+        let: { reviewId: { $toObjectId: "$reviewId" } }, // reviewId를 ObjectId로 변환
+        pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$reviewId"] } } }],
+        as: "review",
       },
     },
+    { $unwind: "$review" },
+    { $unwind: "$review.tags" },
+    { $group: { _id: "$review.tags", score: { $sum: 3 } } },
   ]);
 
-  const likedReviewIds = likedReviews.map((review) => review._id);
-
-  // 추천된 리뷰의 태그와 최근 작성된 리뷰의 태그를 한번에 집계
-  const combinedTags = await ReviewModel.aggregate([
-    {
-      $facet: {
-        likedTags: [
-          { $match: { _id: { $in: likedReviewIds } } },
-          { $unwind: "$tags" },
-          { $group: { _id: "$tags", count: { $sum: 3 } } }, // 추천된 리뷰의 태그는 5점
-        ],
-        recentTags: [
-          { $match: { uploadTime: { $gte: sixHourAgo } } },
-          { $unwind: "$tags" },
-          { $group: { _id: "$tags", count: { $sum: 1 } } }, // 최근 작성된 리뷰의 태그는 1점
-        ],
-      },
-    },
-    {
-      $project: {
-        allTags: {
-          $concatArrays: ["$likedTags", "$recentTags"],
-        },
-      },
-    },
-    { $unwind: "$allTags" },
-    {
-      $group: {
-        _id: "$allTags._id",
-        totalCount: { $sum: "$allTags.count" },
-      },
-    },
-    { $sort: { totalCount: -1 } },
-    { $limit: 5 },
-    { $project: { _id: 1, totalCount: 1 } },
+  // 작성 점수 계산
+  const reviews = await ReviewModel.aggregate([
+    { $match: { uploadTime: { $gte: sixHoursAgo } } },
+    { $unwind: "$tags" },
+    { $group: { _id: "$tags", score: { $sum: 1 } } },
   ]);
 
-  const popularTagList = combinedTags.map((tag) => tag._id);
+  // 댓글 점수 계산
+  const comments = await CommentModel.aggregate([
+    { $match: { uploadTime: { $gte: sixHoursAgo } } },
+    {
+      $lookup: {
+        from: "reviews",
+        // localField: "reviewId",
+        // foreignField: "_id",
+        let: { reviewId: { $toObjectId: "$reviewId" } }, // reviewId를 ObjectId로 변환
+        pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$reviewId"] } } }],
+        as: "review",
+      },
+    },
+    { $unwind: "$review" },
+    { $unwind: "$review.tags" },
+    { $group: { _id: "$review.tags", score: { $sum: 2 } } },
+  ]);
 
-  res.status(200).json(popularTagList);
+  // 점수 합산
+  const combinedScores = [...likes, ...reviews, ...comments].reduce(
+    (acc, { _id, score }) => {
+      acc[_id] = (acc[_id] || 0) + score;
+      return acc;
+    },
+    {}
+  );
+
+  console.log("combinedScores");
+  console.table(combinedScores);
+
+  // 점수 기준으로 정렬
+  const sortedTags = Object.entries(combinedScores)
+    .sort(([, a], [, b]) => b - a)
+    .map(([tagName]) => tagName);
+
+  res.status(200).json(sortedTags);
 });
 
 /**
