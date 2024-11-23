@@ -24,13 +24,11 @@ export default function CommentBox({
   const { mutate: deleteCommentMutate } = useMutation({
     mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: () => {
-      if (commentInfo.reviewId) {
-        queryClient.invalidateQueries({
-          queryKey: ["reviewCommentList", commentInfo.reviewId],
-        });
-      }
       queryClient.invalidateQueries({
-        queryKey: ["userCommentList", commentInfo.authorId],
+        queryKey: ["reviewCommentList", commentInfo.reviewId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["commentCount", commentInfo.reviewId],
       });
     },
   });

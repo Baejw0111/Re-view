@@ -25,7 +25,9 @@ export default function CommentButton({ reviewId }: { reviewId: string }) {
     useCountingAnimation(0);
 
   useEffect(() => {
-    if (commentCount) setCurrentCommentCount(commentCount);
+    if (commentCount !== null && commentCount !== undefined) {
+      setCurrentCommentCount(commentCount);
+    }
   }, [commentCount]);
 
   return (
