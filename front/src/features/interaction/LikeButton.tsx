@@ -45,7 +45,7 @@ export default function LikeButton({
       queryClient.invalidateQueries({ queryKey: ["likeStatus", reviewId] });
     },
     onError: () => {
-      alert("추천 실패");
+      window.location.reload();
     },
   });
 
@@ -56,7 +56,7 @@ export default function LikeButton({
       queryClient.invalidateQueries({ queryKey: ["likeStatus", reviewId] });
     },
     onError: () => {
-      alert("추천 취소 실패");
+      window.location.reload();
     },
   });
 
