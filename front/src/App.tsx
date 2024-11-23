@@ -15,16 +15,18 @@ import Notification from "@/pages/Notification";
 import Search from "@/pages/Search";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
 import SearchDialog from "./features/common/SearchDialog";
 import useAuth from "@/shared/hooks/useAuth";
 import { getLoginUserInfo } from "@/api/auth";
+import { API_URL } from "@/shared/constants";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
   const dispatch = useDispatch();
   const { isPending, isError } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["loggedInUserInfo"],
@@ -43,6 +45,23 @@ function App() {
       }
     }
   }, [userInfo]);
+
+  // 알림 스트림 연결
+  useEffect(() => {
+    if (userInfo && userInfo.kakaoId) {
+      const eventSource = new EventSource(`${API_URL}/notification/stream`, {
+        withCredentials: true,
+      });
+
+      eventSource.onmessage = () => {
+        queryClient.invalidateQueries({ queryKey: ["notifications"] }); // 새로운 알림이 올 때마다 fetchNotifications API 요청
+      };
+
+      return () => {
+        eventSource.close();
+      };
+    }
+  }, [userInfo, queryClient]);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">

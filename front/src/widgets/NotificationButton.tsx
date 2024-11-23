@@ -20,7 +20,6 @@ import {
 import NotificationBox from "@/features/interaction/NotificationBox";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-import { API_URL } from "@/shared/constants";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { setIsNotificationOpen } from "@/state/store/notificationOpenSlice";
@@ -31,7 +30,7 @@ export default function NotificationButton() {
   const isNotificationOpen = useSelector(
     (state: RootState) => state.notificationOpen.isNotificationOpen
   );
-  const { data: notifications, refetch } = useQuery({
+  const { data: notifications } = useQuery({
     queryKey: ["notifications"],
     queryFn: () => fetchNotifications(),
   });
@@ -53,23 +52,6 @@ export default function NotificationButton() {
   const handleNotificationOpenChange = () => {
     dispatch(setIsNotificationOpen(!isNotificationOpen));
   };
-
-  // 알림 스트림 연결
-  useEffect(() => {
-    if (!userInfo || !userInfo.kakaoId) return;
-
-    const eventSource = new EventSource(`${API_URL}/notification/stream`, {
-      withCredentials: true,
-    });
-
-    eventSource.onmessage = () => {
-      refetch(); // 새로운 알림이 올 때마다 fetchNotifications API 요청
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [userInfo, refetch]);
 
   useEffect(() => {
     if (userInfo && userInfo.kakaoId && notifications) {
