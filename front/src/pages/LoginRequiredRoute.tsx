@@ -1,6 +1,6 @@
 import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
 
-export default function PrivateRoute({
+export default function LoginRequiredRoute({
   authenticated,
   children,
 }: {

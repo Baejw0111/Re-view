@@ -21,7 +21,7 @@ import SearchDialog from "./features/common/SearchDialog";
 import useAuth from "@/shared/hooks/useAuth";
 import { getLoginUserInfo } from "@/api/auth";
 import { API_URL } from "@/shared/constants";
-import PrivateRoute from "./pages/PrivateRoute";
+import LoginRequiredRoute from "./pages/LoginRequiredRoute";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
@@ -76,18 +76,39 @@ function App() {
           <Route path="/latest" element={<Feed />} />
           <Route path="/popular" element={<Feed />} />
           <Route path="/oauth/kakao" element={<Authorization />} />
-          <Route path="/onboarding" element={<Onboarding />} />
+          <Route
+            path="/onboarding"
+            element={
+              <LoginRequiredRoute authenticated={isAuth}>
+                <Onboarding />
+              </LoginRequiredRoute>
+            }
+          />
           <Route
             path="/write"
             element={
-              <PrivateRoute authenticated={isAuth}>
+              <LoginRequiredRoute authenticated={isAuth}>
                 <WriteReview />
-              </PrivateRoute>
+              </LoginRequiredRoute>
             }
           />
-          <Route path="/edit" element={<EditReview />} />
+          <Route
+            path="/edit"
+            element={
+              <LoginRequiredRoute authenticated={isAuth}>
+                <EditReview />
+              </LoginRequiredRoute>
+            }
+          />
           <Route path="/profile/:id/*" element={<Profile />} />
-          <Route path="/notifications" element={<Notification />} />
+          <Route
+            path="/notifications"
+            element={
+              <LoginRequiredRoute authenticated={isAuth}>
+                <Notification />
+              </LoginRequiredRoute>
+            }
+          />
           <Route path="/search" element={<Search />} />
           <Route path="/test" element={<Test />} />
         </Routes>
