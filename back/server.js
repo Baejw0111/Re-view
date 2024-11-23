@@ -71,7 +71,7 @@ app.use(cookieParser()); // cookie 파싱
 // 카카오 로그인 관련 API
 app.post("/auth/kakao/login", getKakaoToken); // 카카오 토큰 요청 API
 app.post("/auth/kakao/refresh", refreshKakaoAccessToken); // 카카오 액세스 토큰 재발급 API
-app.get("/auth/kakao/check", checkAuth); // 로그인 여부 확인 API
+app.get("/auth/kakao/check", disableCache, checkAuth); // 로그인 여부 확인 API
 app.post("/auth/kakao/logout", verifyKakaoAccessToken, logOutKakao); // 카카오 로그아웃 API
 app.get(
   "/auth/kakao/user",
