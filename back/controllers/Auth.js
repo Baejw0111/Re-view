@@ -140,7 +140,7 @@ export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
       .json({ message: "액세스 토큰, 리프레시 토큰 갱신 성공" });
   }
 
-  return res.status(200).json({ message: "액세스 토��� 갱신 성공" });
+  return res.status(200).json({ message: "액세스 토큰 갱신 성공" });
 }, "카카오 액세스 토큰 재발급");
 
 /**
