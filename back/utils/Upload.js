@@ -87,7 +87,6 @@ const fieldLimits = {
   tags: 5,
   files: 5,
   maxFileSize: 5, // MB 단위
-  validExtensions: ["jpg", "jpeg", "png", "webp"],
 };
 
 /**
@@ -148,16 +147,12 @@ export const verifyFormFields = (req, res, next) => {
   const isInvalidExtension =
     files &&
     files.some((file) => {
-      const extension = file.originalname.split(".").pop().toLowerCase();
-      return !fieldLimits.validExtensions.includes(extension);
+      const extension = file.path.split(".").pop().toLowerCase();
+      return extension !== "webp";
     });
 
   if (isInvalidExtension) {
-    invalidMessages.push(
-      `파일 확장자는 ${fieldLimits.validExtensions.join(
-        ", "
-      )}만 업로드할 수 있습니다.`
-    );
+    invalidMessages.push(`파일 확장자는 webp만 업로드할 수 있습니다.`);
   }
 
   if (invalidMessages.length > 0) {
