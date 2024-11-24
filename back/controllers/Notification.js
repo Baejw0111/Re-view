@@ -17,7 +17,7 @@ export const connectNotificationSSE = asyncHandler((req, res) => {
   res.setHeader("Connection", "keep-alive");
 
   // 클라이언트를 Map에 추가
-  const userId = req.userId;
+  const userId = req.userId.toString(); // 사용자 ID를 문자열로 변환
   if (userId) {
     if (!clients.has(userId)) {
       clients.set(userId, []); // 같은 사용자가 여러 클라이언트로 접속할 수 있도록 사용자 ID를 키로 하는 배열을 생성
@@ -42,10 +42,10 @@ export const connectNotificationSSE = asyncHandler((req, res) => {
 
 /**
  * 클라이언트에 이벤트 전송 함수
- * @param {number} userId - 사용자 ID
+ * @param {mongoose.Schema.Types.ObjectId} userId - 사용자 ID
  */
 export const sendEventToClient = (userId) => {
-  const userClients = clients.get(userId);
+  const userClients = clients.get(userId.toString());
   if (userClients) {
     userClients.forEach((client) => {
       client.write(

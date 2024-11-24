@@ -80,8 +80,9 @@ export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
 
   const kakaoId = response.data.id; // 카카오 유저 ID
 
-  const userInfo = await UserModel.findOne({ kakaoId }); // 유저 DB ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
-  req.userId = userInfo?._id.toString();
+  // 유저 DB ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
+  const userInfo = await UserModel.findOne({ kakaoId });
+  req.userId = userInfo?._id;
 
   return next();
 }, "카카오 토큰 검증");

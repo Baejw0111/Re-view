@@ -6,16 +6,17 @@ import {
   ReviewLikeModel,
 } from "../utils/Model.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
-import { getTop4TagsPerUser } from "./Tag.js";
+import { getFavoriteTags } from "./Tag.js";
 
 /**
  * 유저 정보 조회
- * @returns {UserModel, string[]} 유저 데이터, 상위 4개 선호 태그 리스트
+ * @returns {Object[]} 유저 데이터, 상위 4개 선호 태그 리스트
  */
 export const getUserInfoById = asyncHandler(async (req, res) => {
   const { id: kakaoId } = req.params;
   const userInfo = await UserModel.findOne({ kakaoId });
-  const topTags = await getTop4TagsPerUser(userInfo._id.toString());
+  const favoriteTags = await getFavoriteTags(userInfo._id);
+
   res.status(200).json({
     kakaoId: userInfo.kakaoId,
     nickname: userInfo.nickname,
@@ -23,7 +24,7 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
     totalRating: userInfo.totalRating,
     reviewCount: userInfo.reviewCount,
     notificationCheckTime: userInfo.notificationCheckTime,
-    favoriteTags: topTags,
+    favoriteTags: favoriteTags,
   });
 }, "유저 정보 조회");
 
@@ -64,9 +65,9 @@ export const getUserReviewList = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
 
-  const lastReview =
-    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
-  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+  const lastReviewUploadTime = lastReviewId
+    ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
+    : new Date();
 
   const reviewList = await ReviewModel.find({
     authorId: user._id,
@@ -81,7 +82,7 @@ export const getUserReviewList = asyncHandler(async (req, res) => {
 
 /**
  * 유저가 작성한 댓글 목록 조회
- * @returns {CommentModel, UserModel} 댓글 데이터, 작성자 데이터 리스트
+ * @returns {Object[]} 댓글 데이터, 작성자 데이터 리스트
  */
 export const getUserCommentList = asyncHandler(async (req, res) => {
   const { id: kakaoId } = req.params;
@@ -121,14 +122,14 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
 
-  const lastReview =
-    lastReviewId === ""
-      ? null
-      : await ReviewLikeModel.findOne({
+  const lastReviewLikedAt = lastReviewId
+    ? (
+        await ReviewLikeModel.findOne({
           reviewId: lastReviewId,
           userId: user._id,
-        });
-  const lastReviewLikedAt = lastReview ? lastReview.likedAt : new Date();
+        })
+      )?.likedAt || new Date()
+    : new Date();
 
   const likedList = await ReviewLikeModel.find({
     userId: user._id,
@@ -139,16 +140,9 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
     })
     .limit(20);
 
-  // 모든 reviewId를 수집
-  const reviewIds = likedList.map((liked) => liked.reviewId);
+  const likedReviewIdList = likedList.map((liked) => liked.reviewId);
 
-  // Review 데이터를 한 번에 가져옴
-  const reviewList = await ReviewModel.find({
-    _id: { $in: reviewIds },
-  });
-
-  const reviewIdList = reviewList.map((review) => review._id);
-  res.status(200).json(reviewIdList);
+  res.status(200).json(likedReviewIdList);
 }, "유저가 추천한 리뷰 목록 조회");
 
 /**
@@ -166,7 +160,7 @@ export const updateUserInfo = asyncHandler(async (req, res) => {
       deleteUploadedFiles([req.file.path]);
     }
     return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
-  } else if (user._id.toString() !== userId) {
+  } else if (!userId.equals(user._id)) {
     if (req.file) {
       deleteUploadedFiles([req.file.path]);
     }

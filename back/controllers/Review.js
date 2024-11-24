@@ -18,8 +18,6 @@ export const createReview = asyncHandler(async (req, res) => {
   const authorId = req.userId;
   const tagList = typeof tags === "string" ? [tags] : [...tags];
 
-  console.log(authorId);
-
   const reviewData = new ReviewModel({
     authorId,
     images: req.files.map((file) => file.path), // 여러 이미지 경로 저장
@@ -31,8 +29,9 @@ export const createReview = asyncHandler(async (req, res) => {
   });
   await reviewData.save();
 
-  await increaseTagPreference(authorId, tagList, 5);
+  await increaseTagPreference(authorId, tagList, 5); // 태그 선호도 증가
 
+  // 유저 정보 업데이트
   await UserModel.findByIdAndUpdate(authorId, {
     $inc: { reviewCount: 1, totalRating: rating },
   });
@@ -51,9 +50,9 @@ export const getLatestFeed = asyncHandler(async (req, res) => {
 
   // 클라이언트에서 마지막으로 받은 리뷰 ID의 업로드 시간을 통해 다음 리뷰 목록 조회
   // 마지막 리뷰 ID가 없으면 처음 요청을 보내는 것이므로, 최근 업로드된 리뷰 20개 조회
-  const lastReview =
-    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
-  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+  const lastReviewUploadTime = lastReviewId
+    ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
+    : new Date();
 
   const reviewList = await ReviewModel.find({
     uploadTime: { $lt: lastReviewUploadTime },
@@ -75,9 +74,11 @@ export const searchReviews = asyncHandler(async (req, res) => {
   const { query, lastReviewId } = req.query;
   const queryWithoutSpace = query.replace(/\s/g, "");
 
-  const lastReview =
-    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
-  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+  // 클라이언트에서 마지막으로 받은 리뷰 ID의 업로드 시간을 통해 다음 리뷰 목록 조회
+  // 마지막 리뷰 ID가 없으면 처음 요청을 보내는 것이므로, 최근 업로드된 리뷰 20개 조회
+  const lastReviewUploadTime = lastReviewId
+    ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
+    : new Date();
 
   const reviews = await ReviewModel.find({
     $or: [
@@ -104,9 +105,11 @@ export const searchReviews = asyncHandler(async (req, res) => {
 export const getPopularFeed = asyncHandler(async (req, res) => {
   const { lastReviewId } = req.query;
 
-  const lastReview =
-    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
-  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+  // 클라이언트에서 마지막으로 받은 리뷰 ID의 업로드 시간을 통해 다음 리뷰 목록 조회
+  // 마지막 리뷰 ID가 없으면 처음 요청을 보내는 것이므로, 최근 업로드된 리뷰 20개 조회
+  const lastReviewUploadTime = lastReviewId
+    ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
+    : new Date();
 
   const reviewList = await ReviewModel.find({
     uploadTime: { $lt: lastReviewUploadTime },
@@ -114,6 +117,7 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
   })
     .sort({ uploadTime: -1 })
     .limit(20);
+
   const reviewIdList = reviewList.map((review) => review._id);
 
   res.status(200).json(reviewIdList);
@@ -125,6 +129,8 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
  */
 export const getReviewById = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
+
+  // 리뷰 데이터 조회 및 작성자 정보 조회
   const reviewData = await ReviewModel.findById(reviewId).populate(
     "authorId",
     "kakaoId"
@@ -132,8 +138,6 @@ export const getReviewById = asyncHandler(async (req, res) => {
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
-
-  console.log(reviewData);
 
   return res.status(200).json({
     _id: reviewData._id,
@@ -156,11 +160,15 @@ export const getReviewById = asyncHandler(async (req, res) => {
 export const updateReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
 
+  // 리뷰 데이터 조회 및 작성자 정보 조회
   const reviewData = await ReviewModel.findById(reviewId);
+
   if (!reviewData) {
+    // 수정하려는 리뷰가 존재하지 않으면 업로드한 이미지 삭제 후 404 응답
     deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
-  } else if (reviewData.authorId.toString() !== req.userId) {
+  } else if (!req.userId.equals(reviewData.authorId)) {
+    // 원본 작성자가 아닐 경우 업로드한 이미지 삭제 후 403 응답
     deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(403).json({ message: "리뷰 수정 권한이 없습니다." });
   }
@@ -168,16 +176,19 @@ export const updateReview = asyncHandler(async (req, res) => {
   // 받은 필드만 업데이트
   const updateData = req.body;
   for (let key in updateData) {
+    // 삭제할 이미지는 제외
     if (key === "deletedImages") {
       continue;
     }
 
+    // 평점 변경 시 유저 평점 업데이트
     if (key === "rating") {
       await UserModel.findByIdAndUpdate(req.userId, {
         $inc: { totalRating: updateData.rating - reviewData.rating },
       });
     }
 
+    // 태그 변경 시 태그 선호도 업데이트
     if (key === "tags") {
       await decreaseTagPreference(req.userId, reviewData.tags, 5);
       await increaseTagPreference(req.userId, updateData.tags, 5);
@@ -186,7 +197,7 @@ export const updateReview = asyncHandler(async (req, res) => {
     reviewData[key] = updateData[key];
   }
 
-  // 새 이미지 파일이 있을 경우 기존 이미지 파일들 삭제 후 경로 업데이트
+  // 삭제할 이미지가 있을 경우 삭제 후 경로 업데이트
   if (updateData.deletedImages && updateData.deletedImages.length > 0) {
     deleteUploadedFiles(updateData.deletedImages);
 
@@ -195,6 +206,7 @@ export const updateReview = asyncHandler(async (req, res) => {
     );
   }
 
+  // 새 이미지 파일이 있을 경우 경로 업데이트
   if (req.files && req.files.length > 0) {
     reviewData.images = reviewData.images.concat(
       req.files.map((file) => file.path)
@@ -212,13 +224,14 @@ export const updateReview = asyncHandler(async (req, res) => {
 export const deleteReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const review = await ReviewModel.findById(reviewId);
+
   if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
-  } else if (review.authorId.toString() !== req.userId) {
+  } else if (!req.userId.equals(review.authorId)) {
     return res.status(403).json({ message: "리뷰 삭제 권한이 없습니다." });
   }
 
-  deleteUploadedFiles(review.images); // 모든 이미지 파일 삭제
+  deleteUploadedFiles(review.images); // 리뷰의 모든 이미지 파일 삭제
 
   await decreaseTagPreference(review.authorId, review.tags, 5); // 태그 선호도 감소
 

@@ -39,7 +39,7 @@ export const UserModel = db.model(
 /**
  * 리뷰 모델
  * @type {mongoose.Model}
- * @property {string} authorId - 작성자 DB ID
+ * @property {mongoose.Schema.Types.ObjectId} authorId - 작성자 DB ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
  * @property {string[]} images - 이미지 파일 경로 모음
@@ -54,7 +54,7 @@ export const ReviewModel = db.model(
   "Review",
   new mongoose.Schema({
     authorId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       index: true,
     },
@@ -73,20 +73,20 @@ export const ReviewModel = db.model(
 /**
  * 유저 추천 모델
  * @type {mongoose.Model}
- * @property {string} userId - 유저 DB ID
- * @property {string} reviewId - 추천된 리뷰 ID
+ * @property {mongoose.Schema.Types.ObjectId} userId - 유저 DB ID
+ * @property {mongoose.Schema.Types.ObjectId} reviewId - 추천된 리뷰 ID
  * @property {Date} likedAt - 추천 시간
  */
 export const ReviewLikeModel = db.model(
   "ReviewLike",
   new mongoose.Schema({
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       index: true,
     },
     reviewId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       default: "",
       index: true,
     },
@@ -98,7 +98,7 @@ export const ReviewLikeModel = db.model(
  * 태그 모델
  * @type {mongoose.Model}
  * @property {string} tagName - 태그 이름
- * @property {string} userId - 유저 DB ID
+ * @property {mongoose.Schema.Types.ObjectId} userId - 유저 DB ID
  * @property {string} koreanInitials - 태그 이름이 한글일 경우 초성 저장
  * @property {Date} lastInteractedAt - 마지막으로 태그와 상호작용한 시간
  * @property {number} preference - 유저의 태그에 대한 선호도
@@ -108,7 +108,7 @@ export const TagModel = db.model(
   new mongoose.Schema({
     tagName: { type: String, default: "" },
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       index: true,
     },
@@ -121,22 +121,22 @@ export const TagModel = db.model(
 /**
  * 댓글 모델
  * @type {mongoose.Model}
- * @property {string} authorId - 작성자 DB ID
+ * @property {mongoose.Schema.Types.ObjectId} authorId - 작성자 DB ID
  * @property {Date} uploadTime - 업로드 시간
- * @property {string} reviewId - 댓글이 작성된 리뷰의 ID
+ * @property {mongoose.Schema.Types.ObjectId} reviewId - 댓글이 작성된 리뷰의 ID
  * @property {string} content - 댓글 내용
  */
 export const CommentModel = db.model(
   "Comment",
   new mongoose.Schema({
     authorId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       index: true,
     },
     uploadTime: { type: Date, default: Date.now },
     reviewId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       default: "",
       index: true,
     },
@@ -147,10 +147,10 @@ export const CommentModel = db.model(
 /**
  * 알림 모델
  * @type {mongoose.Model}
- * @property {string} userId - 알림을 받을 유저의 DB ID
+ * @property {mongoose.Schema.Types.ObjectId} userId - 알림을 받을 유저의 DB ID
  * @property {Date} time - 알림 생성 시간
- * @property {string} commentId - 알림과 관련된 댓글 ID
- * @property {string} reviewId - 알림과 관련된 리뷰 ID
+ * @property {mongoose.Schema.Types.ObjectId} commentId - 알림과 관련된 댓글 ID
+ * @property {mongoose.Schema.Types.ObjectId} reviewId - 알림과 관련된 리뷰 ID
  * @property {string} category - 알림 종류
  * @property {boolean} isRead - 알림 읽음 여부
  */
@@ -158,19 +158,19 @@ export const NotificationModel = db.model(
   "Notification",
   new mongoose.Schema({
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       index: true,
     },
     time: { type: Date, default: Date.now },
     commentId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       default: "",
       index: true,
       ref: "Comment",
     },
     reviewId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       default: "",
       index: true,
       ref: "Review",
