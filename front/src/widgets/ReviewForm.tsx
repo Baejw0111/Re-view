@@ -44,6 +44,8 @@ import {
 } from "@/shared/constants";
 import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
 import { Switch } from "@/shared/shadcn-ui/switch";
+import { AxiosError } from "axios";
+import imageCompression from "browser-image-compression";
 
 export default function ReviewForm({
   reviewInfo,
@@ -57,6 +59,9 @@ export default function ReviewForm({
   const [initialImages, setInitialImages] = useState<string[]>([]); // 초기 이미지
   const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지
 
+  /**
+   * 리뷰 업로드 시 필드 검증 스키마
+   */
   const formSchema = z.object({
     title: z
       .string()
@@ -117,7 +122,9 @@ export default function ReviewForm({
     isSpoiler: z.boolean(),
   });
 
-  // 폼 정의
+  /**
+   * 리뷰 업로드 시 필드 검증 폼
+   */
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -147,9 +154,9 @@ export default function ReviewForm({
     onSuccess: () => {
       window.location.href = "/";
     },
-    onError: () => {
+    onError: (error: AxiosError<{ message: string }>) => {
       alert(
-        "리뷰 업로드 중 에러가 발생했습니다.\n입력된 내용에 문제가 없는지 확인해주세요."
+        `리뷰 업로드 중 에러가 발생했습니다.\n${error.response?.data.message}`
       );
     },
   });
@@ -164,14 +171,18 @@ export default function ReviewForm({
       });
       navigate(-1);
     },
-    onError: () => {
+    onError: (error: AxiosError<{ message: string }>) => {
       alert(
-        "리뷰 수정 중 에러가 발생했습니다.\n입력된 내용에 문제가 없는지 확인해주세요."
+        `리뷰 수정 중 에러가 발생했습니다.\n${error.response?.data.message}`
       );
     },
   });
 
-  // 업로드 제출 시 실행될 작업
+  /**
+   * 업로드 제출 시 실행될 작업
+   * @param {z.infer<typeof formSchema>} values - 폼 값
+   * @returns {Promise<void>}
+   */
   const onUploadSubmit = async (values: z.infer<typeof formSchema>) => {
     // 폼 값 처리
     const { title, reviewText, rating, tags, images, isSpoiler } = values;
@@ -188,7 +199,11 @@ export default function ReviewForm({
     uploadReviewMutation(formData);
   };
 
-  // 수정 제출 시 실행될 작업
+  /**
+   * 수정 제출 시 실행될 작업
+   * @param {z.infer<typeof formSchema>} values - 폼 값
+   * @returns {Promise<void>}
+   */
   const onEditSubmit = async (values: z.infer<typeof formSchema>) => {
     // 폼 값 처리
     const { title, reviewText, rating, tags, images } = values;
@@ -219,12 +234,20 @@ export default function ReviewForm({
     editReviewMutation(formData);
   };
 
-  // 태그 입력 처리
+  /**
+   * 태그 입력 처리
+   * @param {React.ChangeEvent<HTMLInputElement>} e - 태그 입력 이벤트
+   * @returns {void}
+   */
   const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTagInput(e.target.value);
   };
 
-  // 태그 입력 시 추가
+  /**
+   * 태그 입력 시 추가
+   * @param {React.KeyboardEvent<HTMLInputElement>} e - 태그 입력 이벤트
+   * @returns {void}
+   */
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && tagInput.trim() !== "") {
       const newTags = tagInput.trim().toLowerCase();
@@ -238,14 +261,23 @@ export default function ReviewForm({
     }
   };
 
-  // 태그 삭제
+  /**
+   * 태그 삭제
+   * @param {number} index - 태그 인덱스
+   * @returns {void}
+   */
   const handleDeleteTag = (index: number) => {
     const tags = form.getValues("tags");
     const newTags = tags.filter((_, i) => i !== index);
     form.setValue("tags", newTags);
   };
 
-  // 파일 목록 업데이트 함수
+  /**
+   * 파일 목록 업데이트 함수
+   * @param {FileList} newFiles - 새로운 파일 목록
+   * @param {FileList} currentFiles - 현재 파일 목록
+   * @returns {FileList} - 업데이트된 파일 목록
+   */
   const updateFileList = (newFiles: FileList, currentFiles: FileList) => {
     const updatedFiles = new DataTransfer();
     Array.from(currentFiles).forEach((file) => updatedFiles.items.add(file));
@@ -253,7 +285,12 @@ export default function ReviewForm({
     return updatedFiles.files;
   };
 
-  // 메인 이미지 업로드 핸들러
+  /**
+   * 메인 이미지 업로드 핸들러
+   * @description 이미지 업로드 시 미리보기 이미지 생성 및 폼 값 업데이트
+   * @param {React.ChangeEvent<HTMLInputElement>} e - 이미지 업로드 이벤트
+   * @returns {Promise<void>}
+   */
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = e.target.files;
     if (newFiles) {
@@ -266,20 +303,38 @@ export default function ReviewForm({
       const combinedFiles = updateFileList(newFiles, currentFiles); // 새로운 파일 목록과 현재 업로드된 파일 목록을 합친 파일 목록
       form.setValue("images", combinedFiles); // 폼 값 업데이트
 
-      const newPreviewImages = await createPreviewImages(newFiles); // 미리보기 이미지 생성
+      // 이미지 압축
+      const compressedFiles = await Promise.all(
+        Array.from(newFiles).map((file) =>
+          imageCompression(file, {
+            maxSizeMB: 1, // 최대 1MB로 압축
+            maxWidthOrHeight: 1920, // 최대 너비 또는 높이
+          })
+        )
+      );
+
+      const newPreviewImages = await createPreviewImages(compressedFiles); // 미리보기 이미지 생성
 
       setPreviewImages([...currentPreviewImages, ...newPreviewImages]); // 미리보기 이미지 업데이트
     }
   };
 
-  // 초기 이미지 제거 핸들러
+  /**
+   * 초기 이미지 제거 핸들러
+   * @param {number} index - 이미지 인덱스
+   * @returns {void}
+   */
   const handleRemoveInitialImage = (index: number) => {
     setDeletedImages([...deletedImages, initialImages[index]]);
     const newInitialImages = initialImages.filter((_, i) => i !== index);
     setInitialImages(newInitialImages);
   };
 
-  // 사용자가 현재 업로드한 이미지 제거 핸들러
+  /**
+   * 사용자가 현재 업로드한 이미지 제거 핸들러
+   * @param {number} index - 이미지 인덱스
+   * @returns {void}
+   */
   const handleRemoveUploadedImage = (index: number) => {
     const newPreviewImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(newPreviewImages);
@@ -402,14 +457,14 @@ export default function ReviewForm({
                       <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-6">
                         {initialImages.map((image, index) => (
                           <div key={index} className="relative group">
-                            {image === "" ? (
-                              <Skeleton className="aspect-square rounded-md" />
-                            ) : (
+                            {image ? (
                               <img
                                 src={`${API_URL}/${image}`}
                                 alt={`Thumbnail ${index + 1}`}
                                 className="aspect-square rounded-md object-cover"
                               />
+                            ) : (
+                              <Skeleton className="aspect-square rounded-md" />
                             )}
                             <Button
                               type="button"
@@ -425,14 +480,14 @@ export default function ReviewForm({
                         ))}
                         {previewImages.map((image, index) => (
                           <div key={index} className="relative group">
-                            {image === "" ? (
-                              <Skeleton className="aspect-square rounded-md" />
-                            ) : (
+                            {image ? (
                               <img
                                 src={image}
                                 alt={`Thumbnail ${index + 1}`}
                                 className="aspect-square rounded-md object-cover"
                               />
+                            ) : (
+                              <Skeleton className="aspect-square rounded-md" />
                             )}
                             <Button
                               type="button"

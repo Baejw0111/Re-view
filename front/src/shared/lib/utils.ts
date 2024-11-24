@@ -38,7 +38,7 @@ const readFileAsDataURL = (file: File): Promise<string> => {
  * @param files 파일 목록
  * @returns 미리보기 이미지 목록
  */
-export const createPreviewImages = async (files: FileList) => {
+export const createPreviewImages = async (files: File[]) => {
   const previewImages: string[] = [];
   for (const file of Array.from(files)) {
     const dataUrl = await readFileAsDataURL(file);
