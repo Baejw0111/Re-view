@@ -6,6 +6,7 @@ import { deleteReview } from "@/api/review";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 import { VITE_CLIENT_URL } from "@/shared/constants";
+import { AxiosError } from "axios";
 
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
@@ -16,8 +17,8 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
       alert("리뷰 삭제 성공");
       window.location.href = "/";
     },
-    onError: () => {
-      alert("리뷰 삭제 실패");
+    onError: (error: AxiosError<{ message: string }>) => {
+      alert(error.response?.data?.message);
     },
   });
 
