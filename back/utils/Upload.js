@@ -164,7 +164,7 @@ export const verifyFormFields = (req, res, next) => {
     deleteUploadedFiles(files.map((file) => file.path));
     const message = `${invalidMessages.join(
       "\n"
-    )}\n 위 내용을 참고해 다시 입력 후 재시도해주세요.`;
+    )}\n위 내용을 참고해 다시 입력 후 재시도해주세요.`;
 
     console.log(message);
     return res.status(400).json({
