@@ -70,6 +70,12 @@ export default function NotificationButton() {
     }
   }, [userInfo, notifications, isNotificationOpen]);
 
+  useEffect(() => {
+    if (unCheckedNotifications > 0)
+      document.title = `(${unCheckedNotifications}) Re | view`;
+    else document.title = "Re | view";
+  }, [unCheckedNotifications]);
+
   return (
     <DropdownMenu
       open={isNotificationOpen}
