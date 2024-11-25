@@ -22,6 +22,7 @@ import {
   handleEnterKeyDown,
   createPreviewImages,
   convertToWebP,
+  resetFileInput,
 } from "@/shared/lib/utils";
 import { useLocation } from "react-router-dom";
 import {
@@ -101,7 +102,9 @@ export default function EditUserProfile({
     const newFiles = e.target.files;
 
     if (newFiles) {
-      const webpFiles = await convertToWebP(newFiles); // 파일을 webp로 변환
+      const webpFiles = await convertToWebP(newFiles, (progress) => {
+        console.log(`압축 진행률: ${progress}%`);
+      }); // 파일을 webp로 변환
       const previewImage = await createPreviewImages(webpFiles); // 미리보기 이미지 생성
       setCurrentProfileImage(previewImage[0]); // 현재 프로필 이미지 업데이트
       form.setValue("profileImage", webpFiles); // 폼 값 업데이트
@@ -118,13 +121,7 @@ export default function EditUserProfile({
     form.setValue("useDefaultProfile", true);
     form.setValue("profileImage", new DataTransfer().files);
 
-    // 파일 입력 요소의 값을 초기화
-    const fileInput = document.getElementById(
-      "profileImage-upload"
-    ) as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
-    }
+    resetFileInput("profileImage-upload");
   };
 
   useEffect(() => {
@@ -189,7 +186,7 @@ export default function EditUserProfile({
                       <Input
                         id="profileImage-upload"
                         type="file"
-                        accept={reviewFieldLimits.acceptedImageTypes.join(", ")}
+                        accept={reviewFieldLimits.imageTypes.join(", ")}
                         className="hidden"
                         onChange={handleProfileImageUpload}
                       />
