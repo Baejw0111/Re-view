@@ -69,10 +69,13 @@ export const getUserReviewList = asyncHandler(async (req, res) => {
     ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
     : new Date();
 
-  const reviewList = await ReviewModel.find({
-    authorId: user._id,
-    uploadTime: { $lt: lastReviewUploadTime },
-  })
+  const reviewList = await ReviewModel.find(
+    {
+      authorId: user._id,
+      uploadTime: { $lt: lastReviewUploadTime },
+    },
+    { _id: 1, uploadTime: 1 } // 필요한 필드만 명시
+  )
     .sort({ uploadTime: -1 })
     .limit(20);
 

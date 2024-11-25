@@ -54,9 +54,10 @@ export const getLatestFeed = asyncHandler(async (req, res) => {
     ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
     : new Date();
 
-  const reviewList = await ReviewModel.find({
-    uploadTime: { $lt: lastReviewUploadTime },
-  })
+  const reviewList = await ReviewModel.find(
+    { uploadTime: { $lt: lastReviewUploadTime } },
+    { _id: 1, uploadTime: 1 } // 필요한 필드만 명시
+  )
     .sort({ uploadTime: -1 })
     .limit(20);
 
@@ -80,16 +81,19 @@ export const searchReviews = asyncHandler(async (req, res) => {
     ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
     : new Date();
 
-  const reviews = await ReviewModel.find({
-    $or: [
-      { title: { $regex: query, $options: "i" } },
-      { title: { $regex: queryWithoutSpace, $options: "i" } },
-      { reviewText: { $regex: query, $options: "i" } },
-      { reviewText: { $regex: queryWithoutSpace, $options: "i" } },
-      { tags: { $in: [query, queryWithoutSpace] } },
-    ],
-    uploadTime: { $lt: lastReviewUploadTime },
-  })
+  const reviews = await ReviewModel.find(
+    {
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { title: { $regex: queryWithoutSpace, $options: "i" } },
+        { reviewText: { $regex: query, $options: "i" } },
+        { reviewText: { $regex: queryWithoutSpace, $options: "i" } },
+        { tags: { $in: [query, queryWithoutSpace] } },
+      ],
+      uploadTime: { $lt: lastReviewUploadTime },
+    },
+    { _id: 1, uploadTime: 1 } // 필요한 필드만 명시
+  )
     .sort({ uploadTime: -1 })
     .limit(20);
 
@@ -111,10 +115,13 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
     ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
     : new Date();
 
-  const reviewList = await ReviewModel.find({
-    uploadTime: { $lt: lastReviewUploadTime },
-    likesCount: { $gte: 10 },
-  })
+  const reviewList = await ReviewModel.find(
+    {
+      uploadTime: { $lt: lastReviewUploadTime },
+      likesCount: { $gte: 10 },
+    },
+    { _id: 1, uploadTime: 1 } // 필요한 필드만 명시
+  )
     .sort({ uploadTime: -1 })
     .limit(20);
 
