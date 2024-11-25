@@ -51,9 +51,13 @@ export const createPreviewImages = async (files: FileList) => {
 /**
  * 파일 목록을 webp 형식으로 변환
  * @param {FileList} files - 파일 목록
+ * @param {Function} onProgressCallback - 진행률 콜백 함수
  * @returns {Promise<FileList>} - webp 형식의 파일 목록
  */
-export const convertToWebP = async (files: FileList): Promise<FileList> => {
+export const convertToWebP = async (
+  files: FileList,
+  onProgressCallback: (progress: number, index: number) => void
+): Promise<FileList> => {
   const webpDataTransfer = new DataTransfer();
 
   // 이미지 압축 옵션
@@ -62,16 +66,24 @@ export const convertToWebP = async (files: FileList): Promise<FileList> => {
     maxWidthOrHeight: 1920,
     useWebWorker: true,
     fileType: "image/webp",
+    onProgress: (progress: number) => {
+      console.log(`압축 진행률: ${progress}%`);
+    },
   };
 
   // 각 파일을 webp로 변환
-  for (const file of Array.from(files)) {
+  for (const [index, file] of Array.from(files).entries()) {
     try {
       // webp 파일이면 원본 파일 추가
       if (file.type === "image/webp") {
         webpDataTransfer.items.add(file);
+        onProgressCallback(100, index);
         continue;
       }
+
+      options.onProgress = (progress) => {
+        onProgressCallback(progress, index);
+      };
 
       // 이미지 압축 및 webp 변환
       const compressedFile = await imageCompression(file, options);
@@ -89,8 +101,18 @@ export const convertToWebP = async (files: FileList): Promise<FileList> => {
     }
   }
 
-  const webpFiles = webpDataTransfer.files;
-  return webpFiles;
+  return webpDataTransfer.files;
+};
+
+/**
+ * 파일 입력값 초기화
+ * @param fileInputId 파일 입력 아이디
+ */
+export const resetFileInput = (fileInputId: string) => {
+  const fileInput = document.getElementById(fileInputId) as HTMLInputElement;
+  if (fileInput) {
+    fileInput.value = "";
+  }
 };
 
 /**
