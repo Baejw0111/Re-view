@@ -61,13 +61,14 @@ export default function OnboardingPage() {
           <CardContent>
             <motion.div variants={itemVariants}>
               <EditUserProfile
-                submitFooter={
+                submitFooter={(isUploading: boolean) => (
                   <motion.div variants={itemVariants}>
                     <CardFooter className="p-0">
                       <Button
                         type="submit"
                         variant="outline"
                         className="w-full relative overflow-hidden group"
+                        disabled={isUploading}
                       >
                         <span className="relative z-10">프로필 설정 완료</span>
                         <span
@@ -87,7 +88,7 @@ export default function OnboardingPage() {
                     `}</style>
                     </CardFooter>
                   </motion.div>
-                }
+                )}
               />
             </motion.div>
           </CardContent>

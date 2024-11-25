@@ -89,16 +89,18 @@ export default function UserSetting() {
           </DialogHeader>
           <DialogDescription hidden></DialogDescription>
           <EditUserProfile
-            submitFooter={
+            submitFooter={(isUploading: boolean) => (
               <DialogFooter className="flex flex-row justify-end gap-2">
                 <DialogClose asChild>
                   <Button type="button" variant="outline">
                     취소
                   </Button>
                 </DialogClose>
-                <Button type="submit">저장</Button>
+                <Button type="submit" disabled={isUploading}>
+                  저장
+                </Button>
               </DialogFooter>
-            }
+            )}
           />
         </DialogContent>
       </Dialog>

@@ -18,7 +18,11 @@ import { updateUserInfo } from "@/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Camera, UserRound, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
-import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
+import {
+  handleEnterKeyDown,
+  createPreviewImages,
+  convertToWebP,
+} from "@/shared/lib/utils";
 import { useLocation } from "react-router-dom";
 import {
   profileImageValidation,
@@ -26,16 +30,18 @@ import {
   useDefaultProfileValidation,
   reviewFieldLimits,
 } from "@/shared/types/validation";
+import { Skeleton } from "@/shared/shadcn-ui/skeleton";
 
 export default function EditUserProfile({
   submitFooter,
 }: {
-  submitFooter: React.ReactNode;
+  submitFooter: (isUploading: boolean) => React.ReactNode;
 }) {
-  const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
-  const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 사용자가 현재 등록한 프로필 이미지
   const location = useLocation();
   const currentPage = location.pathname.split("/").pop();
+  const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
+  const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 사용자가 현재 등록한 프로필 이미지
+  const [isUploading, setIsUploading] = useState(false); // 프로필 이미지 업로드 상태
 
   const formSchema = z.object({
     profileImage: profileImageValidation(),
@@ -55,6 +61,7 @@ export default function EditUserProfile({
     },
   });
 
+  // 프로필 업데이트
   const { mutate: updateUserInfoMutation } = useMutation({
     mutationFn: updateUserInfo,
     onSuccess: () => {
@@ -90,13 +97,17 @@ export default function EditUserProfile({
   const handleProfileImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setIsUploading(true);
     const newFiles = e.target.files;
+
     if (newFiles) {
-      const previewImage = await createPreviewImages(newFiles);
-      setCurrentProfileImage(previewImage[0]);
-      form.setValue("profileImage", newFiles);
-      form.setValue("useDefaultProfile", false);
+      const webpFiles = await convertToWebP(newFiles); // 파일을 webp로 변환
+      const previewImage = await createPreviewImages(webpFiles); // 미리보기 이미지 생성
+      setCurrentProfileImage(previewImage[0]); // 현재 프로필 이미지 업데이트
+      form.setValue("profileImage", webpFiles); // 폼 값 업데이트
+      form.setValue("useDefaultProfile", false); // 기본 프로필 이미지 사용 여부 업데이트
     }
+    setIsUploading(false);
   };
 
   /**
@@ -106,6 +117,14 @@ export default function EditUserProfile({
     setCurrentProfileImage("");
     form.setValue("useDefaultProfile", true);
     form.setValue("profileImage", new DataTransfer().files);
+
+    // 파일 입력 요소의 값을 초기화
+    const fileInput = document.getElementById(
+      "profileImage-upload"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
 
   useEffect(() => {
@@ -141,14 +160,20 @@ export default function EditUserProfile({
                         {currentProfileImage.length > 0 ||
                         form.getValues("useDefaultProfile") ? (
                           <Avatar className="h-24 w-24 transition-transform hover:scale-105 active:scale-105">
-                            <AvatarImage
-                              src={currentProfileImage}
-                              alt={userInfo.nickname}
-                              className="object-cover"
-                            />
-                            <AvatarFallback>
-                              <UserRound className="w-[70%] h-[70%]" />
-                            </AvatarFallback>
+                            {isUploading ? (
+                              <Skeleton className="h-24 w-24" />
+                            ) : (
+                              <>
+                                <AvatarImage
+                                  src={currentProfileImage}
+                                  alt={userInfo.nickname}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback>
+                                  <UserRound className="w-[70%] h-[70%]" />
+                                </AvatarFallback>
+                              </>
+                            )}
                           </Avatar>
                         ) : (
                           <UserAvatar
@@ -180,7 +205,9 @@ export default function EditUserProfile({
                       )}
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      클릭하여 프로필 사진 업로드
+                      {isUploading
+                        ? "이미지 업로드 중..."
+                        : "클릭하여 프로필 사진 업로드"}
                     </span>
                   </div>
                 </FormControl>
@@ -206,7 +233,7 @@ export default function EditUserProfile({
             </>
           )}
         />
-        {submitFooter}
+        {submitFooter(isUploading)}
       </form>
     </Form>
   );
