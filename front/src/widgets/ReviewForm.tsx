@@ -37,15 +37,21 @@ import { X, Plus, Info } from "lucide-react";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { ReviewInfo } from "@/shared/types/interface";
-import {
-  API_URL,
-  MAX_FILE_SIZE,
-  ACCEPTED_IMAGE_TYPES,
-} from "@/shared/constants";
 import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
 import { Switch } from "@/shared/shadcn-ui/switch";
 import { AxiosError } from "axios";
-import imageCompression from "browser-image-compression";
+import {
+  titleValidation,
+  reviewImagesValidation,
+  reviewTextValidation,
+  ratingValidation,
+  tagsValidation,
+  isSpoilerValidation,
+  acceptedExtensions,
+  reviewFieldLimits,
+} from "@/shared/types/validation";
+import { API_URL } from "@/shared/constants";
+import { convertToWebP } from "@/shared/lib/utils";
 
 export default function ReviewForm({
   reviewInfo,
@@ -58,68 +64,18 @@ export default function ReviewForm({
   const [previewImages, setPreviewImages] = useState<string[]>([]); // 미리보기 이미지
   const [initialImages, setInitialImages] = useState<string[]>([]); // 초기 이미지
   const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지
+  const [isUploading, setIsUploading] = useState(false); // 업로드 중 상태
 
   /**
    * 리뷰 업로드 시 필드 검증 스키마
    */
   const formSchema = z.object({
-    title: z
-      .string()
-      .min(1, {
-        message: "제목을 입력해주세요.",
-      })
-      .max(20, {
-        message: "제목은 최대 20자까지 입력할 수 있습니다.",
-      }),
-    images: z
-      .instanceof(FileList)
-      .refine((files) => files.length + initialImages.length > 0, {
-        message: "하나 이상의 이미지를 업로드해야 합니다.",
-      })
-      .refine((files) => files.length + initialImages.length <= 5, {
-        message: "이미지 파일은 최대 5개까지 업로드 가능합니다.",
-      })
-      .refine(
-        (files) =>
-          Array.from(files).every((file) => file.size <= MAX_FILE_SIZE),
-        `파일 크기는 5MB 이하여야 합니다.`
-      )
-      .refine(
-        // 이미지 MIME 타입 검증
-        (files) =>
-          Array.from(files).every((file) =>
-            ACCEPTED_IMAGE_TYPES.includes(file.type)
-          ),
-        "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
-      )
-      .refine(
-        // 이미지 확장자 검증
-        (files) =>
-          Array.from(files).every((file) =>
-            /\.(jpg|jpeg|png|webp)$/i.test(file.name)
-          ),
-        "올바른 파일 확장자(.jpg, .jpeg, .png, .webp)를 가진 이미지만 허용됩니다."
-      ),
-    reviewText: z
-      .string()
-      .min(1, {
-        message: "리뷰 내용을 입력해주세요.",
-      })
-      .max(1000, {
-        message: "리뷰 내용은 최대 1000자까지 입력할 수 있습니다.",
-      }),
-    rating: z.number().nonnegative({
-      message: "평점을 입력해주세요.",
-    }),
-    tags: z
-      .array(z.string())
-      .min(1, {
-        message: "태그는 최소 1개 이상이어야 합니다.",
-      })
-      .max(5, {
-        message: "태그는 최대 5개까지 입력할 수 있습니다.",
-      }),
-    isSpoiler: z.boolean(),
+    title: titleValidation,
+    images: reviewImagesValidation(initialImages),
+    reviewText: reviewTextValidation,
+    rating: ratingValidation,
+    tags: tagsValidation,
+    isSpoiler: isSpoilerValidation,
   });
 
   /**
@@ -206,7 +162,7 @@ export default function ReviewForm({
    */
   const onEditSubmit = async (values: z.infer<typeof formSchema>) => {
     // 폼 값 처리
-    const { title, reviewText, rating, tags, images } = values;
+    const { title, reviewText, rating, tags, images, isSpoiler } = values;
 
     const formData = new FormData();
     if (reviewInfo?.title !== title) {
@@ -217,6 +173,9 @@ export default function ReviewForm({
     }
     if (reviewInfo?.rating !== rating) {
       formData.append("rating", rating.toString());
+    }
+    if (reviewInfo?.isSpoiler !== isSpoiler) {
+      formData.append("isSpoiler", isSpoiler.toString());
     }
 
     // 현재 태그 목록이 이전 태그 목록과 서로 같은지 확인
@@ -278,7 +237,10 @@ export default function ReviewForm({
    * @param {FileList} currentFiles - 현재 파일 목록
    * @returns {FileList} - 업데이트된 파일 목록
    */
-  const updateFileList = (newFiles: FileList, currentFiles: FileList) => {
+  const updateFileList = (
+    newFiles: FileList,
+    currentFiles: FileList
+  ): FileList => {
     const updatedFiles = new DataTransfer();
     Array.from(currentFiles).forEach((file) => updatedFiles.items.add(file));
     Array.from(newFiles).forEach((file) => updatedFiles.items.add(file));
@@ -291,32 +253,29 @@ export default function ReviewForm({
    * @param {React.ChangeEvent<HTMLInputElement>} e - 이미지 업로드 이벤트
    * @returns {Promise<void>}
    */
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    setIsUploading(true);
     const newFiles = e.target.files;
     if (newFiles) {
       const currentPreviewImages = [...previewImages]; // 현재 미리보기 이미지 상태
 
-      // 스켈레톤 표시
-      setPreviewImages([...previewImages, ...Array(newFiles.length).fill("")]);
+      setPreviewImages([...previewImages, ...Array(newFiles.length).fill("")]); // 스켈레톤 표시
 
       const currentFiles = form.getValues("images") || []; // 현재 업로드된 파일 목록
-      const combinedFiles = updateFileList(newFiles, currentFiles); // 새로운 파일 목록과 현재 업로드된 파일 목록을 합친 파일 목록
+
+      // newFiles의 파일들을 webp로 변환
+      const webpFiles = await convertToWebP(newFiles);
+
+      const combinedFiles = updateFileList(webpFiles, currentFiles); // 새로운 파일 목록과 현재 업로드된 파일 목록을 합친 파일 목록
       form.setValue("images", combinedFiles); // 폼 값 업데이트
 
-      // 이미지 압축
-      const compressedFiles = await Promise.all(
-        Array.from(newFiles).map((file) =>
-          imageCompression(file, {
-            maxSizeMB: 1, // 최대 1MB로 압축
-            maxWidthOrHeight: 1920, // 최대 너비 또는 높이
-          })
-        )
-      );
-
-      const newPreviewImages = await createPreviewImages(compressedFiles); // 미리보기 이미지 생성
+      const newPreviewImages = await createPreviewImages(webpFiles); // 미리보기 이미지 생성
 
       setPreviewImages([...currentPreviewImages, ...newPreviewImages]); // 미리보기 이미지 업데이트
     }
+    setIsUploading(false);
   };
 
   /**
@@ -324,7 +283,7 @@ export default function ReviewForm({
    * @param {number} index - 이미지 인덱스
    * @returns {void}
    */
-  const handleRemoveInitialImage = (index: number) => {
+  const handleRemoveInitialImage = (index: number): void => {
     setDeletedImages([...deletedImages, initialImages[index]]);
     const newInitialImages = initialImages.filter((_, i) => i !== index);
     setInitialImages(newInitialImages);
@@ -450,8 +409,14 @@ export default function ReviewForm({
                         <Label htmlFor="image-upload">파일 업로드</Label>
                         <ul>
                           <li> - 최대 5개</li>
-                          <li> - 파일 당 최대 5MB</li>
-                          <li> - 파일 확장자: .jpg, .jpeg, .png, .webp</li>
+                          <li>
+                            {" "}
+                            - 파일 당 최대{" "}
+                            {reviewFieldLimits.maxFileSize / 1024 / 1024}MB
+                          </li>
+                          <li>
+                            - 파일 확장자: {acceptedExtensions.join(", ")}
+                          </li>
                         </ul>
                       </div>
                       <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-6">
@@ -518,10 +483,11 @@ export default function ReviewForm({
                       <Input
                         id="image-upload"
                         type="file"
-                        multiple
+                        multiple // 여러 파일 업로드
                         className="hidden"
                         onChange={handleImageUpload}
-                        accept={ACCEPTED_IMAGE_TYPES.join(", ")}
+                        // accept={acceptedExtensions.join(", ")}
+                        accept={reviewFieldLimits.acceptedImageTypes.join(", ")}
                       />
                     </div>
                   </FormControl>
@@ -608,8 +574,12 @@ export default function ReviewForm({
                 </>
               )}
             />
-            <Button type="submit">
-              {reviewInfo ? "리뷰 수정" : "리뷰 업로드"}
+            <Button type="submit" disabled={isUploading}>
+              {isUploading
+                ? "파일 업로드 중..."
+                : reviewInfo
+                ? "리뷰 수정"
+                : "리뷰 업로드"}
             </Button>
           </div>
         </form>

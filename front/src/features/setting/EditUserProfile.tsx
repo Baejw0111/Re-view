@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/shared/shadcn-ui/form";
 import { RootState } from "@/state/store";
-import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from "@/shared/constants";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -21,6 +20,12 @@ import { Camera, UserRound, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
 import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
 import { useLocation } from "react-router-dom";
+import {
+  profileImageValidation,
+  nicknameValidation,
+  useDefaultProfileValidation,
+  reviewFieldLimits,
+} from "@/shared/types/validation";
 
 export default function EditUserProfile({
   submitFooter,
@@ -33,41 +38,9 @@ export default function EditUserProfile({
   const currentPage = location.pathname.split("/").pop();
 
   const formSchema = z.object({
-    profileImage: z
-      .instanceof(FileList)
-      .refine((files) => files.length <= 1, {
-        message: "하나의 이미지만 업로드할 수 있습니다.",
-      })
-      .refine(
-        (files) =>
-          Array.from(files).every((file) => file.size <= MAX_FILE_SIZE),
-        `파일 크기는 5MB 이하여야 합니다.`
-      )
-      .refine(
-        // 이미지 MIME 타입 검증
-        (files) =>
-          Array.from(files).every((file) =>
-            ACCEPTED_IMAGE_TYPES.includes(file.type)
-          ),
-        "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
-      )
-      .refine(
-        // 이미지 확장자 검증
-        (files) =>
-          Array.from(files).every((file) =>
-            /\.(jpg|jpeg|png|webp)$/i.test(file.name)
-          ),
-        "올바른 파일 확장자(.jpg, .jpeg, .png, .webp)를 가진 이미지만 허용됩니다."
-      ),
-    newNickname: z
-      .string()
-      .min(1, {
-        message: "닉네임을 입력해주세요.",
-      })
-      .max(10, {
-        message: "닉네임은 최대 10자까지 입력할 수 있습니다.",
-      }),
-    useDefaultProfile: z.boolean(),
+    profileImage: profileImageValidation(),
+    newNickname: nicknameValidation,
+    useDefaultProfile: useDefaultProfileValidation,
   });
 
   /**
@@ -191,7 +164,7 @@ export default function EditUserProfile({
                       <Input
                         id="profileImage-upload"
                         type="file"
-                        accept={ACCEPTED_IMAGE_TYPES.join(", ")}
+                        accept={reviewFieldLimits.acceptedImageTypes.join(", ")}
                         className="hidden"
                         onChange={handleProfileImageUpload}
                       />
