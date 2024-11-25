@@ -33,11 +33,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/shared/shadcn-ui/popover";
-import { X, Plus, Info } from "lucide-react";
+import { X, Info, LoaderCircle, ImagePlus } from "lucide-react";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { ReviewInfo } from "@/shared/types/interface";
-import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
+import {
+  handleEnterKeyDown,
+  createPreviewImages,
+  resetFileInput,
+} from "@/shared/lib/utils";
 import { Switch } from "@/shared/shadcn-ui/switch";
 import { AxiosError } from "axios";
 import {
@@ -52,6 +56,7 @@ import {
 } from "@/shared/types/validation";
 import { API_URL } from "@/shared/constants";
 import { convertToWebP } from "@/shared/lib/utils";
+import { Progress } from "@/shared/shadcn-ui/progress";
 
 export default function ReviewForm({
   reviewInfo,
@@ -65,6 +70,7 @@ export default function ReviewForm({
   const [initialImages, setInitialImages] = useState<string[]>([]); // 초기 이미지
   const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지
   const [isUploading, setIsUploading] = useState(false); // 리뷰 이미지 업로드 상태
+  const [uploadProgress, setUploadProgress] = useState(0); // 업로드 진행률
 
   /**
    * 리뷰 업로드 시 필드 검증 스키마
@@ -260,6 +266,7 @@ export default function ReviewForm({
   const handleImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
+    setUploadProgress(0);
     setIsUploading(true);
     const newFiles = e.target.files;
 
@@ -268,14 +275,21 @@ export default function ReviewForm({
       const currentPreviewImages = [...previewImages]; // 현재 미리보기 이미지 상태
       setPreviewImages([...previewImages, ...Array(newFiles.length).fill("")]); // 스켈레톤 표시
 
+      const progressArray = Array(newFiles.length).fill(0); // 업로드 진행률 배열
+
       // newFiles의 파일들을 webp로 변환
-      const webpFiles = await convertToWebP(newFiles);
+      const webpFiles = await convertToWebP(newFiles, (progress, index) => {
+        progressArray[index] = progress;
+        const total = progressArray.reduce((acc, curr) => acc + curr, 0);
+        setUploadProgress(Math.round(total / newFiles.length));
+      });
 
       const combinedFiles = updateFileList(webpFiles, currentFiles); // 새로운 파일 목록과 현재 업로드된 파일 목록을 합친 파일 목록
       form.setValue("images", combinedFiles); // 폼 값 업데이트
 
       const newPreviewImages = await createPreviewImages(webpFiles); // 미리보기 이미지 생성
       setPreviewImages([...currentPreviewImages, ...newPreviewImages]); // 미리보기 이미지 업데이트
+      resetFileInput("image-upload"); // 파일 입력값 초기화
     }
     setIsUploading(false);
   };
@@ -312,17 +326,11 @@ export default function ReviewForm({
       form.setValue("images", dataTransfer.files);
     }
 
-    // 파일 입력 요소의 값을 초기화
-    const fileInput = document.getElementById(
-      "image-upload"
-    ) as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
-    }
+    resetFileInput("image-upload");
   };
 
   return (
-    <Card className="p-6 md:p-8">
+    <Card className="p-6 md:p-8 max-w-screen-md mx-auto">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(
@@ -415,80 +423,96 @@ export default function ReviewForm({
                 <FormItem>
                   <FormControl>
                     <div className="flex flex-col gap-4 border border-muted rounded-md p-4">
-                      <div className="flex flex-col gap-2 text-sm text-left text-muted-foreground font-medium">
-                        <Label htmlFor="image-upload">파일 업로드</Label>
-                        <ul>
-                          <li> - 최대 5개</li>
+                      <Label htmlFor="image-upload">파일 업로드</Label>
+                      <div className="flex flex-col gap-2 text-sm text-left text-foreground bg-muted-foreground/50 p-2 rounded-md">
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>최대 5개</li>
                           <li>
-                            {" "}
-                            - 파일 당 최대{" "}
-                            {reviewFieldLimits.maxFileSize / 1024 / 1024}MB
+                            파일 당 최대{" "}
+                            {reviewFieldLimits.fileSize / 1024 / 1024}MB
                           </li>
-                          <li>
-                            - 파일 확장자: {acceptedExtensions.join(", ")}
-                          </li>
+                          <li>파일 확장자: {acceptedExtensions.join(", ")}</li>
                         </ul>
                       </div>
-                      <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-6">
+
+                      <Progress className="relative" value={uploadProgress} />
+
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                         {initialImages.map((image, index) => (
                           <div key={index} className="relative group">
                             {image ? (
-                              <img
-                                src={`${API_URL}/${image}`}
-                                alt={`Thumbnail ${index + 1}`}
-                                className="aspect-square rounded-md object-cover"
-                              />
+                              <>
+                                <img
+                                  src={`${API_URL}/${image}`}
+                                  alt={`Thumbnail ${index + 1}`}
+                                  className="aspect-square rounded-md object-cover"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
+                                  onClick={() =>
+                                    handleRemoveInitialImage(index)
+                                  }
+                                >
+                                  <X className="w-4 h-4" />
+                                  <span className="sr-only">이미지 제거</span>
+                                </Button>
+                              </>
                             ) : (
-                              <Skeleton className="aspect-square rounded-md" />
+                              <Skeleton className="aspect-square rounded-md text-muted-foreground flex items-center justify-center">
+                                <LoaderCircle className="w-6 h-6 animate-spin" />
+                              </Skeleton>
                             )}
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
-                              onClick={() => handleRemoveInitialImage(index)}
-                            >
-                              <X className="w-4 h-4" />
-                              <span className="sr-only">이미지 제거</span>
-                            </Button>
                           </div>
                         ))}
                         {previewImages.map((image, index) => (
                           <div key={index} className="relative group">
                             {image ? (
-                              <img
-                                src={image}
-                                alt={`Thumbnail ${index + 1}`}
-                                className="aspect-square rounded-md object-cover"
-                              />
+                              <>
+                                <img
+                                  src={image}
+                                  alt={`Thumbnail ${index + 1}`}
+                                  className="aspect-square rounded-md object-cover"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
+                                  onClick={() =>
+                                    handleRemoveUploadedImage(index)
+                                  }
+                                >
+                                  <X className="w-4 h-4" />
+                                  <span className="sr-only">이미지 제거</span>
+                                </Button>
+                              </>
                             ) : (
-                              <Skeleton className="aspect-square rounded-md" />
+                              <Skeleton className="aspect-square rounded-md text-muted-foreground flex items-center justify-center">
+                                <LoaderCircle className="w-6 h-6 animate-spin" />
+                              </Skeleton>
                             )}
+                          </div>
+                        ))}
+                        {previewImages.length < reviewFieldLimits.files && (
+                          <TooltipWrapper tooltipText="이미지 업로드">
                             <Button
                               type="button"
                               variant="outline"
-                              size="icon"
-                              className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
-                              onClick={() => handleRemoveUploadedImage(index)}
+                              className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground"
+                              onClick={() => {
+                                document
+                                  .getElementById("image-upload")
+                                  ?.click();
+                              }}
                             >
-                              <X className="w-4 h-4" />
-                              <span className="sr-only">이미지 제거</span>
+                              <ImagePlus className="w-8 h-8 mb-2" />
+                              <span className="text-sm">이미지 추가</span>
                             </Button>
-                          </div>
-                        ))}
-                        <TooltipWrapper tooltipText="이미지 업로드">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex items-center justify-center"
-                            onClick={() => {
-                              document.getElementById("image-upload")?.click();
-                            }}
-                          >
-                            <Plus className="w-6 h-6 text-muted-foreground" />
-                            <span className="sr-only">이미지 업로드</span>
-                          </Button>
-                        </TooltipWrapper>
+                          </TooltipWrapper>
+                        )}
                       </div>
                       <Input
                         id="image-upload"
@@ -496,8 +520,7 @@ export default function ReviewForm({
                         multiple // 여러 파일 업로드
                         className="hidden"
                         onChange={handleImageUpload}
-                        // accept={acceptedExtensions.join(", ")}
-                        accept={reviewFieldLimits.acceptedImageTypes.join(", ")}
+                        accept={reviewFieldLimits.imageTypes.join(", ")}
                       />
                     </div>
                   </FormControl>
@@ -515,8 +538,8 @@ export default function ReviewForm({
                   <FormControl>
                     <div className="flex items-center gap-2">
                       <Input
-                        className="w-full md:w-1/4"
-                        placeholder="입력 후 엔터를 눌러 태그 생성(최대 5개)"
+                        className="w-full md:w-1/2"
+                        placeholder="입력 후 엔터를 눌러 태그 생성"
                         {...field}
                         value={tagInput}
                         onChange={handleTagInputChange}
