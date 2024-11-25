@@ -64,7 +64,7 @@ export default function ReviewForm({
   const [previewImages, setPreviewImages] = useState<string[]>([]); // 미리보기 이미지
   const [initialImages, setInitialImages] = useState<string[]>([]); // 초기 이미지
   const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지
-  const [isUploading, setIsUploading] = useState(false); // 업로드 중 상태
+  const [isUploading, setIsUploading] = useState(false); // 리뷰 이미지 업로드 상태
 
   /**
    * 리뷰 업로드 시 필드 검증 스키마
@@ -198,7 +198,9 @@ export default function ReviewForm({
    * @param {React.ChangeEvent<HTMLInputElement>} e - 태그 입력 이벤트
    * @returns {void}
    */
-  const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTagInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     setTagInput(e.target.value);
   };
 
@@ -207,7 +209,9 @@ export default function ReviewForm({
    * @param {React.KeyboardEvent<HTMLInputElement>} e - 태그 입력 이벤트
    * @returns {void}
    */
-  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleTagInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ): void => {
     if (e.key === "Enter" && tagInput.trim() !== "") {
       const newTags = tagInput.trim().toLowerCase();
 
@@ -225,7 +229,7 @@ export default function ReviewForm({
    * @param {number} index - 태그 인덱스
    * @returns {void}
    */
-  const handleDeleteTag = (index: number) => {
+  const handleDeleteTag = (index: number): void => {
     const tags = form.getValues("tags");
     const newTags = tags.filter((_, i) => i !== index);
     form.setValue("tags", newTags);
@@ -258,12 +262,11 @@ export default function ReviewForm({
   ): Promise<void> => {
     setIsUploading(true);
     const newFiles = e.target.files;
+
     if (newFiles) {
-      const currentPreviewImages = [...previewImages]; // 현재 미리보기 이미지 상태
-
-      setPreviewImages([...previewImages, ...Array(newFiles.length).fill("")]); // 스켈레톤 표시
-
       const currentFiles = form.getValues("images") || []; // 현재 업로드된 파일 목록
+      const currentPreviewImages = [...previewImages]; // 현재 미리보기 이미지 상태
+      setPreviewImages([...previewImages, ...Array(newFiles.length).fill("")]); // 스켈레톤 표시
 
       // newFiles의 파일들을 webp로 변환
       const webpFiles = await convertToWebP(newFiles);
@@ -272,7 +275,6 @@ export default function ReviewForm({
       form.setValue("images", combinedFiles); // 폼 값 업데이트
 
       const newPreviewImages = await createPreviewImages(webpFiles); // 미리보기 이미지 생성
-
       setPreviewImages([...currentPreviewImages, ...newPreviewImages]); // 미리보기 이미지 업데이트
     }
     setIsUploading(false);
