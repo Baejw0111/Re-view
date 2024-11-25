@@ -309,6 +309,14 @@ export default function ReviewForm({
 
       form.setValue("images", dataTransfer.files);
     }
+
+    // 파일 입력 요소의 값을 초기화
+    const fileInput = document.getElementById(
+      "image-upload"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
 
   return (
