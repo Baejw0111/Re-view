@@ -5,12 +5,12 @@ export const reviewFieldLimits = {
   reviewText: 1000,
   tags: 5,
   files: 5,
-  maxFileSize: 20 * 1024 * 1024, // 20MB
-  acceptedImageTypes: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
+  fileSize: 20 * 1024 * 1024, // 20MB
+  imageTypes: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
 };
 
 // MIME 타입에서 확장자 추출
-export const acceptedExtensions = reviewFieldLimits.acceptedImageTypes.map(
+export const acceptedExtensions = reviewFieldLimits.imageTypes.map(
   (type) => type.split("/")[1]
 );
 
@@ -23,7 +23,9 @@ const extensionRegex = new RegExp(`\\.(${acceptedExtensions.join("|")})$`, "i");
 export const titleValidation = z
   .string()
   .min(1, { message: "제목을 입력해주세요." })
-  .max(20, { message: "제목은 최대 20자까지 입력할 수 있습니다." });
+  .max(reviewFieldLimits.title, {
+    message: `제목은 최대 ${reviewFieldLimits.title}자까지 입력할 수 있습니다.`,
+  });
 
 /**
  * 공통 이미지 유효성 검사 로직
@@ -49,19 +51,19 @@ const commonImageValidation = (
     .refine(
       (files) =>
         Array.from(files).every(
-          (file) => file.size <= reviewFieldLimits.maxFileSize
+          (file) => file.size <= reviewFieldLimits.fileSize
         ),
       `파일 크기는 ${
-        reviewFieldLimits.maxFileSize / 1024 / 1024
+        reviewFieldLimits.fileSize / 1024 / 1024
       }MB 이하여야 합니다.`
     )
     .refine(
       // 이미지 MIME 타입 검증
       (files) =>
         Array.from(files).every((file) =>
-          reviewFieldLimits.acceptedImageTypes.includes(file.type)
+          reviewFieldLimits.imageTypes.includes(file.type)
         ),
-      `${reviewFieldLimits.acceptedImageTypes
+      `${reviewFieldLimits.imageTypes
         .map((type) => type.split("/")[1].toUpperCase())
         .join(", ")} 형식의 이미지만 허용됩니다.`
     )
@@ -69,7 +71,7 @@ const commonImageValidation = (
       // 파일 확장자 검증
       (files) =>
         Array.from(files).every((file) => extensionRegex.test(file.name)),
-      `올바른 파일 확장자(${reviewFieldLimits.acceptedImageTypes
+      `올바른 파일 확장자(${reviewFieldLimits.imageTypes
         .map((type) => type.split("/")[1])
         .join(", ")})를 가진 이미지만 허용됩니다.`
     );
@@ -81,7 +83,7 @@ const commonImageValidation = (
  * @returns 유효성 검사 스키마
  */
 export const reviewImagesValidation = (initialImages: string[]) =>
-  commonImageValidation(5, true, initialImages);
+  commonImageValidation(reviewFieldLimits.files, true, initialImages);
 
 /**
  * 리뷰 내용 유효성 검사
