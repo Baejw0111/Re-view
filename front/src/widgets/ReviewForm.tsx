@@ -35,7 +35,6 @@ import {
 } from "@/shared/shadcn-ui/popover";
 import { X, Info, LoaderCircle, ImagePlus } from "lucide-react";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
-import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { ReviewInfo } from "@/shared/types/interface";
 import {
   handleEnterKeyDown,
@@ -506,21 +505,17 @@ export default function ReviewForm({
                           </div>
                         ))}
                         {previewImages.length < reviewFieldLimits.files && (
-                          <TooltipWrapper tooltipText="이미지 업로드">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground"
-                              onClick={() => {
-                                document
-                                  .getElementById("image-upload")
-                                  ?.click();
-                              }}
-                            >
-                              <ImagePlus className="w-8 h-8 mb-2" />
-                              <span className="text-sm">이미지 추가</span>
-                            </Button>
-                          </TooltipWrapper>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground"
+                            onClick={() => {
+                              document.getElementById("image-upload")?.click();
+                            }}
+                          >
+                            <ImagePlus className="w-8 h-8 mb-2" />
+                            <span className="text-sm">이미지 추가</span>
+                          </Button>
                         )}
                       </div>
                       <Input
