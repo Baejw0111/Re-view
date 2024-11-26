@@ -23,6 +23,7 @@ import {
   createPreviewImages,
   convertToWebP,
   resetFileInput,
+  revokePreviewImages,
 } from "@/shared/lib/utils";
 import { useLocation } from "react-router-dom";
 import {
@@ -135,6 +136,13 @@ export default function EditUserProfile({
       form.setValue("useDefaultProfile", true);
     }
   }, [userInfo, form]);
+
+  useEffect(() => {
+    // 컴포넌트 언마운트 시 메모리 해제
+    return () => {
+      revokePreviewImages([currentProfileImage]);
+    };
+  }, [currentProfileImage]);
 
   return (
     <Form {...form}>
