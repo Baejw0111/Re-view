@@ -40,6 +40,7 @@ import {
   handleEnterKeyDown,
   createPreviewImages,
   resetFileInput,
+  revokePreviewImages,
 } from "@/shared/lib/utils";
 import { Switch } from "@/shared/shadcn-ui/switch";
 import { AxiosError } from "axios";
@@ -328,6 +329,13 @@ export default function ReviewForm({
     resetFileInput("image-upload");
   };
 
+  useEffect(() => {
+    // 컴포넌트 언마운트 시 메모리 해제
+    return () => {
+      revokePreviewImages(previewImages);
+    };
+  }, [previewImages]);
+
   return (
     <Card className="p-6 md:p-8 max-w-screen-md mx-auto">
       <Form {...form}>
@@ -467,6 +475,11 @@ export default function ReviewForm({
                                   <X className="w-4 h-4" />
                                   <span className="sr-only">이미지 제거</span>
                                 </Button>
+                                <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/50 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
+                                  <p className="text-xs text-white break-all line-clamp-3">
+                                    {image.split(`\\`).pop()}
+                                  </p>
+                                </div>
                               </>
                             ) : (
                               <Skeleton className="aspect-square rounded-md text-muted-foreground flex items-center justify-center">
@@ -481,7 +494,7 @@ export default function ReviewForm({
                               <>
                                 <img
                                   src={image}
-                                  alt={`Thumbnail ${index + 1}`}
+                                  alt={form.getValues("images")[index].name}
                                   className="aspect-square rounded-md object-cover"
                                 />
                                 <Button
@@ -496,6 +509,11 @@ export default function ReviewForm({
                                   <X className="w-4 h-4" />
                                   <span className="sr-only">이미지 제거</span>
                                 </Button>
+                                <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/50 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
+                                  <p className="text-xs text-white break-all line-clamp-3">
+                                    {form.getValues("images")[index].name}
+                                  </p>
+                                </div>
                               </>
                             ) : (
                               <Skeleton className="aspect-square rounded-md text-muted-foreground flex items-center justify-center">
