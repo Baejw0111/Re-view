@@ -57,6 +57,7 @@ import {
 import { API_URL } from "@/shared/constants";
 import { convertToWebP } from "@/shared/lib/utils";
 import { Progress } from "@/shared/shadcn-ui/progress";
+import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 
 export default function ReviewForm({
   reviewInfo,
@@ -463,18 +464,23 @@ export default function ReviewForm({
                                   alt={`Thumbnail ${index + 1}`}
                                   className="aspect-square rounded-md object-cover"
                                 />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
-                                  onClick={() =>
-                                    handleRemoveInitialImage(index)
-                                  }
+                                <TooltipWrapper
+                                  tooltipText="이미지 제거"
+                                  side="top"
                                 >
-                                  <X className="w-4 h-4" />
-                                  <span className="sr-only">이미지 제거</span>
-                                </Button>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
+                                    onClick={() =>
+                                      handleRemoveInitialImage(index)
+                                    }
+                                  >
+                                    <X className="w-4 h-4" />
+                                    <span className="sr-only">이미지 제거</span>
+                                  </Button>
+                                </TooltipWrapper>
                                 <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/50 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
                                   <p className="text-xs text-white break-all line-clamp-3">
                                     {image.split(`\\`).pop()}
@@ -497,18 +503,23 @@ export default function ReviewForm({
                                   alt={form.getValues("images")[index].name}
                                   className="aspect-square rounded-md object-cover"
                                 />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
-                                  onClick={() =>
-                                    handleRemoveUploadedImage(index)
-                                  }
+                                <TooltipWrapper
+                                  tooltipText="이미지 제거"
+                                  side="top"
                                 >
-                                  <X className="w-4 h-4" />
-                                  <span className="sr-only">이미지 제거</span>
-                                </Button>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="absolute top-1 right-1 flex w-5 h-5 md:w-9 md:h-9"
+                                    onClick={() =>
+                                      handleRemoveUploadedImage(index)
+                                    }
+                                  >
+                                    <X className="w-4 h-4" />
+                                    <span className="sr-only">이미지 제거</span>
+                                  </Button>
+                                </TooltipWrapper>
                                 <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/50 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
                                   <p className="text-xs text-white break-all line-clamp-3">
                                     {form.getValues("images")[index].name}
