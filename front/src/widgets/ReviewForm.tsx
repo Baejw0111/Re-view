@@ -435,7 +435,16 @@ export default function ReviewForm({
                         </ul>
                       </div>
 
-                      <Progress className="relative" value={uploadProgress} />
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ${
+                          isUploading
+                            ? "opacity-100 translate-y-0 h-10"
+                            : "opacity-0 -translate-y-full h-0"
+                        }`}
+                      >
+                        <span className="text-sm">파일 업로드 중...</span>
+                        <Progress value={uploadProgress} />
+                      </div>
 
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                         {initialImages.map((image, index) => (
