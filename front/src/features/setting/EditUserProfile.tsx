@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { updateUserInfo } from "@/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
-import { Camera, UserRound, X } from "lucide-react";
+import { Camera, LoaderCircle, UserRound, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
 import {
   handleEnterKeyDown,
@@ -43,6 +43,7 @@ export default function EditUserProfile({
   const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
   const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 사용자가 현재 등록한 프로필 이미지
   const [isUploading, setIsUploading] = useState(false); // 프로필 이미지 업로드 상태
+  const [uploadProgress, setUploadProgress] = useState(0); // 프로필 이미지 업로드 진행률
 
   const formSchema = z.object({
     profileImage: profileImageValidation(),
@@ -99,11 +100,12 @@ export default function EditUserProfile({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setIsUploading(true);
+    setUploadProgress(0);
     const newFiles = e.target.files;
 
     if (newFiles) {
       const webpFiles = await convertToWebP(newFiles, (progress) => {
-        console.log(`압축 진행률: ${progress}%`);
+        setUploadProgress(progress);
       }); // 파일을 webp로 변환
       const previewImage = await createPreviewImages(webpFiles); // 미리보기 이미지 생성
       setCurrentProfileImage(previewImage[0]); // 현재 프로필 이미지 업데이트
@@ -158,7 +160,9 @@ export default function EditUserProfile({
                         form.getValues("useDefaultProfile") ? (
                           <Avatar className="h-24 w-24 transition-transform hover:scale-105 active:scale-105">
                             {isUploading ? (
-                              <Skeleton className="h-24 w-24" />
+                              <Skeleton className="h-24 w-24 flex items-center justify-center">
+                                <LoaderCircle className="w-6 h-6 animate-spin" />
+                              </Skeleton>
                             ) : (
                               <>
                                 <AvatarImage
@@ -203,7 +207,7 @@ export default function EditUserProfile({
                     </div>
                     <span className="text-sm text-muted-foreground">
                       {isUploading
-                        ? "이미지 업로드 중..."
+                        ? `이미지 업로드 중... ${uploadProgress}%`
                         : "클릭하여 프로필 사진 업로드"}
                     </span>
                   </div>
