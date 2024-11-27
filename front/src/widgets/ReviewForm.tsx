@@ -58,12 +58,12 @@ export default function ReviewForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: reviewInfo?.title || "",
+      title: reviewInfo ? reviewInfo.title : "",
       images: new DataTransfer().files,
-      reviewText: reviewInfo?.reviewText || "",
-      rating: reviewInfo?.rating || -1,
-      tags: reviewInfo?.tags || [],
-      isSpoiler: reviewInfo?.isSpoiler || false,
+      reviewText: reviewInfo ? reviewInfo.reviewText : "",
+      rating: reviewInfo ? reviewInfo.rating : -1,
+      tags: reviewInfo ? reviewInfo.tags : [],
+      isSpoiler: reviewInfo ? reviewInfo.isSpoiler : false,
     },
   });
 
