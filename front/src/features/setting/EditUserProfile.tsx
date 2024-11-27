@@ -166,7 +166,7 @@ export default function EditUserProfile({
                         htmlFor="profileImage-upload"
                         className="cursor-pointer"
                       >
-                        {currentProfileImage.length > 0 || !isDefaultProfile ? (
+                        {currentProfileImage.length > 0 || isDefaultProfile ? (
                           <Avatar className="h-24 w-24 transition-transform hover:scale-105 active:scale-105">
                             {isUploading ? (
                               <Skeleton className="h-24 w-24 flex items-center justify-center">
