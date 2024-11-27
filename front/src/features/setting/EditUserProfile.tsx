@@ -64,6 +64,8 @@ export default function EditUserProfile({
     },
   });
 
+  const isDefaultProfile = form.watch("useDefaultProfile"); // 기본 프로필 이미지 사용 여부
+
   // 프로필 업데이트
   const { mutate: updateUserInfoMutation } = useMutation({
     mutationFn: updateUserInfo,
@@ -164,8 +166,7 @@ export default function EditUserProfile({
                         htmlFor="profileImage-upload"
                         className="cursor-pointer"
                       >
-                        {currentProfileImage.length > 0 ||
-                        form.getValues("useDefaultProfile") ? (
+                        {currentProfileImage.length > 0 || !isDefaultProfile ? (
                           <Avatar className="h-24 w-24 transition-transform hover:scale-105 active:scale-105">
                             {isUploading ? (
                               <Skeleton className="h-24 w-24 flex items-center justify-center">
@@ -202,7 +203,7 @@ export default function EditUserProfile({
                         className="hidden"
                         onChange={handleProfileImageUpload}
                       />
-                      {!form.getValues("useDefaultProfile") && (
+                      {!isDefaultProfile && (
                         <button
                           type="button"
                           onClick={handleDefaultProfileImage}
