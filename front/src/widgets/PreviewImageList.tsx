@@ -43,6 +43,7 @@ export default function PreviewImageList({
 }) {
   const [previewImages, setPreviewImages] = useState<string[]>([]); // 미리보기 이미지
   const [uploadProgress, setUploadProgress] = useState(0); // 업로드 진행률
+  const currentFiles = form.watch("images");
 
   /**
    * 파일 목록 업데이트 함수
@@ -74,7 +75,6 @@ export default function PreviewImageList({
     const newFiles = e.target.files;
 
     if (newFiles) {
-      const currentFiles = form.getValues("images") || []; // 현재 업로드된 파일 목록
       const currentPreviewImages = [...previewImages]; // 현재 미리보기 이미지 상태
       setPreviewImages([...previewImages, ...Array(newFiles.length).fill("")]); // 스켈레톤 표시
 
@@ -116,7 +116,6 @@ export default function PreviewImageList({
     const newPreviewImages = previewImages.filter((_, i) => i !== index);
     setPreviewImages(newPreviewImages);
 
-    const currentFiles = form.getValues("images");
     if (currentFiles) {
       const dataTransfer = new DataTransfer(); // 파일 목록을 담을 DataTransfer 객체 생성
 
@@ -184,7 +183,7 @@ export default function PreviewImageList({
                   {image ? (
                     <PreviewImageBox
                       imageSrc={image}
-                      imageName={form.getValues("images")[index].name}
+                      imageName={currentFiles[index].name}
                       handleRemoveImage={() => handleRemoveUploadedImage(index)}
                     />
                   ) : (
