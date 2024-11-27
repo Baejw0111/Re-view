@@ -195,7 +195,7 @@ export default function EditUserProfile({
                           <Camera className="w-4 h-4 text-white" />
                         </div>
                       </FormLabel>
-                      <Input
+                      <input
                         id="profileImage-upload"
                         type="file"
                         accept={reviewFieldLimits.imageTypes.join(", ")}
@@ -233,7 +233,7 @@ export default function EditUserProfile({
               <FormItem>
                 <FormControl>
                   <div className="flex flex-col gap-2">
-                    <FormLabel htmlFor="newNickname">닉네임</FormLabel>
+                    <div className="text-sm font-bold">닉네임</div>
                     <Input id="newNickname" {...field} />
                   </div>
                 </FormControl>
