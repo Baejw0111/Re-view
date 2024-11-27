@@ -21,14 +21,18 @@ export default function ReviewTextForm({
         <>
           <FormItem>
             <FormControl>
-              <div className="grid gap-2">
-                <Textarea
-                  id="review"
-                  placeholder="리뷰를 작성해주세요.(최대 1000자)"
-                  rows={10}
-                  {...field}
-                />
-              </div>
+              <Textarea
+                id="review"
+                placeholder="리뷰를 작성해주세요.(최대 1000자)"
+                rows={5}
+                {...field}
+                className="py-0 px-1 rounded-none border-0 focus-visible:ring-0 resize-none"
+                style={{ overflow: "hidden" }} // 자동 높이 조정 및 스크롤 숨기기
+                onInput={(e) => {
+                  e.currentTarget.style.height = "auto"; // 높이 초기화
+                  e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`; // 내용에 맞게 높이 조정
+                }}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

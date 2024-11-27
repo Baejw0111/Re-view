@@ -1,9 +1,4 @@
-import {
-  FormField,
-  FormItem,
-  FormControl,
-  FormLabel,
-} from "@/shared/shadcn-ui/form";
+import { FormField, FormItem, FormControl } from "@/shared/shadcn-ui/form";
 import { Switch } from "@/shared/shadcn-ui/switch";
 import { UseFormReturn } from "react-hook-form";
 import { ReviewFormValues } from "@/shared/types/interface";
@@ -24,11 +19,12 @@ export default function SpoilerSwitch({
               <FormControl>
                 <Switch
                   id="isSpoiler"
+                  className="data-[state=checked]:bg-destructive"
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormLabel htmlFor="isSpoiler">스포일러</FormLabel>
+              <div className="text-sm font-bold text-destructive">스포일러</div>
             </div>
           </FormItem>
         </>

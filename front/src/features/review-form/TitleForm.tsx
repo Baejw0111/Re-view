@@ -4,9 +4,9 @@ import {
   FormControl,
   FormMessage,
 } from "@/shared/shadcn-ui/form";
-import { Input } from "@/shared/shadcn-ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { ReviewFormValues } from "@/shared/types/interface";
+import { Input } from "@/shared/shadcn-ui/input";
 
 export default function TitleForm({
   form,
@@ -22,7 +22,7 @@ export default function TitleForm({
           <FormItem>
             <FormControl>
               <Input
-                className="w-full"
+                className="w-full h-9 px-1 py-0 border-0 outline-none focus-visible:ring-0 text-3xl font-bold bg-transparent"
                 id="title"
                 placeholder="제목(최대 20자)"
                 {...field}

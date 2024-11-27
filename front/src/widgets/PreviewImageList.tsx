@@ -5,9 +5,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/shared/shadcn-ui/form";
-import { Label } from "@/shared/shadcn-ui/label";
 import { Button } from "@/shared/shadcn-ui/button";
-import { Input } from "@/shared/shadcn-ui/input";
 import { ReviewFormValues } from "@/shared/types/interface";
 import { UseFormReturn } from "react-hook-form";
 import { API_URL } from "@/shared/constants";
@@ -145,92 +143,86 @@ export default function PreviewImageList({
       control={form.control}
       name="images"
       render={() => (
-        <>
-          <FormItem>
-            <FormControl>
-              <div className="flex flex-col gap-4 border border-muted rounded-md p-4">
-                <Label htmlFor="image-upload">파일 업로드</Label>
-                <div className="flex flex-col gap-2 text-sm text-left text-foreground bg-muted-foreground/50 p-2 rounded-md">
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>최대 5개</li>
-                    <li>
-                      파일 당 최대 {reviewFieldLimits.fileSize / 1024 / 1024}MB
-                    </li>
-                    <li>파일 확장자: {acceptedExtensions.join(", ")}</li>
-                  </ul>
-                </div>
+        <FormItem>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-lg font-bold">파일 업로드</h2>
+            <div className="flex flex-col gap-2 text-sm text-left text-foreground bg-muted-foreground/50 p-2 rounded-md">
+              <ul className="list-disc pl-5 space-y-1">
+                <li>최대 5개</li>
+                <li>
+                  파일 당 최대 {reviewFieldLimits.fileSize / 1024 / 1024}MB
+                </li>
+                <li>파일 확장자: {acceptedExtensions.join(", ")}</li>
+              </ul>
+            </div>
 
-                {/* 업로드 이미지 파일 변환 진행 상태바 */}
-                <UploadProgressBar
-                  isUploading={isUploading}
-                  uploadProgress={uploadProgress}
-                />
+            {/* 업로드 이미지 파일 변환 진행 상태바 */}
+            <UploadProgressBar
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+            />
 
-                {/* 초기 이미지(이미 업로드된 이미지들) */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                  {initialImages.map((image, index) => (
-                    <>
-                      {image ? (
-                        <PreviewImageBox
-                          imageSrc={`${API_URL}/${image}`}
-                          imageName={image.split(`\\`).pop() || ""}
-                          handleRemoveImage={() =>
-                            handleRemoveInitialImage(index)
-                          }
-                        />
-                      ) : (
-                        <LoadingBox key={index} />
-                      )}
-                    </>
-                  ))}
-
-                  {/* 새로 업로드할 이미지들 */}
-                  {previewImages.map((image, index) => (
-                    <>
-                      {image ? (
-                        <PreviewImageBox
-                          imageSrc={image}
-                          imageName={form.getValues("images")[index].name}
-                          handleRemoveImage={() =>
-                            handleRemoveUploadedImage(index)
-                          }
-                        />
-                      ) : (
-                        <LoadingBox key={index} />
-                      )}
-                    </>
-                  ))}
-
-                  {/* 이미지 업로드 버튼 */}
-                  {previewImages.length < reviewFieldLimits.files && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground"
-                      onClick={() => {
-                        document.getElementById("image-upload")?.click();
-                      }}
-                    >
-                      <ImagePlus className="w-8 h-8 mb-2" />
-                      <span className="text-sm">이미지 추가</span>
-                    </Button>
+            {/* 초기 이미지(이미 업로드된 이미지들) */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {initialImages.map((image, index) => (
+                <div key={index}>
+                  {image ? (
+                    <PreviewImageBox
+                      imageSrc={`${API_URL}/${image}`}
+                      imageName={image.split(`\\`).pop() || ""}
+                      handleRemoveImage={() => handleRemoveInitialImage(index)}
+                    />
+                  ) : (
+                    <LoadingBox />
                   )}
                 </div>
+              ))}
 
-                {/* 이미지 업로드 파일 입력(숨겨진 상태로, 이미지 업로드 버튼 클릭 시에만 상호작용 가능) */}
-                <Input
-                  id="image-upload"
-                  type="file"
-                  multiple // 여러 파일 업로드
-                  className="hidden"
-                  onChange={handleImageUpload}
-                  accept={reviewFieldLimits.imageTypes.join(", ")}
-                />
-              </div>
+              {/* 새로 업로드할 이미지들 */}
+              {previewImages.map((image, index) => (
+                <div key={index}>
+                  {image ? (
+                    <PreviewImageBox
+                      imageSrc={image}
+                      imageName={form.getValues("images")[index].name}
+                      handleRemoveImage={() => handleRemoveUploadedImage(index)}
+                    />
+                  ) : (
+                    <LoadingBox />
+                  )}
+                </div>
+              ))}
+
+              {/* 이미지 업로드 버튼 */}
+              {previewImages.length < reviewFieldLimits.files && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="aspect-square rounded-md w-full h-full border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground"
+                  onClick={() => {
+                    document.getElementById("image-upload")?.click();
+                  }}
+                >
+                  <ImagePlus className="w-8 h-8 mb-2" />
+                  <span className="text-sm">이미지 추가</span>
+                </Button>
+              )}
+            </div>
+
+            <FormControl>
+              {/* 이미지 업로드 파일 입력(숨겨진 상태로, 이미지 업로드 버튼 클릭 시에만 상호작용 가능) */}
+              <input
+                id="image-upload"
+                type="file"
+                multiple // 여러 파일 업로드
+                className="hidden"
+                onChange={handleImageUpload}
+                accept={reviewFieldLimits.imageTypes.join(", ")}
+              />
             </FormControl>
-            <FormMessage />
-          </FormItem>
-        </>
+          </div>
+          <FormMessage />
+        </FormItem>
       )}
     />
   );

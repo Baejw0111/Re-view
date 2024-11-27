@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   FormField,
   FormItem,
@@ -23,6 +24,7 @@ export default function RatingForm({
   form: UseFormReturn<ReviewFormValues>;
   defaultValue?: number;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <FormField
       control={form.control}
@@ -34,8 +36,13 @@ export default function RatingForm({
               <Select
                 onValueChange={(value) => field.onChange(+value)}
                 defaultValue={defaultValue?.toString()}
+                onOpenChange={setIsOpen}
               >
-                <SelectTrigger className="w-1/3">
+                <SelectTrigger
+                  className={`w-16 h-10 px-1 rounded-none border-0 border-b-2 focus:border-b-foreground focus:ring-0 outline-none transition-all duration-300 ease-in-out
+                    ${isOpen ? "border-b-foreground" : ""}
+                    `}
+                >
                   <SelectValue placeholder="평점" />
                 </SelectTrigger>
                 <SelectContent>

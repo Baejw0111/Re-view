@@ -25,6 +25,7 @@ import ReviewTextForm from "@/features/review-form/ReviewTextForm";
 import PreviewImageList from "@/widgets/PreviewImageList";
 import SpoilerSwitch from "@/features/review-form/SpoilerSwitch";
 import TagForm from "@/features/review-form/TagForm";
+import { Separator } from "@/shared/shadcn-ui/separator";
 
 export default function ReviewForm({
   reviewInfo,
@@ -158,16 +159,21 @@ export default function ReviewForm({
           onKeyDown={handleEnterKeyDown}
           className="flex flex-col gap-6"
         >
-          {/* 제목, 평점 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* 제목 */}
-            <TitleForm form={form} />
-            {/* 평점 */}
-            <RatingForm form={form} defaultValue={reviewInfo?.rating} />
-          </div>
+          {/* 제목 */}
+          <TitleForm form={form} />
+
+          {/* 평점 */}
+          <RatingForm form={form} defaultValue={reviewInfo?.rating} />
 
           {/* 리뷰 본문 */}
           <ReviewTextForm form={form} />
+
+          <Separator />
+
+          {/* 태그 입력 */}
+          <TagForm form={form} />
+
+          <Separator />
 
           {/* 이미지 업로드 */}
           <PreviewImageList
@@ -180,16 +186,13 @@ export default function ReviewForm({
             setIsUploading={setIsUploading}
           />
 
-          {/* 태그 입력 */}
-          <TagForm form={form} />
-
           {/* 하단부(스포일러 스위치, 리뷰 업로드 버튼) */}
           <div className="flex items-center gap-4 justify-end">
             {/* 스포일러 스위치 */}
             <SpoilerSwitch form={form} />
 
             {/* 리뷰 업로드 버튼 */}
-            <Button type="submit" disabled={isUploading}>
+            <Button type="submit" className="font-bold" disabled={isUploading}>
               {isUploading
                 ? "파일 업로드 중..."
                 : reviewInfo
