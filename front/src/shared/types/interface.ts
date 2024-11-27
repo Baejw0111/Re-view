@@ -91,3 +91,21 @@ export interface NotificationInfo {
   content: string;
   reviewThumbnail: string;
 }
+
+/**
+ * @description 리뷰 폼 값
+ * @property {string} title - 리뷰 제목
+ * @property {FileList} images - 리뷰 이미지
+ * @property {string} reviewText - 리뷰 내용
+ * @property {number} rating - 리뷰 평점
+ * @property {string[]} tags - 리뷰 태그
+ * @property {boolean} isSpoiler - 스포일러 여부
+ */
+export interface ReviewFormValues {
+  title: string;
+  images: FileList;
+  reviewText: string;
+  rating: number;
+  tags: string[];
+  isSpoiler: boolean;
+}

@@ -52,7 +52,7 @@ export const searchReviews = async (
  * 리뷰 업로드 함수
  * @param formData 전송할 리뷰 정보
  */
-export const uploadReview = async (formData: FormData): Promise<void> => {
+export const writeReview = async (formData: FormData): Promise<void> => {
   await authApiClient.post(`/review`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
