@@ -1,9 +1,4 @@
-import {
-  UserModel,
-  NotificationModel,
-  CommentModel,
-  ReviewModel,
-} from "../utils/Model.js";
+import { UserModel, NotificationModel } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 
 const clients = new Map(); // 사용자 ID를 키로 하는 클라이언트 맵
@@ -52,6 +47,8 @@ export const sendEventToClient = (userId) => {
         `data: new notification\n\n` // 줄바꿈 문자를 두개 쓰는 이유는 이벤트의 끝을 알려주기 위함
       );
     });
+  } else {
+    console.log(`${userId} 클라이언트 없음`);
   }
 };
 
