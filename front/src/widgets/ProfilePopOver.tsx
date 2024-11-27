@@ -36,7 +36,7 @@ export default function ProfilePopOver({
         onMouseLeave={() => setIsOpen(false)}
       >
         <ProfileInfo userId={userId} profileImageSize="sm" />
-        <Button className="w-full" asChild>
+        <Button className="w-full font-bold" asChild>
           <Link to={`/profile/${userId}`}>
             <User className="mr-2 h-4 w-4" />
             프로필 보기
