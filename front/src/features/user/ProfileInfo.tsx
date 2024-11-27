@@ -23,7 +23,7 @@ export default function ProfileInfo({
     <>
       {userInfo && (
         <div className="flex flex-row w-full items-center gap-6">
-          <div className="w-2/5 flex justify-center items-center">
+          <div className="flex-1 flex justify-center items-center">
             <UserAvatar
               className={`${
                 profileImageSize === "sm"
@@ -40,13 +40,13 @@ export default function ProfileInfo({
             <div className="flex flex-row justify-start gap-2 md:gap-4 text-center">
               <h1 className="text-2xl font-bold">{userInfo.nickname}</h1>
             </div>
-            <div className="flex justify-start gap-6">
-              <div className="text-center">
+            <div className="flex justify-start gap-4">
+              <div className="text-center flex flex-col gap-1">
                 <p className="text-xl font-semibold">{userInfo.reviewCount}</p>
                 <p className="text-xs text-muted-foreground">리뷰</p>
               </div>
               <Separator orientation="vertical" className="h-10" />
-              <div className="text-center">
+              <div className="text-center flex flex-col gap-1">
                 <p className="text-xl font-semibold">
                   {userInfo.reviewCount === 0
                     ? 0
