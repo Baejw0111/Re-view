@@ -37,6 +37,7 @@ export async function getFavoriteTags(userId) {
     return tagList;
   } catch (error) {
     console.error("사용자별 상위 태그 계산 에러:", error);
+    return error;
   }
 }
 
