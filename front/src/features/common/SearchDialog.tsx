@@ -109,7 +109,7 @@ export default function SearchDialog() {
         </CommandGroup>
         {/* 검색창 열었을 때 최근 검색어 + 인기 태그 렌더링 */}
         <div className="flex">
-          <CommandGroup heading="최근 검색어" className="flex-1 w-full pt-0">
+          <CommandGroup heading="🕒 최근 검색어" className="flex-1 w-full pt-0">
             {recentSearchQueries.map((query: string) => (
               <CommandItem
                 value={`recent-search-${query}`} // value 값이 같을 경우 중복 선택되는 현상 방지하기 위에 앞에 문자열 추가
@@ -141,7 +141,7 @@ export default function SearchDialog() {
           {!searchQuery && (
             <>
               <CommandGroup
-                heading="인기 태그"
+                heading="🔥 인기 태그"
                 className="flex-1 w-full border-l"
               >
                 {popularTags &&
