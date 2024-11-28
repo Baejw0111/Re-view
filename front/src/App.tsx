@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ThemeProvider from "@/state/theme/ThemeProvider";
 import Feed from "@/pages/Feed";
@@ -64,55 +64,84 @@ function App() {
     }
   }, [userInfo, queryClient]);
 
+  const router = createBrowserRouter([
+    {
+      element: (
+        <>
+          <Header />
+          <ReviewDetailModal />
+          <SearchDialog />
+        </>
+      ),
+      children: [
+        {
+          path: "/",
+          element: <Feed />,
+        },
+        {
+          path: "/latest",
+          element: <Feed />,
+        },
+        {
+          path: "/popular",
+          element: <Feed />,
+        },
+        {
+          path: "/write",
+          element: (
+            <LoginRequiredRoute authenticated={isAuth}>
+              <WriteReview />
+            </LoginRequiredRoute>
+          ),
+        },
+        {
+          path: "/edit",
+          element: (
+            <LoginRequiredRoute authenticated={isAuth}>
+              <EditReview />
+            </LoginRequiredRoute>
+          ),
+        },
+        {
+          path: "/profile/:id/*",
+          element: <Profile />,
+        },
+        {
+          path: "/notifications",
+          element: (
+            <LoginRequiredRoute authenticated={isAuth}>
+              <Notification />
+            </LoginRequiredRoute>
+          ),
+        },
+        {
+          path: "/search",
+          element: <Search />,
+        },
+        {
+          path: "/test",
+          element: <Test />,
+        },
+      ],
+    },
+    {
+      path: "/oauth/kakao",
+      element: <Authorization />,
+    },
+    {
+      path: "/onboarding",
+      element: (
+        <LoginRequiredRoute authenticated={isAuth}>
+          <Onboarding />
+        </LoginRequiredRoute>
+      ),
+    },
+  ]);
+
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <Router>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <Header />
-        <ReviewDetailModal />
-        <SearchDialog />
-        <Routes>
-          <Route path="/" element={<Feed />} />
-          <Route path="/latest" element={<Feed />} />
-          <Route path="/popular" element={<Feed />} />
-          <Route path="/oauth/kakao" element={<Authorization />} />
-          <Route
-            path="/onboarding"
-            element={
-              <LoginRequiredRoute authenticated={isAuth}>
-                <Onboarding />
-              </LoginRequiredRoute>
-            }
-          />
-          <Route
-            path="/write"
-            element={
-              <LoginRequiredRoute authenticated={isAuth}>
-                <WriteReview />
-              </LoginRequiredRoute>
-            }
-          />
-          <Route
-            path="/edit"
-            element={
-              <LoginRequiredRoute authenticated={isAuth}>
-                <EditReview />
-              </LoginRequiredRoute>
-            }
-          />
-          <Route path="/profile/:id/*" element={<Profile />} />
-          <Route
-            path="/notifications"
-            element={
-              <LoginRequiredRoute authenticated={isAuth}>
-                <Notification />
-              </LoginRequiredRoute>
-            }
-          />
-          <Route path="/search" element={<Search />} />
-          <Route path="/test" element={<Test />} />
-        </Routes>
-      </Router>
+      <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
     </ThemeProvider>
   );
 }
