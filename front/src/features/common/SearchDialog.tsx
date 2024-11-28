@@ -152,10 +152,16 @@ export default function SearchDialog() {
                       onSelect={() => handleSearch(tag)}
                     >
                       <div className="flex items-center gap-1">
-                        <span className="text-muted-foreground">
-                          {`${index + 1}.`}
+                        <span
+                          className={`font-bold mr-1 ${
+                            index <= 2
+                              ? "text-orange-500"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {index + 1}
                         </span>
-                        <span>{tag}</span>
+                        <span className="font-semibold break-all">{tag}</span>
                       </div>
                     </CommandItem>
                   ))}
