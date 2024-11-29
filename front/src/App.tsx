@@ -22,6 +22,9 @@ import useAuth from "@/shared/hooks/useAuth";
 import { getLoginUserInfo } from "@/api/auth";
 import { API_URL } from "@/shared/constants";
 import LoginRequiredRoute from "./pages/LoginRequiredRoute";
+import { fetchNotifications } from "./api/notification";
+import { fetchLatestFeed, fetchPopularFeed } from "./api/review";
+import axios from "axios";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
@@ -64,8 +67,20 @@ function App() {
     }
   }, [userInfo, queryClient]);
 
+  const loginCheck = async () => {
+    try {
+      const userInfo = await axios.get(`${API_URL}/auth/kakao/check`, {
+        withCredentials: true,
+      });
+      return userInfo;
+    } catch (error) {
+      return null;
+    }
+  };
+
   const router = createBrowserRouter([
     {
+      loader: loginCheck,
       element: (
         <>
           <Header />
@@ -77,19 +92,32 @@ function App() {
         {
           path: "/",
           element: <Feed />,
+          loader: async () => {
+            const initialData = await fetchLatestFeed("");
+            return initialData;
+          },
         },
         {
           path: "/latest",
           element: <Feed />,
+          loader: async () => {
+            const initialData = await fetchLatestFeed("");
+            return initialData;
+          },
         },
         {
           path: "/popular",
           element: <Feed />,
+          loader: async () => {
+            const initialData = await fetchPopularFeed("");
+            return initialData;
+          },
         },
         {
           path: "/write",
+          loader: loginCheck,
           element: (
-            <LoginRequiredRoute authenticated={isAuth}>
+            <LoginRequiredRoute>
               <WriteReview />
             </LoginRequiredRoute>
           ),
@@ -97,7 +125,7 @@ function App() {
         {
           path: "/edit",
           element: (
-            <LoginRequiredRoute authenticated={isAuth}>
+            <LoginRequiredRoute>
               <EditReview />
             </LoginRequiredRoute>
           ),
@@ -108,8 +136,12 @@ function App() {
         },
         {
           path: "/notifications",
+          loader: async () => {
+            const notifications = await fetchNotifications();
+            return notifications;
+          },
           element: (
-            <LoginRequiredRoute authenticated={isAuth}>
+            <LoginRequiredRoute>
               <Notification />
             </LoginRequiredRoute>
           ),
@@ -131,7 +163,7 @@ function App() {
     {
       path: "/onboarding",
       element: (
-        <LoginRequiredRoute authenticated={isAuth}>
+        <LoginRequiredRoute>
           <Onboarding />
         </LoginRequiredRoute>
       ),

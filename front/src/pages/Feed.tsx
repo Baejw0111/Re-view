@@ -1,11 +1,13 @@
 import CardList from "@/widgets/CardList";
 import PageTemplate from "@/shared/original-ui/PageTemplate";
+import { useLoaderData } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchLatestFeed, fetchPopularFeed } from "@/api/review";
 import { useLocation } from "react-router-dom";
 
 export default function Feed() {
   const { pathname } = useLocation();
+  const initialData = useLoaderData() as string[];
 
   const getQueryFn = (path: string) => {
     switch (path) {
@@ -33,6 +35,9 @@ export default function Feed() {
       if (lastPage.length < 20) return undefined;
       return lastPage[lastPage.length - 1];
     },
+    initialData: initialData
+      ? { pages: [initialData], pageParams: [""] }
+      : undefined,
     enabled: !!pathname,
   });
 

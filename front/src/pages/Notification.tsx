@@ -1,13 +1,16 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { Loader2Icon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNotifications } from "@/api/notification";
+import { useLoaderData } from "react-router-dom";
 import NotificationBox from "@/features/interaction/NotificationBox";
+import { NotificationInfo } from "@/shared/types/interface";
 
 export default function Notification() {
+  const initialData = useLoaderData() as NotificationInfo[];
+
   const { data: notifications } = useQuery({
     queryKey: ["notifications"],
-    queryFn: () => fetchNotifications(),
+    initialData,
   });
 
   return (
