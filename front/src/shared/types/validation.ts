@@ -93,6 +93,9 @@ export const reviewTextValidation = z
   .min(1, { message: "리뷰 내용을 입력해주세요." })
   .max(reviewFieldLimits.reviewText, {
     message: `리뷰 내용은 최대 ${reviewFieldLimits.reviewText}자까지 입력할 수 있습니다.`,
+  })
+  .refine((text) => text.trim().length > 0, {
+    message: "리뷰 내용은 공백만 입력할 수 없습니다.",
   });
 
 /**
