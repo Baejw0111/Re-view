@@ -93,9 +93,7 @@ export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
 export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
-    return res
-      .status(401)
-      .json({ message: "리프레시 토큰이 존재하지 않습니다." });
+    return res.status(401).json({ message: "로그인 해주세요." });
   }
 
   const response = await axios.post(
