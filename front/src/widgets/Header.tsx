@@ -12,55 +12,55 @@ import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useScrollDirection } from "@/shared/hooks";
 import WriteReviewButton from "@/features/review/WriteReviewButton";
 
-export default function Header() {
+export default function Header({ isAuth }: { isAuth: boolean }) {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const isScrollingUp = useScrollDirection();
 
-  if (window.location.pathname === "/onboarding") return null;
-
   return (
     <>
-      <header
-        className={`sticky p-0 top-0 left-0 w-full h-16 bg-background
+      {window.location.pathname !== "/onboarding" && (
+        <header
+          className={`sticky p-0 top-0 left-0 w-full h-16 bg-background
       flex justify-around items-center z-50 transition-all duration-300 ease-in-out ${
         isScrollingUp ? "translate-y-0" : "-translate-y-full"
       }`}
-      >
-        <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-5">
-          <Link to="/">
-            <Logo />
-          </Link>
-          <div className="flex flex-1 md:justify-end items-center gap-2">
-            <SearchBar />
-            <ThemeToggleButton />
-            {userInfo.kakaoId ? (
-              // 로그인을 했을 경우 유저가 사용 가능한 버튼 보여주기
-              <>
-                <WriteReviewButton />
-                <NotificationButton />
-                <TooltipWrapper tooltipText="프로필">
-                  <Button
-                    variant="ghost"
-                    className="h-9 w-9 rounded-full"
-                    asChild
-                  >
-                    <Link to={`/profile/${userInfo.kakaoId}`}>
-                      <UserAvatar
-                        className="h-7 w-7"
-                        profileImage={userInfo.profileImage}
-                        nickname={userInfo.nickname}
-                      />
-                    </Link>
-                  </Button>
-                </TooltipWrapper>
-              </>
-            ) : (
-              // 닉네임이 없으면 로그인 버튼 보여주기
-              <KakaoLoginButton />
-            )}
+        >
+          <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-5">
+            <Link to="/">
+              <Logo />
+            </Link>
+            <div className="flex flex-1 md:justify-end items-center gap-2">
+              <SearchBar />
+              <ThemeToggleButton />
+              {isAuth ? (
+                // 로그인을 했을 경우 유저가 사용 가능한 버튼 보여주기
+                <>
+                  <WriteReviewButton />
+                  <NotificationButton />
+                  <TooltipWrapper tooltipText="프로필">
+                    <Button
+                      variant="ghost"
+                      className="h-9 w-9 rounded-full"
+                      asChild
+                    >
+                      <Link to={`/profile/${userInfo.kakaoId}`}>
+                        <UserAvatar
+                          className="h-7 w-7"
+                          profileImage={userInfo.profileImage}
+                          nickname={userInfo.nickname}
+                        />
+                      </Link>
+                    </Button>
+                  </TooltipWrapper>
+                </>
+              ) : (
+                // 닉네임이 없으면 로그인 버튼 보여주기
+                <KakaoLoginButton />
+              )}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
       <Outlet />
     </>
   );

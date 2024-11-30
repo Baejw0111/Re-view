@@ -10,7 +10,7 @@ import {
 } from "@/shared/shadcn-ui/card";
 import MovingLogo from "@/features/common/MovingLogo";
 
-export default function OnboardingPage() {
+export default function Onboarding() {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
