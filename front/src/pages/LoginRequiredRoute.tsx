@@ -2,10 +2,10 @@ import AuthError from "@/pages/AuthError";
 
 export default function LoginRequiredRoute({
   children,
+  isAuth,
 }: {
   children: React.ReactNode;
+  isAuth: boolean;
 }) {
-  const isAuth = sessionStorage.getItem("isAuth") === "true";
-
   return isAuth ? <>{children}</> : <AuthError />;
 }
