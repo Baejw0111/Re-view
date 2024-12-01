@@ -23,6 +23,7 @@ import { API_URL } from "@/shared/constants";
 import { fetchNotifications } from "./api/notification";
 import { fetchLatestFeed, fetchPopularFeed } from "./api/review";
 import NotFoundError from "./pages/NotFoundError";
+import ConnectionError from "./pages/ConnectionError";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,7 +56,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Feed />,
-        errorElement: <div>404</div>,
+        errorElement: <ConnectionError />,
         loader: async () => {
           const initialData = await fetchLatestFeed("");
           return initialData;
@@ -64,7 +65,7 @@ const router = createBrowserRouter([
       {
         path: "/latest",
         element: <Feed />,
-        errorElement: <div>404</div>,
+        errorElement: <ConnectionError />,
         loader: async () => {
           const initialData = await fetchLatestFeed("");
           return initialData;
@@ -73,7 +74,7 @@ const router = createBrowserRouter([
       {
         path: "/popular",
         element: <Feed />,
-        errorElement: <div>404</div>,
+        errorElement: <ConnectionError />,
         loader: async () => {
           const initialData = await fetchPopularFeed("");
           return initialData;
