@@ -24,6 +24,9 @@ import { fetchNotifications } from "./api/notification";
 import { fetchLatestFeed, fetchPopularFeed } from "./api/review";
 import NotFoundError from "./pages/NotFoundError";
 import ConnectionError from "./pages/ConnectionError";
+import PostsTab from "@/widgets/PostsTab";
+import CommentsTab from "@/widgets/CommentsTab";
+import LikedTab from "@/widgets/LikedTab";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
@@ -93,8 +96,26 @@ function App() {
           ),
         },
         {
-          path: "/profile/:id/*",
+          path: "/profile/:id",
           element: <Profile />,
+          children: [
+            {
+              path: "",
+              element: <PostsTab />,
+            },
+            {
+              path: "posts",
+              element: <PostsTab />,
+            },
+            {
+              path: "comments",
+              element: <CommentsTab />,
+            },
+            {
+              path: "liked",
+              element: <LikedTab />,
+            },
+          ],
         },
         {
           path: "/notifications",
