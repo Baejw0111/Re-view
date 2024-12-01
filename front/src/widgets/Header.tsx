@@ -9,12 +9,13 @@ import { Link, Outlet } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import SearchBar from "@/features/common/SearchBar";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
-import { useScrollDirection } from "@/shared/hooks";
 import WriteReviewButton from "@/features/review/WriteReviewButton";
 
 export default function Header({ isAuth }: { isAuth: boolean }) {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const isScrollingUp = useScrollDirection();
+  const isScrollingUp = useSelector(
+    (state: RootState) => state.scrollState.isScrollingUp
+  );
 
   return (
     <>

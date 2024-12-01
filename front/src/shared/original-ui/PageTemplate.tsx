@@ -1,8 +1,9 @@
 import { useLocation, useSearchParams } from "react-router-dom";
-import { useScrollDirection } from "@/shared/hooks";
 import { Tabs, TabsTrigger, TabsList } from "@/shared/shadcn-ui/tabs";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function PageTemplate({
   pageName,
@@ -11,7 +12,9 @@ export default function PageTemplate({
   pageName: string;
   children: React.ReactNode;
 }) {
-  const isScrollingUp = useScrollDirection();
+  const isScrollingUp = useSelector(
+    (state: RootState) => state.scrollState.isScrollingUp
+  );
   const queryClient = useQueryClient();
   const { pathname } = useLocation();
   const [queryParams] = useSearchParams();

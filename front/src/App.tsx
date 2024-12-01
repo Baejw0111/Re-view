@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
+import { setScrollState } from "@/state/store/scrollStateSlice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
 import { getLoginUserInfo } from "@/api/auth";
@@ -33,6 +34,8 @@ function App() {
   const isAuth = useAuth();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const [isScrollingUp, setIsScrollingUp] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["loggedInUserInfo"],
@@ -176,6 +179,22 @@ function App() {
       }
     }
   }, [isAuth, userInfo]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < lastScrollY) {
+        setIsScrollingUp(true);
+      } else if (currentScrollY > lastScrollY) {
+        setIsScrollingUp(false);
+      }
+      setLastScrollY(currentScrollY);
+      dispatch(setScrollState(isScrollingUp));
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   // 알림 스트림 연결
   useEffect(() => {
