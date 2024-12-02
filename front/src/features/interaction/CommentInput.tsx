@@ -8,7 +8,6 @@ import { addComment } from "@/api/comment";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMediaQuery } from "@/shared/hooks";
 import { Send } from "lucide-react";
-import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 
@@ -126,16 +125,14 @@ export default function CommentInput() {
               isFocused ? "min-h-[80px]" : "overflow-hidden"
             }`}
           />
-          <TooltipWrapper tooltipText="등록">
-            <Button
-              type="submit"
-              variant="ghost"
-              size="icon"
-              disabled={!comment.trim()}
-            >
-              <Send />
-            </Button>
-          </TooltipWrapper>
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            disabled={!comment.trim()}
+          >
+            <Send />
+          </Button>
         </div>
       </div>
     </form>
