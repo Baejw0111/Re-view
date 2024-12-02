@@ -52,7 +52,7 @@ export default function Search() {
   if (isUserListLoading) return <div>로딩 중...</div>;
 
   return (
-    <PageTemplate pageName={`"${searchQuery}" 검색 결과`}>
+    <PageTemplate>
       {isReviewListSuccess && category === "reviews" && (
         <CardList
           idList={reviewList.pages.flatMap((page) => page)}

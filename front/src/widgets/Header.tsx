@@ -5,17 +5,16 @@ import NotificationButton from "@/widgets/NotificationButton";
 import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store/index";
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import SearchBar from "@/features/common/SearchBar";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import WriteReviewButton from "@/features/review/WriteReviewButton";
+import { useScrollDirection } from "@/shared/hooks";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const isScrollingUp = useSelector(
-    (state: RootState) => state.scrollState.isScrollingUp
-  );
+  const isScrollingUp = useScrollDirection();
 
   return (
     <>
@@ -62,7 +61,6 @@ export default function Header() {
           </div>
         </header>
       )}
-      <Outlet />
     </>
   );
 }

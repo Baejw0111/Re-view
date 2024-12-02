@@ -3,7 +3,6 @@ import userInfoReducer from "@/state/store/userInfoSlice";
 import reviewDetailOpenReducer from "@/state/store/reviewDetailOpenSlice";
 import notificationOpenReducer from "@/state/store/notificationOpenSlice";
 import searchDialogOpenReducer from "@/state/store/searchDialogOpenSlice";
-import scrollStateReducer from "@/state/store/scrollStateSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,7 +10,6 @@ const store = configureStore({
     reviewDetailOpen: reviewDetailOpenReducer,
     notificationOpen: notificationOpenReducer,
     searchDialogOpen: searchDialogOpenReducer,
-    scrollState: scrollStateReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 });

@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
-import { setScrollState } from "@/state/store/scrollStateSlice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
 import { getLoginUserInfo } from "@/api/auth";
@@ -10,14 +9,14 @@ import useAuth from "@/shared/hooks/useAuth";
 import Header from "./widgets/Header";
 import ReviewDetailModal from "./pages/ReviewDetailModal";
 import SearchDialog from "./features/common/SearchDialog";
+import SubHeader from "./widgets/SubHeader";
+import { Outlet } from "react-router-dom";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
   const isAuth = useAuth();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const [isScrollingUp, setIsScrollingUp] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
 
   const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["loggedInUserInfo"],
@@ -39,22 +38,6 @@ function App() {
     }
   }, [isAuth, userInfo]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY < lastScrollY) {
-        setIsScrollingUp(true);
-      } else if (currentScrollY > lastScrollY) {
-        setIsScrollingUp(false);
-      }
-      setLastScrollY(currentScrollY);
-      dispatch(setScrollState(isScrollingUp));
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
   // 알림 스트림 연결
   useEffect(() => {
     if (isAuth) {
@@ -75,6 +58,8 @@ function App() {
   return (
     <>
       <Header />
+      <SubHeader />
+      <Outlet />
       <ReviewDetailModal />
       <SearchDialog />
     </>

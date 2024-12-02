@@ -16,7 +16,7 @@ export default function Profile() {
   const { id: userId } = useParams();
 
   return (
-    <PageTemplate pageName="프로필">
+    <PageTemplate>
       <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
         <ProfileInfo userId={Number(userId)} tags profileImageSize="lg" />
         {loginedUserInfo.kakaoId === Number(userId) && (

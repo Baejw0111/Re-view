@@ -45,7 +45,7 @@ export default function Feed() {
   if (isLoading) return <div>로딩 중...</div>;
 
   return (
-    <PageTemplate pageName="피드">
+    <PageTemplate>
       {isSuccess && (
         <CardList
           idList={feedData.pages.flatMap((page) => page)}
