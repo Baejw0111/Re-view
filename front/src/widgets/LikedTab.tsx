@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useLoaderData } from "react-router-dom";
 import CardList from "@/widgets/CardList";
 import { TabsContent } from "@/shared/shadcn-ui/tabs";
 import { fetchUserLikedList } from "@/api/user";
@@ -7,6 +7,8 @@ import { fetchUserLikedList } from "@/api/user";
 export default function LikedTab() {
   // 사용자 정보 가져오기
   const { id: userId } = useParams();
+  const initialData = useLoaderData() as string[];
+
   // 사용자가 추천한 리뷰 가져오기
   const { data: userLikedList, fetchNextPage: fetchNextUserLikedList } =
     useInfiniteQuery({
@@ -19,6 +21,9 @@ export default function LikedTab() {
         return lastPage[lastPage.length - 1];
       },
       staleTime: 0,
+      initialData: initialData
+        ? { pages: [initialData], pageParams: [""] }
+        : undefined,
     });
 
   return (

@@ -28,6 +28,12 @@ import ConnectionError from "./pages/ConnectionError";
 import PostsTab from "@/widgets/PostsTab";
 import CommentsTab from "@/widgets/CommentsTab";
 import LikedTab from "@/widgets/LikedTab";
+import {
+  fetchUserCommentList,
+  fetchUserInfoById,
+  fetchUserLikedList,
+  fetchUserReviewList,
+} from "./api/user";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
@@ -101,21 +107,53 @@ function App() {
         {
           path: "/profile/:id",
           element: <Profile />,
+          loader: async ({ params }) => {
+            const initialData = await fetchUserInfoById(Number(params.id));
+            return initialData;
+          },
+          errorElement: <NotFoundError />,
           children: [
             {
               path: "",
+              loader: async ({ params }) => {
+                const initialData = await fetchUserReviewList(
+                  Number(params.id),
+                  ""
+                );
+                return initialData;
+              },
               element: <PostsTab />,
             },
             {
               path: "posts",
+              loader: async ({ params }) => {
+                const initialData = await fetchUserReviewList(
+                  Number(params.id),
+                  ""
+                );
+                return initialData;
+              },
               element: <PostsTab />,
             },
             {
               path: "comments",
+              loader: async ({ params }) => {
+                const initialData = await fetchUserCommentList(
+                  Number(params.id)
+                );
+                return initialData;
+              },
               element: <CommentsTab />,
             },
             {
               path: "liked",
+              loader: async ({ params }) => {
+                const initialData = await fetchUserLikedList(
+                  Number(params.id),
+                  ""
+                );
+                return initialData;
+              },
               element: <LikedTab />,
             },
           ],

@@ -1,11 +1,12 @@
 import { TabsContent } from "@/shared/shadcn-ui/tabs";
-import { useParams } from "react-router-dom";
+import { useParams, useLoaderData } from "react-router-dom";
 import CardList from "@/widgets/CardList";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchUserReviewList } from "@/api/user";
 
 export default function PostsTab() {
   const { id: userId } = useParams();
+  const initialData = useLoaderData() as string[];
 
   // 사용자가 작성한 리뷰 가져오기
   const { data: userReviewList, fetchNextPage: fetchNextUserReviewList } =
@@ -19,6 +20,9 @@ export default function PostsTab() {
         return lastPage[lastPage.length - 1];
       },
       staleTime: 0,
+      initialData: initialData
+        ? { pages: [initialData], pageParams: [""] }
+        : undefined,
     });
 
   return (

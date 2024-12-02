@@ -1,9 +1,10 @@
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserInfoById } from "@/api/user";
 import TagBadge from "@/features/review/TagBadge";
 import UserAvatar from "@/features/user/UserAvatar";
+import { useLoaderData } from "react-router-dom";
+import { UserInfo } from "@/shared/types/interface";
 
 export default function ProfileInfo({
   userId,
@@ -14,9 +15,11 @@ export default function ProfileInfo({
   tags?: boolean;
   profileImageSize?: "sm" | "md" | "lg";
 }) {
+  const initialData = useLoaderData() as UserInfo;
+
   const { data: userInfo } = useQuery({
     queryKey: ["userInfo", userId],
-    queryFn: () => fetchUserInfoById(userId),
+    initialData: initialData,
   });
 
   return (

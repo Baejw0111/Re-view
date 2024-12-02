@@ -1,18 +1,17 @@
 import { TabsContent } from "@/shared/shadcn-ui/tabs";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLoaderData } from "react-router-dom";
 import { claculateTime } from "@/shared/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { fetchUserCommentList } from "@/api/user";
 import { CommentInfo } from "@/shared/types/interface";
 
 export default function CommentsTab() {
   const { id: userId } = useParams();
-
+  const initialData = useLoaderData() as CommentInfo[];
   // 사용자가 작성한 댓글 가져오기
   const { data: userCommentList } = useQuery<CommentInfo[]>({
     queryKey: ["userCommentList", Number(userId)],
-    queryFn: () => fetchUserCommentList(Number(userId)),
     staleTime: 0,
+    initialData: initialData,
   });
   return (
     <TabsContent value="comments" className="mt-6 max-w-xl mx-auto">
