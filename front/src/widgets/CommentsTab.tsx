@@ -7,12 +7,14 @@ import { CommentInfo } from "@/shared/types/interface";
 export default function CommentsTab() {
   const { id: userId } = useParams();
   const initialData = useLoaderData() as CommentInfo[];
+
   // 사용자가 작성한 댓글 가져오기
   const { data: userCommentList } = useQuery<CommentInfo[]>({
     queryKey: ["userCommentList", Number(userId)],
     staleTime: 0,
     initialData: initialData,
   });
+
   return (
     <TabsContent value="comments" className="mt-6 max-w-xl mx-auto">
       <div className="bg-background rounded-lg">

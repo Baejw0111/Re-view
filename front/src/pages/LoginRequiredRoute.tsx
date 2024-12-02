@@ -1,11 +1,13 @@
 import AuthError from "@/pages/AuthError";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function LoginRequiredRoute({
   children,
-  isAuth,
 }: {
   children: React.ReactNode;
-  isAuth: boolean;
 }) {
-  return isAuth ? <>{children}</> : <AuthError />;
+  const userInfo = useSelector((state: RootState) => state.userInfo);
+
+  return userInfo.kakaoId ? <>{children}</> : <AuthError />;
 }
