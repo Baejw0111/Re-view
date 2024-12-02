@@ -114,6 +114,10 @@ export const verifyFormFields = (req, res, next) => {
     );
   }
 
+  if (reviewText && reviewText.trim().length === 0) {
+    invalidMessages.push(`리뷰 내용은 공백만 입력할 수 없습니다.`);
+  }
+
   // 평점 검증
   if (rating && (rating < 0 || rating > 5)) {
     invalidMessages.push(`평점 값은 0점 이상, 5점 이하여야 합니다.`);
