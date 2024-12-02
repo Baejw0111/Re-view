@@ -58,7 +58,7 @@ export default function NotificationBox({
     >
       <Link
         to={
-          pathname === "/edit"
+          pathname === "/edit" || pathname === "/write"
             ? `/?reviewId=${reviewId}`
             : `?${new URLSearchParams({
                 ...Object.fromEntries(searchParams),
