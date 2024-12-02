@@ -11,7 +11,6 @@ export default function CommentsTab() {
   // 사용자가 작성한 댓글 가져오기
   const { data: userCommentList } = useQuery<CommentInfo[]>({
     queryKey: ["userCommentList", Number(userId)],
-    staleTime: 0,
     initialData: initialData,
   });
 

@@ -20,7 +20,6 @@ export default function LikedTab() {
         if (lastPage.length < 20) return undefined;
         return lastPage[lastPage.length - 1];
       },
-      staleTime: 0,
       initialData: initialData
         ? { pages: [initialData], pageParams: [""] }
         : undefined,
