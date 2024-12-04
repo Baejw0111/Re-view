@@ -6,6 +6,7 @@ import { VirtualItem } from "@tanstack/react-virtual";
 import { useTailwindBreakpoint } from "@/shared/hooks";
 import UserCard from "@/widgets/UserCard";
 import SkeletonReviewCard from "@/shared/skeleton/SkeletonReviewCard";
+import SkeletonUserCard from "@/shared/skeleton/SkeletonUserCard";
 
 /**
  * @description 카드 목록을 반환하는 컴포넌트
@@ -104,18 +105,22 @@ export default function CardList({
                             />
                           </Suspense>
                         ) : (
-                          <UserCard
-                            userId={Number(
-                              idList[
-                                item.index * gridColumnCount[breakpoint] + index
-                              ]
-                            )}
-                            key={
-                              idList[
-                                item.index * gridColumnCount[breakpoint] + index
-                              ]
-                            }
-                          />
+                          <Suspense key={index} fallback={<SkeletonUserCard />}>
+                            <UserCard
+                              userId={Number(
+                                idList[
+                                  item.index * gridColumnCount[breakpoint] +
+                                    index
+                                ]
+                              )}
+                              key={
+                                idList[
+                                  item.index * gridColumnCount[breakpoint] +
+                                    index
+                                ]
+                              }
+                            />
+                          </Suspense>
                         );
                       }
                     }

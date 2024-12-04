@@ -13,9 +13,7 @@ export default function Search() {
   const {
     data: reviewList,
     isSuccess: isReviewListSuccess,
-    isLoading: isReviewListLoading,
     fetchNextPage: fetchNextReviewList,
-    error: reviewListError,
   } = useInfiniteQuery({
     queryKey: ["search", "reviews", searchQuery],
     initialPageParam: "",
@@ -31,9 +29,7 @@ export default function Search() {
   const {
     data: userList,
     isSuccess: isUserListSuccess,
-    isLoading: isUserListLoading,
     fetchNextPage: fetchNextUserList,
-    error: userListError,
   } = useInfiniteQuery({
     queryKey: ["search", "users", searchQuery],
     initialPageParam: 0,
@@ -45,11 +41,6 @@ export default function Search() {
     },
     enabled: !!searchQuery && category === "users",
   });
-
-  if (reviewListError) return <div>에러: {reviewListError.message}</div>;
-  if (userListError) return <div>에러: {userListError.message}</div>;
-  if (isReviewListLoading) return <div>로딩 중...</div>;
-  if (isUserListLoading) return <div>로딩 중...</div>;
 
   return (
     <PageTemplate>

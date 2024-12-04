@@ -27,7 +27,6 @@ import CommentsTab from "@/widgets/CommentsTab";
 import LikedTab from "@/widgets/LikedTab";
 import {
   fetchUserCommentList,
-  fetchUserInfoById,
   fetchUserLikedList,
   fetchUserReviewList,
 } from "./api/user";
@@ -90,10 +89,6 @@ const router = createBrowserRouter([
       {
         path: "/profile/:id",
         element: <Profile />,
-        loader: async ({ params }) => {
-          const initialData = await fetchUserInfoById(Number(params.id));
-          return initialData;
-        },
         errorElement: <NotFoundError />,
         children: [
           {

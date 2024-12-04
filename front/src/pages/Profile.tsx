@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { Card } from "@/shared/shadcn-ui/card";
 import ProfileInfo from "@/features/user/ProfileInfo";
+import { Suspense } from "react";
+import SkeletonUserCard from "@/shared/skeleton/SkeletonUserCard";
 
 export default function Profile() {
   const location = useLocation();
@@ -17,14 +19,16 @@ export default function Profile() {
 
   return (
     <PageTemplate>
-      <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
-        <ProfileInfo userId={Number(userId)} tags profileImageSize="lg" />
-        {loginedUserInfo.kakaoId === Number(userId) && (
-          <div className="absolute right-1 top-1 md:right-4 md:top-4">
-            <UserSetting />
-          </div>
-        )}
-      </Card>
+      <Suspense fallback={<SkeletonUserCard isUserProfile />}>
+        <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
+          <ProfileInfo userId={Number(userId)} tags profileImageSize="lg" />
+          {loginedUserInfo.kakaoId === Number(userId) && (
+            <div className="absolute right-1 top-1 md:right-4 md:top-4">
+              <UserSetting />
+            </div>
+          )}
+        </Card>
+      </Suspense>
 
       <Tabs
         defaultValue="posts"
