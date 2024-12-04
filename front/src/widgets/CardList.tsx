@@ -1,10 +1,11 @@
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import ReviewCard from "@/widgets/ReviewCard";
 import { useIntersectionObserver } from "@/shared/hooks";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { VirtualItem } from "@tanstack/react-virtual";
 import { useTailwindBreakpoint } from "@/shared/hooks";
 import UserCard from "@/widgets/UserCard";
+import SkeletonReviewCard from "@/shared/skeleton/SkeletonReviewCard";
 
 /**
  * @description 카드 목록을 반환하는 컴포넌트
@@ -68,6 +69,7 @@ export default function CardList({
               >
                 <div
                   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
+                  key={item.index}
                   ref={
                     item.index ===
                     Math.ceil(idList.length / gridColumnCount[breakpoint]) - 2
@@ -82,18 +84,25 @@ export default function CardList({
                         idList.length
                       ) {
                         return cardType === "review" ? (
-                          <ReviewCard
-                            key={
-                              idList[
-                                item.index * gridColumnCount[breakpoint] + index
-                              ]
-                            }
-                            reviewId={String(
-                              idList[
-                                item.index * gridColumnCount[breakpoint] + index
-                              ]
-                            )}
-                          />
+                          <Suspense
+                            key={index}
+                            fallback={<SkeletonReviewCard />}
+                          >
+                            <ReviewCard
+                              key={
+                                idList[
+                                  item.index * gridColumnCount[breakpoint] +
+                                    index
+                                ]
+                              }
+                              reviewId={String(
+                                idList[
+                                  item.index * gridColumnCount[breakpoint] +
+                                    index
+                                ]
+                              )}
+                            />
+                          </Suspense>
                         ) : (
                           <UserCard
                             userId={Number(
