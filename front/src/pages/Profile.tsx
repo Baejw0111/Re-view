@@ -21,7 +21,7 @@ export default function Profile() {
     <PageTemplate>
       <Suspense fallback={<SkeletonUserCard isUserProfile />}>
         <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
-          <ProfileInfo userId={Number(userId)} tags profileImageSize="lg" />
+          <ProfileInfo userId={Number(userId)} tags />
           {loginedUserInfo.kakaoId === Number(userId) && (
             <div className="absolute right-1 top-1 md:right-4 md:top-4">
               <UserSetting />
