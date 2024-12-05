@@ -28,6 +28,7 @@ export default function SearchDialog() {
   const { data: popularTags, refetch: refetchPopularTags } = useQuery({
     queryKey: ["popularTags"],
     queryFn: fetchPopularTags,
+    enabled: !!isSearchDialogOpen,
   });
 
   // 연관 태그 불러오기
@@ -35,7 +36,7 @@ export default function SearchDialog() {
     useQuery({
       queryKey: ["searchRelatedTags"],
       queryFn: () => fetchSearchRelatedTags(searchQuery),
-      enabled: !!searchQuery,
+      enabled: !!searchQuery && !!isSearchDialogOpen,
     });
 
   // localStarage를 활용해 최근 검색어 불러오기 및 저장 기능 필요
