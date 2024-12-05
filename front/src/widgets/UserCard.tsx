@@ -5,7 +5,7 @@ import ProfileInfo from "@/features/user/ProfileInfo";
 export default function UserCard({ userId }: { userId: number }) {
   return (
     <Link to={`/profile/${userId}`}>
-      <Card className="flex justify-center p-8 max-w-xl h-48 mx-auto shadow-lg transition-shadow hover:shadow-xl active:shadow-xl hover:bg-muted active:bg-muted">
+      <Card className="flex justify-center items-center p-8 max-w-xl h-48 mx-auto shadow-lg transition-shadow hover:shadow-xl active:shadow-xl hover:bg-muted active:bg-muted">
         <ProfileInfo userId={userId} profileImageSize="sm" />
       </Card>
     </Link>
