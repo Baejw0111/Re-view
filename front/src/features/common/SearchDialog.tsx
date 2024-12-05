@@ -120,7 +120,7 @@ export default function SearchDialog() {
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">
                     <History className="w-4 h-4 mr-2 shrink-0 text-muted-foreground" />
-                    <span>{query}</span>
+                    <span className="line-clamp-1">{query}</span>
                   </div>
                   <Button
                     variant="link"
@@ -161,7 +161,9 @@ export default function SearchDialog() {
                         >
                           {index + 1}
                         </span>
-                        <span className="font-semibold break-all">{tag}</span>
+                        <span className="font-semibold line-clamp-1">
+                          {tag}
+                        </span>
                       </div>
                     </CommandItem>
                   ))}
