@@ -49,7 +49,7 @@ export default function CardList({
 
   return (
     <>
-      {idList && (
+      {idList.length > 0 ? (
         <div ref={listRef}>
           <div
             className="relative w-full"
@@ -129,6 +129,14 @@ export default function CardList({
               </div>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="flex justify-center items-center h-full">
+          <p className="text-muted-foreground">
+            {cardType === "review"
+              ? "등록된 리뷰가 없습니다."
+              : "해당하는 유저가 없습니다."}
+          </p>
         </div>
       )}
     </>
