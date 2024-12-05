@@ -119,7 +119,7 @@ export default function SearchDialog() {
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">
-                    <History className="w-4 h-4 mr-2 text-muted-foreground" />
+                    <History className="w-4 h-4 mr-2 shrink-0 text-muted-foreground" />
                     <span>{query}</span>
                   </div>
                   <Button
