@@ -3,6 +3,7 @@ import { Tabs, TabsTrigger, TabsList } from "@/shared/shadcn-ui/tabs";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useScrollDirection } from "@/shared/hooks";
+import { Search } from "lucide-react";
 
 export default function SubHeader() {
   const isScrollingUp = useScrollDirection();
@@ -31,13 +32,17 @@ export default function SubHeader() {
             isScrollingUp ? "translate-y-0" : "-translate-y-16"
           }`}
         >
-          <div className="flex items-center justify-between max-w-screen-2xl mx-auto px-4 md:px-6 py-2 md:py-4 border-b border-border">
-            <h1 className="text-2xl md:text-3xl font-bold line-clamp-1">
-              {`${
-                pageRoute === "search"
-                  ? `"${searchQuery}" 검색 결과`
-                  : routeMap[pageRoute as keyof typeof routeMap]
-              }`}
+          <div className="flex items-center h-14 md:h-20 justify-between max-w-screen-2xl mx-auto px-4 md:px-6 py-2 md:py-4 border-b border-border">
+            <h1 className="text-2xl md:text-3xl font-bold line-clamp-1 mr-4">
+              {pageRoute === "search" ? (
+                <div className="flex items-center">
+                  <Search className="h-6 w-6 md:h-8 md:w-8 shrink-0 mr-2" />
+                  <span className="line-clamp-1">"{searchQuery}</span>
+                  <span>"</span>
+                </div>
+              ) : (
+                `${routeMap[pageRoute as keyof typeof routeMap]}`
+              )}
             </h1>
             {routeMap[pageRoute as keyof typeof routeMap] === "피드" && (
               <Tabs
