@@ -11,6 +11,7 @@ import ReviewDetailModal from "./pages/ReviewDetailModal";
 import SearchDialog from "./features/common/SearchDialog";
 import SubHeader from "./widgets/SubHeader";
 import { Outlet } from "react-router-dom";
+import { Toaster } from "./shared/shadcn-ui/sonner";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
@@ -62,6 +63,7 @@ function App() {
       <Outlet />
       <ReviewDetailModal />
       <SearchDialog />
+      <Toaster richColors duration={Infinity} />
     </>
   );
 }

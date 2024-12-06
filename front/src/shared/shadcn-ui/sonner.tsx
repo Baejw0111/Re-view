@@ -1,13 +1,16 @@
-import { useTheme } from "next-themes"
-import { Toaster as Sonner } from "sonner"
+import { useTheme } from "next-themes";
+import { Toaster as Sonner } from "sonner";
+import { useMediaQuery } from "@/shared/hooks";
 
-type ToasterProps = React.ComponentProps<typeof Sonner>
+type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const { theme = "system" } = useTheme();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <Sonner
+      position={isMobile ? "top-center" : "bottom-right"}
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       toastOptions={{
@@ -23,7 +26,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };

@@ -7,18 +7,21 @@ import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 import { VITE_CLIENT_URL } from "@/shared/constants";
 import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
+
   const { mutate: deleteReviewMutate } = useMutation({
     mutationFn: () => deleteReview(reviewId as string),
     onSuccess: () => {
-      alert("리뷰 삭제 성공");
       window.location.href = "/";
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      alert(error.response?.data?.message);
+      toast.error("리뷰 삭제 실패", {
+        description: error.response?.data?.message,
+      });
     },
   });
 
@@ -33,7 +36,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
             navigator.clipboard.writeText(
               `${VITE_CLIENT_URL}/?reviewId=${reviewId}`
             );
-            alert("링크가 복사되었습니다.");
+            toast.success("링크가 복사되었습니다.");
           }}
         >
           <Share2 className="w-6 h-6" />

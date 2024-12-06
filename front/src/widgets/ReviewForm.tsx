@@ -26,6 +26,7 @@ import PreviewImageList from "@/widgets/PreviewImageList";
 import SpoilerSwitch from "@/features/review-form/SpoilerSwitch";
 import TagForm from "@/features/review-form/TagForm";
 import { Separator } from "@/shared/shadcn-ui/separator";
+import { toast } from "sonner";
 
 export default function ReviewForm({
   reviewInfo,
@@ -71,10 +72,11 @@ export default function ReviewForm({
   const { mutate: writeReviewMutation } = useMutation({
     mutationFn: writeReview,
     onSuccess: () => {
-      window.location.href = "/";
+      toast.success("리뷰가 업로드되었습니다.");
+      navigate("/");
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      alert(
+      toast.error(
         `리뷰 업로드 중 에러가 발생했습니다.\n${error.response?.data.message}`
       );
     },
@@ -85,13 +87,14 @@ export default function ReviewForm({
     mutationFn: (formData: FormData) =>
       editReview(reviewInfo?._id as string, formData),
     onSuccess: () => {
+      toast.success("리뷰가 수정되었습니다.");
       queryClient.invalidateQueries({
         queryKey: ["reviewInfo", reviewInfo?._id],
       });
       navigate(-1);
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      alert(
+      toast.error(
         `리뷰 수정 중 에러가 발생했습니다.\n${error.response?.data.message}`
       );
     },

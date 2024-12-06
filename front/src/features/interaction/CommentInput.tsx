@@ -10,6 +10,7 @@ import { useMediaQuery } from "@/shared/hooks";
 import { Send } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import { toast } from "sonner";
 
 export default function CommentInput() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -26,6 +27,7 @@ export default function CommentInput() {
     mutationFn: () => addComment(reviewId as string, comment),
     // 댓글 등록 성공 시, 댓글 목록 갱신
     onSuccess: () => {
+      toast.success("댓글이 등록되었습니다.");
       queryClient.invalidateQueries({
         queryKey: ["reviewCommentList", reviewId],
       });
