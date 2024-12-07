@@ -1,5 +1,4 @@
 import Logo from "@/features/common/Logo";
-import ThemeToggleButton from "@/features/setting/ThemeToggleButton";
 import NotificationButton from "@/widgets/NotificationButton";
 import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
 import { useSelector } from "react-redux";
@@ -67,7 +66,6 @@ export default function Header() {
               </Link>
               <div className="flex flex-1 md:justify-end items-center gap-2">
                 <SearchBar />
-                <ThemeToggleButton />
                 {userInfo.kakaoId ? (
                   // 로그인을 했을 경우 유저가 사용 가능한 버튼 보여주기
                   <>

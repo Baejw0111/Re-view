@@ -11,7 +11,14 @@ import {
   KAKAO_REST_API_KEY,
   KAKAO_LOGOUT_REDIRECT_URI,
 } from "@/shared/constants";
-import { Settings, LogOutIcon, UserRoundX, UserCog } from "lucide-react";
+import {
+  Settings,
+  Sun,
+  Moon,
+  LogOutIcon,
+  UserRoundX,
+  UserCog,
+} from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import {
   Dialog,
@@ -23,10 +30,19 @@ import {
   DialogFooter,
 } from "@/shared/shadcn-ui/dialog";
 import EditUserProfile from "@/features/setting/EditUserProfile";
+import { useTheme } from "@/state/theme/useTheme";
 
 export default function UserSetting() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  /**
+   * 테마 토글 함수
+   */
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   /**
    * 로그아웃 함수
@@ -47,6 +63,7 @@ export default function UserSetting() {
   return (
     <>
       <DropdownMenu onOpenChange={setIsDropdownOpen} modal={false}>
+        {/* 설정 버튼 */}
         <TooltipWrapper tooltipText="설정">
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -54,27 +71,43 @@ export default function UserSetting() {
             </Button>
           </DropdownMenuTrigger>
         </TooltipWrapper>
+
         <DropdownMenuContent onCloseAutoFocus={(e) => e.preventDefault()}>
+          {/* 테마 전환 버튼 */}
+          <DropdownMenuItem
+            onClick={toggleTheme}
+            className="flex items-center justify-start gap-2"
+          >
+            {theme === "light" ? <Moon className="h-5 w-5" /> : null}
+            {theme === "dark" ? <Sun className="h-5 w-5" /> : null}
+            <span className="text-xs">테마 전환</span>
+          </DropdownMenuItem>
+
+          {/* 프로필 편집 버튼 */}
           <DropdownMenuItem
             onClick={() => setIsDialogOpen(true)}
             className="flex items-center justify-start gap-2"
           >
-            <UserCog />
-            <span>프로필 편집</span>
+            <UserCog className="h-5 w-5" />
+            <span className="text-xs">프로필 편집</span>
           </DropdownMenuItem>
+
+          {/* 로그아웃 버튼 */}
           <DropdownMenuItem
             onClick={handleLogOut}
             className="flex items-center justify-start gap-2"
           >
-            <LogOutIcon />
-            <span>로그아웃</span>
+            <LogOutIcon className="h-5 w-5" />
+            <span className="text-xs">로그아웃</span>
           </DropdownMenuItem>
+
+          {/* 회원 탈퇴 버튼 */}
           <DropdownMenuItem
             onClick={handleDelete}
             className="flex items-center justify-start gap-2 text-destructive focus:text-destructive focus:bg-destructive/20 active:text-destructive active:bg-destructive/20"
           >
-            <UserRoundX />
-            <span>회원 탈퇴</span>
+            <UserRoundX className="h-5 w-5" />
+            <span className="text-xs">회원 탈퇴</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -87,7 +120,10 @@ export default function UserSetting() {
           <DialogHeader className="text-left">
             <DialogTitle>프로필 편집</DialogTitle>
           </DialogHeader>
+
           <DialogDescription hidden></DialogDescription>
+
+          {/* 프로필 편집 컴포넌트 */}
           <EditUserProfile
             submitFooter={(isUploading: boolean) => (
               <DialogFooter className="flex flex-row justify-end gap-2">
