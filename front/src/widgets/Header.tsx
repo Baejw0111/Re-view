@@ -1,62 +1,86 @@
 import Logo from "@/features/common/Logo";
-import ThemeToggleButton from "@/features/setting/ThemeToggleButton";
-import UserAvatar from "@/features/user/UserAvatar";
 import NotificationButton from "@/widgets/NotificationButton";
 import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store/index";
 import { Link } from "react-router-dom";
-import { Button } from "@/shared/shadcn-ui/button";
 import SearchBar from "@/features/common/SearchBar";
-import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
-import { useScrollDirection } from "@/shared/hooks";
+import WriteReviewButton from "@/features/review/WriteReviewButton";
+import { useMediaQuery, useScrollDirection } from "@/shared/hooks";
+import ProfileButton from "@/features/user/ProfileButton";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Search, Bell } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setIsSearchDialogOpen } from "@/state/store/searchDialogOpenSlice";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const isScrollingUp = useScrollDirection();
-
-  if (window.location.pathname === "/onboarding") return null;
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const dispatch = useDispatch();
+  const onOpenSearchDialog = () => {
+    dispatch(setIsSearchDialogOpen(true));
+  };
 
   return (
-    <header
-      className={`sticky p-0 top-0 left-0 w-full h-16 bg-background
+    <>
+      {window.location.pathname !== "/onboarding" &&
+        (isMobile ? (
+          <nav
+            className={`fixed p-0 bottom-0 left-0 w-full h-14 bg-background
+      flex justify-around items-center z-50 transition-all duration-300 ease-in-out ${
+        isScrollingUp ? "translate-y-0" : "translate-y-full"
+      }`}
+          >
+            <Button variant="ghost" size="icon" className="shrink-0" asChild>
+              <Link to="/">
+                <Logo className="h-7 w-7" />
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              onClick={onOpenSearchDialog}
+            >
+              <Search />
+            </Button>
+            <WriteReviewButton />
+            <Button variant="ghost" size="icon" className="shrink-0" asChild>
+              <Link to="/notifications">
+                <Bell />
+              </Link>
+            </Button>
+            <ProfileButton userInfo={userInfo} />
+          </nav>
+        ) : (
+          <header
+            className={`sticky p-0 top-0 left-0 w-full h-16 bg-background
       flex justify-around items-center z-50 transition-all duration-300 ease-in-out ${
         isScrollingUp ? "translate-y-0" : "-translate-y-full"
       }`}
-    >
-      <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-5">
-        <Link to="/">
-          <Logo />
-        </Link>
-        <div className="flex flex-1 md:justify-end items-center gap-2">
-          <SearchBar />
-          <ThemeToggleButton />
-          {userInfo.nickname ? (
-            // 닉네임이 있으면(로그인을 했을 경우) 유저가 사용 가능한 버튼 보여주기
-            <>
-              <NotificationButton />
-              <TooltipWrapper tooltipText="프로필">
-                <Button
-                  variant="ghost"
-                  className="h-9 w-9 rounded-full"
-                  asChild
-                >
-                  <Link to={`/profile/${userInfo.kakaoId}`}>
-                    <UserAvatar
-                      className="h-7 w-7"
-                      profileImage={userInfo.profileImage}
-                      nickname={userInfo.nickname}
-                    />
-                  </Link>
-                </Button>
-              </TooltipWrapper>
-            </>
-          ) : (
-            // 닉네임이 없으면 로그인 버튼 보여주기
-            <KakaoLoginButton />
-          )}
-        </div>
-      </div>
-    </header>
+          >
+            <div className="container px-4 md:px-6 max-w-screen-2xl flex justify-between items-center gap-5">
+              <Link to="/">
+                <Logo />
+              </Link>
+              <div className="flex flex-1 md:justify-end items-center gap-2">
+                <SearchBar />
+                {userInfo.kakaoId ? (
+                  // 로그인을 했을 경우 유저가 사용 가능한 버튼 보여주기
+                  <>
+                    <WriteReviewButton />
+                    <NotificationButton />
+                    <ProfileButton userInfo={userInfo} />
+                  </>
+                ) : (
+                  // 닉네임이 없으면 로그인 버튼 보여주기
+                  <KakaoLoginButton />
+                )}
+              </div>
+            </div>
+          </header>
+        ))}
+    </>
   );
 }

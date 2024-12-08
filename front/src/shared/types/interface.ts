@@ -1,19 +1,25 @@
 /**
- * @description 유저 정보
+ * @description 로그인 유저 정보
  * @property {number} kakaoId - 카카오 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
- * @property {string[]} favoriteTags - 선호하는 태그 목록
  * @property {string} notificationCheckTime - 알림 확인 시간
- * @property {number} reviewCount - 작성한 리뷰 개수
- * @property {number} totalRating - 총 평점
  */
-export interface UserInfo {
+export interface LoginUserInfo {
   kakaoId: number;
   nickname: string;
   profileImage: string;
-  favoriteTags: string[];
   notificationCheckTime: string;
+}
+
+/**
+ * @description 유저 정보
+ * @property {string[]} favoriteTags - 선호하는 태그 목록
+ * @property {number} reviewCount - 작성한 리뷰 개수
+ * @property {number} totalRating - 총 평점
+ */
+export interface UserInfo extends LoginUserInfo {
+  favoriteTags: string[];
   reviewCount: number;
   totalRating: number;
 }
@@ -27,6 +33,7 @@ export interface UserInfo {
  * @property {string} reviewText - 리뷰 내용
  * @property {number} rating - 리뷰 평점
  * @property {string[]} tags - 리뷰 태그
+ * @property {boolean} isSpoiler - 스포일러 여부
  * @property {string} _id - 리뷰 ID
  * @property {number} __v - 리뷰 버전
  */
@@ -38,6 +45,7 @@ export interface ReviewInfo {
   reviewText: string;
   rating: number;
   tags: string[];
+  isSpoiler: boolean;
   _id: string;
   __v: number;
 }
@@ -88,4 +96,22 @@ export interface NotificationInfo {
   reviewTitle: string;
   content: string;
   reviewThumbnail: string;
+}
+
+/**
+ * @description 리뷰 폼 값
+ * @property {string} title - 리뷰 제목
+ * @property {FileList} images - 리뷰 이미지
+ * @property {string} reviewText - 리뷰 내용
+ * @property {number} rating - 리뷰 평점
+ * @property {string[]} tags - 리뷰 태그
+ * @property {boolean} isSpoiler - 스포일러 여부
+ */
+export interface ReviewFormValues {
+  title: string;
+  images: FileList;
+  reviewText: string;
+  rating: number;
+  tags: string[];
+  isSpoiler: boolean;
 }

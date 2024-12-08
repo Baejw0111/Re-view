@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { getChoseong } from "es-hangul";
+import imageCompression from "browser-image-compression";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,19 +22,6 @@ export const handleEnterKeyDown = (e: React.KeyboardEvent) => {
 };
 
 /**
- * 파일을 데이터 URL로 변환하는 함수
- * @param file 파일
- * @returns 데이터 URL
- */
-const readFileAsDataURL = (file: File): Promise<string> => {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.readAsDataURL(file);
-  });
-};
-
-/**
  * 파일을 미리보기 이미지로 변환하는 함수
  * @param files 파일 목록
  * @returns 미리보기 이미지 목록
@@ -41,10 +29,85 @@ const readFileAsDataURL = (file: File): Promise<string> => {
 export const createPreviewImages = async (files: FileList) => {
   const previewImages: string[] = [];
   for (const file of Array.from(files)) {
-    const dataUrl = await readFileAsDataURL(file);
+    const dataUrl = URL.createObjectURL(file);
     previewImages.push(dataUrl);
   }
   return previewImages;
+};
+
+/**
+ * 미리보기 이미지 URL 해제
+ * @param previewImages 미리보기 이미지 URL 목록
+ */
+export const revokePreviewImages = (previewImages: string[]) => {
+  previewImages.forEach((image) => URL.revokeObjectURL(image));
+};
+
+/**
+ * 파일 목록을 webp 형식으로 변환
+ * @param {FileList} files - 파일 목록
+ * @param {Function} onProgressCallback - 진행률 콜백 함수
+ * @returns {Promise<FileList>} - webp 형식의 파일 목록
+ */
+export const convertToWebP = async (
+  files: FileList,
+  onProgressCallback: (progress: number, index: number) => void
+): Promise<FileList> => {
+  const webpDataTransfer = new DataTransfer();
+
+  // 이미지 압축 옵션
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1920,
+    useWebWorker: true,
+    fileType: "image/webp",
+    onProgress: (progress: number) => {
+      console.log(`압축 진행률: ${progress}%`);
+    },
+  };
+
+  // 각 파일을 webp로 변환
+  for (const [index, file] of Array.from(files).entries()) {
+    try {
+      // webp 파일이면 원본 파일 추가
+      if (file.type === "image/webp") {
+        webpDataTransfer.items.add(file);
+        onProgressCallback(100, index);
+        continue;
+      }
+
+      options.onProgress = (progress) => {
+        onProgressCallback(progress, index);
+      };
+
+      // 이미지 압축 및 webp 변환
+      const compressedFile = await imageCompression(file, options);
+
+      // 파일 이름을 .webp 확장자로 변경
+      const webpFile = new File(
+        [compressedFile],
+        file.name.replace(/\.[^/.]+$/, "") + ".webp",
+        { type: "image/webp" }
+      );
+
+      webpDataTransfer.items.add(webpFile);
+    } catch (error) {
+      console.error("이미지 변환 중 오류 발생:", error);
+    }
+  }
+
+  return webpDataTransfer.files;
+};
+
+/**
+ * 파일 입력값 초기화
+ * @param fileInputId 파일 입력 아이디
+ */
+export const resetFileInput = (fileInputId: string) => {
+  const fileInput = document.getElementById(fileInputId) as HTMLInputElement;
+  if (fileInput) {
+    fileInput.value = "";
+  }
 };
 
 /**

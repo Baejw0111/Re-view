@@ -15,7 +15,7 @@ export default function EditReview() {
   });
 
   return (
-    <PageTemplate pageName="리뷰 수정">
+    <PageTemplate>
       <ReviewForm reviewInfo={reviewInfo} />
     </PageTemplate>
   );

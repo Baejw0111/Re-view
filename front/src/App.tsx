@@ -1,73 +1,70 @@
 import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import ThemeProvider from "@/state/theme/ThemeProvider";
-import Feed from "@/pages/Feed";
-import Test from "@/pages/Test";
-import Header from "@/widgets/Header";
-import WriteReview from "@/pages/WriteReview";
-import Authorization from "@/pages/Authorization";
-import ReviewDetailModal from "@/pages/ReviewDetailModal";
-import Onboarding from "@/pages/Onboarding";
-import EditReview from "@/pages/EditReview";
-import Profile from "@/pages/Profile";
-import Notification from "@/pages/Notification";
-import Search from "@/pages/Search";
-import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
-import { API_URL } from "./shared/constants";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
+import { getLoginUserInfo } from "@/api/auth";
+import { API_URL } from "@/shared/constants";
+import useAuth from "@/shared/hooks/useAuth";
+import Header from "./widgets/Header";
+import ReviewDetailModal from "./pages/ReviewDetailModal";
 import SearchDialog from "./features/common/SearchDialog";
+import SubHeader from "./widgets/SubHeader";
+import { Outlet } from "react-router-dom";
+import { Toaster } from "./shared/shadcn-ui/sonner";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
+  const isAuth = useAuth();
   const dispatch = useDispatch();
-  const fetchUserInfoForPageReload = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/auth/kakao/user`, {
-        withCredentials: true,
-      });
-      return response.data.userInfo;
-    } catch (error) {
-      console.error("Failed to fetch user info:", error);
-    }
-  };
+  const queryClient = useQueryClient();
 
-  const { data, isFetched } = useQuery<UserInfo>({
+  const { data: userInfo } = useQuery<UserInfo>({
     queryKey: ["loggedInUserInfo"],
-    queryFn: fetchUserInfoForPageReload,
+    queryFn: getLoginUserInfo,
+    retry: false,
+    refetchOnWindowFocus: false,
+    enabled: isAuth,
   });
 
   useEffect(() => {
-    if (isFetched && data) {
-      dispatch(setUserInfo(data));
+    if (isAuth) {
+      if (userInfo) {
+        if (!userInfo?.nickname && window.location.pathname !== "/onboarding") {
+          window.location.href = `/onboarding`;
+        } else {
+          dispatch(setUserInfo(userInfo));
+        }
+      }
     }
-  }, [data, isFetched]);
+  }, [isAuth, userInfo]);
+
+  // 알림 스트림 연결
+  useEffect(() => {
+    if (isAuth) {
+      const eventSource = new EventSource(`${API_URL}/notification/stream`, {
+        withCredentials: true,
+      });
+
+      eventSource.onmessage = () => {
+        queryClient.invalidateQueries({ queryKey: ["notifications"] }); // 새로운 알림이 올 때마다 fetchNotifications API 요청
+      };
+
+      return () => {
+        eventSource.close();
+      };
+    }
+  }, [isAuth, queryClient]);
 
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <Router>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <Header />
-        <ReviewDetailModal />
-        <SearchDialog />
-        <Routes>
-          <Route path="/" element={<Feed />} />
-          <Route path="/latest" element={<Feed />} />
-          <Route path="/popular" element={<Feed />} />
-          <Route path="/oauth/kakao" element={<Authorization />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/write" element={<WriteReview />} />
-          <Route path="/edit" element={<EditReview />} />
-          <Route path="/profile/:id/*" element={<Profile />} />
-          <Route path="/notifications" element={<Notification />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/test" element={<Test />} />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <>
+      <Header />
+      <SubHeader />
+      <Outlet />
+      <ReviewDetailModal />
+      <SearchDialog />
+      <Toaster richColors duration={Infinity} />
+    </>
   );
 }
 

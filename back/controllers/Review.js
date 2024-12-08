@@ -4,13 +4,8 @@ import {
   CommentModel,
   NotificationModel,
   ReviewLikeModel,
-  TagModel,
 } from "../utils/Model.js";
-import {
-  deleteUploadedFiles,
-  checkFormFieldsExistence,
-  verifyFormFields,
-} from "../utils/Upload.js";
+import { deleteUploadedFiles } from "../utils/Upload.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
 
@@ -19,68 +14,27 @@ import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
  * @returns {string} 리뷰 등록 성공 메시지
  */
 export const createReview = asyncHandler(async (req, res) => {
+  const { title, reviewText, rating, tags, isSpoiler } = req.body;
   const authorId = req.userId;
-
-  // 필드 검증
-  const { title, reviewText, rating, tags } = req.body;
-
-  const checkFields = checkFormFieldsExistence(
-    title,
-    reviewText,
-    rating,
-    tags,
-    req.files
-  );
-
-  if (!checkFields.result) {
-    deleteUploadedFiles(req.files.map((file) => file.path));
-
-    return res.status(400).json({
-      message: checkFields.message,
-      req: req.body,
-      files: req.files,
-    });
-  }
-
-  const verifyResult = verifyFormFields(
-    title,
-    reviewText,
-    rating,
-    tags,
-    req.files
-  );
-
-  if (!verifyResult.result) {
-    deleteUploadedFiles(req.files.map((file) => file.path));
-
-    return res.status(400).json({
-      message: verifyResult.message,
-      req: req.body,
-      files: req.files,
-    });
-  }
-
   const tagList = typeof tags === "string" ? [tags] : [...tags];
 
   const reviewData = new ReviewModel({
     authorId,
     images: req.files.map((file) => file.path), // 여러 이미지 경로 저장
-    uploadTime: new Date(),
     title,
     reviewText,
     rating,
     tags: tagList,
-    likesCount: 0,
-    commentsCount: 0,
+    isSpoiler,
   });
   await reviewData.save();
 
-  await increaseTagPreference(authorId, tagList, 5);
+  await increaseTagPreference(authorId, tagList, 5); // 태그 선호도 증가
 
-  await UserModel.updateOne(
-    { kakaoId: authorId },
-    { $inc: { reviewCount: 1, totalRating: rating } }
-  );
+  // 유저 정보 업데이트
+  await UserModel.findByIdAndUpdate(authorId, {
+    $inc: { reviewCount: 1, totalRating: rating },
+  });
 
   res.status(201).json({
     message: "리뷰가 성공적으로 등록되었습니다.",
@@ -96,13 +50,14 @@ export const getLatestFeed = asyncHandler(async (req, res) => {
 
   // 클라이언트에서 마지막으로 받은 리뷰 ID의 업로드 시간을 통해 다음 리뷰 목록 조회
   // 마지막 리뷰 ID가 없으면 처음 요청을 보내는 것이므로, 최근 업로드된 리뷰 20개 조회
-  const lastReview =
-    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
-  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+  const lastReviewUploadTime = lastReviewId
+    ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
+    : new Date();
 
-  const reviewList = await ReviewModel.find({
-    uploadTime: { $lt: lastReviewUploadTime },
-  })
+  const reviewList = await ReviewModel.find(
+    { uploadTime: { $lt: lastReviewUploadTime } },
+    { _id: 1, uploadTime: 1 } // 필요한 필드만 명시
+  )
     .sort({ uploadTime: -1 })
     .limit(20);
 
@@ -116,24 +71,29 @@ export const getLatestFeed = asyncHandler(async (req, res) => {
  * @param {string} query - 검색어
  * @returns {Object[]} 리뷰 검색 결과 배열
  */
-export const getSearchReviews = asyncHandler(async (req, res) => {
+export const searchReviews = asyncHandler(async (req, res) => {
   const { query, lastReviewId } = req.query;
   const queryWithoutSpace = query.replace(/\s/g, "");
 
-  const lastReview =
-    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
-  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+  // 클라이언트에서 마지막으로 받은 리뷰 ID의 업로드 시간을 통해 다음 리뷰 목록 조회
+  // 마지막 리뷰 ID가 없으면 처음 요청을 보내는 것이므로, 최근 업로드된 리뷰 20개 조회
+  const lastReviewUploadTime = lastReviewId
+    ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
+    : new Date();
 
-  const reviews = await ReviewModel.find({
-    $or: [
-      { title: { $regex: query, $options: "i" } },
-      { title: { $regex: queryWithoutSpace, $options: "i" } },
-      { reviewText: { $regex: query, $options: "i" } },
-      { reviewText: { $regex: queryWithoutSpace, $options: "i" } },
-      { tags: { $in: [query] } },
-    ],
-    uploadTime: { $lt: lastReviewUploadTime },
-  })
+  const reviews = await ReviewModel.find(
+    {
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { title: { $regex: queryWithoutSpace, $options: "i" } },
+        { reviewText: { $regex: query, $options: "i" } },
+        { reviewText: { $regex: queryWithoutSpace, $options: "i" } },
+        { tags: { $in: [query, queryWithoutSpace] } },
+      ],
+      uploadTime: { $lt: lastReviewUploadTime },
+    },
+    { _id: 1, uploadTime: 1 } // 필요한 필드만 명시
+  )
     .sort({ uploadTime: -1 })
     .limit(20);
 
@@ -149,16 +109,22 @@ export const getSearchReviews = asyncHandler(async (req, res) => {
 export const getPopularFeed = asyncHandler(async (req, res) => {
   const { lastReviewId } = req.query;
 
-  const lastReview =
-    lastReviewId === "" ? null : await ReviewModel.findById(lastReviewId);
-  const lastReviewUploadTime = lastReview ? lastReview.uploadTime : new Date();
+  // 클라이언트에서 마지막으로 받은 리뷰 ID의 업로드 시간을 통해 다음 리뷰 목록 조회
+  // 마지막 리뷰 ID가 없으면 처음 요청을 보내는 것이므로, 최근 업로드된 리뷰 20개 조회
+  const lastReviewUploadTime = lastReviewId
+    ? (await ReviewModel.findById(lastReviewId))?.uploadTime || new Date()
+    : new Date();
 
-  const reviewList = await ReviewModel.find({
-    uploadTime: { $lt: lastReviewUploadTime },
-    likesCount: { $gte: 10 },
-  })
+  const reviewList = await ReviewModel.find(
+    {
+      uploadTime: { $lt: lastReviewUploadTime },
+      likesCount: { $gte: 10 },
+    },
+    { _id: 1, uploadTime: 1 } // 필요한 필드만 명시
+  )
     .sort({ uploadTime: -1 })
     .limit(20);
+
   const reviewIdList = reviewList.map((review) => review._id);
 
   res.status(200).json(reviewIdList);
@@ -168,14 +134,30 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
  * 특정 리뷰 조회
  * @returns {ReviewModel} 리뷰 데이터
  */
-export const getReviewsById = asyncHandler(async (req, res) => {
+export const getReviewById = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  const reviewData = await ReviewModel.findById(reviewId);
+
+  // 리뷰 데이터 조회 및 작성자 정보 조회
+  const reviewData = await ReviewModel.findById(reviewId).populate(
+    "authorId",
+    "kakaoId"
+  );
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
 
-  return res.status(200).json(reviewData);
+  return res.status(200).json({
+    _id: reviewData._id,
+    __v: reviewData.__v,
+    authorId: reviewData.authorId.kakaoId,
+    uploadTime: reviewData.uploadTime,
+    title: reviewData.title,
+    images: reviewData.images,
+    reviewText: reviewData.reviewText,
+    rating: reviewData.rating,
+    tags: reviewData.tags,
+    isSpoiler: reviewData.isSpoiler,
+  });
 }, "특정 리뷰 조회");
 
 /**
@@ -185,48 +167,35 @@ export const getReviewsById = asyncHandler(async (req, res) => {
 export const updateReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
 
+  // 리뷰 데이터 조회 및 작성자 정보 조회
   const reviewData = await ReviewModel.findById(reviewId);
+
   if (!reviewData) {
+    // 수정하려는 리뷰가 존재하지 않으면 업로드한 이미지 삭제 후 404 응답
     deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
-  } else if (reviewData.authorId !== req.userId) {
+  } else if (!req.userId.equals(reviewData.authorId)) {
+    // 원본 작성자가 아닐 경우 업로드한 이미지 삭제 후 403 응답
     deleteUploadedFiles(req.files.map((file) => file.path));
     return res.status(403).json({ message: "리뷰 수정 권한이 없습니다." });
-  }
-
-  // 필드 검증
-  const { title, reviewText, rating, tags } = req.body;
-  const verifyResult = verifyFormFields(
-    title,
-    reviewText,
-    rating,
-    tags,
-    req.files
-  );
-
-  if (!verifyResult.result) {
-    deleteUploadedFiles(req.files.map((file) => file.path));
-    return res.status(400).json({
-      message: verifyResult.message,
-      req: req.body,
-      files: req.files,
-    });
   }
 
   // 받은 필드만 업데이트
   const updateData = req.body;
   for (let key in updateData) {
+    // 삭제할 이미지는 제외
     if (key === "deletedImages") {
       continue;
     }
 
+    // 평점 변경 시 유저 평점 업데이트
     if (key === "rating") {
-      await UserModel.updateOne(
-        { kakaoId: req.userId },
-        { $inc: { totalRating: updateData.rating - reviewData.rating } }
-      );
+      await UserModel.findByIdAndUpdate(req.userId, {
+        $inc: { totalRating: updateData.rating - reviewData.rating },
+      });
     }
 
+    // 태그 변경 시 태그 선호도 업데이트
     if (key === "tags") {
       await decreaseTagPreference(req.userId, reviewData.tags, 5);
       await increaseTagPreference(req.userId, updateData.tags, 5);
@@ -235,7 +204,7 @@ export const updateReview = asyncHandler(async (req, res) => {
     reviewData[key] = updateData[key];
   }
 
-  // 새 이미지 파일이 있을 경우 기존 이미지 파일들 삭제 후 경로 업데이트
+  // 삭제할 이미지가 있을 경우 삭제 후 경로 업데이트
   if (updateData.deletedImages && updateData.deletedImages.length > 0) {
     deleteUploadedFiles(updateData.deletedImages);
 
@@ -244,6 +213,7 @@ export const updateReview = asyncHandler(async (req, res) => {
     );
   }
 
+  // 새 이미지 파일이 있을 경우 경로 업데이트
   if (req.files && req.files.length > 0) {
     reviewData.images = reviewData.images.concat(
       req.files.map((file) => file.path)
@@ -261,28 +231,24 @@ export const updateReview = asyncHandler(async (req, res) => {
 export const deleteReview = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
   const review = await ReviewModel.findById(reviewId);
+
   if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
-  } else if (review.authorId !== req.userId) {
+  } else if (!req.userId.equals(review.authorId)) {
     return res.status(403).json({ message: "리뷰 삭제 권한이 없습니다." });
   }
 
-  deleteUploadedFiles(review.images); // 모든 이미지 파일 삭제
+  deleteUploadedFiles(review.images); // 리뷰의 모든 이미지 파일 삭제
 
-  await decreaseTagPreference(review.authorId, review.tags, 5);
+  await decreaseTagPreference(review.authorId, review.tags, 5); // 태그 선호도 감소
 
   await ReviewModel.findByIdAndDelete(reviewId); // 리뷰 삭제
-  await UserModel.findOneAndUpdate(
-    { kakaoId: review.authorId },
-    { $pull: { reviews: reviewId } }
-  ); // 유저 정보 업데이트
   await CommentModel.deleteMany({ reviewId: reviewId }); // 댓글 삭제
   await NotificationModel.deleteMany({ reviewId: reviewId }); // 알림 삭제
   await ReviewLikeModel.deleteMany({ reviewId: reviewId }); // 추천 삭제
-  await UserModel.updateOne(
-    { kakaoId: review.authorId },
-    { $inc: { reviewCount: -1, totalRating: -review.rating } }
-  ); // 유저 정보 업데이트
+  await UserModel.findByIdAndUpdate(review.authorId, {
+    $inc: { reviewCount: -1, totalRating: -review.rating },
+  }); // 유저 정보 업데이트
 
   res.status(200).json({ message: "리뷰가 성공적으로 삭제되었습니다." });
 }, "리뷰 삭제");

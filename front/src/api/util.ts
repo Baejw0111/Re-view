@@ -1,11 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { API_URL } from "@/shared/constants";
 import { AxiosError, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
-import {
-  KAKAO_OAUTH_URL,
-  KAKAO_REST_API_KEY,
-  KAKAO_REDIRECT_URI,
-} from "@/shared/constants";
 
 /**
  * axios 인스턴스 생성 함수
@@ -50,15 +45,13 @@ export const authApiClient: AxiosInstance = createApiClient({
  */
 export const refreshKakaoAccessToken = async (): Promise<void> => {
   // 인터셉터로 인한 무한 루프 방지를 위해 generalApiClient 사용
-  const response = await generalApiClient.post(
+  await generalApiClient.post(
     `/auth/kakao/refresh`,
     {},
     {
       withCredentials: true,
     }
   );
-
-  console.log(response.data);
 };
 
 // 토큰 만료 시 토큰 갱신 후 실패한 요청 재시도하도록 authApiClient에 인터셉터 추가
@@ -74,8 +67,6 @@ authApiClient.interceptors.response.use(
         return authApiClient(error.config as AxiosRequestConfig);
       } catch (refreshError) {
         // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
-        alert("로그인해주세요.");
-        window.location.href = `${KAKAO_OAUTH_URL}&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}`;
         return Promise.reject(refreshError);
       }
     }

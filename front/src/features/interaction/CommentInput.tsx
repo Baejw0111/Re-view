@@ -8,9 +8,9 @@ import { addComment } from "@/api/comment";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMediaQuery } from "@/shared/hooks";
 import { Send } from "lucide-react";
-import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import { toast } from "sonner";
 
 export default function CommentInput() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -27,6 +27,7 @@ export default function CommentInput() {
     mutationFn: () => addComment(reviewId as string, comment),
     // 댓글 등록 성공 시, 댓글 목록 갱신
     onSuccess: () => {
+      toast.success("댓글이 등록되었습니다.");
       queryClient.invalidateQueries({
         queryKey: ["reviewCommentList", reviewId],
       });
@@ -64,7 +65,7 @@ export default function CommentInput() {
 
   if (isDesktop) {
     return (
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="mt-4">
         <div className="flex gap-4">
           <UserAvatar
             profileImage={userInfo?.profileImage}
@@ -126,16 +127,14 @@ export default function CommentInput() {
               isFocused ? "min-h-[80px]" : "overflow-hidden"
             }`}
           />
-          <TooltipWrapper tooltipText="등록">
-            <Button
-              type="submit"
-              variant="ghost"
-              size="icon"
-              disabled={!comment.trim()}
-            >
-              <Send />
-            </Button>
-          </TooltipWrapper>
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            disabled={!comment.trim()}
+          >
+            <Send />
+          </Button>
         </div>
       </div>
     </form>

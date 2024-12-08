@@ -9,6 +9,7 @@ import { API_URL } from "@/shared/constants";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 import { cn } from "@/shared/lib/utils";
 import { claculateTime } from "@/shared/lib/utils";
+import { toast } from "sonner";
 
 export default function NotificationBox({
   className,
@@ -37,10 +38,11 @@ export default function NotificationBox({
   const { mutate: deleteNotificationMutate } = useMutation({
     mutationFn: () => deleteNotification(_id),
     onSuccess: () => {
+      toast.success("알림이 삭제되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: () => {
-      alert("알림 삭제 실패");
+      toast.error("알림 삭제 실패");
     },
   });
 
@@ -58,7 +60,7 @@ export default function NotificationBox({
     >
       <Link
         to={
-          pathname === "/edit"
+          pathname === "/edit" || pathname === "/write"
             ? `/?reviewId=${reviewId}`
             : `?${new URLSearchParams({
                 ...Object.fromEntries(searchParams),

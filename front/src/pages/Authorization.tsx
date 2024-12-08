@@ -1,13 +1,10 @@
 import { useEffect } from "react";
 import { getKakaoToken, getLoginUserInfo } from "@/api/auth";
-import { useDispatch } from "react-redux";
-import { setUserInfo } from "@/state/store/userInfoSlice";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/shared/shadcn-ui/button";
 
 export default function Authorization() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const AUTHORIZATION_CODE: string = new URL(
     document.location.toString()
@@ -19,13 +16,11 @@ export default function Authorization() {
       await getKakaoToken(AUTHORIZATION_CODE);
       return await getLoginUserInfo();
     },
-    onSuccess: (responseData) => {
-      const { isNewMember, userInfo } = responseData;
-      dispatch(setUserInfo(userInfo));
-      if (isNewMember) {
-        window.location.href = "/onboarding";
-      } else {
+    onSuccess: (userInfo) => {
+      if (userInfo.nickname) {
         window.location.href = "/";
+      } else {
+        window.location.href = "/onboarding";
       }
     },
   });

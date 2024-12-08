@@ -28,6 +28,7 @@ export default function SearchDialog() {
   const { data: popularTags, refetch: refetchPopularTags } = useQuery({
     queryKey: ["popularTags"],
     queryFn: fetchPopularTags,
+    enabled: !!isSearchDialogOpen,
   });
 
   // 연관 태그 불러오기
@@ -35,7 +36,7 @@ export default function SearchDialog() {
     useQuery({
       queryKey: ["searchRelatedTags"],
       queryFn: () => fetchSearchRelatedTags(searchQuery),
-      enabled: !!searchQuery,
+      enabled: !!searchQuery && !!isSearchDialogOpen,
     });
 
   // localStarage를 활용해 최근 검색어 불러오기 및 저장 기능 필요
@@ -109,7 +110,7 @@ export default function SearchDialog() {
         </CommandGroup>
         {/* 검색창 열었을 때 최근 검색어 + 인기 태그 렌더링 */}
         <div className="flex">
-          <CommandGroup heading="최근 검색어" className="flex-1 w-full pt-0">
+          <CommandGroup heading="🕒 최근 검색어" className="flex-1 w-full pt-0">
             {recentSearchQueries.map((query: string) => (
               <CommandItem
                 value={`recent-search-${query}`} // value 값이 같을 경우 중복 선택되는 현상 방지하기 위에 앞에 문자열 추가
@@ -119,8 +120,8 @@ export default function SearchDialog() {
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">
-                    <History className="w-4 h-4 mr-2 text-muted-foreground" />
-                    <span>{query}</span>
+                    <History className="w-4 h-4 mr-2 shrink-0 text-muted-foreground" />
+                    <span className="line-clamp-1">{query}</span>
                   </div>
                   <Button
                     variant="link"
@@ -141,7 +142,7 @@ export default function SearchDialog() {
           {!searchQuery && (
             <>
               <CommandGroup
-                heading="인기 태그"
+                heading="🔥 인기 태그"
                 className="flex-1 w-full border-l"
               >
                 {popularTags &&
@@ -152,10 +153,18 @@ export default function SearchDialog() {
                       onSelect={() => handleSearch(tag)}
                     >
                       <div className="flex items-center gap-1">
-                        <span className="text-muted-foreground">
-                          {`${index + 1}.`}
+                        <span
+                          className={`font-bold mr-1 ${
+                            index <= 2
+                              ? "text-orange-500"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {index + 1}
                         </span>
-                        <span>{tag}</span>
+                        <span className="font-semibold line-clamp-1">
+                          {tag}
+                        </span>
                       </div>
                     </CommandItem>
                   ))}

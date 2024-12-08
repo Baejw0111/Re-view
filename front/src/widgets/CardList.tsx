@@ -1,10 +1,12 @@
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import ReviewCard from "@/widgets/ReviewCard";
 import { useIntersectionObserver } from "@/shared/hooks";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { VirtualItem } from "@tanstack/react-virtual";
 import { useTailwindBreakpoint } from "@/shared/hooks";
 import UserCard from "@/widgets/UserCard";
+import SkeletonReviewCard from "@/shared/skeleton/SkeletonReviewCard";
+import SkeletonUserCard from "@/shared/skeleton/SkeletonUserCard";
 
 /**
  * @description 카드 목록을 반환하는 컴포넌트
@@ -35,7 +37,7 @@ export default function CardList({
 
   const virtualizer = useWindowVirtualizer({
     count: Math.ceil(idList.length / gridColumnCount[breakpoint]),
-    estimateSize: () => 240,
+    estimateSize: cardType === "review" ? () => 240 : () => 192,
     gap: 24,
     overscan: 2,
   });
@@ -47,7 +49,7 @@ export default function CardList({
 
   return (
     <>
-      {idList && (
+      {idList.length > 0 ? (
         <div ref={listRef}>
           <div
             className="relative w-full"
@@ -58,7 +60,6 @@ export default function CardList({
             {virtualizer.getVirtualItems().map((item) => (
               <div
                 key={idList[item.index]}
-                ref={virtualizer.measureElement}
                 className="absolute top-0 left-0 w-full"
                 data-index={item.index}
                 style={{
@@ -69,6 +70,7 @@ export default function CardList({
               >
                 <div
                   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
+                  key={item.index}
                   ref={
                     item.index ===
                     Math.ceil(idList.length / gridColumnCount[breakpoint]) - 2
@@ -83,31 +85,42 @@ export default function CardList({
                         idList.length
                       ) {
                         return cardType === "review" ? (
-                          <ReviewCard
-                            key={
-                              idList[
-                                item.index * gridColumnCount[breakpoint] + index
-                              ]
-                            }
-                            reviewId={String(
-                              idList[
-                                item.index * gridColumnCount[breakpoint] + index
-                              ]
-                            )}
-                          />
+                          <Suspense
+                            key={index}
+                            fallback={<SkeletonReviewCard />}
+                          >
+                            <ReviewCard
+                              key={
+                                idList[
+                                  item.index * gridColumnCount[breakpoint] +
+                                    index
+                                ]
+                              }
+                              reviewId={String(
+                                idList[
+                                  item.index * gridColumnCount[breakpoint] +
+                                    index
+                                ]
+                              )}
+                            />
+                          </Suspense>
                         ) : (
-                          <UserCard
-                            userId={Number(
-                              idList[
-                                item.index * gridColumnCount[breakpoint] + index
-                              ]
-                            )}
-                            key={
-                              idList[
-                                item.index * gridColumnCount[breakpoint] + index
-                              ]
-                            }
-                          />
+                          <Suspense key={index} fallback={<SkeletonUserCard />}>
+                            <UserCard
+                              userId={Number(
+                                idList[
+                                  item.index * gridColumnCount[breakpoint] +
+                                    index
+                                ]
+                              )}
+                              key={
+                                idList[
+                                  item.index * gridColumnCount[breakpoint] +
+                                    index
+                                ]
+                              }
+                            />
+                          </Suspense>
                         );
                       }
                     }
@@ -116,6 +129,14 @@ export default function CardList({
               </div>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="flex justify-center items-center h-full">
+          <p className="text-muted-foreground">
+            {cardType === "review"
+              ? "등록된 리뷰가 없습니다."
+              : "해당하는 유저가 없습니다."}
+          </p>
         </div>
       )}
     </>

@@ -16,8 +16,7 @@ export const fetchLikeStatus = async (
  * @param reviewId 리뷰 ID
  */
 export const likeReview = async (reviewId: string): Promise<void> => {
-  const response = await authApiClient.patch(`/like/${reviewId}`);
-  console.log("리뷰 추천 성공:", response.data);
+  await authApiClient.patch(`/like/${reviewId}`);
 };
 
 /**
@@ -25,6 +24,5 @@ export const likeReview = async (reviewId: string): Promise<void> => {
  * @param reviewId 리뷰 ID
  */
 export const unlikeReview = async (reviewId: string): Promise<void> => {
-  const response = await authApiClient.patch(`/unlike/${reviewId}`);
-  console.log("리뷰 추천 취소 성공:", response.data);
+  await authApiClient.patch(`/unlike/${reviewId}`);
 };

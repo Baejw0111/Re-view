@@ -1,22 +1,27 @@
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, FilePenLine, Siren } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteReview } from "@/api/review";
-import { Link, useSearchParams } from "react-router-dom";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
+import { VITE_CLIENT_URL } from "@/shared/constants";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
+
   const { mutate: deleteReviewMutate } = useMutation({
     mutationFn: () => deleteReview(reviewId as string),
     onSuccess: () => {
-      alert("리뷰 삭제 성공");
       window.location.href = "/";
     },
-    onError: () => {
-      alert("리뷰 삭제 실패");
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("리뷰 삭제 실패", {
+        description: error.response?.data?.message,
+      });
     },
   });
 
@@ -28,8 +33,10 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
           variant="ghost"
           size="icon"
           onClick={() => {
-            navigator.clipboard.writeText(window.location.href);
-            alert("링크가 복사되었습니다.");
+            navigator.clipboard.writeText(
+              `${VITE_CLIENT_URL}/?reviewId=${reviewId}`
+            );
+            toast.success("링크가 복사되었습니다.");
           }}
         >
           <Share2 className="w-6 h-6" />

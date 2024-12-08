@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
 import { setIsReviewDetailOpen } from "@/state/store/reviewDetailOpenSlice";
@@ -26,6 +26,7 @@ export default function ReviewDetailModal() {
   const dispatch = useDispatch();
   const [queryParams, setQueryParams] = useSearchParams();
   const { pathname } = useLocation();
+  const reviewId = queryParams.get("reviewId");
   const isDesktop = useMediaQuery("(min-width: 768px)"); // md(768px) 아래의 너비는 모바일 환경으로 간주
   const isModalOpen = useSelector(
     (state: RootState) => state.reviewDetailOpen.isReviewDetailOpen
@@ -56,6 +57,19 @@ export default function ReviewDetailModal() {
     }
   }, [queryParams, pathname]);
 
+  useEffect(() => {
+    // 모달이 열리고 scrollToComments가 true일 때 스크롤
+    if (isModalOpen && queryParams.get("scrollToComments") === "true") {
+      setTimeout(() => {
+        const commentSection = document.getElementById("comment-list");
+        commentSection?.scrollIntoView({ behavior: "smooth" });
+        // 스크롤 후 파라미터 제거
+        queryParams.delete("scrollToComments");
+        setQueryParams(queryParams);
+      }, 100); // 모달이 완전히 열린 후 스크롤하기 위해 약간의 딜레이 추가
+    }
+  }, [isModalOpen]);
+
   if (isDesktop === null) return;
 
   if (isDesktop) {
@@ -81,8 +95,10 @@ export default function ReviewDetailModal() {
           <DialogDescription hidden></DialogDescription>
           <ReviewDetail />
           <Separator className="my-4" />
+          <Suspense fallback={<div>로딩중...</div>}>
+            <CommentList reviewId={reviewId as string} />
+          </Suspense>
           <CommentInput />
-          <CommentList />
         </DialogContent>
       </Dialog>
     );
@@ -99,7 +115,9 @@ export default function ReviewDetailModal() {
         <div className="p-5 pb-20 overflow-y-auto scrollbar-hide">
           <ReviewDetail />
           <Separator className="my-4" />
-          <CommentList />
+          <Suspense fallback={<div>로딩중...</div>}>
+            <CommentList reviewId={reviewId as string} />
+          </Suspense>
           <CommentInput />
         </div>
       </DrawerContent>

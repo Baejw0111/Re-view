@@ -11,63 +11,46 @@ import {
   FormMessage,
 } from "@/shared/shadcn-ui/form";
 import { RootState } from "@/state/store";
-import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from "@/shared/constants";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { updateUserInfo } from "@/api/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
-import { Camera, UserRound, X } from "lucide-react";
+import { Camera, LoaderCircle, UserRound, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
-import { handleEnterKeyDown, createPreviewImages } from "@/shared/lib/utils";
+import {
+  handleEnterKeyDown,
+  createPreviewImages,
+  convertToWebP,
+  resetFileInput,
+  revokePreviewImages,
+} from "@/shared/lib/utils";
 import { useLocation } from "react-router-dom";
+import {
+  profileImageValidation,
+  nicknameValidation,
+  useDefaultProfileValidation,
+  reviewFieldLimits,
+} from "@/shared/types/validation";
+import { Skeleton } from "@/shared/shadcn-ui/skeleton";
+import { toast } from "sonner";
 
 export default function EditUserProfile({
   submitFooter,
 }: {
-  submitFooter: React.ReactNode;
+  submitFooter: (isUploading: boolean) => React.ReactNode;
 }) {
-  const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
-  const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 사용자가 현재 등록한 프로필 이미지
   const location = useLocation();
   const currentPage = location.pathname.split("/").pop();
+  const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
+  const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 사용자가 현재 등록한 프로필 이미지
+  const [isUploading, setIsUploading] = useState(false); // 프로필 이미지 업로드 상태
+  const [uploadProgress, setUploadProgress] = useState(0); // 프로필 이미지 업로드 진행률
 
   const formSchema = z.object({
-    profileImage: z
-      .instanceof(FileList)
-      .refine((files) => files.length <= 1, {
-        message: "하나의 이미지만 업로드할 수 있습니다.",
-      })
-      .refine(
-        (files) =>
-          Array.from(files).every((file) => file.size <= MAX_FILE_SIZE),
-        `파일 크기는 5MB 이하여야 합니다.`
-      )
-      .refine(
-        // 이미지 MIME 타입 검증
-        (files) =>
-          Array.from(files).every((file) =>
-            ACCEPTED_IMAGE_TYPES.includes(file.type)
-          ),
-        "JPEG, PNG, WEBP 형식의 이미지만 허용됩니다."
-      )
-      .refine(
-        // 이미지 확장자 검증
-        (files) =>
-          Array.from(files).every((file) =>
-            /\.(jpg|jpeg|png|webp)$/i.test(file.name)
-          ),
-        "올바른 파일 확장자(.jpg, .jpeg, .png, .webp)를 가진 이미지만 허용됩니다."
-      ),
-    newNickname: z
-      .string()
-      .min(1, {
-        message: "닉네임을 입력해주세요.",
-      })
-      .max(10, {
-        message: "닉네임은 최대 10자까지 입력할 수 있습니다.",
-      }),
-    useDefaultProfile: z.boolean(),
+    profileImage: profileImageValidation(),
+    newNickname: nicknameValidation,
+    useDefaultProfile: useDefaultProfileValidation,
   });
 
   /**
@@ -82,6 +65,9 @@ export default function EditUserProfile({
     },
   });
 
+  const isDefaultProfile = form.watch("useDefaultProfile"); // 기본 프로필 이미지 사용 여부
+
+  // 프로필 업데이트
   const { mutate: updateUserInfoMutation } = useMutation({
     mutationFn: updateUserInfo,
     onSuccess: () => {
@@ -92,8 +78,7 @@ export default function EditUserProfile({
       }
     },
     onError: () => {
-      alert("프로필 업데이트 중 에러가 발생했습니다.");
-      window.location.reload();
+      toast.error("프로필 업데이트 중 에러가 발생했습니다.");
     },
   });
 
@@ -117,23 +102,20 @@ export default function EditUserProfile({
   const handleProfileImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setIsUploading(true);
+    setUploadProgress(0);
     const newFiles = e.target.files;
-    if (newFiles) {
-      console.log(
-        "업로드된 파일:",
-        Array.from(newFiles).map((f) => ({
-          name: f.name,
-          type: f.type,
-          size: f.size,
-        })),
-        form.getValues("newNickname")
-      );
 
-      const previewImage = await createPreviewImages(newFiles);
-      setCurrentProfileImage(previewImage[0]);
-      form.setValue("profileImage", newFiles);
-      form.setValue("useDefaultProfile", false);
+    if (newFiles) {
+      const webpFiles = await convertToWebP(newFiles, (progress) => {
+        setUploadProgress(progress);
+      }); // 파일을 webp로 변환
+      const previewImage = await createPreviewImages(webpFiles); // 미리보기 이미지 생성
+      setCurrentProfileImage(previewImage[0]); // 현재 프로필 이미지 업데이트
+      form.setValue("profileImage", webpFiles); // 폼 값 업데이트
+      form.setValue("useDefaultProfile", false); // 기본 프로필 이미지 사용 여부 업데이트
     }
+    setIsUploading(false);
   };
 
   /**
@@ -143,6 +125,8 @@ export default function EditUserProfile({
     setCurrentProfileImage("");
     form.setValue("useDefaultProfile", true);
     form.setValue("profileImage", new DataTransfer().files);
+
+    resetFileInput("profileImage-upload");
   };
 
   useEffect(() => {
@@ -154,6 +138,13 @@ export default function EditUserProfile({
       form.setValue("useDefaultProfile", true);
     }
   }, [userInfo, form]);
+
+  useEffect(() => {
+    // 컴포넌트 언마운트 시 메모리 해제
+    return () => {
+      revokePreviewImages([currentProfileImage]);
+    };
+  }, [currentProfileImage]);
 
   return (
     <Form {...form}>
@@ -175,17 +166,24 @@ export default function EditUserProfile({
                         htmlFor="profileImage-upload"
                         className="cursor-pointer"
                       >
-                        {currentProfileImage.length > 0 ||
-                        form.getValues("useDefaultProfile") ? (
+                        {currentProfileImage.length > 0 || isDefaultProfile ? (
                           <Avatar className="h-24 w-24 transition-transform hover:scale-105 active:scale-105">
-                            <AvatarImage
-                              src={currentProfileImage}
-                              alt={userInfo.nickname}
-                              className="object-cover"
-                            />
-                            <AvatarFallback>
-                              <UserRound className="w-[70%] h-[70%]" />
-                            </AvatarFallback>
+                            {isUploading ? (
+                              <Skeleton className="h-24 w-24 flex items-center justify-center">
+                                <LoaderCircle className="w-6 h-6 animate-spin" />
+                              </Skeleton>
+                            ) : (
+                              <>
+                                <AvatarImage
+                                  src={currentProfileImage}
+                                  alt={userInfo.nickname}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback>
+                                  <UserRound className="w-[70%] h-[70%]" />
+                                </AvatarFallback>
+                              </>
+                            )}
                           </Avatar>
                         ) : (
                           <UserAvatar
@@ -198,14 +196,14 @@ export default function EditUserProfile({
                           <Camera className="w-4 h-4 text-white" />
                         </div>
                       </FormLabel>
-                      <Input
+                      <input
                         id="profileImage-upload"
                         type="file"
-                        accept={ACCEPTED_IMAGE_TYPES.join(", ")}
+                        accept={reviewFieldLimits.imageTypes.join(", ")}
                         className="hidden"
                         onChange={handleProfileImageUpload}
                       />
-                      {!form.getValues("useDefaultProfile") && (
+                      {!isDefaultProfile && (
                         <button
                           type="button"
                           onClick={handleDefaultProfileImage}
@@ -217,7 +215,9 @@ export default function EditUserProfile({
                       )}
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      클릭하여 프로필 사진 업로드
+                      {isUploading
+                        ? `이미지 업로드 중... ${uploadProgress}%`
+                        : "클릭하여 프로필 사진 업로드"}
                     </span>
                   </div>
                 </FormControl>
@@ -234,7 +234,7 @@ export default function EditUserProfile({
               <FormItem>
                 <FormControl>
                   <div className="flex flex-col gap-2">
-                    <FormLabel htmlFor="newNickname">닉네임</FormLabel>
+                    <div className="text-sm font-bold">닉네임</div>
                     <Input id="newNickname" {...field} />
                   </div>
                 </FormControl>
@@ -243,7 +243,7 @@ export default function EditUserProfile({
             </>
           )}
         />
-        {submitFooter}
+        {submitFooter(isUploading)}
       </form>
     </Form>
   );

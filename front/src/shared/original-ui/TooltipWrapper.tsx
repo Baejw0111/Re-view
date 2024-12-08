@@ -9,9 +9,11 @@ import { useMediaQuery } from "@/shared/hooks";
 export default function TooltipWrapper({
   children,
   tooltipText,
+  side = "bottom",
 }: {
   children: React.ReactNode;
   tooltipText: string;
+  side?: "top" | "bottom" | "left" | "right";
 }) {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -23,7 +25,7 @@ export default function TooltipWrapper({
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <TooltipContent side="bottom">
+        <TooltipContent side={side}>
           <p>{tooltipText}</p>
         </TooltipContent>
       </Tooltip>

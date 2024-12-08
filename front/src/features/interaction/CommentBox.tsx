@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import ProfilePopOver from "@/widgets/ProfilePopOver";
 import { claculateTime } from "@/shared/lib/utils";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function CommentBox({
   commentInfo,
@@ -24,13 +25,12 @@ export default function CommentBox({
   const { mutate: deleteCommentMutate } = useMutation({
     mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: () => {
-      if (commentInfo.reviewId) {
-        queryClient.invalidateQueries({
-          queryKey: ["reviewCommentList", commentInfo.reviewId],
-        });
-      }
+      toast.success("댓글이 삭제되었습니다.");
       queryClient.invalidateQueries({
-        queryKey: ["userCommentList", commentInfo.authorId],
+        queryKey: ["reviewCommentList", commentInfo.reviewId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["commentCount", commentInfo.reviewId],
       });
     },
   });
