@@ -27,6 +27,7 @@ export const upload = multer({
   storage: multerS3({
     s3: s3,
     bucket: process.env.AWS_BUCKET_NAME,
+    contentType: multerS3.AUTO_CONTENT_TYPE, // 파일 타입 자동 설정
     // 파일 이름 설정
     key: function (req, file, cb) {
       const ext = path.extname(file.originalname); // 파일 확장자 추출
