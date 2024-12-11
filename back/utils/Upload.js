@@ -2,6 +2,18 @@ import multer from "multer"; // 파일 업로드용
 import path from "path"; // 파일 경로 설정용
 import fs from "fs"; // 파일 삭제용
 
+// 파일 확장자 검증 함수
+const fileFilter = (req, file, cb) => {
+  const allowedExtensions = [".webp"]; // 허용할 확장자 목록
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  if (allowedExtensions.includes(ext)) {
+    cb(null, true); // 허용된 확장자일 경우
+  } else {
+    cb(new Error(`webp 확장자를 가진 파일만 업로드할 수 있습니다.`), false); // 허용되지 않은 확장자일 경우
+  }
+};
+
 // 파일 업로드 처리
 export const upload = multer({
   storage: multer.diskStorage({
@@ -19,7 +31,32 @@ export const upload = multer({
       cb(null, path.join(originalName + Date.now() + ext)); // 파일 이름 설정
     },
   }),
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 파일 사이즈 제한 (5MB)
+  },
 });
+
+/**
+ * Multer 에러 처리 함수
+ * @returns - 에러 처리 결과
+ */
+export const handleMulterError = (err, req, res, next) => {
+  console.log(`err.message: ${err.message}`);
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res
+        .status(400)
+        .json({ message: "파일 크기는 5MB를 초과할 수 없습니다." });
+    }
+    return res.status(400).json({ message: err.message });
+  } else if (
+    err.message === "webp 확장자를 가진 파일만 업로드할 수 있습니다."
+  ) {
+    return res.status(400).json({ message: err.message });
+  }
+  next(err);
+};
 
 /**
  * 업로드된 파일 삭제
@@ -86,7 +123,6 @@ const fieldLimits = {
   reviewText: 1000,
   tags: 5,
   files: 5,
-  maxFileSize: 5, // MB 단위
 };
 
 /**
@@ -135,28 +171,6 @@ export const verifyFormFields = (req, res, next) => {
     invalidMessages.push(
       `이미지는 ${fieldLimits.files}개까지 등록할 수 있습니다.`
     );
-  }
-
-  // 파일 크기 검증
-  if (
-    files &&
-    files.some((file) => file.size > fieldLimits.maxFileSize * 1024 * 1024)
-  ) {
-    invalidMessages.push(
-      `파일 크기는 최대 ${fieldLimits.maxFileSize}MB까지 업로드할 수 있습니다.`
-    );
-  }
-
-  // 파일 확장자 검증
-  const isInvalidExtension =
-    files &&
-    files.some((file) => {
-      const extension = file.path.split(".").pop().toLowerCase();
-      return extension !== "webp";
-    });
-
-  if (isInvalidExtension) {
-    invalidMessages.push(`파일 확장자는 webp만 업로드할 수 있습니다.`);
   }
 
   if (invalidMessages.length > 0) {

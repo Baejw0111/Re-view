@@ -8,6 +8,7 @@ import {
   upload,
   checkFormFieldsExistence,
   verifyFormFields,
+  handleMulterError,
 } from "./utils/Upload.js";
 import {
   getKakaoToken,
@@ -91,6 +92,7 @@ app.post(
   "/review",
   verifyKakaoAccessToken,
   upload.array("images", 5),
+  handleMulterError,
   checkFormFieldsExistence,
   verifyFormFields,
   createReview
@@ -99,6 +101,7 @@ app.patch(
   "/review/:id",
   verifyKakaoAccessToken,
   upload.array("images", 5),
+  handleMulterError,
   verifyFormFields,
   updateReview
 ); // 리뷰 수정 API
@@ -113,6 +116,7 @@ app.put(
   "/user/info",
   verifyKakaoAccessToken,
   upload.single("profileImage"),
+  handleMulterError,
   updateUserInfo
 ); // 유저 정보 수정 API
 
