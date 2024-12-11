@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo } from "@/shared/types/interface";
-import { API_URL } from "@/shared/constants";
+import { IMG_SRC } from "@/shared/constants";
 import {
   Carousel,
   CarouselItem,
@@ -128,7 +128,7 @@ export default function ReviewDetail() {
                       <AspectRatio ratio={16 / 9}>
                         <img
                           className="w-full h-full object-contain rounded-md bg-black border-0"
-                          src={`${API_URL}/${image}`}
+                          src={`${IMG_SRC}/${image}`}
                           alt={`review Image-${index}`}
                         />
                       </AspectRatio>
