@@ -1,6 +1,7 @@
 import multer from "multer"; // 파일 업로드용
 import path from "path"; // 파일 경로 설정용
-import fs from "fs"; // 파일 삭제용
+import multerS3 from "multer-s3"; // S3 업로드용
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3"; // AWS S3 클라이언트 사용
 
 // 파일 확장자 검증 함수
 const fileFilter = (req, file, cb) => {
@@ -14,26 +15,31 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// AWS S3 인스턴스 생성
+const s3 = new S3Client({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+
 // 파일 업로드 처리
 export const upload = multer({
-  storage: multer.diskStorage({
-    // 파일 저장 위치 설정
-    destination: function (req, file, cb) {
-      cb(null, path.join("public"));
-    },
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
     // 파일 이름 설정
-    filename: function (req, file, cb) {
+    key: function (req, file, cb) {
       const ext = path.extname(file.originalname); // 파일 확장자 추출
       const originalName = Buffer.from(
         path.basename(file.originalname, ext),
         "latin1"
       ).toString("utf8"); // 추출한 파일 이름을 UTF-8로 인코딩
-      cb(null, path.join(originalName + Date.now() + ext)); // 파일 이름 설정
+      cb(null, originalName + "_" + Date.now() + ext); // 파일 이름 설정
     },
   }),
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 파일 사이즈 제한 (5MB)
+    fileSize: 5 * 1024 * 1024, // 5MB
   },
 });
 
@@ -42,7 +48,6 @@ export const upload = multer({
  * @returns - 에러 처리 결과
  */
 export const handleMulterError = (err, req, res, next) => {
-  console.log(`err.message: ${err.message}`);
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
       return res
@@ -59,11 +64,23 @@ export const handleMulterError = (err, req, res, next) => {
 };
 
 /**
- * 업로드된 파일 삭제
- * @param {string[]} filePaths - 삭제할 파일 경로 배열
+ * S3에 업로드된 파일 삭제
+ * @param {string[]} fileKeys - 삭제할 파일 키 배열
  */
-export const deleteUploadedFiles = (filePaths) => {
-  filePaths.forEach((filePath) => fs.unlinkSync(filePath));
+export const deleteUploadedFiles = async (fileKeys) => {
+  for (const fileKey of fileKeys) {
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileKey,
+    };
+
+    try {
+      await s3.send(new DeleteObjectCommand(params));
+      console.log(`Successfully deleted file ${fileKey}`);
+    } catch (err) {
+      console.error(`Failed to delete file ${fileKey}:`, err);
+    }
+  }
 };
 
 /**
