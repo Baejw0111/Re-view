@@ -117,7 +117,7 @@ export const checkFormFieldsExistence = (req, res, next) => {
   }
 
   if (missingFields.length > 0) {
-    deleteUploadedFiles(files.map((file) => file.path));
+    deleteUploadedFiles(files.map((file) => file.key));
 
     const message = `${missingFields.join(
       ", "
@@ -191,7 +191,7 @@ export const verifyFormFields = (req, res, next) => {
   }
 
   if (invalidMessages.length > 0) {
-    deleteUploadedFiles(files.map((file) => file.path));
+    deleteUploadedFiles(files.map((file) => file.key));
     const message = `${invalidMessages.join(
       "\n"
     )}\n위 내용을 참고해 다시 입력 후 재시도해주세요.`;

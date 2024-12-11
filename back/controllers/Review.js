@@ -20,7 +20,7 @@ export const createReview = asyncHandler(async (req, res) => {
 
   const reviewData = new ReviewModel({
     authorId,
-    images: req.files.map((file) => file.path), // 여러 이미지 경로 저장
+    images: req.files.map((file) => file.key), // 여러 이미지 경로 저장
     title,
     reviewText,
     rating,
@@ -172,11 +172,11 @@ export const updateReview = asyncHandler(async (req, res) => {
 
   if (!reviewData) {
     // 수정하려는 리뷰가 존재하지 않으면 업로드한 이미지 삭제 후 404 응답
-    deleteUploadedFiles(req.files.map((file) => file.path));
+    deleteUploadedFiles(req.files.map((file) => file.key));
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   } else if (!req.userId.equals(reviewData.authorId)) {
     // 원본 작성자가 아닐 경우 업로드한 이미지 삭제 후 403 응답
-    deleteUploadedFiles(req.files.map((file) => file.path));
+    deleteUploadedFiles(req.files.map((file) => file.key));
     return res.status(403).json({ message: "리뷰 수정 권한이 없습니다." });
   }
 
@@ -216,7 +216,7 @@ export const updateReview = asyncHandler(async (req, res) => {
   // 새 이미지 파일이 있을 경우 경로 업데이트
   if (req.files && req.files.length > 0) {
     reviewData.images = reviewData.images.concat(
-      req.files.map((file) => file.path)
+      req.files.map((file) => file.key)
     );
   }
 
