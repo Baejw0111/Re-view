@@ -1,0 +1,120 @@
+custom:
+  serverless-offline:
+    noPrependStageInUrl: true // url에 스테이지 이름 추가 방지
+
+service: re-view-app
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-northeast-2
+
+functions:
+  app:
+    handler: server.handler
+    events:
+      - http:
+          path: /
+          method: any
+      - http:
+          path: /auth/kakao/login
+          method: post
+      - http:
+          path: /auth/kakao/refresh
+          method: post
+      - http:
+          path: /auth/kakao/check
+          method: get
+      - http:
+          path: /auth/kakao/logout
+          method: post
+      - http:
+          path: /auth/kakao/user
+          method: get
+      - http:
+          path: /auth/kakao/delete
+          method: delete
+      - http:
+          path: /review/latest
+          method: get
+      - http:
+          path: /review/popular
+          method: get
+      - http:
+          path: /review/{id}
+          method: get
+      - http:
+          path: /review/{id}/comments/count
+          method: get
+      - http:
+          path: /review/{id}/comments
+          method: get
+      - http:
+          path: /review
+          method: post
+      - http:
+          path: /review/{id}
+          method: patch
+      - http:
+          path: /review/{id}
+          method: delete
+      - http:
+          path: /user/{id}
+          method: get
+      - http:
+          path: /user/{id}/reviews
+          method: get
+      - http:
+          path: /user/{id}/comments
+          method: get
+      - http:
+          path: /user/{id}/liked
+          method: get
+      - http:
+          path: /user/info
+          method: put
+      - http:
+          path: /notification
+          method: get
+      - http:
+          path: /notification/stream
+          method: get
+      - http:
+          path: /notification/check
+          method: post
+      - http:
+          path: /notification/{id}
+          method: delete
+      - http:
+          path: /comment/{id}
+          method: get
+      - http:
+          path: /comment/{id}
+          method: post
+      - http:
+          path: /comment/{id}
+          method: delete
+      - http:
+          path: /like/{id}
+          method: get
+      - http:
+          path: /like/{id}
+          method: patch
+      - http:
+          path: /unlike/{id}
+          method: patch
+      - http:
+          path: /tag/popular
+          method: get
+      - http:
+          path: /tag/search
+          method: get
+      - http:
+          path: /search/reviews
+          method: get
+      - http:
+          path: /search/users
+          method: get
+
+plugins:
+  - serverless-offline
