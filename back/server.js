@@ -151,4 +151,14 @@ app.get("/tag/search", searchRelatedTags); // 검색어 연관 태그 조회 API
 app.get("/search/reviews", searchReviews); // 리뷰 검색 결과 조회 API
 app.get("/search/users", searchUsers); // 유저 검색 결과 조회 API
 
-export const handler = serverless(app); // 서버리스 함수 내보내기
+export const handler = async (event, context) => {
+  try {
+    return await serverless(app)(event, context);
+  } catch (err) {
+    console.error("Lambda Error:", err); // CloudWatch 로그에서 확인 가능
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Internal Server Error" }),
+    };
+  }
+};
