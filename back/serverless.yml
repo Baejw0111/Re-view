@@ -38,10 +38,6 @@ functions:
       - httpApi:
           path: /{proxy+}
           method: "*"
-          cors:
-            allowedOrigins:
-              - ${env:FRONT_URL}
-            allowCredentials: true
 
 plugins:
   - serverless-offline
