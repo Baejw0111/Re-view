@@ -34,8 +34,6 @@ provider:
 functions:
   app:
     handler: server.handler
-    memorySize: 512
-    timeout: 30
     events:
       - httpApi:
           path: /{proxy+}
