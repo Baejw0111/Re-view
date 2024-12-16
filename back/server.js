@@ -54,6 +54,7 @@ import {
   deleteComment,
 } from "./controllers/Comment.js";
 import { getPopularTags, searchRelatedTags } from "./controllers/Tag.js";
+import { connectDB } from "./utils/Model.js";
 
 const app = express(); // express 인스턴스 생성
 const { FRONT_URL } = process.env;
@@ -153,6 +154,7 @@ app.get("/search/users", searchUsers); // 유저 검색 결과 조회 API
 
 export const handler = async (event, context) => {
   try {
+    await connectDB();
     return await serverless(app)(event, context);
   } catch (err) {
     console.error("Lambda Error:", err); // CloudWatch 로그에서 확인 가능
