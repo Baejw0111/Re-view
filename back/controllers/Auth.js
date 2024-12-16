@@ -1,4 +1,3 @@
-import fs from "fs"; // 파일 삭제용
 import axios from "axios";
 import {
   UserModel,
@@ -9,6 +8,7 @@ import {
   TagModel,
 } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
+import { deleteUploadedFiles } from "../utils/Upload.js";
 
 const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = process.env;
 
@@ -247,7 +247,7 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   const reviews = await ReviewModel.find({ authorId: user._id });
   for (const review of reviews) {
     if (review.images) {
-      review.images.forEach((imagePath) => fs.unlinkSync(imagePath)); // 모든 이미지 파일 삭제
+      deleteUploadedFiles(review.images);
     }
     await CommentModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 댓글들 모두 삭제
     await NotificationModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 알림들 모두 삭제
