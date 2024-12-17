@@ -32,7 +32,6 @@ jobs:
 
       - name: Build Project
         run: |
-          cd front
           pnpm build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
