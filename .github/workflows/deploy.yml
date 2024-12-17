@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - deploy
+    paths:
+      - "back/**"
 
 jobs:
   deploy:
@@ -18,10 +20,13 @@ jobs:
         with:
           node-version: "18"
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Install dependencies
         run: |
           cd back
-          npm install
+          pnpm install
 
       - name: Deploy to Lambda
         env:
