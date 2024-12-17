@@ -32,6 +32,7 @@ jobs:
 
       - name: Build Project
         run: |
+          cd front
           pnpm build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
@@ -43,7 +44,6 @@ jobs:
 
       - name: Deploy to Vercel
         run: |
-          cd front
           vercel deploy --prod --token=${{ secrets.VERCEL_ACCESS_TOKEN }} --yes
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_ACCESS_TOKEN }}
