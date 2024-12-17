@@ -45,7 +45,7 @@ jobs:
       - name: Deploy to Vercel
         run: |
           cd front
-          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+          vercel deploy --prod --token=${{ secrets.VERCEL_ACCESS_TOKEN }} --yes
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_ACCESS_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
