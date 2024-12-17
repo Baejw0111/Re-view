@@ -22,6 +22,8 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       - name: Install Dependencies
         run: |
@@ -32,6 +34,13 @@ jobs:
         run: |
           cd front
           pnpm build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_CLIENT_URL: ${{ secrets.VITE_CLIENT_URL }}
+          VITE_KAKAO_REST_API_KEY: ${{ secrets.VITE_KAKAO_REST_API_KEY }}
+          VITE_KAKAO_REDIRECT_URI: ${{ secrets.VITE_KAKAO_REDIRECT_URI }}
+          VITE_KAKAO_LOGOUT_REDIRECT_URI: ${{ secrets.VITE_KAKAO_LOGOUT_REDIRECT_URI }}
+          VITE_IMG_SRC: ${{ secrets.VITE_IMG_SRC }}
 
       - name: Deploy to Vercel
         run: |
