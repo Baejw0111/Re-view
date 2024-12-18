@@ -21,19 +21,19 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8
+      # - name: Install pnpm
+      #   uses: pnpm/action-setup@v4
+      #   with:
+      #     version: 8
 
       - name: Install dependencies
         run: |
           cd back
-          pnpm install
+          npm install
 
-      - name: Install Serverless
-        run: |
-          npm install -g serverless
+      # - name: Install Serverless
+      #   run: |
+      #     npm install -g serverless
 
       - name: Deploy to Lambda
         env:
