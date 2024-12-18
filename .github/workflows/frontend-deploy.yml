@@ -40,12 +40,12 @@ jobs:
 
       - name: Add Vercel Environment Variables
         run: |
-          vercel env add VITE_API_URL production --token=${{ secrets.API_URL }}
-          vercel env add VITE_CLIENT_URL production --token=${{ secrets.FRONT_URL }}
-          vercel env add VITE_KAKAO_REST_API_KEY production --token=${{ secrets.KAKAO_REST_API_KEY }}
-          vercel env add VITE_KAKAO_REDIRECT_URI production --token=${{ secrets.KAKAO_REDIRECT_URI }}
-          vercel env add VITE_KAKAO_LOGOUT_REDIRECT_URI production --token=${{ secrets.FRONT_URL }}
-          vercel env add VITE_IMG_SRC production --token=${{ secrets.IMG_SRC }}
+          echo "${{ secrets.API_URL }}" | vercel env add VITE_API_URL production --token=${{ secrets.VERCEL_ACCESS_TOKEN }}
+          echo "${{ secrets.FRONT_URL }}" | vercel env add VITE_CLIENT_URL production --token=${{ secrets.VERCEL_ACCESS_TOKEN }}
+          echo "${{ secrets.KAKAO_REST_API_KEY }}" | vercel env add VITE_KAKAO_REST_API_KEY production --token=${{ secrets.VERCEL_ACCESS_TOKEN }}
+          echo "${{ secrets.KAKAO_REDIRECT_URI }}" | vercel env add VITE_KAKAO_REDIRECT_URI production --token=${{ secrets.VERCEL_ACCESS_TOKEN }}
+          echo "${{ secrets.FRONT_URL }}" | vercel env add VITE_KAKAO_LOGOUT_REDIRECT_URI production --token=${{ secrets.VERCEL_ACCESS_TOKEN }}
+          echo "${{ secrets.IMG_SRC }}" | vercel env add VITE_IMG_SRC production --token=${{ secrets.VERCEL_ACCESS_TOKEN }}
 
       - name: Deploy to Vercel
         run: |
