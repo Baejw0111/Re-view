@@ -2,7 +2,6 @@ import serverless from "serverless-http";
 import express from "express"; // 서버 구축용 프레임워크
 import compression from "compression";
 import cors from "cors"; // cors 관리
-import morgan from "morgan"; // 로그 출력용
 import "dotenv/config"; // .env 파일에서 바로 환경 변수 로드
 import cookieParser from "cookie-parser";
 import helmet from "helmet"; // 보안 헤더 설정
@@ -69,7 +68,6 @@ app.use(
     credentials: true,
   })
 ); // cors 에러 방지
-app.use(morgan("dev")); // 로그 출력
 app.use(cookieParser()); // cookie 파싱
 app.use(helmet()); // 보안 헤더 설정
 
