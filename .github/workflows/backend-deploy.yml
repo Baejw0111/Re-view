@@ -6,6 +6,7 @@ on:
       - deploy
     paths:
       - "back/**"
+      - ".github/workflows/backend-deploy.yml"
 
 jobs:
   deploy:
