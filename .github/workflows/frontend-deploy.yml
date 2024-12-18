@@ -37,13 +37,15 @@ jobs:
         run: |
           cd front
           pnpm build
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_CLIENT_URL: ${{ secrets.VITE_CLIENT_URL }}
-          VITE_KAKAO_REST_API_KEY: ${{ secrets.VITE_KAKAO_REST_API_KEY }}
-          VITE_KAKAO_REDIRECT_URI: ${{ secrets.VITE_KAKAO_REDIRECT_URI }}
-          VITE_KAKAO_LOGOUT_REDIRECT_URI: ${{ secrets.VITE_KAKAO_LOGOUT_REDIRECT_URI }}
-          VITE_IMG_SRC: ${{ secrets.VITE_IMG_SRC }}
+
+      - name: Add Vercel Environment Variables
+        run: |
+          vercel env add VITE_API_URL production --token=${{ secrets.API_URL }}
+          vercel env add VITE_CLIENT_URL production --token=${{ secrets.FRONT_URL }}
+          vercel env add VITE_KAKAO_REST_API_KEY production --token=${{ secrets.KAKAO_REST_API_KEY }}
+          vercel env add VITE_KAKAO_REDIRECT_URI production --token=${{ secrets.KAKAO_REDIRECT_URI }}
+          vercel env add VITE_KAKAO_LOGOUT_REDIRECT_URI production --token=${{ secrets.FRONT_URL }}
+          vercel env add VITE_IMG_SRC production --token=${{ secrets.IMG_SRC }}
 
       - name: Deploy to Vercel
         run: |
