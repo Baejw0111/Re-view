@@ -8,23 +8,6 @@ provider:
   region: ap-northeast-2
   deploymentBucket:
     name: ${env:AWS_BUCKET_NAME}
-  httpApi:
-    cors:
-      allowedOrigins:
-        - "${env:FRONT_URL}"
-      allowedHeaders:
-        - Content-Type
-        - X-Amz-Date
-        - Authorization
-        - X-Api-Key
-        - X-Amz-Security-Token
-      allowedMethods:
-        - OPTIONS
-        - GET
-        - POST
-        - PUT
-        - DELETE
-      allowCredentials: true
 
   # 환경변수 설정
   environment:
