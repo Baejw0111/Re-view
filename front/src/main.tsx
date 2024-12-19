@@ -162,7 +162,7 @@ const router = createBrowserRouter(
           element: <Test />,
         },
         {
-          path: "/oauth",
+          path: "/oauth/kakao",
           element: <Authorization />,
         },
         {
