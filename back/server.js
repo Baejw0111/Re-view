@@ -158,7 +158,7 @@ export const handler = async (event, context) => {
     console.error("Lambda Error:", err); // CloudWatch 로그에서 확인 가능
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Internal Server Error" }),
+      body: JSON.stringify({ message: "Internal Server Error", error: err }),
     };
   }
 };
