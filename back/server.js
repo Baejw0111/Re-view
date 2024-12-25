@@ -124,7 +124,7 @@ app.put(
 
 // 알림 관련 API
 app.get("/notification", verifyKakaoAccessToken, getNotifications); // 알림 조회 API
-app.get("/notification/stream", verifyKakaoAccessToken, connectNotificationSSE); // 알림 SSE API
+// app.get("/notification/stream", verifyKakaoAccessToken, connectNotificationSSE); // 알림 SSE API
 app.post(
   "/notification/check",
   verifyKakaoAccessToken,
