@@ -16,6 +16,7 @@ provider:
     KAKAO_REDIRECT_URI: ${env:KAKAO_REDIRECT_URI}
     MONGO_URI: ${env:MONGO_URI}
     AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
+    IMG_SRC: ${env:IMG_SRC}
 
   # IAM 역할 설정
   iam:

@@ -46,6 +46,7 @@ jobs:
           KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+          IMG_SRC: ${{ secrets.IMG_SRC }}
         run: |
           cd back
           npx serverless deploy
