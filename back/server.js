@@ -122,7 +122,7 @@ app.put(
   handleMulterError,
   updateUserInfo
 ); // 유저 정보 수정 API
-app.post("/user/feedback", userFeedback); // 유저 피드백 전송 API
+app.post("/user/feedback", verifyKakaoAccessToken, userFeedback); // 유저 피드백 전송 API
 
 // 알림 관련 API
 app.get("/notification", verifyKakaoAccessToken, getNotifications); // 알림 조회 API

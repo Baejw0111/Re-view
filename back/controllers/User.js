@@ -9,6 +9,8 @@ import {
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import { getFavoriteTags } from "./Tag.js";
 
+const { IMG_SRC } = process.env;
+
 /**
  * 유저 정보 조회
  * @returns {Object[]} 유저 데이터, 상위 4개 선호 태그 리스트
@@ -197,12 +199,15 @@ export const updateUserInfo = asyncHandler(async (req, res) => {
 }, "유저 정보 수정");
 
 export const userFeedback = asyncHandler(async (req, res) => {
+  const userId = req.userId;
+  const user = await UserModel.findById(userId);
   const { feedback } = req.body;
   const webhookUrl =
     "https://discord.com/api/webhooks/1321484339594137600/_NtCXyPcP2pCv9_z0HLU9x7jUkc9fNCMoMdzbDiVSgMNk6gv6B0UiKrC9x0E7AvxeYas";
 
   await axios.post(webhookUrl, {
-    username: "운영자",
+    username: `${user.nickname}(${user.kakaoId})`,
+    avatar_url: `${IMG_SRC}${user.profileImage}`,
     content: feedback,
   });
   res.status(200).json({ message: "피드백 전송 완료" });

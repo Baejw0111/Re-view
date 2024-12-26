@@ -90,5 +90,5 @@ export const updateUserInfo = async (formData: FormData): Promise<void> => {
  * @param feedback 피드백 내용
  */
 export const sendUserFeedback = async (feedback: string): Promise<void> => {
-  await generalApiClient.post(`/user/feedback`, { feedback });
+  await authApiClient.post(`/user/feedback`, { feedback });
 };
