@@ -1,3 +1,4 @@
+import axios from "axios";
 import asyncHandler from "../utils/ControllerUtils.js";
 import {
   UserModel,
@@ -194,3 +195,15 @@ export const updateUserInfo = asyncHandler(async (req, res) => {
     profileImage: user.profileImage, // 프로필 이미지 정보 반환
   });
 }, "유저 정보 수정");
+
+export const userFeedback = asyncHandler(async (req, res) => {
+  const { feedback } = req.body;
+  const webhookUrl =
+    "https://discord.com/api/webhooks/1321484339594137600/_NtCXyPcP2pCv9_z0HLU9x7jUkc9fNCMoMdzbDiVSgMNk6gv6B0UiKrC9x0E7AvxeYas";
+
+  await axios.post(webhookUrl, {
+    username: "운영자",
+    content: feedback,
+  });
+  res.status(200).json({ message: "피드백 전송 완료" });
+}, "유저 피드백 전송");
