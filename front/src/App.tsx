@@ -69,7 +69,7 @@ function App() {
       <Outlet />
       <ReviewDetailModal />
       <SearchDialog />
-      <Toaster richColors duration={Infinity} />
+      <Toaster richColors />
     </>
   );
 }
