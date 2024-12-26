@@ -59,7 +59,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
                 variant="ghost"
                 size="icon"
                 onClick={() => deleteReviewMutate()}
-                className="text-destructive hover:text-destructive/80 hover:bg-destructive/20 active:bg-destructive/20 active:text-destructive"
+                className="text-destructive hover:text-destructive/80 hover:bg-destructive/20 active:bg-destructive/20 active:text-destructive focus-visible:bg-destructive/20 focus-visible:text-destructive"
               >
                 <Trash2 className="w-6 h-6" />
                 <span className="sr-only">삭제</span>
