@@ -3,10 +3,13 @@ name: Deploy to AWS Lambda
 on:
   push:
     branches:
-      - deploy
+      - main
     paths:
       - "back/**"
       - ".github/workflows/backend-deploy.yml"
+  pull_request:
+    branches:
+      - main
 
 jobs:
   deploy:
