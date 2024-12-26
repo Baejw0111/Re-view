@@ -13,7 +13,7 @@ const handleError = (req, res, operation) => (error) => {
   );
 
   if (req.files) {
-    deleteUploadedFiles(req.files.map((file) => file.path));
+    deleteUploadedFiles(req.files.map((file) => file.key));
   }
 
   res

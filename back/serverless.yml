@@ -1,0 +1,41 @@
+service: re-view-app
+
+useDotenv: true # 환경변수 자동 로드
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-northeast-2
+  deploymentBucket:
+    name: ${env:AWS_BUCKET_NAME}
+
+  # 환경변수 설정
+  environment:
+    FRONT_URL: ${env:FRONT_URL}
+    KAKAO_REST_API_KEY: ${env:KAKAO_REST_API_KEY}
+    KAKAO_REDIRECT_URI: ${env:KAKAO_REDIRECT_URI}
+    MONGO_URI: ${env:MONGO_URI}
+    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
+    IMG_SRC: ${env:IMG_SRC}
+
+  # IAM 역할 설정
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource: "arn:aws:s3:::${env:AWS_BUCKET_NAME}/*"
+
+functions:
+  app:
+    handler: server.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: "*"
+
+plugins:
+  - serverless-offline

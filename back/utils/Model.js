@@ -3,14 +3,34 @@ import mongoose from "mongoose"; // MongoDB와 연결
 
 const { MONGO_URI } = process.env;
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log("MongoDB에 연결되었습니다."))
-  .catch((err) => console.error("MongoDB 연결 에러:", err));
-/*
-참고로 이전에는 connect 함수 안에 여러 옵션들을 덕지덕지 달아놔야 했었지만
-mongoose 6.0 버전 이상부터는 해당 옵션들이 기본값이 되어 따로 명시하지 않아도 된다.
-*/
+let cachedConnection = null;
+
+const connectDB = async () => {
+  if (cachedConnection) {
+    return cachedConnection;
+  }
+
+  try {
+    const connection = await mongoose.connect(
+      MONGO_URI
+      // 문제 생길 경우 주석 해제
+      //   , {
+      //   serverSelectionTimeoutMS: 5000,
+      //   maxPoolSize: 10,
+      //   minPoolSize: 5,
+      //   connectTimeoutMS: 10000,
+      //   maxIdleTimeMS: 5000,
+      // }
+    );
+    console.log("MongoDB에 연결되었습니다.");
+
+    cachedConnection = connection;
+    return cachedConnection;
+  } catch (err) {
+    console.error("MongoDB 연결 에러:", err);
+    throw err; // 에러를 상위로 전파
+  }
+};
 
 const db = mongoose.connection.useDb("mainDB");
 
@@ -178,3 +198,5 @@ export const NotificationModel = db.model(
     category: { type: String, default: "" },
   }).index({ userId: 1, time: -1 })
 );
+
+export { connectDB };

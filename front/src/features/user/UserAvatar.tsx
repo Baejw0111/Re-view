@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/shadcn-ui/avatar";
 import { UserRound } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import { API_URL } from "@/shared/constants";
+import { IMG_SRC } from "@/shared/constants";
 
 export default function UserAvatar({
   className,
@@ -16,7 +16,7 @@ export default function UserAvatar({
     <Avatar className={cn("w-9 h-9", className)}>
       {profileImage && (
         <AvatarImage
-          src={`${API_URL}/${profileImage}`}
+          src={`${IMG_SRC}/${profileImage}`}
           alt={nickname}
           className="object-cover"
         />

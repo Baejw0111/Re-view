@@ -8,7 +8,7 @@ import {
 import { Button } from "@/shared/shadcn-ui/button";
 import { ReviewFormValues } from "@/shared/types/interface";
 import { UseFormReturn } from "react-hook-form";
-import { API_URL } from "@/shared/constants";
+import { IMG_SRC } from "@/shared/constants";
 import {
   convertToWebP,
   createPreviewImages,
@@ -167,7 +167,7 @@ export default function PreviewImageList({
                 <div key={index}>
                   {image ? (
                     <PreviewImageBox
-                      imageSrc={`${API_URL}/${image}`}
+                      imageSrc={`${IMG_SRC}/${image}`}
                       imageName={image.split(`\\`).pop() || ""}
                       handleRemoveImage={() => handleRemoveInitialImage(index)}
                     />

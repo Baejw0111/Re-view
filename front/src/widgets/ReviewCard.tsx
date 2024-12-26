@@ -7,7 +7,7 @@ import {
   ResizablePanelGroup,
 } from "@/shared/shadcn-ui/resizable";
 import { Link, useSearchParams } from "react-router-dom";
-import { API_URL } from "@/shared/constants";
+import { IMG_SRC } from "@/shared/constants";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { fetchUserInfoById } from "@/api/user";
@@ -112,7 +112,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
         <ResizablePanel>
           {/* 리뷰 썸네일 이미지 */}
           <img
-            src={`${API_URL}/${reviewInfo.images[0]}`}
+            src={`${IMG_SRC}/${reviewInfo.images[0]}`}
             alt="Review Thumbnail Image"
             className="w-full h-full object-cover"
           />

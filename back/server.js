@@ -1,13 +1,15 @@
-// "nodemon server.js"로 서버 가동
+import serverless from "serverless-http";
 import express from "express"; // 서버 구축용 프레임워크
+import compression from "compression";
 import cors from "cors"; // cors 관리
-import morgan from "morgan"; // 로그 출력용
 import "dotenv/config"; // .env 파일에서 바로 환경 변수 로드
 import cookieParser from "cookie-parser";
+import helmet from "helmet"; // 보안 헤더 설정
 import {
   upload,
   checkFormFieldsExistence,
   verifyFormFields,
+  handleMulterError,
 } from "./utils/Upload.js";
 import {
   getKakaoToken,
@@ -35,6 +37,7 @@ import {
   getUserCommentList,
   getUserLikedList,
   updateUserInfo,
+  userFeedback,
 } from "./controllers/User.js";
 import {
   getNotifications,
@@ -51,22 +54,23 @@ import {
   deleteComment,
 } from "./controllers/Comment.js";
 import { getPopularTags, searchRelatedTags } from "./controllers/Tag.js";
+import { connectDB } from "./utils/Model.js";
 
 const app = express(); // express 인스턴스 생성
-const { PORT } = process.env; // 로드된 환경변수는 process.env로 접근 가능
+const { FRONT_URL } = process.env;
 
 // 미들웨어 설정
 app.use(express.json()); //json 데이터 파싱
+app.use(compression()); // 서버 응답 압축 전송
 app.use(express.urlencoded({ extended: true })); // form 데이터(x-www-form-urlencoded) 파싱(extended 옵션 정의 안해주면 에러 터짐)
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: FRONT_URL,
     credentials: true,
   })
 ); // cors 에러 방지
-app.use(morgan("dev")); // 로그 출력
-app.use("/public", express.static("public")); // url을 통해 public 폴더의 파일들에 접근 가능하게 함
 app.use(cookieParser()); // cookie 파싱
+app.use(helmet()); // 보안 헤더 설정
 
 // 카카오 로그인 관련 API
 app.post("/auth/kakao/login", getKakaoToken); // 카카오 토큰 요청 API
@@ -91,6 +95,7 @@ app.post(
   "/review",
   verifyKakaoAccessToken,
   upload.array("images", 5),
+  handleMulterError,
   checkFormFieldsExistence,
   verifyFormFields,
   createReview
@@ -99,6 +104,7 @@ app.patch(
   "/review/:id",
   verifyKakaoAccessToken,
   upload.array("images", 5),
+  handleMulterError,
   verifyFormFields,
   updateReview
 ); // 리뷰 수정 API
@@ -113,12 +119,14 @@ app.put(
   "/user/info",
   verifyKakaoAccessToken,
   upload.single("profileImage"),
+  handleMulterError,
   updateUserInfo
 ); // 유저 정보 수정 API
+app.post("/user/feedback", verifyKakaoAccessToken, userFeedback); // 유저 피드백 전송 API
 
 // 알림 관련 API
 app.get("/notification", verifyKakaoAccessToken, getNotifications); // 알림 조회 API
-app.get("/notification/stream", verifyKakaoAccessToken, connectNotificationSSE); // 알림 SSE API
+// app.get("/notification/stream", verifyKakaoAccessToken, connectNotificationSSE); // 알림 SSE API
 app.post(
   "/notification/check",
   verifyKakaoAccessToken,
@@ -144,4 +152,15 @@ app.get("/tag/search", searchRelatedTags); // 검색어 연관 태그 조회 API
 app.get("/search/reviews", searchReviews); // 리뷰 검색 결과 조회 API
 app.get("/search/users", searchUsers); // 유저 검색 결과 조회 API
 
-app.listen(PORT, () => console.log(`${PORT} 서버 기동 중`));
+export const handler = async (event, context) => {
+  try {
+    await connectDB();
+    return await serverless(app)(event, context);
+  } catch (err) {
+    console.error("Lambda Error:", err); // CloudWatch 로그에서 확인 가능
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: "Internal Server Error", error: err }),
+    };
+  }
+};

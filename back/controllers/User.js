@@ -1,3 +1,4 @@
+import axios from "axios";
 import asyncHandler from "../utils/ControllerUtils.js";
 import {
   UserModel,
@@ -7,6 +8,8 @@ import {
 } from "../utils/Model.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import { getFavoriteTags } from "./Tag.js";
+
+const { IMG_SRC } = process.env;
 
 /**
  * 유저 정보 조회
@@ -160,12 +163,12 @@ export const updateUserInfo = asyncHandler(async (req, res) => {
 
   if (!user) {
     if (req.file) {
-      deleteUploadedFiles([req.file.path]);
+      deleteUploadedFiles([req.file.key]);
     }
     return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
   } else if (!userId.equals(user._id)) {
     if (req.file) {
-      deleteUploadedFiles([req.file.path]);
+      deleteUploadedFiles([req.file.key]);
     }
     return res.status(403).json({ message: "유저 정보 수정 권한이 없습니다." });
   }
@@ -181,7 +184,7 @@ export const updateUserInfo = asyncHandler(async (req, res) => {
     if (user.profileImage !== "") {
       deleteUploadedFiles([user.profileImage]);
     }
-    user.profileImage = req.file.path; // 업로드된 파일 경로 저장
+    user.profileImage = req.file.key; // 업로드된 파일 경로 저장
   }
 
   user.nickname = newNickname;
@@ -194,3 +197,20 @@ export const updateUserInfo = asyncHandler(async (req, res) => {
     profileImage: user.profileImage, // 프로필 이미지 정보 반환
   });
 }, "유저 정보 수정");
+
+export const userFeedback = asyncHandler(async (req, res) => {
+  const userId = req.userId;
+  const user = await UserModel.findById(userId);
+  const { feedback } = req.body;
+  const webhookUrl =
+    "https://discord.com/api/webhooks/1321484339594137600/_NtCXyPcP2pCv9_z0HLU9x7jUkc9fNCMoMdzbDiVSgMNk6gv6B0UiKrC9x0E7AvxeYas";
+
+  await axios.post(webhookUrl, {
+    username: `${user.nickname}(${user.kakaoId})`,
+    avatar_url: user.profileImage
+      ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
+      : "",
+    content: feedback,
+  });
+  res.status(200).json({ message: "피드백 전송 완료" });
+}, "유저 피드백 전송");

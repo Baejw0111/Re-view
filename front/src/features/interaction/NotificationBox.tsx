@@ -5,7 +5,7 @@ import UserAvatar from "@/features/user/UserAvatar";
 import { NotificationInfo } from "@/shared/types/interface";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteNotification } from "@/api/notification";
-import { API_URL } from "@/shared/constants";
+import { IMG_SRC } from "@/shared/constants";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 import { cn } from "@/shared/lib/utils";
 import { claculateTime } from "@/shared/lib/utils";
@@ -98,7 +98,7 @@ export default function NotificationBox({
             <AspectRatio ratio={16 / 9}>
               <img
                 className="w-full h-full object-cover rounded-md"
-                src={`${API_URL}/${reviewThumbnail}`}
+                src={`${IMG_SRC}/${reviewThumbnail}`}
                 alt="review thumbnail"
               />
             </AspectRatio>

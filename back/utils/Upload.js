@@ -1,32 +1,87 @@
 import multer from "multer"; // 파일 업로드용
 import path from "path"; // 파일 경로 설정용
-import fs from "fs"; // 파일 삭제용
+import multerS3 from "multer-s3"; // S3 업로드용
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3"; // AWS S3 클라이언트 사용
+
+// 파일 확장자 검증 함수
+const fileFilter = (req, file, cb) => {
+  const allowedExtensions = [".webp"]; // 허용할 확장자 목록
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  if (allowedExtensions.includes(ext)) {
+    cb(null, true); // 허용된 확장자일 경우
+  } else {
+    cb(new Error(`webp 확장자를 가진 파일만 업로드할 수 있습니다.`), false); // 허용되지 않은 확장자일 경우
+  }
+};
+
+// AWS S3 인스턴스 생성
+const s3 = new S3Client({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
 
 // 파일 업로드 처리
 export const upload = multer({
-  storage: multer.diskStorage({
-    // 파일 저장 위치 설정
-    destination: function (req, file, cb) {
-      cb(null, path.join("public"));
-    },
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
+    contentType: multerS3.AUTO_CONTENT_TYPE, // 파일 타입 자동 설정
     // 파일 이름 설정
-    filename: function (req, file, cb) {
+    key: function (req, file, cb) {
       const ext = path.extname(file.originalname); // 파일 확장자 추출
       const originalName = Buffer.from(
         path.basename(file.originalname, ext),
         "latin1"
       ).toString("utf8"); // 추출한 파일 이름을 UTF-8로 인코딩
-      cb(null, path.join(originalName + Date.now() + ext)); // 파일 이름 설정
+      cb(null, originalName + "_" + Date.now() + ext); // 파일 이름 설정
     },
   }),
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
 });
 
 /**
- * 업로드된 파일 삭제
- * @param {string[]} filePaths - 삭제할 파일 경로 배열
+ * Multer 에러 처리 함수
+ * @returns - 에러 처리 결과
  */
-export const deleteUploadedFiles = (filePaths) => {
-  filePaths.forEach((filePath) => fs.unlinkSync(filePath));
+export const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res
+        .status(400)
+        .json({ message: "파일 크기는 5MB를 초과할 수 없습니다." });
+    }
+    return res.status(400).json({ message: err.message });
+  } else if (
+    err.message === "webp 확장자를 가진 파일만 업로드할 수 있습니다."
+  ) {
+    return res.status(400).json({ message: err.message });
+  }
+  next(err);
+};
+
+/**
+ * S3에 업로드된 파일 삭제
+ * @param {string[]} fileKeys - 삭제할 파일 키 배열
+ */
+export const deleteUploadedFiles = async (fileKeys) => {
+  for (const fileKey of fileKeys) {
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileKey,
+    };
+
+    try {
+      await s3.send(new DeleteObjectCommand(params));
+      console.log(`Successfully deleted file ${fileKey}`);
+    } catch (err) {
+      console.error(`Failed to delete file ${fileKey}:`, err);
+    }
+  }
 };
 
 /**
@@ -63,7 +118,7 @@ export const checkFormFieldsExistence = (req, res, next) => {
   }
 
   if (missingFields.length > 0) {
-    deleteUploadedFiles(files.map((file) => file.path));
+    deleteUploadedFiles(files.map((file) => file.key));
 
     const message = `${missingFields.join(
       ", "
@@ -86,7 +141,6 @@ const fieldLimits = {
   reviewText: 1000,
   tags: 5,
   files: 5,
-  maxFileSize: 5, // MB 단위
 };
 
 /**
@@ -137,30 +191,8 @@ export const verifyFormFields = (req, res, next) => {
     );
   }
 
-  // 파일 크기 검증
-  if (
-    files &&
-    files.some((file) => file.size > fieldLimits.maxFileSize * 1024 * 1024)
-  ) {
-    invalidMessages.push(
-      `파일 크기는 최대 ${fieldLimits.maxFileSize}MB까지 업로드할 수 있습니다.`
-    );
-  }
-
-  // 파일 확장자 검증
-  const isInvalidExtension =
-    files &&
-    files.some((file) => {
-      const extension = file.path.split(".").pop().toLowerCase();
-      return extension !== "webp";
-    });
-
-  if (isInvalidExtension) {
-    invalidMessages.push(`파일 확장자는 webp만 업로드할 수 있습니다.`);
-  }
-
   if (invalidMessages.length > 0) {
-    deleteUploadedFiles(files.map((file) => file.path));
+    deleteUploadedFiles(files.map((file) => file.key));
     const message = `${invalidMessages.join(
       "\n"
     )}\n위 내용을 참고해 다시 입력 후 재시도해주세요.`;

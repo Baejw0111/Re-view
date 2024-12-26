@@ -24,12 +24,37 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@/shared/shadcn-ui/tabs";
+import SkeletonUserCard from "@/shared/skeleton/SkeletonUserCard";
+import { toast } from "sonner";
 
 export default function Test() {
   return (
     <>
-      <PageTemplate pageName="Test">
+      <PageTemplate>
         {/* 컴포넌트 시작 */}
+        <Button
+          onClick={() =>
+            toast.success("Event has been created", {
+              description: "Sunday, December 03, 2023 at 9:00 AM",
+              action: {
+                label: "Undo",
+                onClick: () => console.log("Undo"),
+              },
+            })
+          }
+        >
+          토스트
+        </Button>
+
+        <div className="flex items-center gap-4">
+          <span className="line-clamp-1">
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          </span>
+          <span>123</span>
+        </div>
+
+        <SkeletonUserCard isUserProfile />
+
         <Tabs defaultValue="latest">
           <TabsList>
             <TabsTrigger value="latest">최신글</TabsTrigger>
@@ -40,8 +65,11 @@ export default function Test() {
           <TabsContent value="popular">인기글</TabsContent>
           <TabsContent value="my">내가 쓴 글</TabsContent>
         </Tabs>
+
         <SkeletonReviewCard />
+
         <Logo className="w-80 h-80 my-40 mx-auto" />
+
         <Dialog modal={false}>
           <DialogTrigger asChild>
             <Button variant="outline">Open Dialog</Button>
@@ -114,7 +142,6 @@ export default function Test() {
             <DropdownMenuItem>Subscription</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
         {/* 컴포넌트 끝*/}
       </PageTemplate>
     </>

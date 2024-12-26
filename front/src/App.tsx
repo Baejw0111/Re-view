@@ -4,7 +4,6 @@ import { setUserInfo } from "@/state/store/userInfoSlice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserInfo } from "@/shared/types/interface";
 import { getLoginUserInfo } from "@/api/auth";
-import { API_URL } from "@/shared/constants";
 import useAuth from "@/shared/hooks/useAuth";
 import Header from "./widgets/Header";
 import ReviewDetailModal from "./pages/ReviewDetailModal";
@@ -42,17 +41,24 @@ function App() {
   // 알림 스트림 연결
   useEffect(() => {
     if (isAuth) {
-      const eventSource = new EventSource(`${API_URL}/notification/stream`, {
-        withCredentials: true,
-      });
+      // const eventSource = new EventSource(`${API_URL}/notification/stream`, {
+      //   withCredentials: true,
+      // });
 
-      eventSource.onmessage = () => {
-        queryClient.invalidateQueries({ queryKey: ["notifications"] }); // 새로운 알림이 올 때마다 fetchNotifications API 요청
-      };
+      // eventSource.onmessage = () => {
+      //   queryClient.invalidateQueries({ queryKey: ["notifications"] }); // 새로운 알림이 올 때마다 fetchNotifications API 요청
+      // };
 
-      return () => {
-        eventSource.close();
-      };
+      // return () => {
+      //   eventSource.close();
+      // };
+
+      // 30초마다 notifications 쿼리 무효화를 통해 알림 목록 갱신
+      const interval = setInterval(() => {
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      }, 30000);
+
+      return () => clearInterval(interval);
     }
   }, [isAuth, queryClient]);
 
@@ -63,7 +69,7 @@ function App() {
       <Outlet />
       <ReviewDetailModal />
       <SearchDialog />
-      <Toaster richColors duration={Infinity} />
+      <Toaster richColors />
     </>
   );
 }
