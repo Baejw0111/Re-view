@@ -207,7 +207,9 @@ export const userFeedback = asyncHandler(async (req, res) => {
 
   await axios.post(webhookUrl, {
     username: `${user.nickname}(${user.kakaoId})`,
-    avatar_url: `${IMG_SRC}${user.profileImage}`,
+    avatar_url: user.profileImage
+      ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
+      : "",
     content: feedback,
   });
   res.status(200).json({ message: "피드백 전송 완료" });
