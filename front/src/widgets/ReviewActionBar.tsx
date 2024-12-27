@@ -3,6 +3,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, FilePenLine, Siren } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteReview } from "@/api/review";
+import { sendUserReport } from "@/api/user";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 import { VITE_CLIENT_URL } from "@/shared/constants";
@@ -20,6 +21,18 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error("리뷰 삭제 실패", {
+        description: error.response?.data?.message,
+      });
+    },
+  });
+
+  const { mutate: reportReviewMutate } = useMutation({
+    mutationFn: () => sendUserReport(reviewId as string),
+    onSuccess: () => {
+      toast.success("신고가 전송되었습니다.");
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("신고 실패", {
         description: error.response?.data?.message,
       });
     },
@@ -68,7 +81,11 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
           </>
         ) : (
           <TooltipWrapper tooltipText="신고">
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => reportReviewMutate()}
+            >
               <Siren className="w-6 h-6" />
               <span className="sr-only">신고</span>
             </Button>

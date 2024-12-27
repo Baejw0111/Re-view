@@ -9,7 +9,7 @@ import {
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import { getFavoriteTags } from "./Tag.js";
 
-const { IMG_SRC } = process.env;
+const { IMG_SRC, FRONT_URL } = process.env;
 
 /**
  * 유저 정보 조회
@@ -198,6 +198,10 @@ export const updateUserInfo = asyncHandler(async (req, res) => {
   });
 }, "유저 정보 수정");
 
+/**
+ * 유저 피드백 전송
+ * @returns {Object} 피드백 전송 결과
+ */
 export const userFeedback = asyncHandler(async (req, res) => {
   const userId = req.userId;
   const user = await UserModel.findById(userId);
@@ -214,3 +218,23 @@ export const userFeedback = asyncHandler(async (req, res) => {
   });
   res.status(200).json({ message: "피드백 전송 완료" });
 }, "유저 피드백 전송");
+
+/**
+ * 유저 신고 전송
+ * @returns {Object} 신고 전송 결과
+ */
+export const userReport = asyncHandler(async (req, res) => {
+  const userId = req.userId;
+  const user = await UserModel.findById(userId);
+  const { reportedReviewId } = req.body;
+  const webhookUrl =
+    "https://discord.com/api/webhooks/1321486396594065410/4h5X9Mrq1GgF9p3VLrmvDPpgx-BJwV7weqOOlCi3xFUWmMESip5ZXTME6O-lQARN3w4p";
+
+  await axios.post(webhookUrl, {
+    username: `${user.nickname}(${user.kakaoId})`,
+    avatar_url: user.profileImage
+      ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
+      : "",
+    content: `${FRONT_URL}/?reviewId=${reportedReviewId}`,
+  });
+});

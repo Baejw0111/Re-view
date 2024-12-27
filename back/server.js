@@ -38,6 +38,7 @@ import {
   getUserLikedList,
   updateUserInfo,
   userFeedback,
+  userReport,
 } from "./controllers/User.js";
 import {
   getNotifications,
@@ -123,6 +124,7 @@ app.put(
   updateUserInfo
 ); // 유저 정보 수정 API
 app.post("/user/feedback", verifyKakaoAccessToken, userFeedback); // 유저 피드백 전송 API
+app.post("/user/report", verifyKakaoAccessToken, userReport); // 유저 신고 API
 
 // 알림 관련 API
 app.get("/notification", verifyKakaoAccessToken, getNotifications); // 알림 조회 API

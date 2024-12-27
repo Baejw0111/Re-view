@@ -92,3 +92,13 @@ export const updateUserInfo = async (formData: FormData): Promise<void> => {
 export const sendUserFeedback = async (feedback: string): Promise<void> => {
   await authApiClient.post(`/user/feedback`, { feedback });
 };
+
+/**
+ * 유저 신고 함수
+ * @param report 신고 내용
+ */
+export const sendUserReport = async (
+  reportedReviewId: string
+): Promise<void> => {
+  await authApiClient.post(`/user/report`, { reportedReviewId });
+};
