@@ -97,8 +97,23 @@ export const sendUserFeedback = async (feedback: string): Promise<void> => {
  * 유저 신고 함수
  * @param report 신고 내용
  */
-export const sendUserReport = async (
+export const sendUserReportReview = async (
   reportedReviewId: string
 ): Promise<void> => {
-  await authApiClient.post(`/user/report`, { reportedReviewId });
+  await authApiClient.post(`/user/report/review`, { reportedReviewId });
+};
+
+/**
+ * 댓글 신고 함수
+ * @param reportedReviewId 신고될 리뷰 ID
+ * @param reportedCommentId 신고될 댓글 ID
+ */
+export const sendUserReportComment = async (
+  reportedReviewId: string,
+  reportedCommentId: string
+): Promise<void> => {
+  await authApiClient.post(`/user/report/comment`, {
+    reportedReviewId,
+    reportedCommentId,
+  });
 };

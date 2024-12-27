@@ -220,10 +220,10 @@ export const userFeedback = asyncHandler(async (req, res) => {
 }, "유저 피드백 전송");
 
 /**
- * 유저 신고 전송
+ * 리뷰 신고 전송
  * @returns {Object} 신고 전송 결과
  */
-export const userReport = asyncHandler(async (req, res) => {
+export const userReportReview = asyncHandler(async (req, res) => {
   const userId = req.userId;
   const user = await UserModel.findById(userId);
   const { reportedReviewId } = req.body;
@@ -236,5 +236,21 @@ export const userReport = asyncHandler(async (req, res) => {
       ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
       : "",
     content: `${FRONT_URL}/?reviewId=${reportedReviewId}`,
+  });
+});
+
+/**
+ * 댓글 신고 전송
+ * @returns {Object} 신고 전송 결과
+ */
+export const userReportComment = asyncHandler(async (req, res) => {
+  const userId = req.userId;
+  const user = await UserModel.findById(userId);
+  const { reportedReviewId, reportedCommentId } = req.body;
+  const webhookUrl =
+    "https://discord.com/api/webhooks/1321486396594065410/4h5X9Mrq1GgF9p3VLrmvDPpgx-BJwV7weqOOlCi3xFUWmMESip5ZXTME6O-lQARN3w4p";
+
+  await axios.post(webhookUrl, {
+    content: `${FRONT_URL}/?reviewId=${reportedReviewId}#${reportedCommentId}`,
   });
 });

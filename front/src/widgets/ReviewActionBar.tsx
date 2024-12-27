@@ -3,7 +3,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, FilePenLine, Siren } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { deleteReview } from "@/api/review";
-import { sendUserReport } from "@/api/user";
+import { sendUserReportReview } from "@/api/user";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 import { VITE_CLIENT_URL } from "@/shared/constants";
@@ -27,7 +27,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   });
 
   const { mutate: reportReviewMutate } = useMutation({
-    mutationFn: () => sendUserReport(reviewId as string),
+    mutationFn: () => sendUserReportReview(reviewId as string),
     onSuccess: () => {
       toast.success("신고가 전송되었습니다.");
     },
