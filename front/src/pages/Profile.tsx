@@ -2,9 +2,6 @@ import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
 import { Grid, MessageCircle, Heart } from "lucide-react";
 import { Link, useParams, useLocation, Outlet } from "react-router-dom";
-import UserSetting from "@/features/setting/UserSetting";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
 import { Card } from "@/shared/shadcn-ui/card";
 import ProfileInfo from "@/features/user/ProfileInfo";
 import { Suspense } from "react";
@@ -12,7 +9,6 @@ import SkeletonUserCard from "@/shared/skeleton/SkeletonUserCard";
 
 export default function Profile() {
   const location = useLocation();
-  const loginedUserInfo = useSelector((state: RootState) => state.userInfo);
 
   // 사용자 정보 가져오기
   const { id: userId } = useParams();
@@ -22,11 +18,6 @@ export default function Profile() {
       <Suspense fallback={<SkeletonUserCard isUserProfile />}>
         <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
           <ProfileInfo userId={Number(userId)} tags />
-          {loginedUserInfo.kakaoId === Number(userId) && (
-            <div className="absolute right-1 top-1 md:right-4 md:top-4">
-              <UserSetting />
-            </div>
-          )}
         </Card>
       </Suspense>
 
