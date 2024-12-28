@@ -8,10 +8,6 @@ import {
 } from "@/shared/shadcn-ui/dropdown-menu";
 import { logOutKakao, deleteUserAccount } from "@/api/auth";
 import {
-  KAKAO_REST_API_KEY,
-  KAKAO_LOGOUT_REDIRECT_URI,
-} from "@/shared/constants";
-import {
   Settings,
   Sun,
   Moon,
@@ -71,7 +67,7 @@ export default function UserSetting() {
    */
   const handleLogOut = async () => {
     await logOutKakao();
-    window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${KAKAO_REST_API_KEY}&logout_redirect_uri=${KAKAO_LOGOUT_REDIRECT_URI}`;
+    window.location.href = `/`;
   };
 
   /**
@@ -79,7 +75,7 @@ export default function UserSetting() {
    */
   const handleDelete = async () => {
     await deleteUserAccount();
-    window.location.href = "/";
+    window.location.href = `/`;
   };
 
   return (

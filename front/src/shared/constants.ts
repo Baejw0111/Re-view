@@ -5,5 +5,5 @@ export const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
 export const KAKAO_LOGOUT_REDIRECT_URI = import.meta.env
   .VITE_KAKAO_LOGOUT_REDIRECT_URI;
 export const KAKAO_OAUTH_URL =
-  "https://kauth.kakao.com/oauth/authorize?response_type=code";
+  "https://kauth.kakao.com/oauth/authorize?response_type=code&prompt=login";
 export const IMG_SRC = import.meta.env.VITE_IMG_SRC;
