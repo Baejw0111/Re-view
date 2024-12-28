@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import UserAvatar from "@/features/user/UserAvatar";
 import { CommentInfo } from "@/shared/types/interface";
 import { deleteComment } from "@/api/comment";
-import { Trash, Pencil, Siren } from "lucide-react";
+import { Trash, Siren } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
@@ -96,9 +96,9 @@ export default function CommentBox({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
+                {/* <Button variant="ghost" size="icon">
                   <Pencil className="w-4 h-4 text-muted-foreground" />
-                </Button>
+                </Button> */}
                 {commentInfo.authorId === kakaoId ? (
                   <Button
                     variant="ghost"
