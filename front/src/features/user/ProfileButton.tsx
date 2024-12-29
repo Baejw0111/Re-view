@@ -253,6 +253,7 @@ export default function ProfileButton({
             <Textarea
               placeholder="피드백을 입력해주세요."
               value={feedback}
+              rows={5}
               onChange={(e) => setFeedback(e.target.value)}
             />
             <DialogFooter className="flex flex-row justify-end gap-2">
