@@ -11,6 +11,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Search, Bell } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setIsSearchDialogOpen } from "@/state/store/searchDialogOpenSlice";
+import { toast } from "sonner";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -19,6 +20,16 @@ export default function Header() {
   const dispatch = useDispatch();
   const onOpenSearchDialog = () => {
     dispatch(setIsSearchDialogOpen(true));
+  };
+
+  const handleNotificationButtonClick = (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    if (userInfo.kakaoId === 0) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
   };
 
   return (
@@ -45,7 +56,13 @@ export default function Header() {
               <Search />
             </Button>
             <WriteReviewButton />
-            <Button variant="ghost" size="icon" className="shrink-0" asChild>
+            <Button
+              onClick={handleNotificationButtonClick}
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              asChild
+            >
               <Link to="/notifications">
                 <Bell />
               </Link>
