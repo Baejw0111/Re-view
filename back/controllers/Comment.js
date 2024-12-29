@@ -42,12 +42,14 @@ export const addComment = asyncHandler(async (req, res) => {
   });
 
   // 알림 생성
-  await NotificationModel.create({
-    userId: review.authorId,
-    commentId: comment._id,
-    reviewId,
-    category: "comment",
-  });
+  if (!review.authorId.equals(authorId)) {
+    await NotificationModel.create({
+      userId: review.authorId,
+      commentId: comment._id,
+      reviewId,
+      category: "comment",
+    });
+  }
 
   // 새로운 댓글 이벤트 전송
   sendEventToClient(review.authorId);
