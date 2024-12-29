@@ -54,7 +54,7 @@ export const addLike = asyncHandler(async (req, res) => {
       });
 
       // 알림 이벤트 전송
-      sendEventToClient(review.authorId);
+      // sendEventToClient(review.authorId);
     }
   }
 

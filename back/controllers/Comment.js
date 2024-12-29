@@ -52,7 +52,7 @@ export const addComment = asyncHandler(async (req, res) => {
   }
 
   // 새로운 댓글 이벤트 전송
-  sendEventToClient(review.authorId);
+  // sendEventToClient(review.authorId);
 
   res.status(200).json({ message: "댓글 추가 완료" });
 }, "리뷰 댓글 추가");
@@ -138,9 +138,10 @@ export const deleteComment = asyncHandler(async (req, res) => {
     $inc: { commentsCount: -1 },
   }); // 리뷰 댓글 수 감소
 
-  // 알림 이벤트 전송
   const review = await ReviewModel.findById(comment.reviewId);
-  sendEventToClient(review.authorId);
+
+  // 알림 이벤트 전송
+  // sendEventToClient(review.authorId);
 
   await decreaseTagPreference(comment.authorId, review.tags, 1);
 
