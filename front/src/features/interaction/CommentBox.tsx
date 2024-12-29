@@ -87,7 +87,9 @@ export default function CommentBox({
               <div className="flex items-center gap-2">
                 <Link
                   to={`/profile/${commentInfo.authorId}`}
-                  className="font-semibold text-sm"
+                  className={`font-semibold text-sm ${
+                    commentInfo.nickname === "운영자" ? "text-orange-500" : ""
+                  }`}
                 >
                   {commentInfo.nickname}
                 </Link>

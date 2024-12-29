@@ -86,7 +86,11 @@ export default function ReviewDetail() {
                     profileImage={userInfo?.profileImage}
                     nickname={userInfo?.nickname}
                   />
-                  <div className="line-clamp-1 font-semibold">
+                  <div
+                    className={`line-clamp-1 font-semibold ${
+                      userInfo?.nickname === "운영자" ? "text-orange-500" : ""
+                    }`}
+                  >
                     {userInfo?.nickname}
                   </div>
                 </Link>
