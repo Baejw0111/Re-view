@@ -1,5 +1,4 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
-import { Loader2Icon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useLoaderData } from "react-router-dom";
 import NotificationBox from "@/features/interaction/NotificationBox";
@@ -16,7 +15,7 @@ export default function Notification() {
   return (
     <PageTemplate>
       <div className="max-w-xl mx-auto bg-background rounded-lg overflow-hidden">
-        {notifications ? (
+        {notifications.length > 0 ? (
           notifications.map((notification, index) => (
             <NotificationBox
               key={index}
@@ -29,10 +28,6 @@ export default function Notification() {
             알림이 없습니다.
           </div>
         )}
-        <div className="flex justify-center items-center p-4 border-t">
-          <Loader2Icon className="animate-spin mr-2" />더 많은 알림 불러오는
-          중...
-        </div>
       </div>
     </PageTemplate>
   );
