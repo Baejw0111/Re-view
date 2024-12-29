@@ -28,7 +28,6 @@ export default function WriteReview() {
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-    window.history.pushState(null, "", window.location.href);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
