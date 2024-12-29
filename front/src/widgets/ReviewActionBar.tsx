@@ -7,22 +7,19 @@ import { sendUserReportReview } from "@/api/user";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
 import { VITE_CLIENT_URL } from "@/shared/constants";
-import { AxiosError } from "axios";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
+  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
   const { mutate: deleteReviewMutate } = useMutation({
     mutationFn: () => deleteReview(reviewId as string),
     onSuccess: () => {
       window.location.href = "/";
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      toast.error("리뷰 삭제 실패", {
-        description: error.response?.data?.message,
-      });
     },
   });
 
@@ -31,12 +28,15 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
     onSuccess: () => {
       toast.success("신고가 전송되었습니다.");
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      toast.error("신고 실패", {
-        description: error.response?.data?.message,
-      });
-    },
   });
+
+  const handleReportReview = () => {
+    if (kakaoId === 0) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
+    reportReviewMutate();
+  };
 
   return (
     <div className="flex items-center gap-2">
@@ -81,11 +81,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
           </>
         ) : (
           <TooltipWrapper tooltipText="신고">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => reportReviewMutate()}
-            >
+            <Button variant="ghost" size="icon" onClick={handleReportReview}>
               <Siren className="w-6 h-6" />
               <span className="sr-only">신고</span>
             </Button>

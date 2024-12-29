@@ -10,7 +10,6 @@ import { Form } from "@/shared/shadcn-ui/form";
 import { Card } from "@/shared/shadcn-ui/card";
 import { ReviewInfo } from "@/shared/types/interface";
 import { handleEnterKeyDown } from "@/shared/lib/utils";
-import { AxiosError } from "axios";
 import {
   titleValidation,
   reviewImagesValidation,
@@ -75,11 +74,6 @@ export default function ReviewForm({
       toast.success("리뷰가 업로드되었습니다.");
       navigate("/");
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      toast.error(
-        `리뷰 업로드 중 에러가 발생했습니다.\n${error.response?.data.message}`
-      );
-    },
   });
 
   // 리뷰 수정
@@ -92,11 +86,6 @@ export default function ReviewForm({
         queryKey: ["reviewInfo", reviewInfo?._id],
       });
       navigate(-1);
-    },
-    onError: (error: AxiosError<{ message: string }>) => {
-      toast.error(
-        `리뷰 수정 중 에러가 발생했습니다.\n${error.response?.data.message}`
-      );
     },
   });
 

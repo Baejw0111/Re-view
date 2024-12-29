@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { sendUserReportComment } from "@/api/user";
-import { AxiosError } from "axios";
 
 export default function CommentBox({
   commentInfo,
@@ -38,11 +37,6 @@ export default function CommentBox({
         queryKey: ["commentCount", commentInfo.reviewId],
       });
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      toast.error("댓글 삭제 실패", {
-        description: error.response?.data?.message,
-      });
-    },
   });
 
   const { mutate: reportCommentMutate } = useMutation({
@@ -51,12 +45,15 @@ export default function CommentBox({
     onSuccess: () => {
       toast.success("댓글이 신고되었습니다.");
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      toast.error("댓글 신고 실패", {
-        description: error.response?.data?.message,
-      });
-    },
   });
+
+  const handleReportComment = () => {
+    if (kakaoId === 0) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
+    reportCommentMutate();
+  };
 
   useEffect(() => {
     if (highlight) {
@@ -113,7 +110,7 @@ export default function CommentBox({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => reportCommentMutate()}
+                    onClick={handleReportComment}
                   >
                     <Siren className="w-4 h-4 text-muted-foreground" />
                   </Button>

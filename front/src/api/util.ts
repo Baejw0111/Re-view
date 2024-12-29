@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { API_URL } from "@/shared/constants";
 import { AxiosError, CreateAxiosDefaults, AxiosRequestConfig } from "axios";
+import { toast } from "sonner";
 
 /**
  * axios 인스턴스 생성 함수
@@ -59,8 +60,11 @@ authApiClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  async (error: AxiosError) => {
+  async (error: AxiosError<{ message: string }>) => {
     const { response } = error;
+    toast.error("요청 실패", {
+      description: error.response?.data?.message,
+    });
     if (response?.status === 401) {
       try {
         await refreshKakaoAccessToken();

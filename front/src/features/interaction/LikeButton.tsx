@@ -12,6 +12,7 @@ import { RootState } from "@/state/store";
 import { cn } from "@/shared/lib/utils";
 import { useCountingAnimation } from "@/shared/hooks";
 import { useIntersectionObserver } from "@/shared/hooks";
+import { toast } from "sonner";
 
 export default function LikeButton({
   reviewId,
@@ -44,9 +45,6 @@ export default function LikeButton({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["likeStatus", reviewId] });
     },
-    onError: () => {
-      window.location.reload();
-    },
   });
 
   // 추천 취소
@@ -54,9 +52,6 @@ export default function LikeButton({
     mutationFn: () => unlikeReview(reviewId as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["likeStatus", reviewId] });
-    },
-    onError: () => {
-      window.location.reload();
     },
   });
 
@@ -66,6 +61,11 @@ export default function LikeButton({
     useCountingAnimation(0); // 추천 수 애니메이션
 
   const handleLikeClick = async () => {
+    if (kakaoId === 0) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
+
     setCurrentLikesCount(currentLikesCount + (likeState ? -1 : 1));
 
     if (likeState) {

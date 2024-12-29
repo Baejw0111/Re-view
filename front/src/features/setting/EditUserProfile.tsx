@@ -33,7 +33,6 @@ import {
   reviewFieldLimits,
 } from "@/shared/types/validation";
 import { Skeleton } from "@/shared/shadcn-ui/skeleton";
-import { toast } from "sonner";
 
 export default function EditUserProfile({
   submitFooter,
@@ -76,9 +75,6 @@ export default function EditUserProfile({
       } else {
         window.location.reload();
       }
-    },
-    onError: () => {
-      toast.error("프로필 업데이트 중 에러가 발생했습니다.");
     },
   });
 

@@ -41,9 +41,6 @@ export default function NotificationBox({
       toast.success("알림이 삭제되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
-    onError: () => {
-      toast.error("알림 삭제 실패");
-    },
   });
 
   const handleDeleteNotification = (e: React.MouseEvent<HTMLButtonElement>) => {
