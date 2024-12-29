@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { sendUserReportComment } from "@/api/user";
+import Alert from "@/widgets/Alert";
 
 export default function CommentBox({
   commentInfo,
@@ -99,21 +100,25 @@ export default function CommentBox({
                   <Pencil className="w-4 h-4 text-muted-foreground" />
                 </Button> */}
                 {commentInfo.authorId === kakaoId ? (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteCommentMutate(commentInfo._id)}
+                  <Alert
+                    title="댓글을 삭제하시겠습니까?"
+                    description=""
+                    onConfirm={() => deleteCommentMutate(commentInfo._id)}
                   >
-                    <Trash className="w-4 h-4 text-muted-foreground" />
-                  </Button>
+                    <Button variant="ghost" size="icon">
+                      <Trash className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                  </Alert>
                 ) : (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleReportComment}
+                  <Alert
+                    title="댓글을 신고하시겠습니까?"
+                    description=""
+                    onConfirm={handleReportComment}
                   >
-                    <Siren className="w-4 h-4 text-muted-foreground" />
-                  </Button>
+                    <Button variant="ghost" size="icon">
+                      <Siren className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                  </Alert>
                 )}
               </div>
             </div>

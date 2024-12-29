@@ -40,13 +40,13 @@ import {
   KAKAO_REST_API_KEY,
   KAKAO_REDIRECT_URI,
 } from "@/shared/constants";
+import Alert from "@/widgets/Alert";
 
 export default function ProfileButton({
   userInfo,
 }: {
   userInfo: LoginUserInfo;
 }) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileEditDialogOpen, setIsProfileEditDialogOpen] = useState(false);
   const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -92,7 +92,7 @@ export default function ProfileButton({
 
   return (
     <>
-      <DropdownMenu onOpenChange={setIsDropdownOpen} modal={false}>
+      <DropdownMenu modal={false}>
         {/* 설정 버튼 */}
         <TooltipWrapper tooltipText="프로필">
           <DropdownMenuTrigger asChild>
@@ -163,13 +163,21 @@ export default function ProfileButton({
               </DropdownMenuItem>
 
               {/* 로그아웃 버튼 */}
-              <DropdownMenuItem
-                onClick={handleLogOut}
-                className="flex items-center justify-start gap-2"
+              <Alert
+                title="로그아웃하시겠습니까?"
+                description="로그아웃 시 서비스를 이용하려면 다시 로그인이 필요합니다."
+                onConfirm={handleLogOut}
               >
-                <LogOut className="h-5 w-5" />
-                <span className="text-xs">로그아웃</span>
-              </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                  }}
+                  className="flex items-center justify-start gap-2"
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span className="text-xs">로그아웃</span>
+                </DropdownMenuItem>
+              </Alert>
 
               {/* 피드백 버튼 */}
               <DropdownMenuItem
@@ -181,20 +189,26 @@ export default function ProfileButton({
               </DropdownMenuItem>
 
               {/* 회원 탈퇴 버튼 */}
-              <DropdownMenuItem
-                onClick={handleDelete}
-                className="flex items-center justify-start gap-2 text-destructive focus:text-destructive focus:bg-destructive/20 active:text-destructive active:bg-destructive/20"
+              <Alert
+                title="서비스에서 탈퇴하시겠습니까?"
+                description="탈퇴 후 모든 데이터는 삭제되며 복구가 불가능합니다."
+                onConfirm={handleDelete}
               >
-                <UserRoundX className="h-5 w-5" />
-                <span className="text-xs">회원 탈퇴</span>
-              </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={(e) => e.preventDefault()}
+                  className="flex items-center justify-start gap-2 text-destructive focus:text-destructive focus:bg-destructive/20 active:text-destructive active:bg-destructive/20"
+                >
+                  <UserRoundX className="h-5 w-5" />
+                  <span className="text-xs">회원 탈퇴</span>
+                </DropdownMenuItem>
+              </Alert>
             </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
 
       <Dialog
-        open={isProfileEditDialogOpen && !isDropdownOpen}
+        open={isProfileEditDialogOpen}
         onOpenChange={setIsProfileEditDialogOpen}
       >
         <DialogContent className="max-w-sm [&>button]:hidden">
@@ -223,14 +237,18 @@ export default function ProfileButton({
       </Dialog>
 
       <Dialog
-        open={isFeedbackDialogOpen && !isDropdownOpen}
+        open={isFeedbackDialogOpen}
         onOpenChange={setIsFeedbackDialogOpen}
       >
         <DialogContent className="max-w-lg [&>button]:hidden">
           <DialogHeader className="text-left">
             <DialogTitle>피드백 보내기</DialogTitle>
           </DialogHeader>
-          <DialogDescription hidden></DialogDescription>
+          <DialogDescription>
+            서비스 이용 중 발생한 버그, 또는 불편했던 점들을 작성해서
+            보내주세요. 서비스 개선점에 대해서 자세하게 작성해주시면 더욱 좋은
+            서비스를 제공하기 위해 노력하겠습니다.
+          </DialogDescription>
           <form onSubmit={handleSubmitFeedback} className="flex flex-col gap-4">
             <Textarea
               placeholder="피드백을 입력해주세요."

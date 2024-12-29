@@ -10,6 +10,7 @@ import { VITE_CLIENT_URL } from "@/shared/constants";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import Alert from "@/widgets/Alert";
 
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
@@ -71,26 +72,46 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => deleteReviewMutate()}
+                onClick={() => {
+                  document.getElementById("delete-review-button")?.click();
+                }}
                 className="text-destructive hover:text-destructive/80 hover:bg-destructive/20 active:bg-destructive/20 active:text-destructive focus-visible:bg-destructive/20 focus-visible:text-destructive"
               >
                 <Trash2 className="w-6 h-6" />
                 <span className="sr-only">삭제</span>
               </Button>
             </TooltipWrapper>
+            <Alert
+              title="리뷰를 삭제하시겠습니까?"
+              description="삭제된 리뷰는 복구할 수 없습니다."
+              onConfirm={() => deleteReviewMutate()}
+            >
+              <button id="delete-review-button" hidden></button>
+            </Alert>
           </>
         ) : (
-          <TooltipWrapper tooltipText="신고">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleReportReview}
-              className="text-destructive hover:text-destructive/80 hover:bg-destructive/20 active:bg-destructive/20 active:text-destructive focus-visible:bg-destructive/20 focus-visible:text-destructive"
+          <>
+            <TooltipWrapper tooltipText="신고">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  document.getElementById("report-review-button")?.click();
+                }}
+                className="text-destructive hover:text-destructive/80 hover:bg-destructive/20 active:bg-destructive/20 active:text-destructive focus-visible:bg-destructive/20 focus-visible:text-destructive"
+              >
+                <Siren className="w-6 h-6" />
+                <span className="sr-only">신고</span>
+              </Button>
+            </TooltipWrapper>
+            <Alert
+              title="리뷰를 신고하시겠습니까?"
+              description="신고된 리뷰는 관리자가 확인 후 처리됩니다."
+              onConfirm={handleReportReview}
             >
-              <Siren className="w-6 h-6" />
-              <span className="sr-only">신고</span>
-            </Button>
-          </TooltipWrapper>
+              <button id="report-review-button" hidden></button>
+            </Alert>
+          </>
         )}
       </div>
     </div>
