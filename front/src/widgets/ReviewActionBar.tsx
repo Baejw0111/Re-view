@@ -81,7 +81,12 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
           </>
         ) : (
           <TooltipWrapper tooltipText="신고">
-            <Button variant="ghost" size="icon" onClick={handleReportReview}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleReportReview}
+              className="text-destructive hover:text-destructive/80 hover:bg-destructive/20 active:bg-destructive/20 active:text-destructive focus-visible:bg-destructive/20 focus-visible:text-destructive"
+            >
               <Siren className="w-6 h-6" />
               <span className="sr-only">신고</span>
             </Button>
