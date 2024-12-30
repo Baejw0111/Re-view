@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useBlocker } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -39,6 +39,8 @@ export default function ReviewForm({
   ); // 초기 이미지(기존에 작성한 리뷰에 첨부된 이미지)
   const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제할 이미지
   const [isUploading, setIsUploading] = useState(false); // 리뷰 이미지 업로드 상태
+  const blocker = useBlocker(true);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   /**
    * 리뷰 업로드 시 필드 검증 스키마
@@ -72,6 +74,9 @@ export default function ReviewForm({
     mutationFn: writeReview,
     onSuccess: () => {
       toast.success("리뷰가 업로드되었습니다.");
+      queryClient.invalidateQueries({
+        queryKey: ["feed", "latest"],
+      });
       navigate("/");
     },
   });
@@ -93,6 +98,7 @@ export default function ReviewForm({
    * 업로드 제출 시 실행될 작업
    */
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsFormSubmitted(true);
     // 폼 값 처리
     const { title, reviewText, rating, tags, images, isSpoiler } = values;
 
@@ -142,6 +148,39 @@ export default function ReviewForm({
       writeReviewMutation(formData);
     }
   };
+
+  // 라우트 간 이동 시 경고창 생성
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      if (isFormSubmitted) {
+        blocker.proceed();
+        return;
+      }
+
+      const confirmLeave = window.confirm(
+        "작성 중인 내용이 저장되지 않을 수 있습니다. 정말 나가시겠습니까?"
+      );
+
+      if (confirmLeave) {
+        blocker.proceed(); // 페이지 이동을 허용
+      } else {
+        blocker.reset(); // 차단 상태 유지
+      }
+    }
+  }, [blocker, isFormSubmitted]);
+
+  // 새로고침 또는 사이트를 떠나려 할 때 경고창 생성
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   return (
     <Card className="p-6 md:p-8 max-w-screen-md mx-auto">
