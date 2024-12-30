@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
@@ -66,6 +67,7 @@ function App() {
     <>
       <Header />
       <SubHeader />
+      <Analytics />
       <Outlet />
       <ReviewDetailModal />
       <SearchDialog />
