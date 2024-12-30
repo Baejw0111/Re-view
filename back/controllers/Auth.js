@@ -10,7 +10,8 @@ import {
 import asyncHandler from "../utils/ControllerUtils.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 
-const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = process.env;
+const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI, PUUUSH_WEB_HOOK_URL } =
+  process.env;
 
 /**
  * 카카오 토큰 요청 및 클라이언트에 쿠키 설정
@@ -64,12 +65,10 @@ export const getKakaoToken = asyncHandler(async (req, res) => {
 export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
   const accessToken = req.cookies.accessToken;
   if (!accessToken) {
-    return res
-      .status(401)
-      .json({
-        message:
-          "액세스 토큰이 만료되었습니다. 로그인하지 않았다면 로그인해주세요.",
-      });
+    return res.status(401).json({
+      message:
+        "액세스 토큰이 만료되었습니다. 로그인하지 않았다면 로그인해주세요.",
+    });
   }
   const response = await axios.get(
     "https://kapi.kakao.com/v1/user/access_token_info",
@@ -188,6 +187,12 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
       kakaoId: response.data.id,
     });
     await userInfo.save();
+
+    const userCount = await UserModel.countDocuments();
+    await axios.post(`${PUUUSH_WEB_HOOK_URL}`, {
+      title: `신규 유저 가입!`,
+      body: `총 ${userCount}명의 유저가 가입하였습니다.`,
+    });
   }
 
   return res.status(200).json({
