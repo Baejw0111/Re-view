@@ -56,7 +56,11 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                         profileImage={author.profileImage}
                         nickname={author.nickname}
                       />
-                      <div className="text-sm text-muted-foreground font-semibold truncate">
+                      <div
+                        className={`text-sm text-muted-foreground font-semibold truncate ${
+                          author.nickname === "운영자" ? "text-orange-500" : ""
+                        }`}
+                      >
                         {author.nickname}
                       </div>
                     </Button>

@@ -22,9 +22,10 @@ export default function SubHeader() {
     edit: "리뷰 수정",
     notifications: "모든 알림",
     profile: "프로필",
-    test: "테스트",
   };
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  if (!routeMap[pageRoute as keyof typeof routeMap]) return null;
 
   return (
     <>

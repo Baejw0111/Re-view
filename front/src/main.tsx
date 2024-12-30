@@ -10,7 +10,6 @@ import ThemeProvider from "@/state/theme/ThemeProvider";
 import store from "@/state/store";
 import LoginRequiredRoute from "./pages/LoginRequiredRoute";
 import Feed from "@/pages/Feed";
-import Test from "@/pages/Test";
 import WriteReview from "@/pages/WriteReview";
 import Authorization from "@/pages/Authorization";
 import Onboarding from "@/pages/Onboarding";
@@ -156,10 +155,6 @@ const router = createBrowserRouter(
         {
           path: "/search",
           element: <Search />,
-        },
-        {
-          path: "/test",
-          element: <Test />,
         },
         {
           path: "/oauth/kakao",

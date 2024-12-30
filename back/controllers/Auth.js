@@ -64,7 +64,12 @@ export const getKakaoToken = asyncHandler(async (req, res) => {
 export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
   const accessToken = req.cookies.accessToken;
   if (!accessToken) {
-    return res.status(401).json({ message: "액세스 토큰이 만료되었습니다." });
+    return res
+      .status(401)
+      .json({
+        message:
+          "액세스 토큰이 만료되었습니다. 로그인하지 않았다면 로그인해주세요.",
+      });
   }
   const response = await axios.get(
     "https://kapi.kakao.com/v1/user/access_token_info",

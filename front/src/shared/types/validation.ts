@@ -132,7 +132,10 @@ export const profileImageValidation = () => commonImageValidation(1, false);
 export const nicknameValidation = z
   .string()
   .min(1, { message: "닉네임을 입력해주세요." })
-  .max(10, { message: "닉네임은 최대 10자까지 입력할 수 있습니다." });
+  .max(10, { message: "닉네임은 최대 10자까지 입력할 수 있습니다." })
+  .refine((nickname) => !nickname.includes("운영자"), {
+    message: "닉네임에 '운영자'가 포함될 수 없습니다.",
+  });
 
 /**
  * 기본 프로필 사용 여부 유효성 검사

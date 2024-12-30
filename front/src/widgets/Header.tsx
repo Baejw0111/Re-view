@@ -1,6 +1,5 @@
 import Logo from "@/features/common/Logo";
 import NotificationButton from "@/widgets/NotificationButton";
-import KakaoLoginButton from "@/features/auth/KakaoLoginButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store/index";
 import { Link } from "react-router-dom";
@@ -12,6 +11,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Search, Bell } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setIsSearchDialogOpen } from "@/state/store/searchDialogOpenSlice";
+import { toast } from "sonner";
 
 export default function Header() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -20,6 +20,16 @@ export default function Header() {
   const dispatch = useDispatch();
   const onOpenSearchDialog = () => {
     dispatch(setIsSearchDialogOpen(true));
+  };
+
+  const handleNotificationButtonClick = (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    if (userInfo.kakaoId === 0) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
   };
 
   return (
@@ -46,7 +56,13 @@ export default function Header() {
               <Search />
             </Button>
             <WriteReviewButton />
-            <Button variant="ghost" size="icon" className="shrink-0" asChild>
+            <Button
+              onClick={handleNotificationButtonClick}
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              asChild
+            >
               <Link to="/notifications">
                 <Bell />
               </Link>
@@ -66,17 +82,14 @@ export default function Header() {
               </Link>
               <div className="flex flex-1 md:justify-end items-center gap-2">
                 <SearchBar />
-                {userInfo.kakaoId ? (
+                {userInfo.kakaoId !== 0 && (
                   // 로그인을 했을 경우 유저가 사용 가능한 버튼 보여주기
                   <>
                     <WriteReviewButton />
                     <NotificationButton />
-                    <ProfileButton userInfo={userInfo} />
                   </>
-                ) : (
-                  // 닉네임이 없으면 로그인 버튼 보여주기
-                  <KakaoLoginButton />
                 )}
+                <ProfileButton userInfo={userInfo} />
               </div>
             </div>
           </header>

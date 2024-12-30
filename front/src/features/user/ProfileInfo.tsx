@@ -37,7 +37,13 @@ export default function ProfileInfo({
         </div>
         <div className="flex-1 flex flex-col gap-6 items-start">
           <div className="flex flex-row justify-start gap-2 md:gap-4 text-center">
-            <h1 className="text-2xl font-bold">{userInfo.nickname}</h1>
+            <h1
+              className={`text-2xl font-bold ${
+                userInfo.nickname === "운영자" ? "text-orange-500" : ""
+              }`}
+            >
+              {userInfo.nickname}
+            </h1>
           </div>
           <div className="flex justify-start gap-4">
             <div className="text-center flex flex-col gap-1">

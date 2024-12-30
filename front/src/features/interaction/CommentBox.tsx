@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import UserAvatar from "@/features/user/UserAvatar";
 import { CommentInfo } from "@/shared/types/interface";
 import { deleteComment } from "@/api/comment";
-import { Trash, Pencil } from "lucide-react";
+import { Trash, Siren } from "lucide-react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,6 +10,10 @@ import ProfilePopOver from "@/widgets/ProfilePopOver";
 import { claculateTime } from "@/shared/lib/utils";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import { sendUserReportComment } from "@/api/user";
+import Alert from "@/widgets/Alert";
 
 export default function CommentBox({
   commentInfo,
@@ -20,6 +24,7 @@ export default function CommentBox({
 }) {
   const queryClient = useQueryClient();
   const [isHighlight, setIsHighlight] = useState(highlight);
+  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
 
   // 댓글 삭제
   const { mutate: deleteCommentMutate } = useMutation({
@@ -34,6 +39,22 @@ export default function CommentBox({
       });
     },
   });
+
+  const { mutate: reportCommentMutate } = useMutation({
+    mutationFn: () =>
+      sendUserReportComment(commentInfo.reviewId, commentInfo._id),
+    onSuccess: () => {
+      toast.success("댓글이 신고되었습니다.");
+    },
+  });
+
+  const handleReportComment = () => {
+    if (kakaoId === 0) {
+      toast.error("로그인 후 이용해주세요.");
+      return;
+    }
+    reportCommentMutate();
+  };
 
   useEffect(() => {
     if (highlight) {
@@ -64,7 +85,9 @@ export default function CommentBox({
               <div className="flex items-center gap-2">
                 <Link
                   to={`/profile/${commentInfo.authorId}`}
-                  className="font-semibold text-sm"
+                  className={`font-semibold text-sm ${
+                    commentInfo.nickname === "운영자" ? "text-orange-500" : ""
+                  }`}
                 >
                   {commentInfo.nickname}
                 </Link>
@@ -73,16 +96,30 @@ export default function CommentBox({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
+                {/* <Button variant="ghost" size="icon">
                   <Pencil className="w-4 h-4 text-muted-foreground" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => deleteCommentMutate(commentInfo._id)}
-                >
-                  <Trash className="w-4 h-4 text-muted-foreground" />
-                </Button>
+                </Button> */}
+                {commentInfo.authorId === kakaoId ? (
+                  <Alert
+                    title="댓글을 삭제하시겠습니까?"
+                    description=""
+                    onConfirm={() => deleteCommentMutate(commentInfo._id)}
+                  >
+                    <Button variant="ghost" size="icon">
+                      <Trash className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                  </Alert>
+                ) : (
+                  <Alert
+                    title="댓글을 신고하시겠습니까?"
+                    description=""
+                    onConfirm={handleReportComment}
+                  >
+                    <Button variant="ghost" size="icon">
+                      <Siren className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                  </Alert>
+                )}
               </div>
             </div>
             <p className="text-sm whitespace-pre-wrap break-all">
