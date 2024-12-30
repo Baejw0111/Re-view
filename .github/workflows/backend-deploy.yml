@@ -10,6 +10,9 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - "back/**"
+      - ".github/workflows/backend-deploy.yml"
 
 jobs:
   deploy:
