@@ -74,6 +74,9 @@ export default function ReviewForm({
     mutationFn: writeReview,
     onSuccess: () => {
       toast.success("리뷰가 업로드되었습니다.");
+      queryClient.invalidateQueries({
+        queryKey: ["feed", "latest"],
+      });
       navigate("/");
     },
   });
