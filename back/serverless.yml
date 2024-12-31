@@ -17,6 +17,7 @@ provider:
     MONGO_URI: ${env:MONGO_URI}
     AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
     IMG_SRC: ${env:IMG_SRC}
+    PUUUSH_WEB_HOOK_URL: ${env:PUUUSH_WEB_HOOK_URL}
 
   # IAM 역할 설정
   iam:

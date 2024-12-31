@@ -53,6 +53,7 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
           IMG_SRC: ${{ secrets.IMG_SRC }}
+          PUUUSH_WEB_HOOK_URL: ${{ secrets.PUUUSH_WEB_HOOK_URL }}
         run: |
           cd back
           npx serverless deploy
