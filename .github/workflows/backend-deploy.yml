@@ -48,6 +48,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
           FRONT_URL: ${{ secrets.FRONT_URL }}
+          TEST_FRONT_URL: ${{ secrets.TEST_FRONT_URL }}
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
           MONGO_URI: ${{ secrets.MONGO_URI }}
