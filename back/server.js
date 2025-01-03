@@ -59,7 +59,7 @@ import { getPopularTags, searchRelatedTags } from "./controllers/Tag.js";
 import { connectDB } from "./utils/Model.js";
 
 const app = express(); // express 인스턴스 생성
-const { FRONT_URL } = process.env;
+const { FRONT_URL, TEST_FRONT_URL } = process.env;
 
 // 미들웨어 설정
 app.use(express.json()); //json 데이터 파싱
