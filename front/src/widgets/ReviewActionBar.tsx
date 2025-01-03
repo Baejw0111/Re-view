@@ -6,7 +6,6 @@ import { deleteReview } from "@/api/review";
 import { sendUserReportReview } from "@/api/user";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
-import { VITE_CLIENT_URL } from "@/shared/constants";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
@@ -48,7 +47,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
           size="icon"
           onClick={() => {
             navigator.clipboard.writeText(
-              `${VITE_CLIENT_URL}/?reviewId=${reviewId}`
+              `${window.location.origin}/?reviewId=${reviewId}`
             );
             toast.success("링크가 복사되었습니다.");
           }}

@@ -35,11 +35,7 @@ import {
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import EditUserProfile from "@/features/setting/EditUserProfile";
 import { logOutKakao, deleteUserAccount } from "@/api/auth";
-import {
-  KAKAO_OAUTH_URL,
-  KAKAO_REST_API_KEY,
-  KAKAO_REDIRECT_URI,
-} from "@/shared/constants";
+import { KAKAO_OAUTH_URL, KAKAO_REST_API_KEY } from "@/shared/constants";
 import Alert from "@/widgets/Alert";
 
 export default function ProfileButton({
@@ -122,7 +118,7 @@ export default function ProfileButton({
               {/* 로그인 버튼 */}
               <DropdownMenuItem
                 onClick={() =>
-                  (window.location.href = `${KAKAO_OAUTH_URL}&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}`)
+                  (window.location.href = `${KAKAO_OAUTH_URL}&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${window.location.origin}/oauth/kakao`)
                 }
                 className="flex items-center justify-start gap-2 h-8 bg-[#FEE500] focus:bg-[#FEE500]/80 active:bg-[#FEE500]/80 text-black/85 font-semibold focus:text-black/85 active:text-black/85"
               >
