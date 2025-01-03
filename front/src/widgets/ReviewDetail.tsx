@@ -110,7 +110,7 @@ export default function ReviewDetail() {
             <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
 
             {/* 리뷰 내용 */}
-            <p className="text-md text-muted-foreground whitespace-pre-wrap break-all">
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap break-all">
               {reviewInfo.reviewText}
             </p>
           </div>

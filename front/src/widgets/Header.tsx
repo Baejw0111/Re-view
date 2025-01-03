@@ -25,8 +25,8 @@ export default function Header() {
   const handleNotificationButtonClick = (
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
-    e.preventDefault();
     if (userInfo.kakaoId === 0) {
+      e.preventDefault();
       toast.error("로그인 후 이용해주세요.");
       return;
     }

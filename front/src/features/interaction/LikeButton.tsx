@@ -31,11 +31,15 @@ export default function LikeButton({
   >({
     queryKey: ["likeStatus", reviewId],
     queryFn: () => fetchLikeStatus(reviewId as string, kakaoId),
-    enabled: !!kakaoId,
+    enabled: kakaoId !== 0,
   });
 
   const likeButtonRef = useIntersectionObserver({
-    callback: refetch,
+    callback: () => {
+      if (kakaoId !== 0) {
+        refetch();
+      }
+    },
     threshold: 1,
   });
 

@@ -59,7 +59,7 @@ import { getPopularTags, searchRelatedTags } from "./controllers/Tag.js";
 import { connectDB } from "./utils/Model.js";
 
 const app = express(); // express 인스턴스 생성
-const { FRONT_URL } = process.env;
+const { FRONT_URL, TEST_FRONT_URL } = process.env;
 
 // 미들웨어 설정
 app.use(express.json()); //json 데이터 파싱
@@ -67,7 +67,7 @@ app.use(compression()); // 서버 응답 압축 전송
 app.use(express.urlencoded({ extended: true })); // form 데이터(x-www-form-urlencoded) 파싱(extended 옵션 정의 안해주면 에러 터짐)
 app.use(
   cors({
-    origin: FRONT_URL,
+    origin: [FRONT_URL, TEST_FRONT_URL],
     credentials: true,
   })
 ); // cors 에러 방지
