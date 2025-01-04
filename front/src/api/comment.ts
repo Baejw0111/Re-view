@@ -15,6 +15,11 @@ export const addComment = async (
   });
 };
 
+/**
+ * 리뷰의 댓글 개수 조회 함수
+ * @param reviewId 리뷰 ID
+ * @returns 댓글 개수
+ */
 export const fetchCommentCount = async (reviewId: string): Promise<number> => {
   const response = await generalApiClient.get(
     `/review/${reviewId}/comments/count`
