@@ -47,7 +47,12 @@ import {
   updateNotificationCheckTime,
   deleteNotification,
 } from "./controllers/Notification.js";
-import { getLikeStatus, addLike, unLike } from "./controllers/Like.js";
+import {
+  getUserLiked,
+  addLike,
+  unLike,
+  getLikeCount,
+} from "./controllers/Like.js";
 import {
   addComment,
   getCommentById,
@@ -144,8 +149,9 @@ app.post("/comment/:id", verifyKakaoAccessToken, addComment); // 리뷰 댓글 �
 app.delete("/comment/:id", verifyKakaoAccessToken, deleteComment); // 리뷰 댓글 삭제 API
 
 // 추천 관련 API
-app.get("/like/:id", getLikeStatus); // 리뷰 추천 관련 정보 조회 API
 app.patch("/like/:id", verifyKakaoAccessToken, addLike); // 리뷰 추천 API
+app.get("/like/:id", verifyKakaoAccessToken, getUserLiked); // 사용자의 리뷰 추천 여부 조회 API
+app.get("/like/:id/count", getLikeCount); // 리뷰 추천 수 조회 API
 app.patch("/unlike/:id", verifyKakaoAccessToken, unLike); // 리뷰 추천 취소 API
 
 // 태그 관련 API

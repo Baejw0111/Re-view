@@ -62,28 +62,30 @@ export const addLike = asyncHandler(async (req, res) => {
 }, "리뷰 추천");
 
 /**
- * 리뷰 추천 관련 정보 조회
+ * 리뷰 추천 수 조회 API
  */
-export const getLikeStatus = asyncHandler(async (req, res) => {
+export const getLikeCount = asyncHandler(async (req, res) => {
   const { id: reviewId } = req.params;
-  const { kakaoId } = req.query;
-
-  const user = await UserModel.findOne({ kakaoId });
-
-  let isLiked = false;
-
-  // 유저가 존재할 경우 추천 여부 확인
-  if (user) {
-    isLiked = !!(await ReviewLikeModel.exists({
-      reviewId,
-      userId: user._id,
-    }));
-  }
 
   const review = await ReviewModel.findById(reviewId);
 
-  return res.status(200).json({ isLiked, likesCount: review.likesCount });
-}, "리뷰 추천 관련 정보 조회");
+  return res.status(200).json(review.likesCount);
+});
+
+/**
+ * 사용자의 리뷰 추천 여부 조회 API
+ */
+export const getUserLiked = asyncHandler(async (req, res) => {
+  const { id: reviewId } = req.params;
+  const userId = req.userId;
+
+  const isLiked = !!(await ReviewLikeModel.exists({
+    reviewId,
+    userId: userId,
+  }));
+
+  return res.status(200).json(isLiked);
+}, "사용자의 리뷰 추천 여부 조회");
 
 /**
  * 리뷰 추천 취소 API
