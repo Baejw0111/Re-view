@@ -27,7 +27,12 @@ const handleError = (req, res, operation) => (error) => {
  * @param {string} operation - 래핑하는 함수 이름
  * @returns {Function} - 래핑된 함수
  */
-const asyncHandler = (fn, operation) => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(handleError(req, res, operation));
+const asyncHandler = (fn, operation) => (req, res, next) => {
+  console.log(`실행 작업: ${operation}`);
+
+  return Promise.resolve(fn(req, res, next)).catch(
+    handleError(req, res, operation)
+  );
+};
 
 export default asyncHandler;
