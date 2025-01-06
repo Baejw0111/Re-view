@@ -8,7 +8,7 @@ export default function useAuth() {
     refetchOnWindowFocus: false,
     retry: false,
     queryFn: async () =>
-      await axios.get(`${API_URL}/auth/kakao/check`, {
+      await axios.get(`${API_URL}/auth/check`, {
         withCredentials: true,
       }),
   });

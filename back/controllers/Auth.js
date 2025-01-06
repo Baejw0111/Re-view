@@ -9,37 +9,39 @@ import {
 } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
+import kakaoAuth from "./Auth/KakaoAuth.js";
+import naverAuth from "./Auth/NaverAuth.js";
+import googleAuth from "./Auth/GoogleAuth.js";
 
-const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI, PUUUSH_WEB_HOOK_URL } =
-  process.env;
+const { PUUUSH_WEB_HOOK_URL } = process.env;
+
+const authProvider = {
+  kakao: kakaoAuth,
+  naver: naverAuth,
+  google: googleAuth,
+};
 
 /**
- * 카카오 토큰 요청 및 클라이언트에 쿠키 설정
+ * 토큰 요청 및 클라이언트에 쿠키 설정
  */
-export const getKakaoToken = asyncHandler(async (req, res) => {
+export const getToken = asyncHandler(async (req, res) => {
   const { code } = req.body;
-  const response = await axios.post(
-    "https://kauth.kakao.com/oauth/token",
-    {
-      grant_type: "authorization_code",
-      client_id: KAKAO_REST_API_KEY,
-      redirect_uri: KAKAO_REDIRECT_URI,
-      code: code,
-    },
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    }
-  );
-
+  const { provider } = req.params;
+  const tokenData = await authProvider[provider].getToken(code);
   const { access_token, refresh_token, expires_in, refresh_token_expires_in } =
-    response.data;
+    tokenData;
 
-  console.log(`func: getKakaoToken`);
-  console.table(response.data);
+  console.log(`func: getToken`);
+  console.table(tokenData);
 
   // 브라우저에 쿠키 설정
+  res.cookie("provider", provider, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    maxAge: expires_in * 1000, // 엑세스 토큰 유효 기간
+  });
+
   res.cookie("accessToken", access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -47,6 +49,7 @@ export const getKakaoToken = asyncHandler(async (req, res) => {
     maxAge: expires_in * 1000, // 엑세스 토큰 유효 기간
   });
 
+  // 추후에 DB에 저장하는 로직으로 바꿀 것
   res.cookie("refreshToken", refresh_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -57,32 +60,26 @@ export const getKakaoToken = asyncHandler(async (req, res) => {
   return res.status(200).json({
     message: "토큰 요청 성공",
   });
-}, "카카오 토큰 요청");
+}, "토큰 요청");
 
 /**
- * 카카오 토큰 검증 미들웨어
+ * 토큰 검증 미들웨어
  */
-export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
-  const accessToken = req.cookies.accessToken;
+export const verifyAccessToken = asyncHandler(async (req, res, next) => {
+  const { accessToken, provider } = req.cookies;
   if (!accessToken) {
     return res.status(401).json({
       message:
         "액세스 토큰이 만료되었습니다. 로그인하지 않았다면 로그인해주세요.",
     });
   }
-  const response = await axios.get(
-    "https://kapi.kakao.com/v1/user/access_token_info",
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
 
-  console.log(`func: verifyKakaoAccessToken`);
-  console.table(response.data);
+  const verifiedData = await authProvider[provider].verifyToken(accessToken);
 
-  const kakaoId = response.data.id; // 카카오 유저 ID
+  console.log(`func: verifyAccessToken`);
+  console.table(verifiedData);
+
+  const kakaoId = verifiedData.id; // 카카오 유저 ID
 
   // 유저 DB ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
   const userInfo = await UserModel.findOne({ kakaoId });
@@ -92,33 +89,21 @@ export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
 }, "카카오 토큰 검증");
 
 /**
- * 카카오 액세스 토큰 재발급
+ * 액세스 토큰 재발급
  */
-export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const { refreshToken, provider } = req.cookies;
   if (!refreshToken) {
     return res.status(401).json({ message: "로그인 해주세요." });
   }
 
-  const response = await axios.post(
-    "https://kauth.kakao.com/oauth/token",
-    {
-      grant_type: "refresh_token",
-      client_id: KAKAO_REST_API_KEY,
-      refresh_token: refreshToken,
-    },
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    }
-  );
+  const tokenData = await authProvider[provider].refreshToken(refreshToken);
 
-  console.log(`func: refreshKakaoAccessToken`);
-  console.table(response.data);
+  console.log(`func: refreshAccessToken`);
+  console.table(tokenData);
 
   const { access_token, expires_in, refresh_token, refresh_token_expires_in } =
-    response.data;
+    tokenData;
 
   res.cookie("accessToken", access_token, {
     httpOnly: true,
@@ -166,25 +151,20 @@ export const disableCache = (req, res, next) => {
 };
 
 /**
- * 카카오 유저 정보 조회
+ * 유저 정보 조회
  */
-export const getKakaoUserInfo = asyncHandler(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const response = await axios.get("https://kapi.kakao.com/v2/user/me", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-    },
-  });
+export const getUserInfo = asyncHandler(async (req, res) => {
+  const { accessToken, provider } = req.cookies;
+  const userData = await authProvider[provider].getUserInfo(accessToken);
 
-  console.log(`func: getKakaoUserInfo`);
-  console.log(response.data);
+  console.log(`func: getUserInfo`);
+  console.table(userData);
 
-  let userInfo = await UserModel.findOne({ kakaoId: response.data.id });
+  let userInfo = await UserModel.findOne({ kakaoId: userData.id });
 
   if (!userInfo) {
     userInfo = new UserModel({
-      kakaoId: response.data.id,
+      kakaoId: userData.id,
     });
     await userInfo.save();
 
@@ -208,23 +188,17 @@ export const getKakaoUserInfo = asyncHandler(async (req, res) => {
 /**
  * 카카오 로그아웃
  */
-export const logOutKakao = asyncHandler(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const response = await axios.post(
-    "https://kapi.kakao.com/v1/user/logout",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+export const logOut = asyncHandler(async (req, res) => {
+  const { accessToken, provider } = req.cookies;
+  const response = await authProvider[provider].logout(accessToken);
 
-  console.log(`func: logOutKakao`);
-  console.table(response.data);
+  console.log(`func: logOut`);
+  console.table(response);
 
+  res.clearCookie("provider");
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
+
   res.status(200).json({ message: "로그아웃 성공" });
 }, "카카오 로그아웃");
 
@@ -232,22 +206,13 @@ export const logOutKakao = asyncHandler(async (req, res) => {
  * 카카오 유저 계정 삭제
  */
 export const deleteUserAccount = asyncHandler(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const response = await axios.post(
-    "https://kapi.kakao.com/v1/user/unlink",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/x-www-form-urlencoded;",
-      },
-    }
-  );
+  const { accessToken, provider } = req.cookies;
+  const response = await authProvider[provider].unlink(accessToken);
 
   console.log(`func: deleteUserAccount`);
-  console.table(response.data);
+  console.table(response);
 
-  const user = await UserModel.findOneAndDelete({ kakaoId: response.data.id }); // 유저 데이터 삭제 및 반환
+  const user = await UserModel.findOneAndDelete({ kakaoId: response.id }); // 유저 데이터 삭제 및 반환
 
   if (!user) {
     return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
@@ -275,7 +240,9 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   await ReviewLikeModel.deleteMany({ userId: user._id }); // 유저의 추천들 모두 삭제
   await TagModel.deleteMany({ userId: user._id }); // 유저의 태그들 모두 삭제
 
+  res.clearCookie("provider");
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
+
   res.status(200).json({ message: "유저 계정 삭제 성공" });
 }, "카카오 유저 계정 삭제");
