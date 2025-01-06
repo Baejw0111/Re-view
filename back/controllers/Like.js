@@ -70,7 +70,7 @@ export const getLikeCount = asyncHandler(async (req, res) => {
   const review = await ReviewModel.findById(reviewId);
 
   return res.status(200).json(review.likesCount);
-});
+}, "리뷰 추천 수 조회");
 
 /**
  * 사용자의 리뷰 추천 여부 조회 API
