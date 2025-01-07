@@ -3,26 +3,28 @@ import { UserInfo, CommentInfo } from "@/shared/types/interface";
 
 /**
  * 유저 조회 함수
- * @param userId 유저 ID
+ * @param socialId 유저 소셜 아이디
  * @returns 유저 정보
  */
-export const fetchUserInfoById = async (userId: number): Promise<UserInfo> => {
-  const response = await generalApiClient.get(`/user/${userId}`);
+export const fetchUserInfoById = async (
+  socialId: number
+): Promise<UserInfo> => {
+  const response = await generalApiClient.get(`/user/${socialId}`);
   return response.data;
 };
 
 /**
  * 유저 검색 함수
  * @param query 검색어
- * @param lastUserId 마지막 유저 ID
+ * @param lastUserSocialId 이전 검색 결과의 마지막 유저 소셜 아이디
  * @returns 유저 목록
  */
 export const searchUsers = async (
   query: string,
-  lastUserKakaoId: number
+  lastUserSocialId: number
 ): Promise<number[]> => {
   const response = await generalApiClient.get(`/search/users`, {
-    params: { query, lastUserKakaoId },
+    params: { query, lastUserSocialId },
   });
 
   return response.data;

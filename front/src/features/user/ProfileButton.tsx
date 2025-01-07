@@ -114,7 +114,7 @@ export default function ProfileButton({
             <span className="text-xs">테마 전환</span>
           </DropdownMenuItem>
 
-          {userInfo.kakaoId === 0 ? (
+          {userInfo.socialId === 0 ? (
             <>
               {/* 로그인 버튼 */}
               <DropdownMenuItem
@@ -132,7 +132,7 @@ export default function ProfileButton({
                 className="flex items-center justify-start gap-2"
                 asChild
               >
-                <Link to={`/profile/${userInfo.kakaoId}`}>
+                <Link to={`/profile/${userInfo.socialId}`}>
                   <UserRound className="h-5 w-5" />
                   <span className="text-xs">내 프로필</span>
                 </Link>

@@ -21,12 +21,12 @@ const {
  * @returns {Object[]} 유저 데이터, 상위 4개 선호 태그 리스트
  */
 export const getUserInfoById = asyncHandler(async (req, res) => {
-  const { id: kakaoId } = req.params;
-  const userInfo = await UserModel.findOne({ kakaoId });
+  const { socialId } = req.params;
+  const userInfo = await UserModel.findOne({ socialId });
   const favoriteTags = await getFavoriteTags(userInfo._id);
 
   res.status(200).json({
-    kakaoId: userInfo.kakaoId,
+    socialId: userInfo.socialId,
     nickname: userInfo.nickname,
     profileImage: userInfo.profileImage,
     totalRating: userInfo.totalRating,
@@ -38,11 +38,11 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
 /**
  * 유저 검색 결과 조회 API
  * @param {string} query - 검색어
- * @param {string} lastUserId - 마지막 유저 ID
- * @returns {ObjectId[]} 유저 ID 리스트
+ * @param {number} lastUserSocialId - 이전 검색 결과의 마지막 유저 소셜 아이디
+ * @returns {number[]} 유저 소셜 아이디 리스트
  */
 export const searchUsers = asyncHandler(async (req, res) => {
-  const { query, lastUserKakaoId } = req.query;
+  const { query, lastUserSocialId } = req.query;
   const queryWithoutSpace = query.replace(/\s/g, "");
 
   const users = await UserModel.find({
@@ -50,11 +50,11 @@ export const searchUsers = asyncHandler(async (req, res) => {
       { nickname: { $regex: query, $options: "i" } },
       { nickname: { $regex: queryWithoutSpace, $options: "i" } },
     ],
-    kakaoId: { $gt: lastUserKakaoId },
+    socialId: { $gt: lastUserSocialId },
   })
-    .sort({ kakaoId: 1 })
+    .sort({ socialId: 1 })
     .limit(20);
-  const userIdList = users.map((user) => user.kakaoId);
+  const userIdList = users.map((user) => user.socialId);
 
   res.status(200).json(userIdList);
 }, "유저 검색");
@@ -64,10 +64,10 @@ export const searchUsers = asyncHandler(async (req, res) => {
  * @returns {string[]} 리뷰 ID 리스트
  */
 export const getUserReviewList = asyncHandler(async (req, res) => {
-  const { id: kakaoId } = req.params;
+  const { socialId } = req.params;
   const { lastReviewId } = req.query;
 
-  const user = await UserModel.findOne({ kakaoId });
+  const user = await UserModel.findOne({ socialId });
   if (!user) {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
@@ -95,9 +95,9 @@ export const getUserReviewList = asyncHandler(async (req, res) => {
  * @returns {Object[]} 댓글 데이터, 작성자 데이터 리스트
  */
 export const getUserCommentList = asyncHandler(async (req, res) => {
-  const { id: kakaoId } = req.params;
+  const { socialId } = req.params;
 
-  const user = await UserModel.findOne({ kakaoId });
+  const user = await UserModel.findOne({ socialId });
   if (!user) {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
@@ -124,10 +124,10 @@ export const getUserCommentList = asyncHandler(async (req, res) => {
  * @returns {string[]} 리뷰 ID 리스트
  */
 export const getUserLikedList = asyncHandler(async (req, res) => {
-  const { id: kakaoId } = req.params;
+  const { socialId } = req.params;
   const { lastReviewId } = req.query;
 
-  const user = await UserModel.findOne({ kakaoId });
+  const user = await UserModel.findOne({ socialId });
   if (!user) {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
@@ -196,7 +196,7 @@ export const updateUserInfo = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     message: "유저 정보 수정 성공",
-    kakaoId: user.kakaoId,
+    socialId: user.socialId,
     nickname: newNickname,
     profileImage: user.profileImage, // 프로필 이미지 정보 반환
   });
@@ -213,7 +213,7 @@ export const userFeedback = asyncHandler(async (req, res) => {
   const webhookUrl = DISCORD_FEEDBACK_WEB_HOOK_URL;
 
   await axios.post(webhookUrl, {
-    username: `${user.nickname}(${user.kakaoId})`,
+    username: `${user.nickname}(${user.socialId})`,
     avatar_url: user.profileImage
       ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
       : "",
@@ -233,7 +233,7 @@ export const userReportReview = asyncHandler(async (req, res) => {
   const webhookUrl = DISCORD_REPORT_WEB_HOOK_URL;
 
   await axios.post(webhookUrl, {
-    username: `${user.nickname}(${user.kakaoId})`,
+    username: `${user.nickname}(${user.socialId})`,
     avatar_url: user.profileImage
       ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
       : "",
@@ -252,7 +252,7 @@ export const userReportComment = asyncHandler(async (req, res) => {
   const webhookUrl = DISCORD_REPORT_WEB_HOOK_URL;
 
   await axios.post(webhookUrl, {
-    username: `${user.nickname}(${user.kakaoId})`,
+    username: `${user.nickname}(${user.socialId})`,
     avatar_url: user.profileImage
       ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
       : "",

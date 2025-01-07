@@ -12,7 +12,7 @@ import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
  * 리뷰 댓글 추가
  */
 export const addComment = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
   const authorId = req.userId;
 
   const review = await ReviewModel.findById(reviewId);
@@ -61,7 +61,7 @@ export const addComment = asyncHandler(async (req, res) => {
  * 리뷰 댓글 수 조회
  */
 export const getCommentCount = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
 
   const review = await ReviewModel.findById(reviewId);
 
@@ -76,15 +76,15 @@ export const getCommentCount = asyncHandler(async (req, res) => {
  * 특정 댓글 조회
  */
 export const getCommentById = asyncHandler(async (req, res) => {
-  const { id: commentId } = req.params;
+  const { commentId } = req.params;
   const comment = await CommentModel.findById(commentId).populate(
     "authorId",
-    "kakaoId"
+    "socialId"
   );
 
   res.status(200).json({
     _id: comment._id,
-    authorId: comment.authorId.kakaoId,
+    authorId: comment.authorId.socialId,
     profileImage: comment.authorId.profileImage,
     nickname: comment.authorId.nickname,
     reviewId: comment.reviewId,
@@ -98,18 +98,18 @@ export const getCommentById = asyncHandler(async (req, res) => {
  * @returns 리뷰 댓글 목록
  */
 export const getReviewCommentList = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
 
   // 댓글 목록 조회 및 작성자 정보 함께 가져오기
   const comments = await CommentModel.find({ reviewId }).populate(
     "authorId",
-    "kakaoId profileImage nickname"
+    "socialId profileImage nickname"
   );
 
   // 댓글 목록 생성
   const commentList = comments.map((comment) => ({
     _id: comment._id,
-    authorId: comment.authorId.kakaoId,
+    authorId: comment.authorId.socialId,
     profileImage: comment.authorId.profileImage,
     nickname: comment.authorId.nickname,
     reviewId: comment.reviewId,
@@ -124,7 +124,7 @@ export const getReviewCommentList = asyncHandler(async (req, res) => {
  * 리뷰 댓글 삭제 API
  */
 export const deleteComment = asyncHandler(async (req, res) => {
-  const { id: commentId } = req.params;
+  const { commentId } = req.params;
 
   const comment = await CommentModel.findById(commentId);
 

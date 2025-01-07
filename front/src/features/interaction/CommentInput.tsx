@@ -39,7 +39,7 @@ export default function CommentInput() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (userInfo.kakaoId === 0) {
+    if (userInfo.socialId === 0) {
       toast.error("로그인 후 이용해주세요.");
       return;
     }

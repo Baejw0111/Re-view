@@ -79,11 +79,12 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
   console.log(`func: verifyAccessToken`);
   console.table(verifiedData);
 
-  const kakaoId = verifiedData.id; // 카카오 유저 ID
+  const socialId = verifiedData.id; // 유저 소셜 ID
+  const userInfo = await UserModel.findOne({ socialId });
 
-  // 유저 DB ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
-  const userInfo = await UserModel.findOne({ kakaoId });
-  req.userId = userInfo?._id;
+  // 유저 소셜 ID와 유저 데이터 고유 ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
+  req.socialId = socialId;
+  req.userId = userInfo?._id; // 회원 가입을 하지 않은 경우 빈 값
 
   return next();
 }, "카카오 토큰 검증");
@@ -154,11 +155,13 @@ export const disableCache = (req, res, next) => {
  * 로그인한 유저 정보 조회
  */
 export const getLoginUserInfo = asyncHandler(async (req, res) => {
-  const userInfo = await UserModel.findById(req.userId);
+  const { socialId } = req;
+  const userInfo = await UserModel.findOne({ socialId });
 
+  // 회원 가입을 하지 않은 경우 유저 데이터 생성
   if (!userInfo) {
     userInfo = new UserModel({
-      kakaoId: userData.id,
+      socialId,
     });
     await userInfo.save();
 
@@ -170,7 +173,7 @@ export const getLoginUserInfo = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({
-    kakaoId: userInfo.kakaoId,
+    socialId: userInfo.socialId,
     nickname: userInfo.nickname,
     profileImage: userInfo.profileImage,
     notificationCheckTime: userInfo.notificationCheckTime,
@@ -208,7 +211,7 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   console.log(`func: deleteUserAccount`);
   console.table(response);
 
-  const user = await UserModel.findOneAndDelete({ kakaoId: response.id }); // 유저 데이터 삭제 및 반환
+  const user = await UserModel.findOneAndDelete({ socialId: response.id }); // 유저 데이터 삭제 및 반환
 
   if (!user) {
     return res.status(404).json({ message: "유저를 찾을 수 없습니다." });

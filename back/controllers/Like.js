@@ -12,7 +12,7 @@ import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
  * 리뷰 추천 API
  */
 export const addLike = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
   const userId = req.userId;
 
   const review = await ReviewModel.findById(reviewId);
@@ -65,7 +65,7 @@ export const addLike = asyncHandler(async (req, res) => {
  * 리뷰 추천 수 조회 API
  */
 export const getLikeCount = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
 
   const review = await ReviewModel.findById(reviewId);
 
@@ -76,7 +76,7 @@ export const getLikeCount = asyncHandler(async (req, res) => {
  * 사용자의 리뷰 추천 여부 조회 API
  */
 export const getUserLiked = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
   const userId = req.userId;
 
   const isLiked = !!(await ReviewLikeModel.exists({
@@ -91,7 +91,7 @@ export const getUserLiked = asyncHandler(async (req, res) => {
  * 리뷰 추천 취소 API
  */
 export const unLike = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
   const userId = req.userId;
 
   const review = await ReviewModel.findById(reviewId);

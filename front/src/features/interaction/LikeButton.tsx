@@ -27,7 +27,7 @@ export default function LikeButton({
   className?: string;
 }) {
   const queryClient = useQueryClient();
-  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
+  const socialId = useSelector((state: RootState) => state.userInfo.socialId);
 
   // 추천 수 조회
   const { data: likesCount } = useQuery<number, Error>({
@@ -39,12 +39,12 @@ export default function LikeButton({
   const { data: userLiked, refetch } = useQuery<boolean, Error>({
     queryKey: ["userLiked", reviewId],
     queryFn: () => fetchUserLiked(reviewId),
-    enabled: kakaoId !== 0,
+    enabled: socialId !== 0,
   });
 
   const likeButtonRef = useIntersectionObserver({
     callback: () => {
-      if (kakaoId !== 0) {
+      if (socialId !== 0) {
         refetch();
       }
     },
@@ -75,7 +75,7 @@ export default function LikeButton({
     useCountingAnimation(0); // 추천 수 증감 애니메이션
 
   const handleLikeClick = async () => {
-    if (kakaoId === 0) {
+    if (socialId === 0) {
       toast.error("로그인 후 이용해주세요.");
       return;
     }

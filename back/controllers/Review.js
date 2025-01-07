@@ -135,12 +135,12 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
  * @returns {ReviewModel} 리뷰 데이터
  */
 export const getReviewById = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
 
   // 리뷰 데이터 조회 및 작성자 정보 조회
   const reviewData = await ReviewModel.findById(reviewId).populate(
     "authorId",
-    "kakaoId"
+    "socialId"
   );
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
@@ -149,7 +149,7 @@ export const getReviewById = asyncHandler(async (req, res) => {
   return res.status(200).json({
     _id: reviewData._id,
     __v: reviewData.__v,
-    authorId: reviewData.authorId.kakaoId,
+    authorId: reviewData.authorId.socialId,
     uploadTime: reviewData.uploadTime,
     title: reviewData.title,
     images: reviewData.images,
@@ -165,7 +165,7 @@ export const getReviewById = asyncHandler(async (req, res) => {
  * @returns {string} 리뷰 수정 성공 메시지
  */
 export const updateReview = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
 
   // 리뷰 데이터 조회 및 작성자 정보 조회
   const reviewData = await ReviewModel.findById(reviewId);
@@ -229,7 +229,7 @@ export const updateReview = asyncHandler(async (req, res) => {
  * @returns {string} 리뷰 삭제 성공 메시지
  */
 export const deleteReview = asyncHandler(async (req, res) => {
-  const { id: reviewId } = req.params;
+  const { reviewId } = req.params;
   const review = await ReviewModel.findById(reviewId);
 
   if (!review) {

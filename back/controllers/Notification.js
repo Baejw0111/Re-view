@@ -115,7 +115,7 @@ export const updateNotificationCheckTime = asyncHandler(async (req, res) => {
  * 알림 삭제
  */
 export const deleteNotification = asyncHandler(async (req, res) => {
-  const { id: notificationId } = req.params;
+  const { notificationId } = req.params;
   await NotificationModel.findByIdAndDelete(notificationId);
   res.status(200).json({ message: "알림 삭제 완료" });
 }, "알림 삭제");

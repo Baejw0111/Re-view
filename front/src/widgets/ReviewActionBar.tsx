@@ -14,7 +14,7 @@ import Alert from "@/widgets/Alert";
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
-  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
+  const socialId = useSelector((state: RootState) => state.userInfo.socialId);
 
   const { mutate: deleteReviewMutate } = useMutation({
     mutationFn: () => deleteReview(reviewId as string),
@@ -31,7 +31,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   });
 
   const handleReportReview = () => {
-    if (kakaoId === 0) {
+    if (socialId === 0) {
       toast.error("로그인 후 이용해주세요.");
       return;
     }

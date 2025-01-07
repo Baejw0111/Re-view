@@ -46,7 +46,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               <div className="flex items-center justify-between">
                 {/* 작성자 정보 및 프로필 팝오버 버튼*/}
                 {author && (
-                  <ProfilePopOver userId={author.kakaoId as number}>
+                  <ProfilePopOver userId={author.socialId as number}>
                     <Button
                       variant="ghost"
                       className="flex items-center gap-2 p-0 h-auto min-w-8"

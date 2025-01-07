@@ -1,12 +1,12 @@
 /**
  * @description 로그인 유저 정보
- * @property {number} kakaoId - 카카오 아이디
+ * @property {number} socialId - 소셜 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
  * @property {string} notificationCheckTime - 알림 확인 시간
  */
 export interface LoginUserInfo {
-  kakaoId: number;
+  socialId: number;
   nickname: string;
   profileImage: string;
   notificationCheckTime: string;
@@ -14,7 +14,7 @@ export interface LoginUserInfo {
 
 /**
  * @description 유저 정보
- * @property {number} kakaoId - 카카오 아이디
+ * @property {number} socialId - 소셜 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
  * @property {string[]} favoriteTags - 선호하는 태그 목록
@@ -22,7 +22,7 @@ export interface LoginUserInfo {
  * @property {number} totalRating - 총 평점
  */
 export interface UserInfo {
-  kakaoId: number;
+  socialId: number;
   nickname: string;
   profileImage: string;
   favoriteTags: string[];

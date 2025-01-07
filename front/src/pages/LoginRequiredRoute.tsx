@@ -9,5 +9,5 @@ export default function LoginRequiredRoute({
 }) {
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
-  return userInfo.kakaoId ? <>{children}</> : <AuthError />;
+  return userInfo.socialId ? <>{children}</> : <AuthError />;
 }
