@@ -28,7 +28,9 @@ import {
   fetchUserCommentList,
   fetchUserLikedList,
   fetchUserReviewList,
-} from "./api/user";
+} from "@/api/user";
+import Test from "./pages/Test";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,6 +71,10 @@ const router = createBrowserRouter(
             const initialData = await fetchPopularFeed("");
             return initialData;
           },
+        },
+        {
+          path: "/login",
+          element: <Login />,
         },
         {
           path: "/write",
@@ -167,6 +173,10 @@ const router = createBrowserRouter(
               <Onboarding />
             </LoginRequiredRoute>
           ),
+        },
+        {
+          path: "/test",
+          element: <Test />,
         },
         {
           path: "*",

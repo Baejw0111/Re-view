@@ -1,5 +1,23 @@
 import { generalApiClient, authApiClient } from "@/api/util";
 import { UserInfo } from "@/shared/types/interface";
+import {
+  KAKAO_AUTH_URL,
+  GOOGLE_AUTH_URL,
+  NAVER_AUTH_URL,
+} from "@/shared/constants";
+
+/**
+ * 소셜 로그인 페이지 이동 함수
+ */
+export const socialLogin = async (provider: string): Promise<void> => {
+  const urlVariants: Record<string, string> = {
+    google: GOOGLE_AUTH_URL,
+    kakao: KAKAO_AUTH_URL,
+    naver: NAVER_AUTH_URL,
+  };
+
+  window.location.href = urlVariants[provider];
+};
 
 /**
  * 카카오 토큰 요청 함수
@@ -7,7 +25,7 @@ import { UserInfo } from "@/shared/types/interface";
  */
 export const getKakaoToken = async (code: string): Promise<void> => {
   await generalApiClient.post(
-    `/auth/kakao/login`,
+    `/auth/kakao/token`,
     { code },
     {
       withCredentials: true,
