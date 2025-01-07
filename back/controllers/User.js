@@ -31,7 +31,6 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
     profileImage: userInfo.profileImage,
     totalRating: userInfo.totalRating,
     reviewCount: userInfo.reviewCount,
-    notificationCheckTime: userInfo.notificationCheckTime,
     favoriteTags: favoriteTags,
   });
 }, "유저 정보 조회");

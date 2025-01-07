@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { UserInfo } from "@/shared/types/interface";
+import { LoginUserInfo } from "@/shared/types/interface";
 import { getLoginUserInfo } from "@/api/auth";
 import useAuth from "@/shared/hooks/useAuth";
 import Header from "./widgets/Header";
@@ -19,7 +19,7 @@ function App() {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
 
-  const { data: userInfo } = useQuery<UserInfo>({
+  const { data: userInfo } = useQuery<LoginUserInfo>({
     queryKey: ["loggedInUserInfo"],
     queryFn: getLoginUserInfo,
     retry: false,

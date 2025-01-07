@@ -1,5 +1,5 @@
 import { generalApiClient, authApiClient } from "@/api/util";
-import { UserInfo } from "@/shared/types/interface";
+import { LoginUserInfo } from "@/shared/types/interface";
 import {
   KAKAO_AUTH_URL,
   GOOGLE_AUTH_URL,
@@ -37,7 +37,7 @@ export const getKakaoToken = async (code: string): Promise<void> => {
  * 로그인한 유저의 정보를 조회하는 함수
  * @returns 유저 정보
  */
-export const getLoginUserInfo = async (): Promise<UserInfo> => {
+export const getLoginUserInfo = async (): Promise<LoginUserInfo> => {
   const response = await authApiClient.get(`/auth/user`);
 
   return response.data;
