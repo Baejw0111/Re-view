@@ -9,7 +9,12 @@ import {
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import { getFavoriteTags } from "./Tag.js";
 
-const { IMG_SRC, FRONT_URL } = process.env;
+const {
+  IMG_SRC,
+  FRONT_URL,
+  DISCORD_FEEDBACK_WEB_HOOK_URL,
+  DISCORD_REPORT_WEB_HOOK_URL,
+} = process.env;
 
 /**
  * 유저 정보 조회
@@ -206,8 +211,7 @@ export const userFeedback = asyncHandler(async (req, res) => {
   const userId = req.userId;
   const user = await UserModel.findById(userId);
   const { feedback } = req.body;
-  const webhookUrl =
-    "https://discord.com/api/webhooks/1321484339594137600/_NtCXyPcP2pCv9_z0HLU9x7jUkc9fNCMoMdzbDiVSgMNk6gv6B0UiKrC9x0E7AvxeYas";
+  const webhookUrl = DISCORD_FEEDBACK_WEB_HOOK_URL;
 
   await axios.post(webhookUrl, {
     username: `${user.nickname}(${user.kakaoId})`,
@@ -227,8 +231,7 @@ export const userReportReview = asyncHandler(async (req, res) => {
   const userId = req.userId;
   const user = await UserModel.findById(userId);
   const { reportedReviewId } = req.body;
-  const webhookUrl =
-    "https://discord.com/api/webhooks/1321486396594065410/4h5X9Mrq1GgF9p3VLrmvDPpgx-BJwV7weqOOlCi3xFUWmMESip5ZXTME6O-lQARN3w4p";
+  const webhookUrl = DISCORD_REPORT_WEB_HOOK_URL;
 
   await axios.post(webhookUrl, {
     username: `${user.nickname}(${user.kakaoId})`,
@@ -247,10 +250,13 @@ export const userReportComment = asyncHandler(async (req, res) => {
   const userId = req.userId;
   const user = await UserModel.findById(userId);
   const { reportedReviewId, reportedCommentId } = req.body;
-  const webhookUrl =
-    "https://discord.com/api/webhooks/1321486396594065410/4h5X9Mrq1GgF9p3VLrmvDPpgx-BJwV7weqOOlCi3xFUWmMESip5ZXTME6O-lQARN3w4p";
+  const webhookUrl = DISCORD_REPORT_WEB_HOOK_URL;
 
   await axios.post(webhookUrl, {
+    username: `${user.nickname}(${user.kakaoId})`,
+    avatar_url: user.profileImage
+      ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
+      : "",
     content: `${FRONT_URL}/?reviewId=${reportedReviewId}#${reportedCommentId}`,
   });
 });
