@@ -9,16 +9,16 @@ import {
 } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
-import kakaoAuth from "./Auth/KakaoAuth.js";
+import KakaoAuth from "./Auth/KakaoAuth.js";
 import naverAuth from "./Auth/NaverAuth.js";
-import googleAuth from "./Auth/GoogleAuth.js";
+// import googleAuth from "./Auth/GoogleAuth.js";
 
 const { PUUUSH_WEB_HOOK_URL } = process.env;
 
 const authProvider = {
-  kakao: kakaoAuth,
+  kakao: KakaoAuth,
   naver: naverAuth,
-  google: googleAuth,
+  // google: googleAuth,
 };
 
 /**

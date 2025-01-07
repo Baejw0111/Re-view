@@ -80,7 +80,7 @@ app.use(cookieParser()); // cookie 파싱
 app.use(helmet()); // 보안 헤더 설정
 
 // 카카오 로그인 관련 API
-app.post("/auth/:provider/login", getToken); // 카카오 토큰 요청 API
+app.post("/auth/:provider/token", getToken); // 카카오 토큰 요청 API
 app.post("/auth/refresh", refreshAccessToken); // 카카오 액세스 토큰 재발급 API
 app.get("/auth/check", disableCache, checkAuth); // 로그인 여부 확인 API
 app.post("/auth/logout", verifyAccessToken, logOut); // 카카오 로그아웃 API
