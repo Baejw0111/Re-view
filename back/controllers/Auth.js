@@ -151,16 +151,10 @@ export const disableCache = (req, res, next) => {
 };
 
 /**
- * 유저 정보 조회
+ * 로그인한 유저 정보 조회
  */
-export const getUserInfo = asyncHandler(async (req, res) => {
-  const { accessToken, provider } = req.cookies;
-  const userData = await authProvider[provider].getUserInfo(accessToken);
-
-  console.log(`func: getUserInfo`);
-  console.table(userData);
-
-  let userInfo = await UserModel.findOne({ kakaoId: userData.id });
+export const getLoginUserInfo = asyncHandler(async (req, res) => {
+  const userInfo = await UserModel.findById(req.userId);
 
   if (!userInfo) {
     userInfo = new UserModel({
@@ -179,8 +173,6 @@ export const getUserInfo = asyncHandler(async (req, res) => {
     kakaoId: userInfo.kakaoId,
     nickname: userInfo.nickname,
     profileImage: userInfo.profileImage,
-    totalRating: userInfo.totalRating,
-    reviewCount: userInfo.reviewCount,
     notificationCheckTime: userInfo.notificationCheckTime,
   });
 }, "카카오 유저 정보 조회");
@@ -190,10 +182,14 @@ export const getUserInfo = asyncHandler(async (req, res) => {
  */
 export const logOut = asyncHandler(async (req, res) => {
   const { accessToken, provider } = req.cookies;
-  const response = await authProvider[provider].logout(accessToken);
 
-  console.log(`func: logOut`);
-  console.table(response);
+  // 구글 Oauth의 경우 토큰을 따로 만료시키는 기능이 없음
+  if (provider !== "google") {
+    const response = await authProvider[provider].logout(accessToken);
+
+    console.log(`func: logOut`);
+    console.table(response);
+  }
 
   res.clearCookie("provider");
   res.clearCookie("accessToken");

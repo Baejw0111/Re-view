@@ -38,17 +38,15 @@ export default class KakaoAuth {
   /**
    * 카카오 엑세스 토큰 검증
    * @param {string} accessToken 카카오 엑세스 토큰
-   * @returns 카카오 엑세스 토큰 정보
+   * @returns 유저 정보
    */
   static async verifyToken(accessToken) {
-    const response = await axios.get(
-      `${this.apiUrl}/v1/user/access_token_info`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    const response = await axios.get(`${this.apiUrl}/v2/user/me`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+      },
+    });
 
     return response.data;
   }
@@ -73,22 +71,6 @@ export default class KakaoAuth {
         },
       }
     );
-
-    return response.data;
-  }
-
-  /**
-   * 카카오 유저 정보 조회
-   * @param {string} accessToken 카카오 엑세스 토큰
-   * @returns 유저 정보
-   */
-  static async getUserInfo(accessToken) {
-    const response = await axios.get(`${this.apiUrl}/v2/user/me`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    });
 
     return response.data;
   }

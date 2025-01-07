@@ -17,7 +17,7 @@ import {
   refreshAccessToken,
   checkAuth,
   disableCache,
-  getUserInfo,
+  getLoginUserInfo,
   logOut,
   deleteUserAccount,
 } from "./controllers/Auth.js";
@@ -84,7 +84,7 @@ app.post("/auth/:provider/token", getToken); // 카카오 토큰 요청 API
 app.post("/auth/refresh", refreshAccessToken); // 카카오 액세스 토큰 재발급 API
 app.get("/auth/check", disableCache, checkAuth); // 로그인 여부 확인 API
 app.post("/auth/logout", verifyAccessToken, logOut); // 카카오 로그아웃 API
-app.get("/auth/user", verifyAccessToken, disableCache, getUserInfo); // 카카오 유저 정보 조회 API
+app.get("/auth/user", verifyAccessToken, disableCache, getLoginUserInfo); // 카카오 유저 정보 조회 API
 app.delete("/auth/delete", verifyAccessToken, deleteUserAccount); // 카카오 유저 계정 삭제 API
 
 // 리뷰 관련 API
