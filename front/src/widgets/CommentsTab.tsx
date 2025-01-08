@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CommentInfo } from "@/shared/types/interface";
 
 export default function CommentsTab() {
-  const { id: userId } = useParams();
+  const { userId } = useParams();
   const initialData = useLoaderData() as CommentInfo[];
 
   // 사용자가 작성한 댓글 가져오기

@@ -5,7 +5,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchUserReviewList } from "@/api/user";
 
 export default function PostsTab() {
-  const { id: userId } = useParams();
+  const { userId } = useParams();
   const initialData = useLoaderData() as string[];
 
   // 사용자가 작성한 리뷰 가져오기

@@ -93,7 +93,7 @@ const router = createBrowserRouter(
           ),
         },
         {
-          path: "/profile/:id",
+          path: "/profile/:userId",
           element: <Profile />,
           errorElement: <NotFoundError />,
           children: [
@@ -101,7 +101,7 @@ const router = createBrowserRouter(
               path: "",
               loader: async ({ params }) => {
                 const initialData = await fetchUserReviewList(
-                  params.id as string,
+                  params.userId as string,
                   ""
                 );
                 return initialData;
@@ -112,7 +112,7 @@ const router = createBrowserRouter(
               path: "posts",
               loader: async ({ params }) => {
                 const initialData = await fetchUserReviewList(
-                  params.id as string,
+                  params.userId as string,
                   ""
                 );
                 return initialData;
@@ -123,7 +123,7 @@ const router = createBrowserRouter(
               path: "comments",
               loader: async ({ params }) => {
                 const initialData = await fetchUserCommentList(
-                  params.id as string
+                  params.userId as string
                 );
                 return initialData;
               },
@@ -133,7 +133,7 @@ const router = createBrowserRouter(
               path: "liked",
               loader: async ({ params }) => {
                 const initialData = await fetchUserLikedList(
-                  params.id as string,
+                  params.userId as string,
                   ""
                 );
                 return initialData;

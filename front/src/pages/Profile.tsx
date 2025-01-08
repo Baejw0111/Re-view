@@ -11,7 +11,7 @@ export default function Profile() {
   const location = useLocation();
 
   // 사용자 정보 가져오기
-  const { id: userId } = useParams();
+  const { userId } = useParams();
 
   return (
     <PageTemplate>
