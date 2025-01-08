@@ -100,7 +100,7 @@ export default class KakaoAuth {
    * @returns 연동 해제한 회원의 id
    */
   static async unlink(accessToken) {
-    const response = await axios.post(
+    await axios.post(
       `${this.apiUrl}/v1/user/unlink`,
       {},
       {
@@ -109,6 +109,5 @@ export default class KakaoAuth {
         },
       }
     );
-    return response.data;
   }
 }
