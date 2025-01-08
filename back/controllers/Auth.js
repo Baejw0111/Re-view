@@ -87,7 +87,7 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
   req.userId = userInfo?._id; // 유저 데이터 고유 ID. 회원 가입을 하지 않은 경우 빈 값
 
   return next();
-}, "카카오 토큰 검증");
+}, "소셜 토큰 검증");
 
 /**
  * 액세스 토큰 재발급
@@ -130,7 +130,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({ message: "액세스 토큰 갱신 성공" });
-}, "카카오 액세스 토큰 재발급");
+}, "소셜 액세스 토큰 재발급");
 
 /**
  * 로그인 여부 확인
@@ -178,10 +178,10 @@ export const getLoginUserInfo = asyncHandler(async (req, res) => {
     profileImage: userInfo.profileImage,
     notificationCheckTime: userInfo.notificationCheckTime,
   });
-}, "카카오 유저 정보 조회");
+}, "소셜 유저 정보 조회");
 
 /**
- * 카카오 로그아웃
+ * 소셜 로그아웃
  */
 export const logOut = asyncHandler(async (req, res) => {
   const { accessToken, provider } = req.cookies;
@@ -199,10 +199,10 @@ export const logOut = asyncHandler(async (req, res) => {
   res.clearCookie("refreshToken");
 
   res.status(200).json({ message: "로그아웃 성공" });
-}, "카카오 로그아웃");
+}, "소셜 로그아웃");
 
 /**
- * 카카오 유저 계정 삭제
+ * 소셜 유저 계정 삭제
  */
 export const deleteUserAccount = asyncHandler(async (req, res) => {
   const { accessToken, provider } = req.cookies;
@@ -246,4 +246,4 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   res.clearCookie("refreshToken");
 
   res.status(200).json({ message: "유저 계정 삭제 성공" });
-}, "카카오 유저 계정 삭제");
+}, "소셜 유저 계정 삭제");

@@ -52,7 +52,7 @@ export const logOut = async (): Promise<void> => {
   await authApiClient.post(`/auth/logout`, {});
 };
 
-// 카카오 서버에서 유저 계정 삭제 요청
+// 서비스 탈퇴
 export const deleteUserAccount = async (): Promise<void> => {
   await authApiClient.delete(`/auth/delete`, {});
 };

@@ -79,13 +79,13 @@ app.use(
 app.use(cookieParser()); // cookie 파싱
 app.use(helmet()); // 보안 헤더 설정
 
-// 카카오 로그인 관련 API
-app.post("/auth/:provider/token", getToken); // 카카오 토큰 요청 API
-app.post("/auth/refresh", refreshAccessToken); // 카카오 액세스 토큰 재발급 API
+// 소셜 로그인 관련 API
+app.post("/auth/:provider/token", getToken); // 소셜 토큰 요청 API
+app.post("/auth/refresh", refreshAccessToken); // 소셜 액세스 토큰 재발급 API
 app.get("/auth/check", disableCache, checkAuth); // 로그인 여부 확인 API
-app.post("/auth/logout", verifyAccessToken, logOut); // 카카오 로그아웃 API
-app.get("/auth/user", verifyAccessToken, disableCache, getLoginUserInfo); // 카카오 유저 정보 조회 API
-app.delete("/auth/delete", verifyAccessToken, deleteUserAccount); // 카카오 유저 계정 삭제 API
+app.post("/auth/logout", verifyAccessToken, logOut); // 소셜 로그아웃 API
+app.get("/auth/user", verifyAccessToken, disableCache, getLoginUserInfo); // 소셜 유저 정보 조회 API
+app.delete("/auth/delete", verifyAccessToken, deleteUserAccount); // 소셜 유저 계정 삭제 API
 
 // 리뷰 관련 API
 app.get("/review/latest", getLatestFeed); // 최신 리뷰 조회 API
