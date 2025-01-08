@@ -11,14 +11,14 @@ import asyncHandler from "../utils/ControllerUtils.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import KakaoAuth from "./Auth/KakaoAuth.js";
 import naverAuth from "./Auth/NaverAuth.js";
-// import googleAuth from "./Auth/GoogleAuth.js";
+import googleAuth from "./Auth/GoogleAuth.js";
 
 const { PUUUSH_WEB_HOOK_URL } = process.env;
 
 const authProvider = {
+  google: googleAuth,
   kakao: KakaoAuth,
   naver: naverAuth,
-  // google: googleAuth,
 };
 
 /**
@@ -31,7 +31,6 @@ export const getToken = asyncHandler(async (req, res) => {
   const { access_token, refresh_token, expires_in, refresh_token_expires_in } =
     tokenData;
 
-  console.log(`func: getToken`);
   console.table(tokenData);
 
   // 브라우저에 쿠키 설정
@@ -54,7 +53,9 @@ export const getToken = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "Strict",
-    maxAge: refresh_token_expires_in * 1000, // 리프레시 토큰 유효 기간
+    maxAge: refresh_token_expires_in
+      ? refresh_token_expires_in * 1000
+      : 7 * 24 * 60 * 60 * 1000, // 리프레시 토큰 유효 기간
   });
 
   return res.status(200).json({
@@ -76,7 +77,6 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
 
   const verifiedData = await authProvider[provider].verifyToken(accessToken);
 
-  console.log(`func: verifyAccessToken`);
   console.table(verifiedData);
 
   const socialId = provider + verifiedData.id; // 유저 소셜 ID
@@ -100,7 +100,6 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
   const tokenData = await authProvider[provider].refreshToken(refreshToken);
 
-  console.log(`func: refreshAccessToken`);
   console.table(tokenData);
 
   const { access_token, expires_in, refresh_token, refresh_token_expires_in } =
@@ -156,7 +155,7 @@ export const disableCache = (req, res, next) => {
  */
 export const getLoginUserInfo = asyncHandler(async (req, res) => {
   const { socialId } = req;
-  const userInfo = await UserModel.findOne({ socialId });
+  let userInfo = await UserModel.findOne({ socialId });
 
   // 회원 가입을 하지 않은 경우 유저 데이터 생성
   if (!userInfo) {
@@ -190,7 +189,6 @@ export const logOut = asyncHandler(async (req, res) => {
   if (provider !== "google") {
     const response = await authProvider[provider].logout(accessToken);
 
-    console.log(`func: logOut`);
     console.table(response);
   }
 
@@ -206,12 +204,9 @@ export const logOut = asyncHandler(async (req, res) => {
  */
 export const deleteUserAccount = asyncHandler(async (req, res) => {
   const { accessToken, provider } = req.cookies;
-  const response = await authProvider[provider].unlink(accessToken);
+  const { socialId } = req;
 
-  console.log(`func: deleteUserAccount`);
-  console.table(response);
-
-  const user = await UserModel.findOneAndDelete({ socialId: response.id }); // 유저 데이터 삭제 및 반환
+  const user = await UserModel.findOneAndDelete({ socialId }); // 유저 데이터 삭제 및 반환
 
   if (!user) {
     return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
@@ -244,6 +239,8 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   res.clearCookie("provider");
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
+
+  await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
 
   res.status(200).json({ message: "유저 계정 삭제 성공" });
 }, "소셜 유저 계정 삭제");
