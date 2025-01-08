@@ -42,12 +42,12 @@ export const authApiClient: AxiosInstance = createApiClient({
 });
 
 /**
- * 카카오 액세스 토큰 갱신 함수
+ * 액세스 토큰 갱신 함수
  */
-export const refreshKakaoAccessToken = async (): Promise<void> => {
+export const refreshAccessToken = async (): Promise<void> => {
   // 인터셉터로 인한 무한 루프 방지를 위해 generalApiClient 사용
   await generalApiClient.post(
-    `/auth/kakao/refresh`,
+    `/auth/refresh`,
     {},
     {
       withCredentials: true,
@@ -67,7 +67,7 @@ authApiClient.interceptors.response.use(
     });
     if (response?.status === 401) {
       try {
-        await refreshKakaoAccessToken();
+        await refreshAccessToken();
         return authApiClient(error.config as AxiosRequestConfig);
       } catch (refreshError) {
         // refreshToken이 만료된 경우이므로 강제 로그아웃 처리

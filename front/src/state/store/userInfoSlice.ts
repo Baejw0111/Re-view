@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { LoginUserInfo } from "@/shared/types/interface";
 
 const initialState: LoginUserInfo = {
-  socialId: 0,
+  socialId: "",
   nickname: "",
   profileImage: "",
   notificationCheckTime: "",

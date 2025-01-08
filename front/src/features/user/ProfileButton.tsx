@@ -35,7 +35,7 @@ import {
 } from "@/shared/shadcn-ui/dialog";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
 import EditUserProfile from "@/features/setting/EditUserProfile";
-import { logOutKakao, deleteUserAccount } from "@/api/auth";
+import { logOut, deleteUserAccount } from "@/api/auth";
 import Alert from "@/widgets/Alert";
 
 export default function ProfileButton({
@@ -75,7 +75,7 @@ export default function ProfileButton({
    * 로그아웃 함수
    */
   const handleLogOut = async () => {
-    await logOutKakao();
+    await logOut();
     window.location.href = `/`;
   };
 
@@ -114,7 +114,7 @@ export default function ProfileButton({
             <span className="text-xs">테마 전환</span>
           </DropdownMenuItem>
 
-          {userInfo.socialId === 0 ? (
+          {userInfo.socialId === "" ? (
             <>
               {/* 로그인 버튼 */}
               <DropdownMenuItem

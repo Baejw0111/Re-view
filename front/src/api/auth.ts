@@ -20,12 +20,16 @@ export const socialLogin = async (provider: string): Promise<void> => {
 };
 
 /**
- * 카카오 토큰 요청 함수
- * @param code 카카오 인증 코드
+ * 소셜 토큰 요청 함수
+ * @param provider 소셜 플랫폼
+ * @param code 소셜 인증 코드
  */
-export const getKakaoToken = async (code: string): Promise<void> => {
+export const getToken = async (
+  provider: string,
+  code: string
+): Promise<void> => {
   await generalApiClient.post(
-    `/auth/kakao/token`,
+    `/auth/${provider}/token`,
     { code },
     {
       withCredentials: true,
@@ -43,8 +47,8 @@ export const getLoginUserInfo = async (): Promise<LoginUserInfo> => {
   return response.data;
 };
 
-// 카카오 서버에서 로그아웃 요청 후 쿠키 삭제
-export const logOutKakao = async (): Promise<void> => {
+// 로그아웃 및 쿠키 삭제
+export const logOut = async (): Promise<void> => {
   await authApiClient.post(`/auth/logout`, {});
 };
 

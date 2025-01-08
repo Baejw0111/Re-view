@@ -39,12 +39,12 @@ export default function LikeButton({
   const { data: userLiked, refetch } = useQuery<boolean, Error>({
     queryKey: ["userLiked", reviewId],
     queryFn: () => fetchUserLiked(reviewId),
-    enabled: socialId !== 0,
+    enabled: socialId !== "",
   });
 
   const likeButtonRef = useIntersectionObserver({
     callback: () => {
-      if (socialId !== 0) {
+      if (socialId !== "") {
         refetch();
       }
     },
@@ -75,7 +75,7 @@ export default function LikeButton({
     useCountingAnimation(0); // 추천 수 증감 애니메이션
 
   const handleLikeClick = async () => {
-    if (socialId === 0) {
+    if (socialId === "") {
       toast.error("로그인 후 이용해주세요.");
       return;
     }

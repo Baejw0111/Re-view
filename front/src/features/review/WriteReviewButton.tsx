@@ -13,7 +13,7 @@ export default function WriteReviewButton() {
   const handleWriteReviewButtonClick = (
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
-    if (socialId === 0) {
+    if (socialId === "") {
       e.preventDefault();
       toast.error("로그인 후 이용해주세요.");
       navigate("/login");

@@ -31,7 +31,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   });
 
   const handleReportReview = () => {
-    if (socialId === 0) {
+    if (socialId === "") {
       toast.error("로그인 후 이용해주세요.");
       return;
     }

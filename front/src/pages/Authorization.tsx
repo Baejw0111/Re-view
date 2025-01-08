@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getKakaoToken } from "@/api/auth";
+import { getToken } from "@/api/auth";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,7 +12,7 @@ export default function Authorization() {
 
   // 카카오 로그인 처리
   const { mutate, isPending } = useMutation({
-    mutationFn: async () => await getKakaoToken(AUTHORIZATION_CODE),
+    mutationFn: async () => await getToken("kakao", AUTHORIZATION_CODE),
     onSuccess: () => {
       // 유저 정보를 자동으로 가져오게 하기 위해 페이지를 새로고침하며 이동
       window.location.href = "/";
