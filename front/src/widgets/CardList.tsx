@@ -20,7 +20,7 @@ export default function CardList({
   callback,
   cardType,
 }: {
-  idList: string[] | number[];
+  idList: string[];
   callback: () => void;
   cardType: "review" | "userProfile";
 }) {
@@ -107,12 +107,12 @@ export default function CardList({
                         ) : (
                           <Suspense key={index} fallback={<SkeletonUserCard />}>
                             <UserCard
-                              userId={Number(
+                              userId={
                                 idList[
                                   item.index * gridColumnCount[breakpoint] +
                                     index
                                 ]
-                              )}
+                              }
                               key={
                                 idList[
                                   item.index * gridColumnCount[breakpoint] +

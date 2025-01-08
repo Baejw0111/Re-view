@@ -60,7 +60,7 @@ export default function ReviewDetail() {
   // 유저 정보
   const { data: userInfo } = useQuery({
     queryKey: ["userInfo", reviewInfo?.authorId],
-    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
+    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as string),
     enabled: !!reviewInfo, // reviewInfo가 있을 때만 쿼리 실행
   });
 

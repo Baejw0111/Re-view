@@ -17,7 +17,7 @@ export default function Profile() {
     <PageTemplate>
       <Suspense fallback={<SkeletonUserCard isUserProfile />}>
         <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
-          <ProfileInfo userId={Number(userId)} tags />
+          <ProfileInfo userId={userId as string} tags />
         </Card>
       </Suspense>
 

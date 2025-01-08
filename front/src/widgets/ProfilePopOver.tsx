@@ -13,7 +13,7 @@ export default function ProfilePopOver({
   userId,
   children,
 }: {
-  userId: number;
+  userId: string;
   children: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(false);

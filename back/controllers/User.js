@@ -38,8 +38,8 @@ export const getUserInfoById = asyncHandler(async (req, res) => {
 /**
  * 유저 검색 결과 조회 API
  * @param {string} query - 검색어
- * @param {number} lastUserSocialId - 이전 검색 결과의 마지막 유저 소셜 아이디
- * @returns {number[]} 유저 소셜 아이디 리스트
+ * @param {string} lastUserSocialId - 이전 검색 결과의 마지막 유저 소셜 아이디
+ * @returns {string[]} 유저 소셜 아이디 리스트
  */
 export const searchUsers = asyncHandler(async (req, res) => {
   const { query, lastUserSocialId } = req.query;

@@ -79,12 +79,12 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
   console.log(`func: verifyAccessToken`);
   console.table(verifiedData);
 
-  const socialId = verifiedData.id; // 유저 소셜 ID
+  const socialId = provider + verifiedData.id; // 유저 소셜 ID
   const userInfo = await UserModel.findOne({ socialId });
 
   // 유저 소셜 ID와 유저 데이터 고유 ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
   req.socialId = socialId;
-  req.userId = userInfo?._id; // 회원 가입을 하지 않은 경우 빈 값
+  req.userId = userInfo?._id; // 유저 데이터 고유 ID. 회원 가입을 하지 않은 경우 빈 값
 
   return next();
 }, "카카오 토큰 검증");
@@ -225,7 +225,9 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
     }
     await CommentModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 댓글들 모두 삭제
     await NotificationModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 알림들 모두 삭제
+    await ReviewLikeModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 추천들 모두 삭제
   }
+
   await ReviewModel.deleteMany({ authorId: user._id });
 
   // 댓글 관련 데이터 모두 삭제

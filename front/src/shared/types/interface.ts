@@ -1,12 +1,12 @@
 /**
  * @description 로그인 유저 정보
- * @property {number} socialId - 소셜 아이디
+ * @property {string} socialId - 소셜 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
  * @property {string} notificationCheckTime - 알림 확인 시간
  */
 export interface LoginUserInfo {
-  socialId: number;
+  socialId: string;
   nickname: string;
   profileImage: string;
   notificationCheckTime: string;
@@ -14,7 +14,7 @@ export interface LoginUserInfo {
 
 /**
  * @description 유저 정보
- * @property {number} socialId - 소셜 아이디
+ * @property {string} socialId - 소셜 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
  * @property {string[]} favoriteTags - 선호하는 태그 목록
@@ -22,7 +22,7 @@ export interface LoginUserInfo {
  * @property {number} totalRating - 총 평점
  */
 export interface UserInfo {
-  socialId: number;
+  socialId: string;
   nickname: string;
   profileImage: string;
   favoriteTags: string[];
@@ -32,7 +32,7 @@ export interface UserInfo {
 
 /**
  * @description 리뷰 정보
- * @property {number} authorId - 리뷰 작성자 ID
+ * @property {string} authorId - 리뷰 작성자 ID
  * @property {string} uploadTime - 리뷰 업로드 시간
  * @property {string} title - 리뷰 제목
  * @property {string[]} images - 리뷰 이미지
@@ -44,7 +44,7 @@ export interface UserInfo {
  * @property {number} __v - 리뷰 버전
  */
 export interface ReviewInfo {
-  authorId: number;
+  authorId: string;
   uploadTime: string;
   title: string;
   images: string[];
@@ -59,7 +59,7 @@ export interface ReviewInfo {
 /**
  * @description 댓글 정보
  * @property {string} _id - 댓글 ID
- * @property {number} authorId - 댓글 작성자 ID
+ * @property {string} authorId - 댓글 작성자 ID
  * @property {string} profileImage - 댓글 작성자 프로필 이미지
  * @property {string} nickname - 댓글 작성자 닉네임
  * @property {string} reviewId - 댓글이 작성된 리뷰 ID
@@ -68,7 +68,7 @@ export interface ReviewInfo {
  */
 export interface CommentInfo {
   _id: string;
-  authorId: number;
+  authorId: string;
   profileImage: string;
   nickname: string;
   reviewId: string;

@@ -7,7 +7,7 @@ import { UserInfo, CommentInfo } from "@/shared/types/interface";
  * @returns 유저 정보
  */
 export const fetchUserInfoById = async (
-  socialId: number
+  socialId: string
 ): Promise<UserInfo> => {
   const response = await generalApiClient.get(`/user/${socialId}`);
   return response.data;
@@ -21,8 +21,8 @@ export const fetchUserInfoById = async (
  */
 export const searchUsers = async (
   query: string,
-  lastUserSocialId: number
-): Promise<number[]> => {
+  lastUserSocialId: string
+): Promise<string[]> => {
   const response = await generalApiClient.get(`/search/users`, {
     params: { query, lastUserSocialId },
   });
@@ -36,7 +36,7 @@ export const searchUsers = async (
  * @returns 댓글 목록
  */
 export const fetchUserCommentList = async (
-  userId: number
+  userId: string
 ): Promise<CommentInfo[]> => {
   const response = await generalApiClient.get(`/user/${userId}/comments`);
   return response.data;
@@ -48,7 +48,7 @@ export const fetchUserCommentList = async (
  * @returns 리뷰 목록
  */
 export const fetchUserReviewList = async (
-  userId: number,
+  userId: string,
   lastReviewId: string
 ): Promise<string[]> => {
   const response = await generalApiClient.get(`/user/${userId}/reviews`, {
@@ -65,7 +65,7 @@ export const fetchUserReviewList = async (
  * @returns 리뷰 목록
  */
 export const fetchUserLikedList = async (
-  userId: number,
+  userId: string,
   lastReviewId: string
 ): Promise<string[]> => {
   const response = await generalApiClient.get(`/user/${userId}/liked`, {

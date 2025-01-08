@@ -37,7 +37,7 @@ const db = mongoose.connection.useDb("mainDB");
 /**
  * 유저 모델
  * @type {mongoose.Model}
- * @property {number} socialId - 유저 소셜 아이디
+ * @property {string} socialId - 유저 소셜 아이디
  * @property {string} nickname - 닉네임
  * @property {string} profileImage - 프로필 이미지 경로
  * @property {Date} notificationCheckTime - 알림 확인 시간
@@ -47,7 +47,7 @@ const db = mongoose.connection.useDb("mainDB");
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
-    socialId: { type: Number, default: 0, index: true },
+    socialId: { type: String, default: "", index: true },
     nickname: { type: String, default: "" },
     profileImage: { type: String, default: "" },
     notificationCheckTime: { type: Date, default: Date.now },

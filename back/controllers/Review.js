@@ -137,7 +137,7 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
 export const getReviewById = asyncHandler(async (req, res) => {
   const { reviewId } = req.params;
 
-  // 리뷰 데이터 조회 및 작성자 정보 조회
+  // 리뷰 데이터 조회 시 작성자 socialId도 함께 조회
   const reviewData = await ReviewModel.findById(reviewId).populate(
     "authorId",
     "socialId"

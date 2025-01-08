@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card } from "@/shared/shadcn-ui/card";
 import ProfileInfo from "@/features/user/ProfileInfo";
 
-export default function UserCard({ userId }: { userId: number }) {
+export default function UserCard({ userId }: { userId: string }) {
   return (
     <Link to={`/profile/${userId}`}>
       <Card className="flex justify-center items-center p-8 max-w-xl h-48 mx-auto shadow-lg transition-shadow hover:shadow-xl active:shadow-xl hover:bg-muted active:bg-muted">

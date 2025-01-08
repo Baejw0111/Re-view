@@ -10,7 +10,7 @@ export default function ProfileInfo({
   tags,
   profileImageSize = "md",
 }: {
-  userId: number;
+  userId: string;
   tags?: boolean;
   profileImageSize?: "sm" | "md" | "lg";
 }) {

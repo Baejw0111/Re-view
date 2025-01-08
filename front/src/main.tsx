@@ -101,7 +101,7 @@ const router = createBrowserRouter(
               path: "",
               loader: async ({ params }) => {
                 const initialData = await fetchUserReviewList(
-                  Number(params.id),
+                  params.id as string,
                   ""
                 );
                 return initialData;
@@ -112,7 +112,7 @@ const router = createBrowserRouter(
               path: "posts",
               loader: async ({ params }) => {
                 const initialData = await fetchUserReviewList(
-                  Number(params.id),
+                  params.id as string,
                   ""
                 );
                 return initialData;
@@ -123,7 +123,7 @@ const router = createBrowserRouter(
               path: "comments",
               loader: async ({ params }) => {
                 const initialData = await fetchUserCommentList(
-                  Number(params.id)
+                  params.id as string
                 );
                 return initialData;
               },
@@ -133,7 +133,7 @@ const router = createBrowserRouter(
               path: "liked",
               loader: async ({ params }) => {
                 const initialData = await fetchUserLikedList(
-                  Number(params.id),
+                  params.id as string,
                   ""
                 );
                 return initialData;

@@ -12,10 +12,10 @@ export default function LikedTab() {
   // 사용자가 추천한 리뷰 가져오기
   const { data: userLikedList, fetchNextPage: fetchNextUserLikedList } =
     useInfiniteQuery({
-      queryKey: ["userLikedList", Number(userId)],
+      queryKey: ["userLikedList", userId],
       initialPageParam: "",
       queryFn: ({ pageParam }: { pageParam: string }) =>
-        fetchUserLikedList(Number(userId), pageParam),
+        fetchUserLikedList(userId as string, pageParam),
       getNextPageParam: (lastPage) => {
         if (lastPage.length < 20) return undefined;
         return lastPage[lastPage.length - 1];

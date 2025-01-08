@@ -11,10 +11,10 @@ export default function PostsTab() {
   // 사용자가 작성한 리뷰 가져오기
   const { data: userReviewList, fetchNextPage: fetchNextUserReviewList } =
     useInfiniteQuery({
-      queryKey: ["userReviewList", Number(userId)],
+      queryKey: ["userReviewList", userId],
       initialPageParam: "",
       queryFn: ({ pageParam }: { pageParam: string }) =>
-        fetchUserReviewList(Number(userId), pageParam),
+        fetchUserReviewList(userId as string, pageParam),
       getNextPageParam: (lastPage) => {
         if (lastPage.length < 20) return undefined;
         return lastPage[lastPage.length - 1];
