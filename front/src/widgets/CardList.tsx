@@ -134,7 +134,7 @@ export default function CardList({
         <div className="flex justify-center items-center h-full">
           <p className="text-muted-foreground">
             {cardType === "review"
-              ? "등록된 리뷰가 없습니다."
+              ? "리뷰가 없습니다."
               : "해당하는 유저가 없습니다."}
           </p>
         </div>
