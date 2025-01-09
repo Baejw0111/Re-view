@@ -205,6 +205,8 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   const { accessToken, provider } = req.cookies;
   const { socialId } = req;
 
+  await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
+
   const user = await UserModel.findOneAndDelete({ socialId }); // 유저 데이터 삭제 및 반환
 
   if (!user) {
@@ -238,8 +240,6 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   res.clearCookie("provider");
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
-
-  await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
 
   res.status(200).json({ message: "유저 계정 삭제 성공" });
 }, "소셜 유저 계정 삭제");
