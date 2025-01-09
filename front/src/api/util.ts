@@ -62,9 +62,6 @@ authApiClient.interceptors.response.use(
   },
   async (error: AxiosError<{ message: string }>) => {
     const { response } = error;
-    toast.error("요청 실패", {
-      description: error.response?.data?.message,
-    });
     if (response?.status === 401) {
       try {
         await refreshAccessToken();
@@ -73,6 +70,10 @@ authApiClient.interceptors.response.use(
         // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
         return Promise.reject(refreshError);
       }
+    } else {
+      toast.error("요청 실패", {
+        description: error.response?.data?.message,
+      });
     }
     return Promise.reject(error);
   }
