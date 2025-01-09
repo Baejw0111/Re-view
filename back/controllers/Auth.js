@@ -118,7 +118,6 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: refresh_token_expires_in * 1000,
     });
   }
 
@@ -186,7 +185,7 @@ export const logOut = asyncHandler(async (req, res) => {
   const { accessToken, provider } = req.cookies;
 
   // 구글 Oauth의 경우 토큰을 따로 만료시키는 기능이 없음
-  if (provider !== "google") {
+  if (provider === "kakao") {
     const response = await authProvider[provider].logout(accessToken);
 
     console.table(response);
