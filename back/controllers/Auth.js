@@ -167,7 +167,7 @@ export const getLoginUserInfo = asyncHandler(async (req, res) => {
     const userCount = await UserModel.countDocuments();
     await axios.post(`${PUUUSH_WEB_HOOK_URL}`, {
       title: `신규 유저 가입!`,
-      body: `총 ${userCount}명의 유저가 가입하였습니다.`,
+      body: `현재까지 총 ${userCount}명의 유저가 가입하였습니다.`,
     });
   }
 
