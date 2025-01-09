@@ -16,7 +16,7 @@ export const socialLogin = async (provider: string): Promise<void> => {
     naver: NAVER_AUTH_URL,
   };
 
-  window.location.href = urlVariants[provider];
+  window.location.href = `${urlVariants[provider]}&redirect_uri=${window.location.origin}/oauth/${provider}`;
 };
 
 /**
