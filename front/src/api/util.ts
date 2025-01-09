@@ -67,8 +67,8 @@ authApiClient.interceptors.response.use(
         await refreshAccessToken();
         return authApiClient(error.config as AxiosRequestConfig);
       } catch (refreshError) {
-        // refreshToken이 만료된 경우이므로 강제 로그아웃 처리
-        return Promise.reject(refreshError);
+        // refreshToken이 만료된 경우이므로 강제 로그아웃 처리 후 로그인 페이지로 이동
+        window.location.href = "/login";
       }
     } else {
       toast.error("요청 실패", {
