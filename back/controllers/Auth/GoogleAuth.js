@@ -4,7 +4,7 @@ const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } =
   process.env;
 
 export default class GoogleAuth {
-  // 구글 토큰 요청 URL
+  // 구글 인증 요청 URL
   static oauthUrl = "https://oauth2.googleapis.com";
 
   // 구글 API URL
