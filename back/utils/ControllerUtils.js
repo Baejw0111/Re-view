@@ -8,8 +8,9 @@ import { deleteUploadedFiles } from "./Upload.js";
  */
 const handleError = (req, res, operation) => (error) => {
   console.error(
-    `${operation} 중 에러 발생: ${error.message}\n`,
-    error.response?.data
+    `\x1b[31m${operation} 중 에러 발생: ${error.message}\nData:${JSON.stringify(
+      error.response?.data
+    )}\x1b[0m\n`
   );
 
   if (req.files) {
@@ -28,7 +29,7 @@ const handleError = (req, res, operation) => (error) => {
  * @returns {Function} - 래핑된 함수
  */
 const asyncHandler = (fn, operation) => (req, res, next) => {
-  console.log(`실행 작업: ${operation}`);
+  console.log(`\x1b[32m실행 작업: ${operation}\x1b[0m`);
 
   return Promise.resolve(fn(req, res, next)).catch(
     handleError(req, res, operation)
