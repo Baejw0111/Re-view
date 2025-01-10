@@ -6,10 +6,12 @@ import {
   NotificationModel,
   ReviewLikeModel,
   TagModel,
+  IdMapModel,
 } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import { GoogleAuth, NaverAuth, KakaoAuth } from "./SocialAuth/index.js";
+import { getUserAliasId } from "../utils/IdGenerator.js";
 
 const { PUUUSH_WEB_HOOK_URL } = process.env;
 
@@ -77,11 +79,13 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
 
   console.table(verifiedData);
 
-  const socialId = provider + verifiedData.id; // 유저 소셜 ID
-  const userInfo = await UserModel.findOne({ socialId });
+  const originalSocialId = provider + verifiedData.id; // 유저 소셜 ID
+  const userAliasId = await getUserAliasId(originalSocialId);
+
+  const userInfo = await UserModel.findOne({ socialId: userAliasId });
 
   // 유저 소셜 ID와 유저 데이터 고유 ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
-  req.socialId = socialId;
+  req.socialId = userAliasId;
   req.userId = userInfo?._id; // 유저 데이터 고유 ID. 회원 가입을 하지 않은 경우 빈 값
 
   return next();
@@ -234,6 +238,7 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   await NotificationModel.deleteMany({ userId: user._id }); // 유저의 알림들 모두 삭제
   await ReviewLikeModel.deleteMany({ userId: user._id }); // 유저의 추천들 모두 삭제
   await TagModel.deleteMany({ userId: user._id }); // 유저의 태그들 모두 삭제
+  await IdMapModel.deleteOne({ aliasId: socialId }); // 유저의 소셜 아이디 맵 삭제
 
   res.clearCookie("provider");
   res.clearCookie("accessToken");
