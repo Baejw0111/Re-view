@@ -1,4 +1,4 @@
-import { IdMapModel, ReviewModel } from "./Model.js";
+import { IdMapModel, ReviewModel, CommentModel } from "./Model.js";
 
 /**
  * 랜덤 문자열 생성
@@ -19,12 +19,12 @@ function generateRandomString(length) {
 }
 
 /**
- * 유저 서비스 ID 중복 체크
- * @param {string} aliasId - 유저 서비스 ID
+ * 유저 별칭 ID 중복 체크
+ * @param {string} aliasId - 유저 별칭 ID
  * @returns {boolean} - 중복 여부
  */
 async function checkDuplicateUserAliasId(aliasId) {
-  const idMap = await IdMapModel.findOne({ aliasId });
+  const idMap = await IdMapModel.exists({ aliasId });
   return idMap ? true : false;
 }
 
@@ -34,15 +34,25 @@ async function checkDuplicateUserAliasId(aliasId) {
  * @returns {boolean} - 중복 여부
  */
 async function checkDuplicateReviewAliasId(aliasId) {
-  const review = await ReviewModel.findOne({ aliasId });
+  const review = await ReviewModel.exists({ aliasId });
   return review ? true : false;
+}
+
+/**
+ * 댓글 별칭 ID 중복 체크
+ * @param {string} aliasId - 댓글 별칭 ID
+ * @returns {boolean} - 중복 여부
+ */
+async function checkDuplicateCommentAliasId(aliasId) {
+  const comment = await CommentModel.exists({ aliasId });
+  return comment ? true : false;
 }
 
 /**
  * 유저 서비스 ID 생성
  * @returns {string} - 유저 서비스 ID
  */
-export async function generateUserAliasId() {
+async function generateUserAliasId() {
   let userAliasId = generateRandomString(8);
 
   while (await checkDuplicateUserAliasId(userAliasId)) {
@@ -54,7 +64,6 @@ export async function generateUserAliasId() {
 
 /**
  * 리뷰 별칭 ID 생성
- * @param {number} length - 리뷰 별칭 ID 길이
  * @returns {string} - 리뷰 별칭 ID
  */
 export async function generateReviewAliasId() {
@@ -68,9 +77,23 @@ export async function generateReviewAliasId() {
 }
 
 /**
- * 유저 서비스 ID 반환
+ * 댓글 별칭 ID 생성
+ * @returns {string} - 댓글 별칭 ID
+ */
+export async function generateCommentAliasId() {
+  let commentAliasId = generateRandomString(16);
+
+  while (await checkDuplicateCommentAliasId(commentAliasId)) {
+    commentAliasId = generateRandomString(16);
+  }
+
+  return commentAliasId;
+}
+
+/**
+ * 유저 별칭 ID 반환
  * @param {string} originalSocialId - 소셜 로그인 제공자 이름 + 원본 소셜 아이디 로 이뤄진 문자열
- * @returns {string} - 유저 서비스 ID
+ * @returns {string} - 유저 별칭 ID
  */
 export async function getUserAliasId(originalSocialId) {
   const idMap = await IdMapModel.findOne({ originalSocialId });
@@ -82,5 +105,6 @@ export async function getUserAliasId(originalSocialId) {
     return aliasId;
   }
 
+  // 이미 가입한 유저일 경우 기존 아이디 반환
   return idMap.aliasId;
 }

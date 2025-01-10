@@ -7,29 +7,33 @@ import {
 } from "../utils/Model.js";
 import { sendEventToClient } from "./Notification.js";
 import { increaseTagPreference, decreaseTagPreference } from "./Tag.js";
+import { generateCommentAliasId } from "../utils/IdGenerator.js";
 
 /**
  * 리뷰 댓글 추가
  */
 export const addComment = asyncHandler(async (req, res) => {
-  const { reviewId } = req.params;
+  const { reviewAliasId } = req.params;
   const authorId = req.userId;
 
-  const review = await ReviewModel.findById(reviewId);
+  const review = await ReviewModel.findOne({ aliasId: reviewAliasId });
 
   if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
   }
 
+  const commentAliasId = await generateCommentAliasId();
+
   // 댓글 생성
   const comment = await CommentModel.create({
+    aliasId: commentAliasId,
     authorId,
-    reviewId,
+    reviewId: review._id,
     content: req.body.comment,
   });
 
   // 리뷰 댓글 수 증가
-  await ReviewModel.findByIdAndUpdate(reviewId, {
+  await ReviewModel.findByIdAndUpdate(review._id, {
     $inc: { commentsCount: 1 },
   });
 
@@ -46,7 +50,7 @@ export const addComment = asyncHandler(async (req, res) => {
     await NotificationModel.create({
       userId: review.authorId,
       commentId: comment._id,
-      reviewId,
+      reviewId: review._id,
       category: "comment",
     });
   }
@@ -61,9 +65,12 @@ export const addComment = asyncHandler(async (req, res) => {
  * 리뷰 댓글 수 조회
  */
 export const getCommentCount = asyncHandler(async (req, res) => {
-  const { reviewId } = req.params;
+  const { reviewAliasId } = req.params;
 
-  const review = await ReviewModel.findById(reviewId);
+  const review = await ReviewModel.findOne(
+    { aliasId: reviewAliasId },
+    { commentsCount: 1 }
+  );
 
   if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
@@ -76,18 +83,17 @@ export const getCommentCount = asyncHandler(async (req, res) => {
  * 특정 댓글 조회
  */
 export const getCommentById = asyncHandler(async (req, res) => {
-  const { commentId } = req.params;
-  const comment = await CommentModel.findById(commentId).populate(
-    "authorId",
-    "aliasId"
-  );
+  const { commentAliasId } = req.params;
+  const comment = await CommentModel.findOne({ aliasId: commentAliasId })
+    .populate("authorId", "aliasId, profileImage, nickname")
+    .populate("reviewId", "aliasId");
 
   res.status(200).json({
-    _id: comment._id,
+    aliasId: comment.aliasId,
     authorId: comment.authorId.aliasId,
     profileImage: comment.authorId.profileImage,
     nickname: comment.authorId.nickname,
-    reviewId: comment.reviewId,
+    reviewId: comment.reviewId.aliasId,
     uploadTime: comment.uploadTime,
     content: comment.content,
   });
@@ -98,21 +104,26 @@ export const getCommentById = asyncHandler(async (req, res) => {
  * @returns 리뷰 댓글 목록
  */
 export const getReviewCommentList = asyncHandler(async (req, res) => {
-  const { reviewId } = req.params;
+  const { reviewAliasId } = req.params;
+
+  const review = await ReviewModel.findOne({ aliasId: reviewAliasId });
+
+  if (!review) {
+    return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
+  }
 
   // 댓글 목록 조회 및 작성자 정보 함께 가져오기
-  const comments = await CommentModel.find({ reviewId }).populate(
-    "authorId",
-    "aliasId profileImage nickname"
-  );
+  const comments = await CommentModel.find({ reviewId: review._id })
+    .populate("authorId", "aliasId profileImage nickname")
+    .populate("reviewId", "aliasId");
 
   // 댓글 목록 생성
   const commentList = comments.map((comment) => ({
-    _id: comment._id,
+    aliasId: comment.aliasId,
     authorId: comment.authorId.aliasId,
     profileImage: comment.authorId.profileImage,
     nickname: comment.authorId.nickname,
-    reviewId: comment.reviewId,
+    reviewId: comment.reviewId.aliasId,
     uploadTime: comment.uploadTime,
     content: comment.content,
   }));
@@ -124,16 +135,16 @@ export const getReviewCommentList = asyncHandler(async (req, res) => {
  * 리뷰 댓글 삭제 API
  */
 export const deleteComment = asyncHandler(async (req, res) => {
-  const { commentId } = req.params;
+  const { commentAliasId } = req.params;
 
-  const comment = await CommentModel.findById(commentId);
+  const comment = await CommentModel.findOne({ aliasId: commentAliasId });
 
   if (!comment) {
     return res.status(404).json({ message: "댓글이 존재하지 않습니다." });
   }
 
-  await CommentModel.findByIdAndDelete(commentId); // 댓글 삭제
-  await NotificationModel.findOneAndDelete({ commentId }); // 알림 삭제
+  await CommentModel.findByIdAndDelete(comment._id); // 댓글 삭제
+  await NotificationModel.findOneAndDelete({ commentId: comment._id }); // 알림 삭제
   await ReviewModel.findByIdAndUpdate(comment.reviewId, {
     $inc: { commentsCount: -1 },
   }); // 리뷰 댓글 수 감소

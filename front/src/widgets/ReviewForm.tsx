@@ -84,11 +84,11 @@ export default function ReviewForm({
   // 리뷰 수정
   const { mutate: editReviewMutation } = useMutation({
     mutationFn: (formData: FormData) =>
-      editReview(reviewInfo?._id as string, formData),
+      editReview(reviewInfo?.aliasId as string, formData),
     onSuccess: () => {
       toast.success("리뷰가 수정되었습니다.");
       queryClient.invalidateQueries({
-        queryKey: ["reviewInfo", reviewInfo?._id],
+        queryKey: ["reviewInfo", reviewInfo?.aliasId],
       });
       navigate(-1);
     },

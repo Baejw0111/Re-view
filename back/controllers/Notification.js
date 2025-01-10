@@ -81,8 +81,8 @@ export const getNotifications = asyncHandler(async (req, res) => {
     return {
       _id: notification._id,
       time: notification.time,
-      commentId: notification.commentId?._id,
-      reviewId: notification.reviewId?._id,
+      commentId: comment?.aliasId,
+      reviewId: review?.aliasId,
       category: notification.category,
       profileImage: author ? author.profileImage : "public/logo.svg", // 시스템 알림일 경우 기본 이미지 사용
       nickname: author ? author.nickname : "시스템",

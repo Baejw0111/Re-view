@@ -1,6 +1,6 @@
 /**
  * @description 로그인 유저 정보
- * @property {string} aliasId - 소셜 아이디
+ * @property {string} aliasId - 유저 별칭 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
  * @property {string} notificationCheckTime - 알림 확인 시간
@@ -14,7 +14,7 @@ export interface LoginUserInfo {
 
 /**
  * @description 유저 정보
- * @property {string} aliasId - 소셜 아이디
+ * @property {string} aliasId - 유저 별칭 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
  * @property {string[]} favoriteTags - 선호하는 태그 목록
@@ -32,6 +32,7 @@ export interface UserInfo {
 
 /**
  * @description 리뷰 정보
+ * @property {string} aliasId - 리뷰 ID
  * @property {string} authorId - 리뷰 작성자 ID
  * @property {string} uploadTime - 리뷰 업로드 시간
  * @property {string} title - 리뷰 제목
@@ -40,10 +41,9 @@ export interface UserInfo {
  * @property {number} rating - 리뷰 평점
  * @property {string[]} tags - 리뷰 태그
  * @property {boolean} isSpoiler - 스포일러 여부
- * @property {string} _id - 리뷰 ID
- * @property {number} __v - 리뷰 버전
  */
 export interface ReviewInfo {
+  aliasId: string;
   authorId: string;
   uploadTime: string;
   title: string;
@@ -52,13 +52,11 @@ export interface ReviewInfo {
   rating: number;
   tags: string[];
   isSpoiler: boolean;
-  _id: string;
-  __v: number;
 }
 
 /**
  * @description 댓글 정보
- * @property {string} _id - 댓글 ID
+ * @property {string} aliasId - 댓글 ID
  * @property {string} authorId - 댓글 작성자 ID
  * @property {string} profileImage - 댓글 작성자 프로필 이미지
  * @property {string} nickname - 댓글 작성자 닉네임
@@ -67,7 +65,7 @@ export interface ReviewInfo {
  * @property {string} content - 댓글 내용
  */
 export interface CommentInfo {
-  _id: string;
+  aliasId: string;
   authorId: string;
   profileImage: string;
   nickname: string;

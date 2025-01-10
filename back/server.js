@@ -90,9 +90,9 @@ app.delete("/auth/delete", verifyAccessToken, deleteUserAccount); // 소셜 유�
 // 리뷰 관련 API
 app.get("/review/latest", getLatestFeed); // 최신 리뷰 조회 API
 app.get("/review/popular", getPopularFeed); // 인기 리뷰 조회 API
-app.get("/review/:reviewId", getReviewById); // 특정 리뷰 조회 API
-app.get("/review/:reviewId/comments/count", getCommentCount); // 리뷰의 댓글 수 조회 API
-app.get("/review/:reviewId/comments", getReviewCommentList); // 리뷰의 댓글 목록 조회 API
+app.get("/review/:reviewAliasId", getReviewById); // 특정 리뷰 조회 API
+app.get("/review/:reviewAliasId/comments/count", getCommentCount); // 리뷰의 댓글 수 조회 API
+app.get("/review/:reviewAliasId/comments", getReviewCommentList); // 리뷰의 댓글 목록 조회 API
 app.post(
   "/review",
   verifyAccessToken,
@@ -103,20 +103,20 @@ app.post(
   createReview
 ); // 리뷰 등록 API
 app.patch(
-  "/review/:reviewId",
+  "/review/:reviewAliasId",
   verifyAccessToken,
   upload.array("images", 5),
   handleMulterError,
   verifyFormFields,
   updateReview
 ); // 리뷰 수정 API
-app.delete("/review/:reviewId", verifyAccessToken, deleteReview); // 리뷰 삭제 API
+app.delete("/review/:reviewAliasId", verifyAccessToken, deleteReview); // 리뷰 삭제 API
 
 // 유저 정보 관련 API
-app.get("/user/:aliasId", getUserInfoById); // 유저 정보 조회 API
-app.get("/user/:aliasId/reviews", getUserReviewList); // 유저가 작성한 리뷰 목록 조회 API
-app.get("/user/:aliasId/comments", getUserCommentList); // 유저가 작성한 댓글 목록 조회 API
-app.get("/user/:aliasId/liked", getUserLikedList); // 유저가 추천한 리뷰 목록 조회 API
+app.get("/user/:userAliasId", getUserInfoById); // 유저 정보 조회 API
+app.get("/user/:userAliasId/reviews", getUserReviewList); // 유저가 작성한 리뷰 목록 조회 API
+app.get("/user/:userAliasId/comments", getUserCommentList); // 유저가 작성한 댓글 목록 조회 API
+app.get("/user/:userAliasId/liked", getUserLikedList); // 유저가 추천한 리뷰 목록 조회 API
 app.put(
   "/user/info",
   verifyAccessToken,
@@ -139,15 +139,15 @@ app.delete(
 ); // 알림 삭제 API
 
 // 댓글 관련 API
-app.get("/comment/:commentId", getCommentById); // 특정 댓글 조회 API
-app.post("/comment/:reviewId", verifyAccessToken, addComment); // 리뷰 댓글 등록 API
-app.delete("/comment/:commentId", verifyAccessToken, deleteComment); // 리뷰 댓글 삭제 API
+app.get("/comment/:commentAliasId", getCommentById); // 특정 댓글 조회 API
+app.post("/comment/:reviewAliasId", verifyAccessToken, addComment); // 리뷰 댓글 등록 API
+app.delete("/comment/:commentAliasId", verifyAccessToken, deleteComment); // 리뷰 댓글 삭제 API
 
 // 추천 관련 API
-app.patch("/like/:reviewId", verifyAccessToken, addLike); // 리뷰 추천 API
-app.get("/like/:reviewId", verifyAccessToken, getUserLiked); // 사용자의 리뷰 추천 여부 조회 API
-app.get("/like/:reviewId/count", getLikeCount); // 리뷰 추천 수 조회 API
-app.patch("/unlike/:reviewId", verifyAccessToken, unLike); // 리뷰 추천 취소 API
+app.patch("/like/:reviewAliasId", verifyAccessToken, addLike); // 리뷰 추천 API
+app.get("/like/:reviewAliasId", verifyAccessToken, getUserLiked); // 사용자의 리뷰 추천 여부 조회 API
+app.get("/like/:reviewAliasId/count", getLikeCount); // 리뷰 추천 수 조회 API
+app.patch("/unlike/:reviewAliasId", verifyAccessToken, unLike); // 리뷰 추천 취소 API
 
 // 태그 관련 API
 app.get("/tag/popular", getPopularTags); // 인기 태그 조회 API

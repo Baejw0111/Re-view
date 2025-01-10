@@ -42,7 +42,7 @@ export default function CommentBox({
 
   const { mutate: reportCommentMutate } = useMutation({
     mutationFn: () =>
-      sendUserReportComment(commentInfo.reviewId, commentInfo._id),
+      sendUserReportComment(commentInfo.reviewId, commentInfo.aliasId),
     onSuccess: () => {
       toast.success("댓글이 신고되었습니다.");
     },
@@ -70,7 +70,7 @@ export default function CommentBox({
           className={`py-2 flex items-start gap-2.5 transition-colors duration-300 ${
             isHighlight ? "bg-accent" : ""
           }`}
-          id={commentInfo._id}
+          id={commentInfo.aliasId}
         >
           <ProfilePopOver userId={commentInfo.authorId}>
             <Button variant="ghost" className="h-12 w-12 rounded-full">
@@ -103,7 +103,7 @@ export default function CommentBox({
                   <Alert
                     title="댓글을 삭제하시겠습니까?"
                     description=""
-                    onConfirm={() => deleteCommentMutate(commentInfo._id)}
+                    onConfirm={() => deleteCommentMutate(commentInfo.aliasId)}
                   >
                     <Button variant="ghost" size="icon">
                       <Trash className="w-4 h-4 text-muted-foreground" />

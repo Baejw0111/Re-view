@@ -43,8 +43,8 @@ const db = mongoose.connection.useDb("mainDB");
 export const IdMapModel = db.model(
   "IdMap",
   new mongoose.Schema({
-    originalSocialId: { type: String, default: "", index: true },
-    aliasId: { type: String, default: "", index: true },
+    originalSocialId: { type: String, default: "" },
+    aliasId: { type: String, default: "" },
   }).index({ originalSocialId: 1, aliasId: 1 })
 );
 
@@ -73,6 +73,7 @@ export const UserModel = db.model(
 /**
  * 리뷰 모델
  * @type {mongoose.Model}
+ * @property {string} aliasId - 서비스 내에서 사용되는 리뷰의 별칭 아이디
  * @property {mongoose.Schema.Types.ObjectId} authorId - 작성자 DB ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
@@ -87,10 +88,10 @@ export const UserModel = db.model(
 export const ReviewModel = db.model(
   "Review",
   new mongoose.Schema({
+    aliasId: { type: String, default: "" },
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     uploadTime: { type: Date, default: Date.now },
     title: { type: String, default: "" },
@@ -101,7 +102,7 @@ export const ReviewModel = db.model(
     likesCount: { type: Number, default: 0 },
     commentsCount: { type: Number, default: 0 },
     isSpoiler: { type: Boolean, default: false },
-  }).index({ uploadTime: -1, likesCount: 1, authorId: 1 })
+  }).index({ uploadTime: -1, likesCount: 1, authorId: 1, aliasId: 1 })
 );
 
 /**
@@ -117,12 +118,11 @@ export const ReviewLikeModel = db.model(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     reviewId: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      index: true,
+      ref: "Review",
     },
     likedAt: { type: Date, default: Date.now },
   }).index({ userId: 1, likedAt: -1, reviewId: 1 })
@@ -144,7 +144,6 @@ export const TagModel = db.model(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     koreanInitials: { type: String, default: "" },
     lastInteractedAt: { type: Date, default: Date.now },
@@ -155,6 +154,7 @@ export const TagModel = db.model(
 /**
  * 댓글 모델
  * @type {mongoose.Model}
+ * @property {string} aliasId - 서비스 내에서 사용되는 댓글의 별칭 아이디
  * @property {mongoose.Schema.Types.ObjectId} authorId - 작성자 DB ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {mongoose.Schema.Types.ObjectId} reviewId - 댓글이 작성된 리뷰의 ID
@@ -163,19 +163,19 @@ export const TagModel = db.model(
 export const CommentModel = db.model(
   "Comment",
   new mongoose.Schema({
+    aliasId: { type: String, default: "" },
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     uploadTime: { type: Date, default: Date.now },
     reviewId: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      index: true,
+      ref: "Review",
     },
     content: { type: String, default: "" },
-  })
+  }).index({ uploadTime: -1, authorId: 1 })
 );
 
 /**
@@ -194,19 +194,16 @@ export const NotificationModel = db.model(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     time: { type: Date, default: Date.now },
     commentId: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      index: true,
       ref: "Comment",
     },
     reviewId: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      index: true,
       ref: "Review",
     },
     category: { type: String, default: "" },

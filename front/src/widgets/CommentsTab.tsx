@@ -24,7 +24,7 @@ export default function CommentsTab() {
               className="border-b last:border-b-0 p-4 flex justify-between"
             >
               <Link
-                to={`?reviewId=${commentInfo.reviewId}#${commentInfo._id}`}
+                to={`?reviewId=${commentInfo.reviewId}#${commentInfo.aliasId}`}
                 className="hover:underline text-sm whitespace-pre-wrap break-all"
               >
                 {commentInfo.content}

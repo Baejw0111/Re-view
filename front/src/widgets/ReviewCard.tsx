@@ -76,7 +76,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                 <Link
                   to={`?${new URLSearchParams({
                     ...Object.fromEntries(searchParams),
-                    reviewId: reviewInfo._id,
+                    reviewId: reviewInfo.aliasId,
                   })}`}
                   className="group flex items-center gap-1 cursor-pointer hover:text-blue-500 active:text-blue-500 transition-colors"
                 >
@@ -106,8 +106,8 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               <Separator className="my-3" />
               {/* 좋아요 버튼 및 댓글 버튼 */}
               <div className="flex gap-2">
-                <LikeButton reviewId={reviewInfo._id} className="w-5 h-5" />
-                <CommentButton reviewId={reviewInfo._id} />
+                <LikeButton reviewId={reviewInfo.aliasId} className="w-5 h-5" />
+                <CommentButton reviewId={reviewInfo.aliasId} />
               </div>
             </div>
           </div>
