@@ -48,7 +48,7 @@ export default class KakaoAuth {
       },
     });
 
-    return response.data;
+    return response.data.id;
   }
 
   /**

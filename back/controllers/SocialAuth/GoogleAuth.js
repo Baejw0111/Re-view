@@ -48,7 +48,7 @@ export default class GoogleAuth {
       },
     });
 
-    return response.data;
+    return response.data.id;
   }
 
   /**

@@ -75,11 +75,10 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const verifiedData = await authProvider[provider].verifyToken(accessToken);
+  const socialId = await authProvider[provider].verifyToken(accessToken);
+  console.table({ socialId });
 
-  console.table(verifiedData);
-
-  const originalSocialId = provider + verifiedData.id; // 유저 소셜 ID
+  const originalSocialId = provider + socialId; // 소셜 로그인 제공자 + 유저 소셜 ID
   const userAliasId = await getUserAliasId(originalSocialId);
 
   const userInfo = await UserModel.findOne({ aliasId: userAliasId });
