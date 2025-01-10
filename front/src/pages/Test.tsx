@@ -26,14 +26,16 @@ import {
 } from "@/shared/shadcn-ui/tabs";
 import SkeletonUserCard from "@/shared/skeleton/SkeletonUserCard";
 import { toast } from "sonner";
-import { socialLogin } from "@/api/auth";
+import { generalApiClient } from "@/api/util";
 
 export default function Test() {
   return (
     <>
       <PageTemplate>
         {/* 컴포넌트 시작 */}
-        <Button onClick={() => socialLogin("kakao")}>로그인</Button>
+        <Button onClick={() => generalApiClient.get("/change")}>
+          데이터 변경
+        </Button>
         <Button
           onClick={() =>
             toast.success("Event has been created", {

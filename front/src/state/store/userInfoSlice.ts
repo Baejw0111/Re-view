@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { LoginUserInfo } from "@/shared/types/interface";
 
 const initialState: LoginUserInfo = {
-  socialId: "",
+  aliasId: "",
   nickname: "",
   profileImage: "",
   notificationCheckTime: "",
@@ -13,7 +13,7 @@ const userInfoSlice = createSlice({
   initialState,
   reducers: {
     setUserInfo: (state, action) => {
-      state.socialId = action.payload.socialId;
+      state.aliasId = action.payload.aliasId;
       state.nickname = action.payload.nickname;
       state.profileImage = action.payload.profileImage;
       state.notificationCheckTime = action.payload.notificationCheckTime;

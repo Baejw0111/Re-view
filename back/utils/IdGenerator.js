@@ -24,8 +24,8 @@ function generateRandomString(length) {
  * @returns {boolean} - 중복 여부
  */
 async function checkDuplicateUserAliasId(aliasId) {
-  const socialId = await IdMapModel.findOne({ aliasId });
-  return socialId ? true : false;
+  const idMap = await IdMapModel.findOne({ aliasId });
+  return idMap ? true : false;
 }
 
 /**

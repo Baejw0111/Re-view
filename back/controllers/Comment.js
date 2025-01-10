@@ -79,12 +79,12 @@ export const getCommentById = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
   const comment = await CommentModel.findById(commentId).populate(
     "authorId",
-    "socialId"
+    "aliasId"
   );
 
   res.status(200).json({
     _id: comment._id,
-    authorId: comment.authorId.socialId,
+    authorId: comment.authorId.aliasId,
     profileImage: comment.authorId.profileImage,
     nickname: comment.authorId.nickname,
     reviewId: comment.reviewId,
@@ -103,13 +103,13 @@ export const getReviewCommentList = asyncHandler(async (req, res) => {
   // 댓글 목록 조회 및 작성자 정보 함께 가져오기
   const comments = await CommentModel.find({ reviewId }).populate(
     "authorId",
-    "socialId profileImage nickname"
+    "aliasId profileImage nickname"
   );
 
   // 댓글 목록 생성
   const commentList = comments.map((comment) => ({
     _id: comment._id,
-    authorId: comment.authorId.socialId,
+    authorId: comment.authorId.aliasId,
     profileImage: comment.authorId.profileImage,
     nickname: comment.authorId.nickname,
     reviewId: comment.reviewId,

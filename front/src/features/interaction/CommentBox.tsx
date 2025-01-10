@@ -24,7 +24,7 @@ export default function CommentBox({
 }) {
   const queryClient = useQueryClient();
   const [isHighlight, setIsHighlight] = useState(highlight);
-  const socialId = useSelector((state: RootState) => state.userInfo.socialId);
+  const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
 
   // 댓글 삭제
   const { mutate: deleteCommentMutate } = useMutation({
@@ -49,7 +49,7 @@ export default function CommentBox({
   });
 
   const handleReportComment = () => {
-    if (socialId === "") {
+    if (aliasId === "") {
       toast.error("로그인 후 이용해주세요.");
       return;
     }
@@ -99,7 +99,7 @@ export default function CommentBox({
                 {/* <Button variant="ghost" size="icon">
                   <Pencil className="w-4 h-4 text-muted-foreground" />
                 </Button> */}
-                {commentInfo.authorId === socialId ? (
+                {commentInfo.authorId === aliasId ? (
                   <Alert
                     title="댓글을 삭제하시겠습니까?"
                     description=""

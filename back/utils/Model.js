@@ -51,7 +51,7 @@ export const IdMapModel = db.model(
 /**
  * 유저 모델
  * @type {mongoose.Model}
- * @property {string} socialId - 유저 소셜 아이디
+ * @property {string} aliasId - 서비스 내에서 사용되는 유저의 별칭 아이디
  * @property {string} nickname - 닉네임
  * @property {string} profileImage - 프로필 이미지 경로
  * @property {Date} notificationCheckTime - 알림 확인 시간
@@ -61,7 +61,7 @@ export const IdMapModel = db.model(
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
-    socialId: { type: String, default: "", index: true },
+    aliasId: { type: String, default: "", index: true },
     nickname: { type: String, default: "" },
     profileImage: { type: String, default: "" },
     notificationCheckTime: { type: Date, default: Date.now },

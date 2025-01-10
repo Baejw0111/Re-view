@@ -3,13 +3,11 @@ import { UserInfo, CommentInfo } from "@/shared/types/interface";
 
 /**
  * 유저 조회 함수
- * @param socialId 유저 소셜 아이디
+ * @param aliasId 유저 소셜 아이디
  * @returns 유저 정보
  */
-export const fetchUserInfoById = async (
-  socialId: string
-): Promise<UserInfo> => {
-  const response = await generalApiClient.get(`/user/${socialId}`);
+export const fetchUserInfoById = async (aliasId: string): Promise<UserInfo> => {
+  const response = await generalApiClient.get(`/user/${aliasId}`);
   return response.data;
 };
 

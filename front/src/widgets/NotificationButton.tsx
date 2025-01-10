@@ -54,7 +54,7 @@ export default function NotificationButton() {
   };
 
   useEffect(() => {
-    if (userInfo && userInfo.socialId && notifications) {
+    if (userInfo && userInfo.aliasId && notifications) {
       // 알림 창이 열려있으면 알림 개수 초기화
       if (isNotificationOpen) setUnCheckedNotifications(0);
       else {

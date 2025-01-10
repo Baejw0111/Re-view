@@ -9,5 +9,5 @@ export default function LoginRequiredRoute({
 }) {
   const userInfo = useSelector((state: RootState) => state.userInfo);
 
-  return userInfo.socialId ? <>{children}</> : <AuthError />;
+  return userInfo.aliasId ? <>{children}</> : <AuthError />;
 }

@@ -82,10 +82,10 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
   const originalSocialId = provider + verifiedData.id; // 유저 소셜 ID
   const userAliasId = await getUserAliasId(originalSocialId);
 
-  const userInfo = await UserModel.findOne({ socialId: userAliasId });
+  const userInfo = await UserModel.findOne({ aliasId: userAliasId });
 
   // 유저 소셜 ID와 유저 데이터 고유 ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
-  req.socialId = userAliasId;
+  req.aliasId = userAliasId;
   req.userId = userInfo?._id; // 유저 데이터 고유 ID. 회원 가입을 하지 않은 경우 빈 값
 
   return next();
@@ -155,13 +155,13 @@ export const disableCache = (req, res, next) => {
  * 로그인한 유저 정보 조회
  */
 export const getLoginUserInfo = asyncHandler(async (req, res) => {
-  const { socialId } = req;
-  let userInfo = await UserModel.findOne({ socialId });
+  const { aliasId } = req;
+  let userInfo = await UserModel.findOne({ aliasId });
 
   // 회원 가입을 하지 않은 경우 유저 데이터 생성
   if (!userInfo) {
     userInfo = new UserModel({
-      socialId,
+      aliasId,
     });
     await userInfo.save();
 
@@ -173,7 +173,7 @@ export const getLoginUserInfo = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({
-    socialId: userInfo.socialId,
+    aliasId: userInfo.aliasId,
     nickname: userInfo.nickname,
     profileImage: userInfo.profileImage,
     notificationCheckTime: userInfo.notificationCheckTime,
@@ -205,11 +205,11 @@ export const logOut = asyncHandler(async (req, res) => {
  */
 export const deleteUserAccount = asyncHandler(async (req, res) => {
   const { accessToken, provider } = req.cookies;
-  const { socialId } = req;
+  const { aliasId } = req;
 
   await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
 
-  const user = await UserModel.findOneAndDelete({ socialId }); // 유저 데이터 삭제 및 반환
+  const user = await UserModel.findOneAndDelete({ aliasId }); // 유저 데이터 삭제 및 반환
 
   if (!user) {
     return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
@@ -238,7 +238,7 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   await NotificationModel.deleteMany({ userId: user._id }); // 유저의 알림들 모두 삭제
   await ReviewLikeModel.deleteMany({ userId: user._id }); // 유저의 추천들 모두 삭제
   await TagModel.deleteMany({ userId: user._id }); // 유저의 태그들 모두 삭제
-  await IdMapModel.deleteOne({ aliasId: socialId }); // 유저의 소셜 아이디 맵 삭제
+  await IdMapModel.deleteOne({ aliasId: aliasId }); // 유저의 소셜 아이디 맵 삭제
 
   res.clearCookie("provider");
   res.clearCookie("accessToken");

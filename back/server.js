@@ -113,10 +113,10 @@ app.patch(
 app.delete("/review/:reviewId", verifyAccessToken, deleteReview); // 리뷰 삭제 API
 
 // 유저 정보 관련 API
-app.get("/user/:socialId", getUserInfoById); // 유저 정보 조회 API
-app.get("/user/:socialId/reviews", getUserReviewList); // 유저가 작성한 리뷰 목록 조회 API
-app.get("/user/:socialId/comments", getUserCommentList); // 유저가 작성한 댓글 목록 조회 API
-app.get("/user/:socialId/liked", getUserLikedList); // 유저가 추천한 리뷰 목록 조회 API
+app.get("/user/:aliasId", getUserInfoById); // 유저 정보 조회 API
+app.get("/user/:aliasId/reviews", getUserReviewList); // 유저가 작성한 리뷰 목록 조회 API
+app.get("/user/:aliasId/comments", getUserCommentList); // 유저가 작성한 댓글 목록 조회 API
+app.get("/user/:aliasId/liked", getUserLikedList); // 유저가 추천한 리뷰 목록 조회 API
 app.put(
   "/user/info",
   verifyAccessToken,

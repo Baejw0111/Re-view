@@ -137,10 +137,10 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
 export const getReviewById = asyncHandler(async (req, res) => {
   const { reviewId } = req.params;
 
-  // 리뷰 데이터 조회 시 작성자 socialId도 함께 조회
+  // 리뷰 데이터 조회 시 작성자 aliasId도 함께 조회
   const reviewData = await ReviewModel.findById(reviewId).populate(
     "authorId",
-    "socialId"
+    "aliasId"
   );
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
@@ -149,7 +149,7 @@ export const getReviewById = asyncHandler(async (req, res) => {
   return res.status(200).json({
     _id: reviewData._id,
     __v: reviewData.__v,
-    authorId: reviewData.authorId.socialId,
+    authorId: reviewData.authorId.aliasId,
     uploadTime: reviewData.uploadTime,
     title: reviewData.title,
     images: reviewData.images,

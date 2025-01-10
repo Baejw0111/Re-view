@@ -7,13 +7,13 @@ import { RootState } from "@/state/store";
 import { toast } from "sonner";
 
 export default function WriteReviewButton() {
-  const socialId = useSelector((state: RootState) => state.userInfo.socialId);
+  const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
   const navigate = useNavigate();
 
   const handleWriteReviewButtonClick = (
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
-    if (socialId === "") {
+    if (aliasId === "") {
       e.preventDefault();
       toast.error("로그인 후 이용해주세요.");
       navigate("/login");
