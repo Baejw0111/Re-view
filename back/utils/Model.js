@@ -175,7 +175,7 @@ export const CommentModel = db.model(
       ref: "Review",
     },
     content: { type: String, default: "" },
-  }).index({ uploadTime: -1, authorId: 1 })
+  }).index({ uploadTime: -1, authorId: 1, aliasId: 1 })
 );
 
 /**
