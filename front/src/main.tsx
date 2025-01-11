@@ -31,6 +31,8 @@ import {
 } from "@/api/user";
 import Test from "./pages/Test";
 import Login from "./pages/Login";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -173,6 +175,23 @@ const router = createBrowserRouter(
               <Onboarding />
             </LoginRequiredRoute>
           ),
+        },
+        {
+          path: "/policies",
+          children: [
+            {
+              path: "",
+              element: <NotFoundError />,
+            },
+            {
+              path: "privacy",
+              element: <PrivacyPolicy />,
+            },
+            {
+              path: "terms",
+              element: <Terms />,
+            },
+          ],
         },
         {
           path: "/test",
