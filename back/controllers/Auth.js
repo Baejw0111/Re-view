@@ -11,7 +11,7 @@ import {
 import asyncHandler from "../utils/ControllerUtils.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
 import { GoogleAuth, NaverAuth, KakaoAuth } from "./SocialAuth/index.js";
-import { getUserAliasId } from "../utils/IdGenerator.js";
+import { generateUserAliasId } from "../utils/IdGenerator.js";
 
 const { PUUUSH_WEB_HOOK_URL } = process.env;
 
@@ -78,13 +78,14 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
   const socialId = await authProvider[provider].verifyToken(accessToken);
   console.table({ socialId });
 
-  const originalSocialId = provider + socialId; // 소셜 로그인 제공자 + 유저 소셜 ID
-  const userAliasId = await getUserAliasId(originalSocialId);
+  const userIdentifier = provider + socialId; // 소셜 로그인 제공자 + 유저 소셜 ID
+  const idMap = await IdMapModel.findOne({
+    originalSocialId: { $in: [userIdentifier] },
+  });
+  const userInfo = await UserModel.findOne({ aliasId: idMap?.aliasId });
 
-  const userInfo = await UserModel.findOne({ aliasId: userAliasId });
-
-  // 유저 소셜 ID와 유저 데이터 고유 ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
-  req.aliasId = userAliasId;
+  req.userIdentifier = userIdentifier;
+  req.aliasId = idMap?.aliasId; // 유저 별칭 ID. 회원 가입을 하지 않은 경우 빈 값
   req.userId = userInfo?._id; // 유저 데이터 고유 ID. 회원 가입을 하지 않은 경우 빈 값
 
   return next();
@@ -132,6 +133,45 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 }, "소셜 액세스 토큰 재발급");
 
 /**
+ * 회원 가입
+ */
+export const signUp = asyncHandler(async (req, res) => {
+  const { userIdentifier } = req;
+  const { newNickname, useDefaultProfile } = req.body; // 기본 프로필 사용 여부 추가
+  console.log(req.body);
+  const aliasId = await generateUserAliasId();
+  await IdMapModel.create({ originalSocialId: [userIdentifier], aliasId });
+  const userInfo = new UserModel({
+    aliasId,
+  });
+
+  if (useDefaultProfile.toLowerCase() === "true") {
+    // 기본 프로필 사용 시
+    userInfo.profileImage = ""; // 프로필 이미지 필드를 빈 문자열로 설정
+  } else if (req.file) {
+    // 사용자 지정 프로필 사용 + 프로필 이미지 업로드 시
+    userInfo.profileImage = req.file.key; // 업로드된 파일 경로 저장
+  }
+
+  userInfo.nickname = newNickname;
+  await userInfo.save();
+
+  const userCount = await UserModel.countDocuments();
+  await axios.post(`${PUUUSH_WEB_HOOK_URL}`, {
+    title: `신규 유저 가입!`,
+    body: `현재까지 총 ${userCount}명의 유저가 가입하였습니다.`,
+  });
+
+  return res.status(200).json({
+    message: "회원 가입 성공",
+    isSignedUp: true,
+    aliasId: userInfo.aliasId,
+    nickname: newNickname,
+    profileImage: userInfo.profileImage, // 프로필 이미지 정보 반환
+  });
+}, "회원 가입");
+
+/**
  * 로그인 여부 확인
  */
 export const checkAuth = asyncHandler(async (req, res) => {
@@ -155,23 +195,14 @@ export const disableCache = (req, res, next) => {
  */
 export const getLoginUserInfo = asyncHandler(async (req, res) => {
   const { aliasId } = req;
-  let userInfo = await UserModel.findOne({ aliasId });
+  const userInfo = await UserModel.findOne({ aliasId });
 
-  // 회원 가입을 하지 않은 경우 유저 데이터 생성
   if (!userInfo) {
-    userInfo = new UserModel({
-      aliasId,
-    });
-    await userInfo.save();
-
-    const userCount = await UserModel.countDocuments();
-    await axios.post(`${PUUUSH_WEB_HOOK_URL}`, {
-      title: `신규 유저 가입!`,
-      body: `현재까지 총 ${userCount}명의 유저가 가입하였습니다.`,
-    });
+    return res.status(200).json({ isSignedUp: false });
   }
 
   return res.status(200).json({
+    isSignedUp: true,
     aliasId: userInfo.aliasId,
     nickname: userInfo.nickname,
     profileImage: userInfo.profileImage,

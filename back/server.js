@@ -16,6 +16,7 @@ import {
   verifyAccessToken,
   refreshAccessToken,
   checkAuth,
+  signUp,
   disableCache,
   getLoginUserInfo,
   logOut,
@@ -81,6 +82,14 @@ app.use(helmet()); // 보안 헤더 설정
 
 // 소셜 로그인 관련 API
 app.post("/auth/:provider/token", getToken); // 소셜 토큰 요청 API
+// 가입
+app.put(
+  "/auth/signup",
+  verifyAccessToken,
+  upload.single("profileImage"),
+  handleMulterError,
+  signUp
+);
 app.post("/auth/refresh", refreshAccessToken); // 소셜 액세스 토큰 재발급 API
 app.get("/auth/check", disableCache, checkAuth); // 로그인 여부 확인 API
 app.post("/auth/logout", verifyAccessToken, logOut); // 소셜 로그아웃 API

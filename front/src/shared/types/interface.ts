@@ -1,11 +1,13 @@
 /**
  * @description 로그인 유저 정보
+ * @property {boolean} isSignedUp - 가입 여부
  * @property {string} aliasId - 유저 별칭 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
  * @property {string} notificationCheckTime - 알림 확인 시간
  */
 export interface LoginUserInfo {
+  isSignedUp: boolean;
   aliasId: string;
   nickname: string;
   profileImage: string;

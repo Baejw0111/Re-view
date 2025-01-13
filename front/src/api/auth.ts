@@ -37,6 +37,14 @@ export const getToken = async (
   );
 };
 
+export const signUp = async (formData: FormData): Promise<void> => {
+  await authApiClient.put(`/auth/signup`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
 /**
  * 로그인한 유저의 정보를 조회하는 함수
  * @returns 유저 정보

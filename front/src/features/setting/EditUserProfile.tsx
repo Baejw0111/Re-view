@@ -15,6 +15,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { updateUserInfo } from "@/api/user";
+import { signUp } from "@/api/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Camera, LoaderCircle, UserRound, X } from "lucide-react";
 import UserAvatar from "@/features/user/UserAvatar";
@@ -25,7 +26,6 @@ import {
   resetFileInput,
   revokePreviewImages,
 } from "@/shared/lib/utils";
-import { useLocation } from "react-router-dom";
 import {
   profileImageValidation,
   nicknameValidation,
@@ -36,11 +36,11 @@ import { Skeleton } from "@/shared/shadcn-ui/skeleton";
 
 export default function EditUserProfile({
   submitFooter,
+  isOnboarding = false,
 }: {
   submitFooter: (isUploading: boolean) => React.ReactNode;
+  isOnboarding?: boolean;
 }) {
-  const location = useLocation();
-  const currentPage = location.pathname.split("/").pop();
   const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
   const [currentProfileImage, setCurrentProfileImage] = useState<string>(""); // 사용자가 현재 등록한 프로필 이미지
   const [isUploading, setIsUploading] = useState(false); // 프로필 이미지 업로드 상태
@@ -68,9 +68,9 @@ export default function EditUserProfile({
 
   // 프로필 업데이트
   const { mutate: updateUserInfoMutation } = useMutation({
-    mutationFn: updateUserInfo,
+    mutationFn: isOnboarding ? signUp : updateUserInfo,
     onSuccess: () => {
-      if (currentPage === "onboarding") {
+      if (isOnboarding) {
         window.location.href = "/";
       } else {
         window.location.reload();
@@ -125,13 +125,16 @@ export default function EditUserProfile({
     resetFileInput("profileImage-upload");
   };
 
+  // 현재 프로필 정보 폼에 적용
   useEffect(() => {
-    form.setValue("profileImage", new DataTransfer().files);
-    form.setValue("newNickname", userInfo.nickname);
-    if (userInfo.profileImage.length > 0) {
-      form.setValue("useDefaultProfile", false);
-    } else {
-      form.setValue("useDefaultProfile", true);
+    if (userInfo.isSignedUp) {
+      form.setValue("profileImage", new DataTransfer().files);
+      form.setValue("newNickname", userInfo.nickname);
+      if (userInfo.profileImage.length > 0) {
+        form.setValue("useDefaultProfile", false);
+      } else {
+        form.setValue("useDefaultProfile", true);
+      }
     }
   }, [userInfo, form]);
 

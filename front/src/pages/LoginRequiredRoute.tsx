@@ -1,13 +1,12 @@
 import AuthError from "@/pages/AuthError";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
+import { useAuth } from "@/shared/hooks";
 
 export default function LoginRequiredRoute({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const isAuth = useAuth();
 
-  return userInfo.aliasId ? <>{children}</> : <AuthError />;
+  return isAuth ? <>{children}</> : <AuthError />;
 }

@@ -10,11 +10,12 @@ import Header from "./widgets/Header";
 import ReviewDetailModal from "./pages/ReviewDetailModal";
 import SearchDialog from "./features/common/SearchDialog";
 import SubHeader from "./widgets/SubHeader";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Toaster } from "./shared/shadcn-ui/sonner";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
+  const navigate = useNavigate();
   const isAuth = useAuth();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
@@ -30,8 +31,11 @@ function App() {
   useEffect(() => {
     if (isAuth) {
       if (userInfo) {
-        if (!userInfo?.nickname && window.location.pathname !== "/onboarding") {
-          window.location.href = `/onboarding`;
+        if (
+          !userInfo?.isSignedUp &&
+          window.location.pathname !== "/onboarding"
+        ) {
+          navigate("/onboarding");
         } else {
           dispatch(setUserInfo(userInfo));
         }

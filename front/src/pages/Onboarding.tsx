@@ -61,6 +61,7 @@ export default function Onboarding() {
           <CardContent>
             <motion.div variants={itemVariants}>
               <EditUserProfile
+                isOnboarding
                 submitFooter={(isUploading: boolean) => (
                   <motion.div variants={itemVariants}>
                     <CardFooter className="p-0">
@@ -92,6 +93,30 @@ export default function Onboarding() {
               />
             </motion.div>
           </CardContent>
+          {/* <CardFooter className="flex flex-col items-center mt-4">
+            <motion.div variants={itemVariants}>
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2" />
+                <span>
+                  <a href="/privacy-policy" className="text-blue-500 underline">
+                    개인정보 처리방침
+                  </a>
+                  에 동의합니다.
+                </span>
+              </label>
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <label className="flex items-center mt-2">
+                <input type="checkbox" className="mr-2" />
+                <span>
+                  <a href="/terms" className="text-blue-500 underline">
+                    이용 약관
+                  </a>
+                  에 동의합니다.
+                </span>
+              </label>
+            </motion.div>
+          </CardFooter> */}
         </Card>
       </motion.div>
     </div>

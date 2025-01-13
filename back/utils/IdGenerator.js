@@ -52,7 +52,7 @@ async function checkDuplicateCommentAliasId(aliasId) {
  * 유저 서비스 ID 생성
  * @returns {string} - 유저 서비스 ID
  */
-async function generateUserAliasId() {
+export async function generateUserAliasId() {
   let userAliasId = generateRandomString(8);
 
   while (await checkDuplicateUserAliasId(userAliasId)) {
@@ -88,23 +88,4 @@ export async function generateCommentAliasId() {
   }
 
   return commentAliasId;
-}
-
-/**
- * 유저 별칭 ID 반환
- * @param {string} originalSocialId - 소셜 로그인 제공자 이름 + 원본 소셜 아이디 로 이뤄진 문자열
- * @returns {string} - 유저 별칭 ID
- */
-export async function getUserAliasId(originalSocialId) {
-  const idMap = await IdMapModel.findOne({ originalSocialId });
-
-  // 새로 가입한 유저일 경우 새로 생성
-  if (!idMap) {
-    const aliasId = await generateUserAliasId();
-    await IdMapModel.create({ originalSocialId, aliasId });
-    return aliasId;
-  }
-
-  // 이미 가입한 유저일 경우 기존 아이디 반환
-  return idMap.aliasId;
 }

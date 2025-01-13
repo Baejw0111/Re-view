@@ -37,13 +37,13 @@ const db = mongoose.connection.useDb("mainDB");
 /**
  * 소셜 아이디 맵 모델
  * @type {mongoose.Model}
- * @property {string} originalSocialId - 소셜 로그인 제공자 이름 + 원본 소셜 아이디 로 이뤄진 문자열
+ * @property {string[]} originalSocialId - 소셜 로그인 제공자 이름 + 원본 소셜 아이디 로 이뤄진 문자열 배열
  * @property {string} aliasId - 서비스 내에서 사용하기 위해 생성된 아이디
  */
 export const IdMapModel = db.model(
   "IdMap",
   new mongoose.Schema({
-    originalSocialId: { type: String, default: "" },
+    originalSocialId: { type: [String], default: [] },
     aliasId: { type: String, default: "" },
   }).index({ originalSocialId: 1, aliasId: 1 })
 );

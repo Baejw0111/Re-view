@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { LoginUserInfo } from "@/shared/types/interface";
 
 const initialState: LoginUserInfo = {
+  isSignedUp: false,
   aliasId: "",
   nickname: "",
   profileImage: "",
@@ -13,6 +14,7 @@ const userInfoSlice = createSlice({
   initialState,
   reducers: {
     setUserInfo: (state, action) => {
+      state.isSignedUp = action.payload.isSignedUp;
       state.aliasId = action.payload.aliasId;
       state.nickname = action.payload.nickname;
       state.profileImage = action.payload.profileImage;
