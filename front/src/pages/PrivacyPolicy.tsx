@@ -112,7 +112,7 @@ export default function PrivacyPolicy() {
           수탁업체와 최소한으로 협력하고 있습니다. 아래는 서비스 제공을 위해
           필요한 위탁 업무의 목록입니다:
         </p>
-        <table className="table-auto border-collapse w-full my-4">
+        <table className="table-auto w-full my-4">
           <thead>
             <tr>
               <th className="px-4 py-2 border border-gray-300">수탁 업체</th>
