@@ -18,11 +18,7 @@ import {
   revokePreviewImages,
   resetFileInput,
 } from "@/shared/lib/utils";
-import {
-  LoginUserInfo,
-  ProfileFormValues,
-  SignUpFormValues,
-} from "@/shared/types/interface";
+import { LoginUserInfo, ProfileFormValues } from "@/shared/types/interface";
 
 export default function ProfileImageForm({
   form,
@@ -31,7 +27,7 @@ export default function ProfileImageForm({
   setIsUploading,
   userInfo,
 }: {
-  form: UseFormReturn<ProfileFormValues | SignUpFormValues>;
+  form: UseFormReturn<ProfileFormValues>;
   isDefaultProfile: boolean;
   isUploading: boolean;
   setIsUploading: (isUploading: boolean) => void;
