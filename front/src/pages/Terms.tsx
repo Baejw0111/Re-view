@@ -1,268 +1,279 @@
 export default function Terms() {
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">이용 약관</h1>
+      <h1 className="text-3xl font-bold my-10 text-center">서비스 이용약관</h1>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 1조 (목적)</h2>
+      <section className="my-8">
+        <h2 className="text-2xl font-semibold my-4">제 1장 총칙</h2>
+        <h3 className="text-xl font-semibold my-4">제1조 (목적)</h3>
         <p>
-          본 약관은 Re|view (이하 "서비스")이 제공하는 리뷰 서비스의 이용과
-          관련하여 운영자와 이용자 간의 권리, 의무 및 책임 사항, 기타 필요한
-          사항을 규정함을 목적으로 합니다.
+          본 약관은 Re|view(이하 “서비스”)와 서비스를 이용하는 회원(이하 “회원”)
+          간에 서비스의 이용조건 및 절차, 기타 필요한 사항을 규정함을 목적으로
+          합니다.
         </p>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 2조 (용어의 정의)</h2>
-        <ol className="list-decimal pl-6">
+        <h3 className="text-xl font-semibold my-4">
+          제2조 (약관의 효력 및 변경)
+        </h3>
+        <ol className="list-decimal pl-6 my-4">
           <li>
-            "서비스"란 이용자가 이미지와 글을 업로드하여 리뷰를 작성하고, 댓글과
-            추천을 통해 상호작용할 수 있도록 운영자가 제공하는 플랫폼 및 관련
-            서비스를 말합니다.
+            본 약관은 서비스를 이용하고자 하는 모든 회원에 대해 효력을
+            발생합니다.
           </li>
           <li>
-            "이용자"란 본 약관에 따라 운영자가 제공하는 서비스를 이용하는 자를
-            말합니다.
+            약관은 서비스 내에 온라인으로 공시함으로써 효력을 발생하며, 합리적인
+            사유가 발생할 경우 운영자는 관련 법령에 위배되지 않는 범위에서
+            약관을 변경할 수 있습니다.
           </li>
           <li>
-            "콘텐츠"란 이용자가 서비스에 업로드한 이미지, 텍스트, 댓글, 추천 등
-            모든 자료를 말합니다.
-          </li>
-        </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">
-          제 3조 (약관의 게시와 개정)
-        </h2>
-        <ol className="list-decimal pl-6">
-          <li>
-            본 약관은 서비스 초기 화면에 게시하거나 기타의 방법으로 이용자가
-            확인할 수 있도록 제공합니다.
+            변경된 약관은 공시 후 효력을 발생하며, 회원은 정기적으로 약관 변경
+            사항을 확인할 책임이 있습니다. 변경된 약관에 동의하지 않는 회원은
+            서비스 이용을 중단하고 탈퇴할 수 있습니다.
           </li>
           <li>
-            운영자는 필요한 경우 관련 법령을 위배하지 않는 범위에서 본 약관을
-            개정할 수 있습니다.
-          </li>
-          <li>
-            약관이 개정될 경우 운영자는 개정 내용과 시행일자를 명시하여 최소 7일
-            전(이용자에게 불리하거나 중대한 사항의 변경은 30일 전)부터
-            공지합니다.
+            회원이 변경된 약관의 효력 발생 후에도 서비스를 계속 이용하는 경우,
+            약관 변경에 동의한 것으로 간주합니다.
           </li>
         </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 4조 (서비스 이용)</h2>
-        <ol className="list-decimal pl-6">
-          <li>
-            서비스 이용은 운영자의 업무상 또는 기술상 특별한 사정이 없는 한
-            연중무휴, 24시간 제공함을 원칙으로 합니다.
-          </li>
-          <li>
-            운영자는 서비스 제공을 위해 필요한 경우 정기 점검을 실시할 수
-            있으며, 점검 시간은 서비스 제공 화면에 공지합니다.
-          </li>
-          <li>
-            이용자는 자유롭게 리뷰를 작성할 수 있으나, 작성된 리뷰가 본 약관 및
-            관련 법령을 위반하는 경우 운영자는 해당 콘텐츠를 삭제하거나 이용을
-            제한할 수 있습니다.
-          </li>
-        </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 5조 (이용자의 의무)</h2>
-        <ol className="list-decimal pl-6">
-          <li>
-            이용자는 서비스 이용 시 다음 각 호의 행위를 하여서는 안 됩니다.
-            <ul className="list-disc pl-6">
-              <li>타인의 정보 도용</li>
-              <li>타인의 권리를 침해하거나 명예를 훼손하는 행위</li>
-              <li>허위 정보나 악의적인 리뷰 작성</li>
-              <li>서비스 운영 방해</li>
-              <li>법령 및 공공질서에 반하는 행위</li>
-            </ul>
-          </li>
-          <li>이용자는 본 약관 및 운영자가 공지하는 사항을 준수해야 합니다.</li>
-        </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 6조 (개인정보 보호)</h2>
+        <h3 className="text-xl font-semibold my-4">제3조 (약관 외 준칙)</h3>
         <p>
-          운영자는 이용자의 개인정보를 보호하기 위해 관련 법령에서 정하는 바를
-          준수하며, 개인정보 처리에 대한 세부 내용은 개인정보처리방침에
+          본 약관에 명시되지 않은 사항은 관계법령 또는 서비스 내 공지사항에
           따릅니다.
         </p>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">
-          제 7조 (콘텐츠의 관리 및 권리)
-        </h2>
-        <ol className="list-decimal pl-6">
+        <h3 className="text-xl font-semibold my-4">제4조 (용어 정의)</h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>"회원"이란 본 약관에 따라 서비스를 이용하는 개인을 말합니다.</li>
           <li>
-            이용자가 작성한 리뷰 및 댓글 등 콘텐츠의 저작권은 해당 이용자에게
-            귀속됩니다.
+            "게시물"이란 회원이 서비스를 통해 게시한 텍스트, 이미지, 동영상 등
+            모든 형태의 콘텐츠를 말합니다.
           </li>
           <li>
-            이용자가 업로드한 콘텐츠는 서비스 홍보 및 개선 목적으로 운영자가
-            비상업적인 범위에서 사용할 수 있습니다.
+            "운영자"란 서비스를 제작 및 관리하는 자로, 본 서비스의 소유자 및
+            운영 책임자를 의미합니다.
           </li>
           <li>
-            이용자는 자신이 업로드한 콘텐츠에 대해 제3자의 권리를 침해하지
-            않음을 보증하며, 이로 인해 발생하는 모든 책임은 이용자에게 있습니다.
+            "서비스"란 Re|view가 제공하는 리뷰형 커뮤니티 플랫폼을 말하며, 광고
+            및 관련 부가 서비스를 포함합니다.
           </li>
         </ol>
       </section>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 8조 (광고 및 마케팅)</h2>
-        <ol className="list-decimal pl-6">
+      <section className="my-8">
+        <h2 className="text-2xl font-semibold my-4">제2장 서비스 이용 계약</h2>
+        <h3 className="text-xl font-semibold my-4">제5조 (이용 계약의 성립)</h3>
+        <ol className="list-decimal pl-6 my-4">
           <li>
-            운영자는 서비스 운영을 위해 광고를 게재할 수 있으며, 이용자는 서비스
-            이용 시 노출되는 광고에 대해 동의합니다.
+            이용 계약은 회원이 본 약관에 동의하고, 회원가입 절차를 완료함으로써
+            성립됩니다.
           </li>
           <li>
-            운영자는 이용자의 관심사에 맞는 맞춤형 광고를 제공하기 위해 쿠키,
-            로그 분석 등을 활용할 수 있습니다. 관련된 세부 사항은
-            개인정보처리방침에 따릅니다.
+            회원가입은 운영자가 제공하는 양식에 따라 본인의 정보를 정확히
+            기입해야 합니다.
           </li>
           <li>
-            운영자는 제3자의 광고 또는 스폰서 배너를 서비스에 게재할 수 있으며,
-            이를 통해 발생하는 거래나 손해에 대해 운영자는 책임을 지지 않습니다.
+            운영자는 회원이 약관에 위배되지 않는 한 회원가입을 승낙합니다.
           </li>
         </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 9조 (계정 관리)</h2>
-        <ol className="list-decimal pl-6">
+        <h3 className="text-xl font-semibold my-4">제6조 (서비스의 제공)</h3>
+        <ol className="list-decimal pl-6 my-4">
           <li>
-            이용자는 서비스 이용을 위해 회원 가입 시 정확한 정보를 제공해야
-            하며, 부정확한 정보로 인해 발생하는 문제에 대해 책임을 집니다.
-          </li>
-          <li>이용자는 자신의 계정을 타인과 공유하거나 양도할 수 없습니다.</li>
-        </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">
-          제 10조 (서비스 사용 제한)
-        </h2>
-        <ol className="list-decimal pl-6">
-          <li>
-            운영자는 다음과 같은 경우 사전 통지 없이 이용자의 서비스 이용을
-            제한하거나 계정을 해지할 수 있습니다.
-            <ul className="list-disc pl-6">
-              <li>허위 정보 또는 불법 콘텐츠를 반복적으로 업로드한 경우</li>
-              <li>
-                다른 이용자의 서비스 이용을 방해하거나, 서비스 운영을 악의적으로
-                방해한 경우
-              </li>
-              <li>운영자의 명예를 훼손하거나 손해를 가한 경우</li>
+            서비스는 다음의 기능을 포함합니다:
+            <ul className="list-disc pl-6 my-4">
+              <li>리뷰 작성 및 게시 기능</li>
+              <li>다른 회원과의 댓글 및 피드백 교류 기능</li>
+              <li>게시물 검색 및 조회 기능</li>
             </ul>
           </li>
           <li>
-            서비스 이용 제한에 대한 구체적인 기준 및 절차는 운영자의 내부 방침에
-            따릅니다.
-          </li>
-        </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">
-          제 11조 (데이터 보관 및 삭제)
-        </h2>
-        <ol className="list-decimal pl-6">
-          <li>
-            운영자는 이용자가 작성한 콘텐츠를 서비스 제공 목적으로만 보관하며,
-            보관 기간은 관련 법령 및 운영자의 내부 정책에 따릅니다.
-          </li>
-          <li>
-            이용자가 자신의 계정을 삭제하거나 콘텐츠를 삭제 요청할 경우,
-            운영자는 관련 법령에서 정하는 기간 내에 이를 처리합니다.
-          </li>
-          <li>
-            이용자의 콘텐츠 삭제 요청 시, 이미 타인이 공유하거나 상호작용한
-            데이터는 삭제 대상에서 제외될 수 있습니다.
-          </li>
-        </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">
-          제 12조 (신고 및 요청 처리)
-        </h2>
-        <ol className="list-decimal pl-6">
-          <li>
-            이용자는 리뷰 또는 댓글에서 제공되는 신고 버튼을 통해 부적절한
-            콘텐츠를 신고할 수 있으며, 운영자는 이를 신속히 검토하고 필요 시
-            적절한 조치를 취합니다.
-          </li>
-          <li>
-            신고 접수 및 처리 절차는 서비스 내 신고 기능 또는 고객센터를 통해
-            안내합니다.
-          </li>
-          <li>
-            허위 신고 또는 악의적인 신고로 다른 이용자에게 피해를 준 경우,
-            신고자에 대한 제재 조치를 취할 수 있습니다.
-          </li>
-        </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">
-          제 13조 (서비스의 변경 및 중단)
-        </h2>
-        <ol className="list-decimal pl-6">
-          <li>
-            운영자는 서비스의 내용, 운영상, 기술상 필요에 따라 제공하는 서비스의
-            일부 또는 전부를 변경하거나 중단할 수 있습니다.
-          </li>
-          <li>
-            서비스 변경 또는 중단 시 운영자는 이용자에게 사전에 공지합니다.
-          </li>
-        </ol>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 14조 (면책)</h2>
-        <ol className="list-decimal pl-6">
-          <li>
-            운영자는 천재지변, 비상사태 등 불가항력으로 인해 서비스를 제공할 수
-            없는 경우 책임을 지지 않습니다.
-          </li>
-          <li>
-            운영자는 이용자의 귀책 사유로 발생한 손해에 대해 책임을 지지
+            서비스는 회원에게 무료로 제공되며, 별도의 유료 서비스는 포함하지
             않습니다.
           </li>
           <li>
-            이용자가 작성한 리뷰나 댓글 등 콘텐츠에 대한 책임은 해당 이용자에게
-            있으며, 운영자는 이에 대해 책임을 지지 않습니다.
+            운영자는 광고 게재를 통해 서비스를 유지하며, 회원은 서비스 이용 시
+            광고가 노출되는 것에 동의합니다.
+          </li>
+        </ol>
+        <h3 className="text-xl font-semibold my-4">제7조 (개인정보의 보호)</h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>
+            운영자는 회원의 개인정보를 중요하게 생각하며, 관련 법령에 따라 이를
+            보호합니다.
+          </li>
+          <li>
+            개인정보의 수집 및 이용은 서비스 제공 및 운영 목적에 한정됩니다.
+          </li>
+          <li>
+            운영자는 회원의 동의 없이 개인정보를 제3자에게 제공하지 않습니다.
+            단, 법령에 따라 요구되는 경우는 예외로 합니다.
+          </li>
+        </ol>
+        <h3 className="text-xl font-semibold my-4">제8조 (회원의 의무)</h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>
+            회원은 다음 행위를 하여서는 안 됩니다:
+            <ul className="list-disc pl-6 my-4">
+              <li>
+                회원가입 신청 또는 회원정보 변경 시 허위 내용을 등록하는 행위
+              </li>
+              <li>
+                소셜 로그인 제공자에게서 받은 client ID를 부정하게 사용하거나
+                타인의 정보를 도용하는 행위
+              </li>
+              <li>회원 정보를 타인과 거래하는 행위</li>
+              <li>운영자를 사칭하거나 허위로 정보를 제공하는 행위</li>
+              <li>
+                운영자의 허가 없이 서비스를 변경하거나, 서버를 해킹하거나,
+                웹사이트 또는 게시된 정보의 일부를 임의로 변경하는 행위
+              </li>
+              <li>서비스를 고의로 방해하거나 운영에 지장을 초래하는 행위</li>
+              <li>
+                본 서비스를 통해 얻은 정보를 운영자의 사전 승낙 없이 서비스 이용
+                외의 목적으로 복제, 출판, 방송 또는 제3자에게 제공하는 행위
+              </li>
+              <li>
+                공공질서 및 미풍양속에 위반되는 저속, 음란한 내용의 정보, 문장,
+                도형, 음향, 동영상을 전송, 게시하거나 타인에게 유포하는 행위
+              </li>
+              <li>
+                타인의 명예나 프라이버시를 침해하는 내용을 전송, 게시하거나
+                유포하는 행위
+              </li>
+              <li>
+                다른 회원을 희롱하거나 위협하거나, 다수의 회원에게 분란을
+                조장하거나 특정 회원에게 지속적으로 고통이나 불편을 주는 행위
+              </li>
+              <li>
+                운영자의 승인 없이 다른 사용자의 개인정보를 수집, 저장하거나
+                제3자에게 제공하는 행위
+              </li>
+              <li>범죄와 결부된다고 판단되는 행위</li>
+              <li>
+                본 약관 및 운영자가 정한 규정이나 이용 조건을 위반하는 행위
+              </li>
+              <li>기타 관계 법령에 위배되는 행위</li>
+            </ul>
+          </li>
+          <li>
+            회원은 자신의 계정 정보를 안전하게 관리해야 하며, 도난 또는 부정
+            사용이 의심될 경우 즉시 운영자에게 통보해야 합니다.
           </li>
         </ol>
       </section>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">제 15조 (분쟁 해결)</h2>
-        <ol className="list-decimal pl-6">
+      <section className="my-8">
+        <h2 className="text-2xl font-semibold my-4">제3장 게시물 관리</h2>
+        <h3 className="text-xl font-semibold my-4">
+          제9조 (게시물의 권리와 책임)
+        </h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>회원이 작성한 게시물의 저작권은 회원에게 귀속됩니다.</li>
           <li>
-            본 약관에 명시되지 않은 사항에 대해서는 관련 법령 및 상관례에
-            따릅니다.
+            회원은 자신이 작성한 게시물이 타인의 지적재산권을 침해하지 않음을
+            보증하며, 이와 관련된 모든 책임은 회원 본인에게 있습니다.
           </li>
           <li>
-            서비스 이용과 관련하여 발생한 분쟁에 대해 운영자와 이용자는 성실히
-            협의하여 해결하며, 협의가 이루어지지 않을 경우 관할 법원에 소를
-            제기할 수 있습니다.
+            운영자는 게시물을 서비스 홍보 목적으로 사용할 수 있으며, 필요한 경우
+            크기 조정, 단순 수정 등의 편집을 할 수 있습니다.
+          </li>
+        </ol>
+        <h3 className="text-xl font-semibold my-4">
+          제10조 (게시물의 관리 및 삭제)
+        </h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>
+            운영자는 다음에 해당하는 게시물을 사전 통지 없이 삭제하거나 수정할
+            수 있습니다:
+            <ul className="list-disc pl-6 my-4">
+              <li>불법적이거나 타인의 권리를 침해하는 내용</li>
+              <li>공공질서 및 미풍양속에 반하는 내용</li>
+              <li>광고 또는 스팸성 콘텐츠</li>
+              <li>기타 약관 및 관계법령에 위배되는 내용</li>
+            </ul>
+          </li>
+          <li>
+            운영자는 회원이 작성한 게시물로 인해 발생한 손해나 문제에 대해
+            책임지지 않습니다.
           </li>
         </ol>
       </section>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">부칙</h2>
-        <p>본 약관은 2025년 1월 11일부터 시행됩니다.</p>
+      <section className="my-8">
+        <h2 className="text-2xl font-semibold my-4">
+          제4장 계약 해지 및 서비스 이용 제한
+        </h2>
+        <h3 className="text-xl font-semibold my-4">
+          제11조 (회원 탈퇴 및 계약 해지)
+        </h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>
+            회원은 언제든지 서비스 내 탈퇴 절차를 통해 이용 계약을 해지할 수
+            있습니다.
+          </li>
+          <li>
+            운영자는 회원이 약관을 위반하거나 서비스 운영에 피해를 준 경우, 사전
+            통보 없이 회원 자격을 정지하거나 계약을 해지할 수 있습니다.
+          </li>
+        </ol>
+        <h3 className="text-xl font-semibold my-4">
+          제12조 (서비스 이용 제한)
+        </h3>
+        <p className="my-4">
+          운영자는 다음의 경우 서비스 이용을 제한할 수 있습니다:
+        </p>
+        <ol className="list-decimal pl-6 my-4">
+          <li>
+            회원의 활동이 다른 회원에게 피해를 주거나 서비스 운영에 중대한
+            지장을 초래하는 경우
+          </li>
+          <li>관계법령 및 본 약관을 위반한 경우</li>
+        </ol>
+      </section>
+
+      <section className="my-8">
+        <h2 className="text-2xl font-semibold my-4">제5장 책임과 면책</h2>
+        <h3 className="text-xl font-semibold my-4">제13조 (책임 제한)</h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>
+            운영자는 천재지변, 시스템 오류 등 불가항력으로 인해 발생한 서비스
+            이용 장애에 대해 책임을 지지 않습니다.
+          </li>
+          <li>
+            운영자는 회원이 게시한 콘텐츠로 인해 발생한 분쟁이나 손해에 대해
+            책임을 지지 않습니다.
+          </li>
+          <li>
+            회원은 본인의 부주의로 인해 발생한 계정 도용, 정보 유출 등의 피해에
+            대해 스스로 책임을 집니다.
+          </li>
+        </ol>
+        <h3 className="text-xl font-semibold my-4">제14조 (광고 및 수익)</h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>
+            운영자는 서비스 유지 및 개선을 위해 광고를 게재할 수 있으며, 회원은
+            광고 노출에 동의합니다.
+          </li>
+          <li>
+            운영자는 광고를 통해 발생한 수익을 서비스 운영 및 유지에 사용합니다.
+          </li>
+          <li>
+            회원이 광고를 통해 외부 사이트로 이동하거나 거래를 진행하는 경우,
+            그로 인해 발생한 문제에 대해 운영자는 책임을 지지 않습니다.
+          </li>
+        </ol>
+        <h3 className="text-xl font-semibold my-4">
+          제15조 (재판 관할 및 준거법)
+        </h3>
+        <ol className="list-decimal pl-6 my-4">
+          <li>
+            본 약관과 관련된 분쟁은 운영자의 본사 소재지를 관할하는 법원에서
+            해결합니다.
+          </li>
+          <li>본 약관은 대한민국 법률에 따라 해석되고 적용됩니다.</li>
+        </ol>
+      </section>
+
+      <section className="my-8">
+        <h2 className="text-2xl font-semibold my-4">부칙</h2>
+        <p>본 약관은 2025년 1월 15일부터 적용됩니다.</p>
       </section>
     </div>
   );
