@@ -136,8 +136,3 @@ export const nicknameValidation = z
   .refine((nickname) => !nickname.includes("운영자"), {
     message: "닉네임에 '운영자'가 포함될 수 없습니다.",
   });
-
-/**
- * 기본 프로필 사용 여부 유효성 검사
- */
-export const useDefaultProfileValidation = z.boolean();
