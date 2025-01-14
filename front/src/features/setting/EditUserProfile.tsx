@@ -60,7 +60,7 @@ export default function EditUserProfile({
     defaultValues: {
       profileImage: new DataTransfer().files,
       newNickname: "",
-      useDefaultProfile: false,
+      useDefaultProfile: true,
     },
   });
 
