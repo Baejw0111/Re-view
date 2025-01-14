@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/shared/shadcn-ui/button";
 import { motion } from "framer-motion";
 import EditUserProfile from "@/features/setting/EditUserProfile";
@@ -9,8 +10,18 @@ import {
   CardHeader,
 } from "@/shared/shadcn-ui/card";
 import MovingLogo from "@/features/common/MovingLogo";
+import { Checkbox } from "@/shared/shadcn-ui/checkbox";
+import { Label } from "@/shared/shadcn-ui/label";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import TermsDialog from "@/widgets/TermsDialog";
+import PrivacyAgreementDialog from "@/widgets/PrivacyAgreementDialog";
 
 export default function Onboarding() {
+  const navigate = useNavigate();
+  const [isAgreementChecked, setIsAgreementChecked] = useState(false);
+  const userInfo = useSelector((state: RootState) => state.userInfo);
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -34,8 +45,14 @@ export default function Onboarding() {
     },
   };
 
+  useEffect(() => {
+    if (userInfo?.isSignedUp) {
+      navigate("/");
+    }
+  }, [userInfo]);
+
   return (
-    <div className="pt-20 flex flex-col items-center justify-center gap-10">
+    <div className="pt-20 flex flex-col items-center gap-10">
       <MovingLogo className="w-40 h-40" />
       <motion.div
         variants={containerVariants}
@@ -44,11 +61,8 @@ export default function Onboarding() {
       >
         <Card className="w-96">
           <CardHeader>
-            <motion.h1
-              className="text-2xl font-bold text-center"
-              variants={itemVariants}
-            >
-              환영합니다!
+            <motion.h1 className="text-2xl font-bold" variants={itemVariants}>
+              회원 가입
             </motion.h1>
           </CardHeader>
 
@@ -63,15 +77,36 @@ export default function Onboarding() {
               <EditUserProfile
                 isOnboarding
                 submitFooter={(isUploading: boolean) => (
-                  <motion.div variants={itemVariants}>
-                    <CardFooter className="p-0">
+                  <CardFooter className="flex flex-col items-center gap-2 p-0">
+                    <motion.div
+                      variants={itemVariants}
+                      className="flex flex-col items-center gap-2 w-full my-2"
+                    >
+                      <div className="flex items-center gap-2 w-full">
+                        <Checkbox
+                          id="agreement"
+                          checked={isAgreementChecked}
+                          onCheckedChange={() =>
+                            setIsAgreementChecked(!isAgreementChecked)
+                          }
+                        />
+                        <Label htmlFor="agreement" className="font-medium">
+                          필수 약관에 동의합니다
+                        </Label>
+                      </div>
+                      <div className="w-full text-sm text-muted-foreground">
+                        <TermsDialog />및
+                        <PrivacyAgreementDialog />에 동의합니다.
+                      </div>
+                    </motion.div>
+                    <motion.div variants={itemVariants} className="w-full">
                       <Button
                         type="submit"
                         variant="outline"
                         className="w-full relative overflow-hidden group"
-                        disabled={isUploading}
+                        disabled={isUploading || !isAgreementChecked}
                       >
-                        <span className="relative z-10">프로필 설정 완료</span>
+                        <span className="relative z-10">회원 가입 완료</span>
                         <span
                           className="absolute inset-0 bg-gradient-to-r from-red-500 via-green-500 to-blue-500
                       opacity-0 group-hover:opacity-100 group-active:opacity-100 group-focus:opacity-100 animate-shimmer transition-opacity duration-300"
@@ -87,36 +122,12 @@ export default function Onboarding() {
                         animation: shimmer 0.5s linear infinite;
                       }
                     `}</style>
-                    </CardFooter>
-                  </motion.div>
+                    </motion.div>
+                  </CardFooter>
                 )}
               />
             </motion.div>
           </CardContent>
-          {/* <CardFooter className="flex flex-col items-center mt-4">
-            <motion.div variants={itemVariants}>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span>
-                  <a href="/privacy-policy" className="text-blue-500 underline">
-                    개인정보 처리방침
-                  </a>
-                  에 동의합니다.
-                </span>
-              </label>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <label className="flex items-center mt-2">
-                <input type="checkbox" className="mr-2" />
-                <span>
-                  <a href="/terms" className="text-blue-500 underline">
-                    이용 약관
-                  </a>
-                  에 동의합니다.
-                </span>
-              </label>
-            </motion.div>
-          </CardFooter> */}
         </Card>
       </motion.div>
     </div>
