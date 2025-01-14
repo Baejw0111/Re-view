@@ -18,12 +18,12 @@ import {
   tagsValidation,
   isSpoilerValidation,
 } from "@/shared/types/validation";
-import TitleForm from "@/features/review-form/TitleForm";
-import RatingForm from "@/features/review-form/RatingForm";
-import ReviewTextForm from "@/features/review-form/ReviewTextForm";
+import TitleForm from "@/features/form/TitleForm";
+import RatingForm from "@/features/form/RatingForm";
+import ReviewTextForm from "@/features/form/ReviewTextForm";
 import PreviewImageList from "@/widgets/PreviewImageList";
-import SpoilerSwitch from "@/features/review-form/SpoilerSwitch";
-import TagForm from "@/features/review-form/TagForm";
+import SpoilerSwitch from "@/features/form/SpoilerSwitch";
+import TagForm from "@/features/form/TagForm";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { toast } from "sonner";
 
