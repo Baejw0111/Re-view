@@ -1,5 +1,5 @@
 /**
- * @description 로그인 유저 정보
+ * 로그인 유저 정보
  * @property {boolean} isSignedUp - 가입 여부
  * @property {string} aliasId - 유저 별칭 아이디
  * @property {string} nickname - 유저 닉네임
@@ -15,7 +15,7 @@ export interface LoginUserInfo {
 }
 
 /**
- * @description 유저 정보
+ * 유저 정보
  * @property {string} aliasId - 유저 별칭 아이디
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
@@ -33,7 +33,7 @@ export interface UserInfo {
 }
 
 /**
- * @description 리뷰 정보
+ * 리뷰 정보
  * @property {string} aliasId - 리뷰 ID
  * @property {string} authorId - 리뷰 작성자 ID
  * @property {string} uploadTime - 리뷰 업로드 시간
@@ -57,7 +57,7 @@ export interface ReviewInfo {
 }
 
 /**
- * @description 댓글 정보
+ * 댓글 정보
  * @property {string} aliasId - 댓글 ID
  * @property {string} authorId - 댓글 작성자 ID
  * @property {string} profileImage - 댓글 작성자 프로필 이미지
@@ -77,7 +77,7 @@ export interface CommentInfo {
 }
 
 /**
- * @description 알림 정보
+ * 알림 정보
  * @property {string} _id - 알림 ID
  * @property {string} time - 알림 생성 시간
  * @property {string} commentId - 알림과 관련된 댓글 ID
@@ -105,7 +105,7 @@ export interface NotificationInfo {
 }
 
 /**
- * @description 리뷰 폼 값
+ * 리뷰 폼 값
  * @property {string} title - 리뷰 제목
  * @property {FileList} images - 리뷰 이미지
  * @property {string} reviewText - 리뷰 내용
@@ -120,4 +120,16 @@ export interface ReviewFormValues {
   rating: number;
   tags: string[];
   isSpoiler: boolean;
+}
+
+/**
+ * 프로필 폼 값
+ * @property {FileList} profileImage - 프로필 이미지
+ * @property {string} newNickname - 새로운 닉네임
+ * @property {boolean} useDefaultProfile - 기본 프로필 이미지 사용 여부
+ */
+export interface ProfileFormValues {
+  profileImage: FileList;
+  newNickname: string;
+  useDefaultProfile: boolean;
 }
