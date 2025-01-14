@@ -196,6 +196,7 @@ export default function ProfileButton({
         open={isProfileEditDialogOpen}
         onOpenChange={setIsProfileEditDialogOpen}
       >
+        {/* [&>button]:hidden 은 창 닫기 버튼을 숨기는 설정이다 */}
         <DialogContent className="max-w-sm [&>button]:hidden">
           <DialogHeader className="text-left">
             <DialogTitle>프로필 편집</DialogTitle>
