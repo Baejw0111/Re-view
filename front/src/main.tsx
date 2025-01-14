@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import App from "@/App.tsx";
 import ThemeProvider from "@/state/theme/ThemeProvider";
 import store from "@/state/store";
-import LoginRequiredRoute from "./pages/LoginRequiredRoute";
+import LoginRequiredRoute from "@/pages/LoginRequiredRoute";
 import Feed from "@/pages/Feed";
 import WriteReview from "@/pages/WriteReview";
 import Authorization from "@/pages/Authorization";
@@ -17,10 +17,10 @@ import EditReview from "@/pages/EditReview";
 import Profile from "@/pages/Profile";
 import Notification from "@/pages/Notification";
 import Search from "@/pages/Search";
-import { fetchNotifications } from "./api/notification";
-import { fetchLatestFeed, fetchPopularFeed } from "./api/review";
-import NotFoundError from "./pages/NotFoundError";
-import ConnectionError from "./pages/ConnectionError";
+import { fetchNotifications } from "@/api/notification";
+import { fetchLatestFeed, fetchPopularFeed } from "@/api/review";
+import NotFoundError from "@/pages/NotFoundError";
+import ConnectionError from "@/pages/ConnectionError";
 import PostsTab from "@/widgets/PostsTab";
 import CommentsTab from "@/widgets/CommentsTab";
 import LikedTab from "@/widgets/LikedTab";
@@ -29,10 +29,11 @@ import {
   fetchUserLikedList,
   fetchUserReviewList,
 } from "@/api/user";
-import Test from "./pages/Test";
-import Login from "./pages/Login";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import Terms from "./pages/Terms";
+import Test from "@/pages/Test";
+import Login from "@/pages/Login";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import Terms from "@/pages/Terms";
+import Setting from "@/pages/Setting";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -167,6 +168,14 @@ const router = createBrowserRouter(
         {
           path: "/oauth/:provider",
           element: <Authorization />,
+        },
+        {
+          path: "/setting",
+          element: (
+            <LoginRequiredRoute>
+              <Setting />
+            </LoginRequiredRoute>
+          ),
         },
         {
           path: "/onboarding",
