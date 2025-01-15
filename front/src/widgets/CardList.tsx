@@ -20,7 +20,7 @@ export default function CardList({
   callback,
   cardType,
 }: {
-  idList: string[] | number[];
+  idList: string[];
   callback: () => void;
   cardType: "review" | "userProfile";
 }) {
@@ -107,12 +107,12 @@ export default function CardList({
                         ) : (
                           <Suspense key={index} fallback={<SkeletonUserCard />}>
                             <UserCard
-                              userId={Number(
+                              userId={
                                 idList[
                                   item.index * gridColumnCount[breakpoint] +
                                     index
                                 ]
-                              )}
+                              }
                               key={
                                 idList[
                                   item.index * gridColumnCount[breakpoint] +
@@ -134,7 +134,7 @@ export default function CardList({
         <div className="flex justify-center items-center h-full">
           <p className="text-muted-foreground">
             {cardType === "review"
-              ? "등록된 리뷰가 없습니다."
+              ? "리뷰가 없습니다."
               : "해당하는 유저가 없습니다."}
           </p>
         </div>

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import { PencilLine } from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
@@ -7,14 +7,16 @@ import { RootState } from "@/state/store";
 import { toast } from "sonner";
 
 export default function WriteReviewButton() {
-  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
+  const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
+  const navigate = useNavigate();
 
   const handleWriteReviewButtonClick = (
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
-    if (kakaoId === 0) {
+    if (aliasId === "") {
       e.preventDefault();
       toast.error("로그인 후 이용해주세요.");
+      navigate("/login");
 
       return;
     }

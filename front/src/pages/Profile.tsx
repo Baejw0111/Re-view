@@ -11,13 +11,13 @@ export default function Profile() {
   const location = useLocation();
 
   // 사용자 정보 가져오기
-  const { id: userId } = useParams();
+  const { userId } = useParams();
 
   return (
     <PageTemplate>
       <Suspense fallback={<SkeletonUserCard isUserProfile />}>
         <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
-          <ProfileInfo userId={Number(userId)} tags />
+          <ProfileInfo userId={userId as string} tags />
         </Card>
       </Suspense>
 

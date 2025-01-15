@@ -1,33 +1,33 @@
 import { useEffect } from "react";
-import { getKakaoToken, getLoginUserInfo } from "@/api/auth";
-import { useNavigate } from "react-router-dom";
+import { getToken } from "@/api/auth";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "@/shared/shadcn-ui/button";
+import { toast } from "sonner";
 
 export default function Authorization() {
   const navigate = useNavigate();
+  const { provider } = useParams();
   const AUTHORIZATION_CODE: string = new URL(
     document.location.toString()
   ).searchParams.get("code") as string;
 
-  // 카카오 로그인 처리
-  const { mutate, isPending, isError } = useMutation({
-    mutationFn: async () => {
-      await getKakaoToken(AUTHORIZATION_CODE);
-      return await getLoginUserInfo();
+  // 소셜 로그인 처리
+  const { mutate, isPending } = useMutation({
+    mutationFn: async () =>
+      await getToken(provider as string, AUTHORIZATION_CODE),
+    onSuccess: () => {
+      // 유저 정보를 자동으로 가져오게 하기 위해 페이지를 새로고침하며 이동
+      window.location.href = "/";
     },
-    onSuccess: (userInfo) => {
-      if (userInfo.nickname) {
-        window.location.href = "/";
-      } else {
-        window.location.href = "/onboarding";
-      }
+    onError: () => {
+      toast.error("로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+      navigate("/login");
     },
   });
 
   useEffect(() => {
     mutate();
-  }, [mutate]);
+  }, []);
 
   if (isPending) {
     return (
@@ -35,17 +35,6 @@ export default function Authorization() {
         <div className="text-2xl md:text-3xl font-bold m-8">
           로그인 처리 중...
         </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="w-full px-4 py-6 md:py-4">
-        <div className="text-2xl md:text-3xl font-bold m-8">
-          로그인 처리 중 오류가 발생했습니다.
-        </div>
-        <Button onClick={() => navigate("/")}>홈으로 돌아가기</Button>
       </div>
     );
   }

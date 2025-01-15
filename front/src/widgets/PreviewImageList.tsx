@@ -20,9 +20,9 @@ import {
   acceptedExtensions,
 } from "@/shared/types/validation";
 import { ImagePlus } from "lucide-react";
-import UploadProgressBar from "@/features/review-form/UploadProgressBar";
-import LoadingBox from "@/features/review-form/LoadingBox";
-import PreviewImageBox from "@/features/review-form/PreviewImageBox";
+import UploadProgressBar from "@/features/form/UploadProgressBar";
+import LoadingBox from "@/features/form/LoadingBox";
+import PreviewImageBox from "@/features/form/PreviewImageBox";
 
 export default function PreviewImageList({
   form,

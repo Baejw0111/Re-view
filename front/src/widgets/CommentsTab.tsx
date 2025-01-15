@@ -5,12 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import { CommentInfo } from "@/shared/types/interface";
 
 export default function CommentsTab() {
-  const { id: userId } = useParams();
+  const { userId } = useParams();
   const initialData = useLoaderData() as CommentInfo[];
 
   // 사용자가 작성한 댓글 가져오기
   const { data: userCommentList } = useQuery<CommentInfo[]>({
-    queryKey: ["userCommentList", Number(userId)],
+    queryKey: ["userCommentList", userId],
     initialData: initialData,
   });
 
@@ -24,7 +24,7 @@ export default function CommentsTab() {
               className="border-b last:border-b-0 p-4 flex justify-between"
             >
               <Link
-                to={`?reviewId=${commentInfo.reviewId}#${commentInfo._id}`}
+                to={`?reviewId=${commentInfo.reviewId}#${commentInfo.aliasId}`}
                 className="hover:underline text-sm whitespace-pre-wrap break-all"
               >
                 {commentInfo.content}

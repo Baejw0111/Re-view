@@ -35,9 +35,46 @@ const connectDB = async () => {
 const db = mongoose.connection.useDb("mainDB");
 
 /**
+ * 소셜 아이디 맵 모델
+ * @type {mongoose.Model}
+ * @property {string[]} originalSocialId - 소셜 로그인 제공자 이름 + 원본 소셜 아이디 로 이뤄진 문자열 배열
+ * @property {string} aliasId - 서비스 내에서 사용하기 위해 생성된 아이디
+ */
+export const IdMapModel = db.model(
+  "IdMap",
+  new mongoose.Schema({
+    originalSocialId: { type: [String], default: [] },
+    aliasId: { type: String, default: "" },
+  }).index({ originalSocialId: 1, aliasId: 1 })
+);
+
+/**
+ * 약관 동의 모델
+ * @type {mongoose.Model}
+ * @property {string} userId - 유저 ID
+ * @property {number} termVersion - 이용 약관 버전
+ * @property {Date} termAgreementTime - 이용 약관 동의 시점
+ * @property {number} privacyVersion - 개인정보 수집 및 이용 약관 버전
+ * @property {Date} privacyAgreementTime - 개인정보 수집 및 이용 약관 동의 시점
+ */
+export const AgreementModel = db.model(
+  "Agreement",
+  new mongoose.Schema({
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    termVersion: { type: Number, default: 0 },
+    termAgreementTime: { type: Date, default: Date.now },
+    privacyVersion: { type: Number, default: 0 },
+    privacyAgreementTime: { type: Date, default: Date.now },
+  })
+);
+
+/**
  * 유저 모델
  * @type {mongoose.Model}
- * @property {number} kakaoId - 유저 카카오 ID
+ * @property {string} aliasId - 서비스 내에서 사용되는 유저의 별칭 아이디
  * @property {string} nickname - 닉네임
  * @property {string} profileImage - 프로필 이미지 경로
  * @property {Date} notificationCheckTime - 알림 확인 시간
@@ -47,7 +84,7 @@ const db = mongoose.connection.useDb("mainDB");
 export const UserModel = db.model(
   "User",
   new mongoose.Schema({
-    kakaoId: { type: Number, default: 0, index: true },
+    aliasId: { type: String, default: "", index: true },
     nickname: { type: String, default: "" },
     profileImage: { type: String, default: "" },
     notificationCheckTime: { type: Date, default: Date.now },
@@ -59,6 +96,7 @@ export const UserModel = db.model(
 /**
  * 리뷰 모델
  * @type {mongoose.Model}
+ * @property {string} aliasId - 서비스 내에서 사용되는 리뷰의 별칭 아이디
  * @property {mongoose.Schema.Types.ObjectId} authorId - 작성자 DB ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {string} title - 제목
@@ -73,10 +111,10 @@ export const UserModel = db.model(
 export const ReviewModel = db.model(
   "Review",
   new mongoose.Schema({
+    aliasId: { type: String, default: "" },
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     uploadTime: { type: Date, default: Date.now },
     title: { type: String, default: "" },
@@ -87,7 +125,7 @@ export const ReviewModel = db.model(
     likesCount: { type: Number, default: 0 },
     commentsCount: { type: Number, default: 0 },
     isSpoiler: { type: Boolean, default: false },
-  }).index({ uploadTime: -1, likesCount: 1, authorId: 1 })
+  }).index({ uploadTime: -1, likesCount: 1, authorId: 1, aliasId: 1 })
 );
 
 /**
@@ -103,12 +141,11 @@ export const ReviewLikeModel = db.model(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     reviewId: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      index: true,
+      ref: "Review",
     },
     likedAt: { type: Date, default: Date.now },
   }).index({ userId: 1, likedAt: -1, reviewId: 1 })
@@ -130,7 +167,6 @@ export const TagModel = db.model(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     koreanInitials: { type: String, default: "" },
     lastInteractedAt: { type: Date, default: Date.now },
@@ -141,6 +177,7 @@ export const TagModel = db.model(
 /**
  * 댓글 모델
  * @type {mongoose.Model}
+ * @property {string} aliasId - 서비스 내에서 사용되는 댓글의 별칭 아이디
  * @property {mongoose.Schema.Types.ObjectId} authorId - 작성자 DB ID
  * @property {Date} uploadTime - 업로드 시간
  * @property {mongoose.Schema.Types.ObjectId} reviewId - 댓글이 작성된 리뷰의 ID
@@ -149,19 +186,19 @@ export const TagModel = db.model(
 export const CommentModel = db.model(
   "Comment",
   new mongoose.Schema({
+    aliasId: { type: String, default: "" },
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     uploadTime: { type: Date, default: Date.now },
     reviewId: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      index: true,
+      ref: "Review",
     },
     content: { type: String, default: "" },
-  })
+  }).index({ uploadTime: -1, authorId: 1, aliasId: 1 })
 );
 
 /**
@@ -180,19 +217,16 @@ export const NotificationModel = db.model(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      index: true,
     },
     time: { type: Date, default: Date.now },
     commentId: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      index: true,
       ref: "Comment",
     },
     reviewId: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      index: true,
       ref: "Review",
     },
     category: { type: String, default: "" },

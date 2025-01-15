@@ -29,7 +29,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
 
   const { data: author } = useSuspenseQuery({
     queryKey: ["userInfo", reviewInfo?.authorId],
-    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
+    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as string),
   });
 
   return (
@@ -46,7 +46,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               <div className="flex items-center justify-between">
                 {/* 작성자 정보 및 프로필 팝오버 버튼*/}
                 {author && (
-                  <ProfilePopOver userId={author.kakaoId as number}>
+                  <ProfilePopOver userId={author.aliasId as string}>
                     <Button
                       variant="ghost"
                       className="flex items-center gap-2 p-0 h-auto min-w-8"
@@ -76,7 +76,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
                 <Link
                   to={`?${new URLSearchParams({
                     ...Object.fromEntries(searchParams),
-                    reviewId: reviewInfo._id,
+                    reviewId: reviewInfo.aliasId,
                   })}`}
                   className="group flex items-center gap-1 cursor-pointer hover:text-blue-500 active:text-blue-500 transition-colors"
                 >
@@ -106,8 +106,8 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               <Separator className="my-3" />
               {/* 좋아요 버튼 및 댓글 버튼 */}
               <div className="flex gap-2">
-                <LikeButton reviewId={reviewInfo._id} className="w-5 h-5" />
-                <CommentButton reviewId={reviewInfo._id} />
+                <LikeButton reviewId={reviewInfo.aliasId} className="w-5 h-5" />
+                <CommentButton reviewId={reviewInfo.aliasId} />
               </div>
             </div>
           </div>

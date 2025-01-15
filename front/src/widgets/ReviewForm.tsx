@@ -18,12 +18,12 @@ import {
   tagsValidation,
   isSpoilerValidation,
 } from "@/shared/types/validation";
-import TitleForm from "@/features/review-form/TitleForm";
-import RatingForm from "@/features/review-form/RatingForm";
-import ReviewTextForm from "@/features/review-form/ReviewTextForm";
+import TitleForm from "@/features/form/TitleForm";
+import RatingForm from "@/features/form/RatingForm";
+import ReviewTextForm from "@/features/form/ReviewTextForm";
 import PreviewImageList from "@/widgets/PreviewImageList";
-import SpoilerSwitch from "@/features/review-form/SpoilerSwitch";
-import TagForm from "@/features/review-form/TagForm";
+import SpoilerSwitch from "@/features/form/SpoilerSwitch";
+import TagForm from "@/features/form/TagForm";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { toast } from "sonner";
 
@@ -73,6 +73,7 @@ export default function ReviewForm({
   const { mutate: writeReviewMutation } = useMutation({
     mutationFn: writeReview,
     onSuccess: () => {
+      setIsFormSubmitted(true);
       toast.success("리뷰가 업로드되었습니다.");
       queryClient.invalidateQueries({
         queryKey: ["feed", "latest"],
@@ -84,11 +85,12 @@ export default function ReviewForm({
   // 리뷰 수정
   const { mutate: editReviewMutation } = useMutation({
     mutationFn: (formData: FormData) =>
-      editReview(reviewInfo?._id as string, formData),
+      editReview(reviewInfo?.aliasId as string, formData),
     onSuccess: () => {
+      setIsFormSubmitted(true);
       toast.success("리뷰가 수정되었습니다.");
       queryClient.invalidateQueries({
-        queryKey: ["reviewInfo", reviewInfo?._id],
+        queryKey: ["reviewInfo", reviewInfo?.aliasId],
       });
       navigate(-1);
     },
@@ -98,7 +100,6 @@ export default function ReviewForm({
    * 업로드 제출 시 실행될 작업
    */
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsFormSubmitted(true);
     // 폼 값 처리
     const { title, reviewText, rating, tags, images, isSpoiler } = values;
 
@@ -158,7 +159,7 @@ export default function ReviewForm({
       }
 
       const confirmLeave = window.confirm(
-        "작성 중인 내용이 저장되지 않을 수 있습니다. 정말 나가시겠습니까?"
+        "작성 중인 내용을 잃게 됩니다. 정말 나가시겠습니까?"
       );
 
       if (confirmLeave) {

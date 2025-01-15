@@ -25,7 +25,7 @@ import TagBadge from "@/features/review/TagBadge";
 export default function ReviewDetail() {
   const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
-  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
+  const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
 
   // 캐러셀 넘버링
   // 참고: https://ui.shadcn.com/docs/components/carousel#api
@@ -60,7 +60,7 @@ export default function ReviewDetail() {
   // 유저 정보
   const { data: userInfo } = useQuery({
     queryKey: ["userInfo", reviewInfo?.authorId],
-    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as number),
+    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as string),
     enabled: !!reviewInfo, // reviewInfo가 있을 때만 쿼리 실행
   });
 
@@ -148,7 +148,7 @@ export default function ReviewDetail() {
             </div>
 
             {/* 리뷰 관련 상호작용 버튼들 */}
-            <ReviewActionBar isAuthor={reviewInfo.authorId === kakaoId} />
+            <ReviewActionBar isAuthor={reviewInfo.authorId === aliasId} />
           </div>
         </div>
       )}

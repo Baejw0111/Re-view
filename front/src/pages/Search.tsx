@@ -32,8 +32,8 @@ export default function Search() {
     fetchNextPage: fetchNextUserList,
   } = useInfiniteQuery({
     queryKey: ["search", "users", searchQuery],
-    initialPageParam: 0,
-    queryFn: ({ pageParam }: { pageParam: number }) =>
+    initialPageParam: "",
+    queryFn: ({ pageParam }: { pageParam: string }) =>
       searchUsers(searchQuery ?? "", pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;

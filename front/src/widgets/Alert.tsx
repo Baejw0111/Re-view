@@ -40,7 +40,9 @@ export default function Alert({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>취소</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>확인</AlertDialogAction>
+          <AlertDialogAction className="bg-destructive" onClick={onConfirm}>
+            확인
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

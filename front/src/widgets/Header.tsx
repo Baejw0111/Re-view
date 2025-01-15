@@ -2,7 +2,7 @@ import Logo from "@/features/common/Logo";
 import NotificationButton from "@/widgets/NotificationButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store/index";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchBar from "@/features/common/SearchBar";
 import WriteReviewButton from "@/features/review/WriteReviewButton";
 import { useMediaQuery, useScrollDirection } from "@/shared/hooks";
@@ -14,6 +14,7 @@ import { setIsSearchDialogOpen } from "@/state/store/searchDialogOpenSlice";
 import { toast } from "sonner";
 
 export default function Header() {
+  const navigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const isScrollingUp = useScrollDirection();
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -25,9 +26,11 @@ export default function Header() {
   const handleNotificationButtonClick = (
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
-    if (userInfo.kakaoId === 0) {
+    if (userInfo.aliasId === "") {
       e.preventDefault();
       toast.error("로그인 후 이용해주세요.");
+      navigate("/login");
+
       return;
     }
   };
@@ -35,6 +38,7 @@ export default function Header() {
   return (
     <>
       {window.location.pathname !== "/onboarding" &&
+        window.location.pathname !== "/login" &&
         (isMobile ? (
           <nav
             className={`fixed p-0 bottom-0 left-0 w-full h-14 bg-background
@@ -82,7 +86,7 @@ export default function Header() {
               </Link>
               <div className="flex flex-1 md:justify-end items-center gap-2">
                 <SearchBar />
-                {userInfo.kakaoId !== 0 && (
+                {userInfo.aliasId !== "" && (
                   // 로그인을 했을 경우 유저가 사용 가능한 버튼 보여주기
                   <>
                     <WriteReviewButton />

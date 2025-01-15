@@ -4,42 +4,44 @@ import {
   ReviewModel,
   CommentModel,
   NotificationModel,
+  AgreementModel,
   ReviewLikeModel,
   TagModel,
+  IdMapModel,
 } from "../utils/Model.js";
 import asyncHandler from "../utils/ControllerUtils.js";
 import { deleteUploadedFiles } from "../utils/Upload.js";
+import { GoogleAuth, NaverAuth, KakaoAuth } from "./SocialAuth/index.js";
+import { generateUserAliasId } from "../utils/IdGenerator.js";
 
-const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI, PUUUSH_WEB_HOOK_URL } =
-  process.env;
+const { PUUUSH_WEB_HOOK_URL } = process.env;
+
+const authProvider = {
+  google: GoogleAuth,
+  kakao: KakaoAuth,
+  naver: NaverAuth,
+};
 
 /**
- * 카카오 토큰 요청 및 클라이언트에 쿠키 설정
+ * 토큰 요청 및 클라이언트에 쿠키 설정
  */
-export const getKakaoToken = asyncHandler(async (req, res) => {
+export const getToken = asyncHandler(async (req, res) => {
   const { code } = req.body;
-  const response = await axios.post(
-    "https://kauth.kakao.com/oauth/token",
-    {
-      grant_type: "authorization_code",
-      client_id: KAKAO_REST_API_KEY,
-      redirect_uri: KAKAO_REDIRECT_URI,
-      code: code,
-    },
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    }
-  );
-
+  const { provider } = req.params;
+  const tokenData = await authProvider[provider].getToken(code);
   const { access_token, refresh_token, expires_in, refresh_token_expires_in } =
-    response.data;
+    tokenData;
 
-  console.log(`func: getKakaoToken`);
-  console.table(response.data);
+  console.table(tokenData);
 
   // 브라우저에 쿠키 설정
+  res.cookie("provider", provider, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    maxAge: expires_in * 1000, // 엑세스 토큰 유효 기간
+  });
+
   res.cookie("accessToken", access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -47,78 +49,64 @@ export const getKakaoToken = asyncHandler(async (req, res) => {
     maxAge: expires_in * 1000, // 엑세스 토큰 유효 기간
   });
 
+  // 추후에 DB에 저장하는 로직으로 바꿀 것
   res.cookie("refreshToken", refresh_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "Strict",
-    maxAge: refresh_token_expires_in * 1000, // 리프레시 토큰 유효 기간
+    maxAge: refresh_token_expires_in
+      ? refresh_token_expires_in * 1000
+      : 7 * 24 * 60 * 60 * 1000, // 리프레시 토큰 유효 기간
   });
 
   return res.status(200).json({
     message: "토큰 요청 성공",
   });
-}, "카카오 토큰 요청");
+}, "토큰 요청");
 
 /**
- * 카카오 토큰 검증 미들웨어
+ * 토큰 검증 미들웨어
  */
-export const verifyKakaoAccessToken = asyncHandler(async (req, res, next) => {
-  const accessToken = req.cookies.accessToken;
+export const verifyAccessToken = asyncHandler(async (req, res, next) => {
+  const { accessToken, provider } = req.cookies;
   if (!accessToken) {
     return res.status(401).json({
       message:
         "액세스 토큰이 만료되었습니다. 로그인하지 않았다면 로그인해주세요.",
     });
   }
-  const response = await axios.get(
-    "https://kapi.kakao.com/v1/user/access_token_info",
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
 
-  console.log(`func: verifyKakaoAccessToken`);
-  console.table(response.data);
+  const socialId = await authProvider[provider].verifyToken(accessToken);
+  console.table({ socialId });
 
-  const kakaoId = response.data.id; // 카카오 유저 ID
+  const userIdentifier = provider + socialId; // 소셜 로그인 제공자 + 유저 소셜 ID
+  const idMap = await IdMapModel.findOne({
+    originalSocialId: { $in: [userIdentifier] },
+  });
+  const userInfo = await UserModel.findOne({ aliasId: idMap?.aliasId });
 
-  // 유저 DB ID를 요청에 추가해 다음 미들웨어에서 사용할 수 있도록 함
-  const userInfo = await UserModel.findOne({ kakaoId });
-  req.userId = userInfo?._id;
+  req.userIdentifier = userIdentifier;
+  req.aliasId = idMap?.aliasId; // 유저 별칭 ID. 회원 가입을 하지 않은 경우 빈 값
+  req.userId = userInfo?._id; // 유저 데이터 고유 ID. 회원 가입을 하지 않은 경우 빈 값
 
   return next();
-}, "카카오 토큰 검증");
+}, "소셜 토큰 검증");
 
 /**
- * 카카오 액세스 토큰 재발급
+ * 액세스 토큰 재발급
  */
-export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const { refreshToken, provider } = req.cookies;
   if (!refreshToken) {
     return res.status(401).json({ message: "로그인 해주세요." });
   }
 
-  const response = await axios.post(
-    "https://kauth.kakao.com/oauth/token",
-    {
-      grant_type: "refresh_token",
-      client_id: KAKAO_REST_API_KEY,
-      refresh_token: refreshToken,
-    },
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    }
-  );
+  const tokenData = await authProvider[provider].refreshToken(refreshToken);
 
-  console.log(`func: refreshKakaoAccessToken`);
-  console.table(response.data);
+  console.table(tokenData);
 
   const { access_token, expires_in, refresh_token, refresh_token_expires_in } =
-    response.data;
+    tokenData;
 
   res.cookie("accessToken", access_token, {
     httpOnly: true,
@@ -133,7 +121,6 @@ export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: refresh_token_expires_in * 1000,
     });
   }
 
@@ -144,7 +131,87 @@ export const refreshKakaoAccessToken = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({ message: "액세스 토큰 갱신 성공" });
-}, "카카오 액세스 토큰 재발급");
+}, "소셜 액세스 토큰 재발급");
+
+/**
+ * 회원 가입
+ */
+export const signUp = asyncHandler(async (req, res) => {
+  const { userIdentifier } = req;
+  const { newNickname, useDefaultProfile } = req.body; // 기본 프로필 사용 여부 추가
+  const { termVersion, privacyVersion } = req.query;
+  const aliasId = await generateUserAliasId();
+
+  await IdMapModel.create({ originalSocialId: [userIdentifier], aliasId });
+  const userInfo = new UserModel({
+    aliasId,
+  });
+
+  if (useDefaultProfile.toLowerCase() === "true") {
+    // 기본 프로필 사용 시
+    userInfo.profileImage = ""; // 프로필 이미지 필드를 빈 문자열로 설정
+  } else if (req.file) {
+    // 사용자 지정 프로필 사용 + 프로필 이미지 업로드 시
+    userInfo.profileImage = req.file.key; // 업로드된 파일 경로 저장
+  }
+
+  userInfo.nickname = newNickname;
+  await userInfo.save();
+
+  await AgreementModel.create({
+    userId: userInfo._id,
+    termVersion,
+    termAgreementTime: Date.now(),
+    privacyVersion,
+    privacyAgreementTime: Date.now(),
+  });
+
+  const userCount = await UserModel.countDocuments();
+  await axios.post(`${PUUUSH_WEB_HOOK_URL}`, {
+    title: `신규 유저 가입!`,
+    body: `현재까지 총 ${userCount}명의 유저가 가입하였습니다.`,
+  });
+
+  return res.status(200).json({
+    message: "회원 가입 성공",
+  });
+}, "회원 가입");
+
+/**
+ * 회원 가입 취소
+ */
+export const cancelSignUp = asyncHandler(async (req, res) => {
+  const { accessToken, provider } = req.cookies;
+
+  await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
+
+  res.clearCookie("provider");
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  return res.status(200).json({ message: "회원 가입 취소 성공" });
+}, "회원 가입 취소");
+
+export const updateTermsAgreement = asyncHandler(async (req, res) => {
+  const { userId } = req;
+  const { termVersion, privacyVersion } = req.body;
+
+  await AgreementModel.findOneAndUpdate(
+    { _id: userId }, // 검색 조건
+    {
+      termVersion,
+      privacyVersion,
+      termAgreementTime: Date.now(),
+      privacyAgreementTime: Date.now(),
+    },
+    {
+      new: true, // 업데이트된 문서 반환
+      upsert: true, // 문서가 없으면 새로 생성
+    }
+  );
+
+  return res.status(200).json({ message: "약관 동의 업데이트 성공" });
+}, "약관 동의 업데이트");
 
 /**
  * 로그인 여부 확인
@@ -166,88 +233,59 @@ export const disableCache = (req, res, next) => {
 };
 
 /**
- * 카카오 유저 정보 조회
+ * 로그인한 유저 정보 조회
  */
-export const getKakaoUserInfo = asyncHandler(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const response = await axios.get("https://kapi.kakao.com/v2/user/me", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-    },
-  });
-
-  console.log(`func: getKakaoUserInfo`);
-  console.log(response.data);
-
-  let userInfo = await UserModel.findOne({ kakaoId: response.data.id });
+export const getLoginUserInfo = asyncHandler(async (req, res) => {
+  const { userId } = req;
+  const userInfo = await UserModel.findById(userId);
 
   if (!userInfo) {
-    userInfo = new UserModel({
-      kakaoId: response.data.id,
-    });
-    await userInfo.save();
-
-    const userCount = await UserModel.countDocuments();
-    await axios.post(`${PUUUSH_WEB_HOOK_URL}`, {
-      title: `신규 유저 가입!`,
-      body: `총 ${userCount}명의 유저가 가입하였습니다.`,
-    });
+    return res.status(200).json({ isSignedUp: false });
   }
 
+  const agreement = await AgreementModel.findOne({ userId });
+
   return res.status(200).json({
-    kakaoId: userInfo.kakaoId,
+    isSignedUp: true,
+    aliasId: userInfo.aliasId,
     nickname: userInfo.nickname,
     profileImage: userInfo.profileImage,
-    totalRating: userInfo.totalRating,
-    reviewCount: userInfo.reviewCount,
     notificationCheckTime: userInfo.notificationCheckTime,
+    agreedTermVersion: agreement?.termVersion,
+    agreedPrivacyVersion: agreement?.privacyVersion,
   });
-}, "카카오 유저 정보 조회");
+}, "소셜 유저 정보 조회");
 
 /**
- * 카카오 로그아웃
+ * 소셜 로그아웃
  */
-export const logOutKakao = asyncHandler(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const response = await axios.post(
-    "https://kapi.kakao.com/v1/user/logout",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+export const logOut = asyncHandler(async (req, res) => {
+  const { accessToken, provider } = req.cookies;
 
-  console.log(`func: logOutKakao`);
-  console.table(response.data);
+  // 구글 Oauth의 경우 토큰을 따로 만료시키는 기능이 없음
+  if (provider === "kakao") {
+    const response = await authProvider[provider].logout(accessToken);
 
+    console.table(response);
+  }
+
+  res.clearCookie("provider");
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
+
   res.status(200).json({ message: "로그아웃 성공" });
-}, "카카오 로그아웃");
+}, "소셜 로그아웃");
 
 /**
- * 카카오 유저 계정 삭제
+ * 소셜 유저 계정 삭제
  */
 export const deleteUserAccount = asyncHandler(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const response = await axios.post(
-    "https://kapi.kakao.com/v1/user/unlink",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/x-www-form-urlencoded;",
-      },
-    }
-  );
+  const { accessToken, provider } = req.cookies;
+  const { userId, userIdentifier } = req;
 
-  console.log(`func: deleteUserAccount`);
-  console.table(response.data);
+  await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
 
-  const user = await UserModel.findOneAndDelete({ kakaoId: response.data.id }); // 유저 데이터 삭제 및 반환
+  const user = await UserModel.findByIdAndDelete(userId); // 유저 데이터 삭제 및 반환
 
   if (!user) {
     return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
@@ -261,7 +299,9 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
     }
     await CommentModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 댓글들 모두 삭제
     await NotificationModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 알림들 모두 삭제
+    await ReviewLikeModel.deleteMany({ reviewId: review._id }); // 리뷰에 달린 추천들 모두 삭제
   }
+
   await ReviewModel.deleteMany({ authorId: user._id });
 
   // 댓글 관련 데이터 모두 삭제
@@ -271,11 +311,15 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   }
   await CommentModel.deleteMany({ authorId: user._id });
 
+  await IdMapModel.deleteOne({ originalSocialId: userIdentifier }); // 유저의 소셜 아이디 맵 삭제
   await NotificationModel.deleteMany({ userId: user._id }); // 유저의 알림들 모두 삭제
   await ReviewLikeModel.deleteMany({ userId: user._id }); // 유저의 추천들 모두 삭제
   await TagModel.deleteMany({ userId: user._id }); // 유저의 태그들 모두 삭제
+  await AgreementModel.deleteOne({ userId: user._id }); // 유저의 약관 동의 데이터 삭제
 
+  res.clearCookie("provider");
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
+
   res.status(200).json({ message: "유저 계정 삭제 성공" });
-}, "카카오 유저 계정 삭제");
+}, "소셜 유저 계정 삭제");

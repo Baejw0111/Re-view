@@ -5,7 +5,7 @@ useDotenv: true # 환경변수 자동 로드
 provider:
   name: aws
   runtime: nodejs18.x
-  region: ap-northeast-2
+  region: ${env:AWS_REGION}
   deploymentBucket:
     name: ${env:AWS_BUCKET_NAME}
 
@@ -13,12 +13,21 @@ provider:
   environment:
     FRONT_URL: ${env:FRONT_URL}
     TEST_FRONT_URL: ${env:TEST_FRONT_URL}
-    KAKAO_REST_API_KEY: ${env:KAKAO_REST_API_KEY}
+    KAKAO_CLIENT_ID: ${env:KAKAO_CLIENT_ID}
+    KAKAO_CLIENT_SECRET: ${env:KAKAO_CLIENT_SECRET}
     KAKAO_REDIRECT_URI: ${env:KAKAO_REDIRECT_URI}
+    GOOGLE_CLIENT_ID: ${env:GOOGLE_CLIENT_ID}
+    GOOGLE_CLIENT_SECRET: ${env:GOOGLE_CLIENT_SECRET}
+    GOOGLE_REDIRECT_URI: ${env:GOOGLE_REDIRECT_URI}
+    NAVER_CLIENT_ID: ${env:NAVER_CLIENT_ID}
+    NAVER_CLIENT_SECRET: ${env:NAVER_CLIENT_SECRET}
+    NAVER_REDIRECT_URI: ${env:NAVER_REDIRECT_URI}
     MONGO_URI: ${env:MONGO_URI}
     AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
     IMG_SRC: ${env:IMG_SRC}
     PUUUSH_WEB_HOOK_URL: ${env:PUUUSH_WEB_HOOK_URL}
+    DISCORD_FEEDBACK_WEB_HOOK_URL: ${env:DISCORD_FEEDBACK_WEB_HOOK_URL}
+    DISCORD_REPORT_WEB_HOOK_URL: ${env:DISCORD_REPORT_WEB_HOOK_URL}
 
   # IAM 역할 설정
   iam:

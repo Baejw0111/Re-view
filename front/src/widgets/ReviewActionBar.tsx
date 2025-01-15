@@ -6,7 +6,6 @@ import { deleteReview } from "@/api/review";
 import { sendUserReportReview } from "@/api/user";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import LikeButton from "@/features/interaction/LikeButton";
-import { VITE_CLIENT_URL } from "@/shared/constants";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
@@ -15,7 +14,7 @@ import Alert from "@/widgets/Alert";
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
-  const kakaoId = useSelector((state: RootState) => state.userInfo.kakaoId);
+  const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
 
   const { mutate: deleteReviewMutate } = useMutation({
     mutationFn: () => deleteReview(reviewId as string),
@@ -32,7 +31,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   });
 
   const handleReportReview = () => {
-    if (kakaoId === 0) {
+    if (aliasId === "") {
       toast.error("로그인 후 이용해주세요.");
       return;
     }
@@ -48,7 +47,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
           size="icon"
           onClick={() => {
             navigator.clipboard.writeText(
-              `${VITE_CLIENT_URL}/?reviewId=${reviewId}`
+              `${window.location.origin}/?reviewId=${reviewId}`
             );
             toast.success("링크가 복사되었습니다.");
           }}

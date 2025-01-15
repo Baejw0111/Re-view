@@ -1,25 +1,31 @@
+import { useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { UserInfo } from "@/shared/types/interface";
+import { LoginUserInfo } from "@/shared/types/interface";
 import { getLoginUserInfo } from "@/api/auth";
 import useAuth from "@/shared/hooks/useAuth";
 import Header from "./widgets/Header";
 import ReviewDetailModal from "./pages/ReviewDetailModal";
 import SearchDialog from "./features/common/SearchDialog";
 import SubHeader from "./widgets/SubHeader";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Toaster } from "./shared/shadcn-ui/sonner";
+import TermsAgreementDialog from "./widgets/TermsAgreementDialog";
+import { TERM_VERSION, PRIVACY_VERSION } from "@/shared/constants";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
+  const navigate = useNavigate();
   const isAuth = useAuth();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const [isTermsAgreementDialogOpen, setIsTermsAgreementDialogOpen] =
+    useState(false);
 
-  const { data: userInfo } = useQuery<UserInfo>({
+  const { data: userInfo } = useQuery<LoginUserInfo>({
     queryKey: ["loggedInUserInfo"],
     queryFn: getLoginUserInfo,
     retry: false,
@@ -30,10 +36,23 @@ function App() {
   useEffect(() => {
     if (isAuth) {
       if (userInfo) {
-        if (!userInfo?.nickname && window.location.pathname !== "/onboarding") {
-          window.location.href = `/onboarding`;
+        if (
+          !userInfo.isSignedUp &&
+          window.location.pathname !== "/onboarding"
+        ) {
+          navigate("/onboarding");
         } else {
           dispatch(setUserInfo(userInfo));
+        }
+
+        if (
+          userInfo.isSignedUp &&
+          (userInfo.agreedTermVersion === undefined ||
+            userInfo.agreedPrivacyVersion === undefined ||
+            userInfo.agreedTermVersion < TERM_VERSION ||
+            userInfo.agreedPrivacyVersion < PRIVACY_VERSION)
+        ) {
+          setIsTermsAgreementDialogOpen(true);
         }
       }
     }
@@ -72,6 +91,7 @@ function App() {
       <ReviewDetailModal />
       <SearchDialog />
       <Toaster richColors />
+      <TermsAgreementDialog open={isTermsAgreementDialogOpen} />
     </>
   );
 }

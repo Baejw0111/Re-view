@@ -36,7 +36,7 @@ export default function CommentList({ reviewId }: { reviewId: string }) {
           <CommentBox
             key={index}
             commentInfo={commentInfo}
-            highlight={commentId === commentInfo._id}
+            highlight={commentId === commentInfo.aliasId}
           />
         ))}
       </div>
