@@ -56,6 +56,13 @@ export const signUp = async (formData: FormData): Promise<void> => {
 };
 
 /**
+ * 회원 가입 취소 함수
+ */
+export const cancelSignUp = async (): Promise<void> => {
+  await authApiClient.post(`/auth/signup/cancel`, {});
+};
+
+/**
  * 로그인한 유저의 정보를 조회하는 함수
  * @returns 유저 정보
  */
