@@ -46,10 +46,11 @@ function App() {
         }
 
         if (
-          userInfo.agreedTermVersion === undefined ||
-          userInfo.agreedPrivacyVersion === undefined ||
-          userInfo.agreedTermVersion < TERM_VERSION ||
-          userInfo.agreedPrivacyVersion < PRIVACY_VERSION
+          userInfo.isSignedUp &&
+          (userInfo.agreedTermVersion === undefined ||
+            userInfo.agreedPrivacyVersion === undefined ||
+            userInfo.agreedTermVersion < TERM_VERSION ||
+            userInfo.agreedPrivacyVersion < PRIVACY_VERSION)
         ) {
           setIsTermsAgreementDialogOpen(true);
         }
