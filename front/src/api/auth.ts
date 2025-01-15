@@ -18,7 +18,8 @@ export const socialLogin = async (provider: string): Promise<void> => {
     naver: NAVER_AUTH_URL,
   };
 
-  window.location.href = `${urlVariants[provider]}&redirect_uri=${window.location.origin}/oauth/${provider}`;
+  // window.location.href = `${urlVariants[provider]}&redirect_uri=http://localhost:5173/oauth/${provider}`;
+  window.location.href = `${urlVariants[provider]}&redirect_uri=https://re-view.my/oauth/${provider}`;
 };
 
 /**
