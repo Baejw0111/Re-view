@@ -177,9 +177,8 @@ export default function Onboarding() {
             <form
               onSubmit={form.handleSubmit(onSubmit)}
               onKeyDown={handleEnterKeyDown}
-              className="flex flex-col gap-4"
             >
-              <CardContent>
+              <CardContent className="flex flex-col gap-4">
                 <motion.div variants={itemVariants}>
                   {/* 프로필 이미지 */}
                   <ProfileImageForm
