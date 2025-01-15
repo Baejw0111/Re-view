@@ -174,12 +174,44 @@ export const signUp = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     message: "회원 가입 성공",
-    isSignedUp: true,
-    aliasId: userInfo.aliasId,
-    nickname: newNickname,
-    profileImage: userInfo.profileImage, // 프로필 이미지 정보 반환
   });
 }, "회원 가입");
+
+/**
+ * 회원 가입 취소
+ */
+export const cancelSignUp = asyncHandler(async (req, res) => {
+  const { accessToken, provider } = req.cookies;
+
+  await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
+
+  res.clearCookie("provider");
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  return res.status(200).json({ message: "회원 가입 취소 성공" });
+}, "회원 가입 취소");
+
+export const updateTermsAgreement = asyncHandler(async (req, res) => {
+  const { userId } = req;
+  const { termVersion, privacyVersion } = req.body;
+
+  await AgreementModel.findOneAndUpdate(
+    { _id: userId }, // 검색 조건
+    {
+      termVersion,
+      privacyVersion,
+      termAgreementTime: Date.now(),
+      privacyAgreementTime: Date.now(),
+    },
+    {
+      new: true, // 업데이트된 문서 반환
+      upsert: true, // 문서가 없으면 새로 생성
+    }
+  );
+
+  return res.status(200).json({ message: "약관 동의 업데이트 성공" });
+}, "약관 동의 업데이트");
 
 /**
  * 로그인 여부 확인
@@ -204,12 +236,14 @@ export const disableCache = (req, res, next) => {
  * 로그인한 유저 정보 조회
  */
 export const getLoginUserInfo = asyncHandler(async (req, res) => {
-  const { aliasId } = req;
-  const userInfo = await UserModel.findOne({ aliasId });
+  const { userId } = req;
+  const userInfo = await UserModel.findById(userId);
 
   if (!userInfo) {
     return res.status(200).json({ isSignedUp: false });
   }
+
+  const agreement = await AgreementModel.findById(userId);
 
   return res.status(200).json({
     isSignedUp: true,
@@ -217,6 +251,8 @@ export const getLoginUserInfo = asyncHandler(async (req, res) => {
     nickname: userInfo.nickname,
     profileImage: userInfo.profileImage,
     notificationCheckTime: userInfo.notificationCheckTime,
+    agreedTermVersion: agreement?.termVersion,
+    agreedPrivacyVersion: agreement?.privacyVersion,
   });
 }, "소셜 유저 정보 조회");
 
@@ -245,11 +281,11 @@ export const logOut = asyncHandler(async (req, res) => {
  */
 export const deleteUserAccount = asyncHandler(async (req, res) => {
   const { accessToken, provider } = req.cookies;
-  const { aliasId } = req;
+  const { userId, userIdentifier } = req;
 
   await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
 
-  const user = await UserModel.findOneAndDelete({ aliasId }); // 유저 데이터 삭제 및 반환
+  const user = await UserModel.findByIdAndDelete(userId); // 유저 데이터 삭제 및 반환
 
   if (!user) {
     return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
@@ -275,7 +311,7 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   }
   await CommentModel.deleteMany({ authorId: user._id });
 
-  await IdMapModel.deleteOne({ aliasId: aliasId }); // 유저의 소셜 아이디 맵 삭제
+  await IdMapModel.deleteOne({ originalSocialId: userIdentifier }); // 유저의 소셜 아이디 맵 삭제
   await NotificationModel.deleteMany({ userId: user._id }); // 유저의 알림들 모두 삭제
   await ReviewLikeModel.deleteMany({ userId: user._id }); // 유저의 추천들 모두 삭제
   await TagModel.deleteMany({ userId: user._id }); // 유저의 태그들 모두 삭제

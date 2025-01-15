@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -12,6 +13,8 @@ import SearchDialog from "./features/common/SearchDialog";
 import SubHeader from "./widgets/SubHeader";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Toaster } from "./shared/shadcn-ui/sonner";
+import TermsAgreementDialog from "./widgets/TermsAgreementDialog";
+import { TERM_VERSION, PRIVACY_VERSION } from "@/shared/constants";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
@@ -19,6 +22,8 @@ function App() {
   const isAuth = useAuth();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const [isTermsAgreementDialogOpen, setIsTermsAgreementDialogOpen] =
+    useState(false);
 
   const { data: userInfo } = useQuery<LoginUserInfo>({
     queryKey: ["loggedInUserInfo"],
@@ -32,12 +37,21 @@ function App() {
     if (isAuth) {
       if (userInfo) {
         if (
-          !userInfo?.isSignedUp &&
+          !userInfo.isSignedUp &&
           window.location.pathname !== "/onboarding"
         ) {
           navigate("/onboarding");
         } else {
           dispatch(setUserInfo(userInfo));
+        }
+
+        if (
+          userInfo.agreedTermVersion === undefined ||
+          userInfo.agreedPrivacyVersion === undefined ||
+          userInfo.agreedTermVersion < TERM_VERSION ||
+          userInfo.agreedPrivacyVersion < PRIVACY_VERSION
+        ) {
+          setIsTermsAgreementDialogOpen(true);
         }
       }
     }
@@ -76,6 +90,7 @@ function App() {
       <ReviewDetailModal />
       <SearchDialog />
       <Toaster richColors />
+      <TermsAgreementDialog open={isTermsAgreementDialogOpen} />
     </>
   );
 }

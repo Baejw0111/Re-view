@@ -7,6 +7,8 @@ const initialState: LoginUserInfo = {
   nickname: "",
   profileImage: "",
   notificationCheckTime: "",
+  agreedTermVersion: 0,
+  agreedPrivacyVersion: 0,
 };
 
 const userInfoSlice = createSlice({
@@ -19,6 +21,8 @@ const userInfoSlice = createSlice({
       state.nickname = action.payload.nickname;
       state.profileImage = action.payload.profileImage;
       state.notificationCheckTime = action.payload.notificationCheckTime;
+      state.agreedTermVersion = action.payload.agreedTermVersion;
+      state.agreedPrivacyVersion = action.payload.agreedPrivacyVersion;
     },
   },
 });

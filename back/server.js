@@ -17,6 +17,8 @@ import {
   refreshAccessToken,
   checkAuth,
   signUp,
+  cancelSignUp,
+  updateTermsAgreement,
   disableCache,
   getLoginUserInfo,
   logOut,
@@ -90,6 +92,8 @@ app.put(
   handleMulterError,
   signUp
 );
+app.post("/auth/signup/cancel", verifyAccessToken, cancelSignUp); // 회원 가입 취소 API
+app.post("/auth/terms/agreement", verifyAccessToken, updateTermsAgreement); // 약관 동의 업데이트 API
 app.post("/auth/refresh", refreshAccessToken); // 소셜 액세스 토큰 재발급 API
 app.get("/auth/check", disableCache, checkAuth); // 로그인 여부 확인 API
 app.post("/auth/logout", verifyAccessToken, logOut); // 소셜 로그아웃 API

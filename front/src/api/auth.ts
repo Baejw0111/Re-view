@@ -63,6 +63,18 @@ export const cancelSignUp = async (): Promise<void> => {
 };
 
 /**
+ * 약관 동의 업데이트 함수
+ * @param termVersion 약관 버전
+ * @param privacyVersion 개인정보 처리 방침 버전
+ */
+export const updateTermsAgreement = async (): Promise<void> => {
+  await authApiClient.post(`/auth/terms/agreement`, {
+    termVersion: TERM_VERSION,
+    privacyVersion: PRIVACY_VERSION,
+  });
+};
+
+/**
  * 로그인한 유저의 정보를 조회하는 함수
  * @returns 유저 정보
  */

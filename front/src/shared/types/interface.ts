@@ -5,6 +5,8 @@
  * @property {string} nickname - 유저 닉네임
  * @property {string} profileImage - 유저 프로필 이미지
  * @property {string} notificationCheckTime - 알림 확인 시간
+ * @property {number} agreedTermVersion - 이용약관 동의 버전
+ * @property {number} agreedPrivacyVersion - 개인정보 이용 및 처리 동의 버전
  */
 export interface LoginUserInfo {
   isSignedUp: boolean;
@@ -12,6 +14,8 @@ export interface LoginUserInfo {
   nickname: string;
   profileImage: string;
   notificationCheckTime: string;
+  agreedTermVersion: number;
+  agreedPrivacyVersion: number;
 }
 
 /**

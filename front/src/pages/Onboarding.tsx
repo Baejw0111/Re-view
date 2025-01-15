@@ -21,15 +21,12 @@ import {
 import MovingLogo from "@/features/common/MovingLogo";
 import ProfileImageForm from "@/features/form/ProfileImageForm";
 import NicknameForm from "@/features/form/NicknameForm";
-import { Checkbox } from "@/shared/shadcn-ui/checkbox";
-import { Label } from "@/shared/shadcn-ui/label";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-import TermsDialog from "@/widgets/TermsDialog";
-import PrivacyAgreementDialog from "@/widgets/PrivacyAgreementDialog";
 import { signUp, cancelSignUp } from "@/api/auth";
 import { useBlocker } from "react-router-dom";
+import TermsAgreement from "@/features/form/TermsAgreement";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -203,22 +200,10 @@ export default function Onboarding() {
                   variants={itemVariants}
                   className="flex flex-col items-center gap-2 w-full my-2"
                 >
-                  <div className="flex items-center gap-2 w-full">
-                    <Checkbox
-                      id="agreement"
-                      checked={isAgreementChecked}
-                      onCheckedChange={() =>
-                        setIsAgreementChecked(!isAgreementChecked)
-                      }
-                    />
-                    <Label htmlFor="agreement" className="font-medium">
-                      필수 약관에 동의합니다
-                    </Label>
-                  </div>
-                  <div className="w-full text-sm text-muted-foreground">
-                    <TermsDialog />및
-                    <PrivacyAgreementDialog />에 동의합니다.
-                  </div>
+                  <TermsAgreement
+                    isAgreementChecked={isAgreementChecked}
+                    setIsAgreementChecked={setIsAgreementChecked}
+                  />
                 </motion.div>
               </CardContent>
 

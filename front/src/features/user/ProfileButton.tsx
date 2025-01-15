@@ -34,7 +34,6 @@ import {
   DialogClose,
 } from "@/shared/shadcn-ui/dialog";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
-import EditUserProfile from "@/features/setting/EditUserProfile";
 import { logOut, deleteUserAccount } from "@/api/auth";
 import Alert from "@/widgets/Alert";
 
@@ -205,20 +204,6 @@ export default function ProfileButton({
           <DialogDescription hidden></DialogDescription>
 
           {/* 프로필 편집 컴포넌트 */}
-          <EditUserProfile
-            submitFooter={(isUploading: boolean) => (
-              <DialogFooter className="flex flex-row justify-end gap-2">
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">
-                    취소
-                  </Button>
-                </DialogClose>
-                <Button type="submit" disabled={isUploading}>
-                  저장
-                </Button>
-              </DialogFooter>
-            )}
-          />
         </DialogContent>
       </Dialog>
 

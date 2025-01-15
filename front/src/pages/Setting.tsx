@@ -1,6 +1,5 @@
 import EditUserProfile from "@/features/setting/EditUserProfile";
 import PageTemplate from "@/shared/original-ui/PageTemplate";
-import { Button } from "@/shared/shadcn-ui/button";
 
 export default function Setting() {
   return (
@@ -12,7 +11,7 @@ export default function Setting() {
           <p className="text-sm text-muted-foreground">
             프로필 이미지, 닉네임을 편집할 수 있습니다.
           </p>
-          <EditUserProfile submitFooter={() => <Button>저장</Button>} />
+          <EditUserProfile />
         </div>
 
         {/* 소셜 로그인 연동 설정 */}

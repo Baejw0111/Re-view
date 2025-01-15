@@ -14,12 +14,9 @@ import {
 } from "@/shared/types/validation";
 import ProfileImageForm from "../form/ProfileImageForm";
 import NicknameForm from "../form/NicknameForm";
+import { Button } from "@/shared/shadcn-ui/button";
 
-export default function EditUserProfile({
-  submitFooter,
-}: {
-  submitFooter: (isUploading: boolean) => React.ReactNode;
-}) {
+export default function EditUserProfile() {
   const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
   const [isUploading, setIsUploading] = useState(false); // 프로필 이미지 업로드 상태
 
@@ -93,7 +90,10 @@ export default function EditUserProfile({
 
         {/* 닉네임 */}
         <NicknameForm form={form} />
-        {submitFooter(isUploading)}
+
+        <Button type="submit" disabled={isUploading}>
+          저장
+        </Button>
       </form>
     </Form>
   );
