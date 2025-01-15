@@ -243,7 +243,7 @@ export const getLoginUserInfo = asyncHandler(async (req, res) => {
     return res.status(200).json({ isSignedUp: false });
   }
 
-  const agreement = await AgreementModel.findById(userId);
+  const agreement = await AgreementModel.findOne({ userId });
 
   return res.status(200).json({
     isSignedUp: true,
