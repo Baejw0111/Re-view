@@ -4,6 +4,7 @@ import {
   ReviewModel,
   CommentModel,
   NotificationModel,
+  AgreementModel,
   ReviewLikeModel,
   TagModel,
   IdMapModel,
@@ -138,8 +139,9 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 export const signUp = asyncHandler(async (req, res) => {
   const { userIdentifier } = req;
   const { newNickname, useDefaultProfile } = req.body; // 기본 프로필 사용 여부 추가
-  console.log(req.body);
+  const { termVersion, privacyVersion } = req.query;
   const aliasId = await generateUserAliasId();
+
   await IdMapModel.create({ originalSocialId: [userIdentifier], aliasId });
   const userInfo = new UserModel({
     aliasId,
@@ -155,6 +157,14 @@ export const signUp = asyncHandler(async (req, res) => {
 
   userInfo.nickname = newNickname;
   await userInfo.save();
+
+  await AgreementModel.create({
+    userId: userInfo._id,
+    termVersion,
+    termAgreementTime: Date.now(),
+    privacyVersion,
+    privacyAgreementTime: Date.now(),
+  });
 
   const userCount = await UserModel.countDocuments();
   await axios.post(`${PUUUSH_WEB_HOOK_URL}`, {
@@ -265,10 +275,11 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   }
   await CommentModel.deleteMany({ authorId: user._id });
 
+  await IdMapModel.deleteOne({ aliasId: aliasId }); // 유저의 소셜 아이디 맵 삭제
   await NotificationModel.deleteMany({ userId: user._id }); // 유저의 알림들 모두 삭제
   await ReviewLikeModel.deleteMany({ userId: user._id }); // 유저의 추천들 모두 삭제
   await TagModel.deleteMany({ userId: user._id }); // 유저의 태그들 모두 삭제
-  await IdMapModel.deleteOne({ aliasId: aliasId }); // 유저의 소셜 아이디 맵 삭제
+  await AgreementModel.deleteOne({ userId: user._id }); // 유저의 약관 동의 데이터 삭제
 
   res.clearCookie("provider");
   res.clearCookie("accessToken");

@@ -4,6 +4,8 @@ import {
   KAKAO_AUTH_URL,
   GOOGLE_AUTH_URL,
   NAVER_AUTH_URL,
+  TERM_VERSION,
+  PRIVACY_VERSION,
 } from "@/shared/constants";
 
 /**
@@ -37,10 +39,18 @@ export const getToken = async (
   );
 };
 
+/**
+ * 회원 가입 함수
+ * @param formData 회원 가입 폼 데이터
+ */
 export const signUp = async (formData: FormData): Promise<void> => {
   await authApiClient.put(`/auth/signup`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
+    },
+    params: {
+      termVersion: TERM_VERSION,
+      privacyVersion: PRIVACY_VERSION,
     },
   });
 };

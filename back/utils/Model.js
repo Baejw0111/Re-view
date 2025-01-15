@@ -49,6 +49,29 @@ export const IdMapModel = db.model(
 );
 
 /**
+ * 약관 동의 모델
+ * @type {mongoose.Model}
+ * @property {string} userId - 유저 ID
+ * @property {number} termVersion - 이용 약관 버전
+ * @property {Date} termAgreementTime - 이용 약관 동의 시점
+ * @property {number} privacyVersion - 개인정보 수집 및 이용 약관 버전
+ * @property {Date} privacyAgreementTime - 개인정보 수집 및 이용 약관 동의 시점
+ */
+export const AgreementModel = db.model(
+  "Agreement",
+  new mongoose.Schema({
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    termVersion: { type: Number, default: 0 },
+    termAgreementTime: { type: Date, default: Date.now },
+    privacyVersion: { type: Number, default: 0 },
+    privacyAgreementTime: { type: Date, default: Date.now },
+  })
+);
+
+/**
  * 유저 모델
  * @type {mongoose.Model}
  * @property {string} aliasId - 서비스 내에서 사용되는 유저의 별칭 아이디
