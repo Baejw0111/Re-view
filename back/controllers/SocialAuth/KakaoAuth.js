@@ -32,8 +32,6 @@ export default class KakaoAuth {
       }
     );
 
-    console.log(`${KAKAO_REDIRECT_URI}`);
-
     return response.data;
   }
 
