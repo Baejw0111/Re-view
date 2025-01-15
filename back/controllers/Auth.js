@@ -197,7 +197,7 @@ export const updateTermsAgreement = asyncHandler(async (req, res) => {
   const { termVersion, privacyVersion } = req.body;
 
   await AgreementModel.findOneAndUpdate(
-    { _id: userId }, // 검색 조건
+    { userId: userId }, // 검색 조건
     {
       termVersion,
       privacyVersion,
