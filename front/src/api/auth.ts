@@ -11,7 +11,6 @@ import {
  */
 export const socialLogin = async (provider: string): Promise<void> => {
   window.location.href = `${authUrlVariants[provider]}&redirect_uri=https://re-view.my/oauth/${provider}`;
-  // window.location.href = `${authUrlVariants[provider]}&redirect_uri=${window.location.origin}/oauth/${provider}`;
 };
 
 /**
