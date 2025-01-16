@@ -23,7 +23,7 @@ export default function ReviewTextForm({
             <FormControl>
               <Textarea
                 id="review"
-                placeholder="리뷰를 작성해주세요.(최대 1000자)"
+                placeholder="리뷰를 작성해주세요.(최대 2000자)"
                 rows={5}
                 {...field}
                 className="py-0 px-1 rounded-none border-0 focus-visible:ring-0 resize-none"
