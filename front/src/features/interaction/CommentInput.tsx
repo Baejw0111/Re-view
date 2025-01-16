@@ -38,7 +38,7 @@ export default function CommentInput() {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // 제출 버튼 클릭 시 발생하는 새로고침 방지
     if (userInfo.aliasId === "") {
       toast.error("로그인 후 이용해주세요.");
       return;
