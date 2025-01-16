@@ -89,6 +89,12 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
   req.aliasId = idMap?.aliasId; // 유저 별칭 ID. 회원 가입을 하지 않은 경우 빈 값
   req.userId = userInfo?._id; // 유저 데이터 고유 ID. 회원 가입을 하지 않은 경우 빈 값
 
+  if (userInfo?.nickname === "운영자") {
+    req.role = "admin";
+  } else {
+    req.role = "user";
+  }
+
   return next();
 }, "소셜 토큰 검증");
 
@@ -224,6 +230,13 @@ export const signUp = asyncHandler(async (req, res) => {
   const { userIdentifier } = req;
   const { newNickname, useDefaultProfile } = req.body; // 기본 프로필 사용 여부 추가
   const { termVersion, privacyVersion } = req.query;
+
+  if (newNickname === "운영자") {
+    return res
+      .status(400)
+      .json({ message: `"운영자"는 사용할 수 없는 닉네임입니다.` });
+  }
+
   const aliasId = await generateUserAliasId();
 
   await IdMapModel.create({ originalSocialId: [userIdentifier], aliasId });
@@ -360,21 +373,7 @@ export const logOut = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "로그아웃 성공" });
 }, "소셜 로그아웃");
 
-/**
- * 소셜 유저 계정 삭제
- */
-export const deleteUserAccount = asyncHandler(async (req, res) => {
-  const { accessToken, provider } = req.cookies;
-  const { userId, userIdentifier } = req;
-
-  await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
-
-  const user = await UserModel.findByIdAndDelete(userId); // 유저 데이터 삭제 및 반환
-
-  if (!user) {
-    return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
-  }
-
+const deleteUserData = async (user, userIdentifier) => {
   // 리뷰 관련 데이터 모두 삭제
   const reviews = await ReviewModel.find({ authorId: user._id });
   for (const review of reviews) {
@@ -395,15 +394,54 @@ export const deleteUserAccount = asyncHandler(async (req, res) => {
   }
   await CommentModel.deleteMany({ authorId: user._id });
 
-  await IdMapModel.deleteOne({ originalSocialId: userIdentifier }); // 유저의 소셜 아이디 맵 삭제
+  await IdMapModel.deleteOne({ aliasId: user.aliasId }); // 유저의 소셜 아이디 맵 삭제
   await NotificationModel.deleteMany({ userId: user._id }); // 유저의 알림들 모두 삭제
   await ReviewLikeModel.deleteMany({ userId: user._id }); // 유저의 추천들 모두 삭제
   await TagModel.deleteMany({ userId: user._id }); // 유저의 태그들 모두 삭제
   await AgreementModel.deleteOne({ userId: user._id }); // 유저의 약관 동의 데이터 삭제
+};
+
+/**
+ * 회원 탈퇴
+ */
+export const deleteUserAccount = asyncHandler(async (req, res) => {
+  const { accessToken, provider } = req.cookies;
+  const { userId, aliasId } = req;
+
+  await authProvider[provider].unlink(accessToken); // 소셜 연동 해제
+
+  const user = await UserModel.findByIdAndDelete(userId); // 유저 데이터 삭제 및 반환
+
+  if (!user) {
+    return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+  }
+
+  await deleteUserData(user, aliasId);
 
   res.clearCookie("provider");
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
 
-  res.status(200).json({ message: "유저 계정 삭제 성공" });
-}, "소셜 유저 계정 삭제");
+  res.status(200).json({ message: "회원 탈퇴 성공" });
+}, "회원 탈퇴");
+
+/**
+ * 관리자 권한 강제 유저 계정 삭제
+ */
+export const adminDeleteUserAccount = asyncHandler(async (req, res) => {
+  const { aliasId } = req.params;
+  const { role } = req;
+
+  if (role !== "admin") {
+    return res.status(403).json({ message: "관리자 권한이 없습니다." });
+  }
+
+  const user = await UserModel.findOneAndDelete({ aliasId });
+  if (!user) {
+    return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+  }
+
+  await deleteUserData(user, aliasId);
+
+  res.status(200).json({ message: "관리자 권한 강제 유저 계정 삭제 성공" });
+}, "관리자 권한 강제 유저 계정 삭제");

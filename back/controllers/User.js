@@ -169,7 +169,13 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
  */
 export const updateUserInfo = asyncHandler(async (req, res) => {
   const { newNickname, useDefaultProfile } = req.body; // 기본 프로필 사용 여부 추가
-  const userId = req.userId;
+  const { userId } = req;
+
+  if (newNickname === "운영자") {
+    return res
+      .status(400)
+      .json({ message: `"운영자"는 사용할 수 없는 닉네임입니다.` });
+  }
 
   const user = await UserModel.findById(userId); // 유저 찾기
 

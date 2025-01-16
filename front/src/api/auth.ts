@@ -110,12 +110,26 @@ export const getLoginUserInfo = async (): Promise<LoginUserInfo> => {
   return response.data;
 };
 
-// 로그아웃 및 쿠키 삭제
+/**
+ * 로그아웃 및 쿠키 삭제 함수
+ */
 export const logOut = async (): Promise<void> => {
   await authApiClient.post(`/auth/logout`, {});
 };
 
-// 서비스 탈퇴
+/**
+ * 서비스 탈퇴 함수
+ */
 export const deleteUserAccount = async (): Promise<void> => {
   await authApiClient.delete(`/auth/delete`, {});
+};
+
+/**
+ * 관리자 권한 강제 유저 계정 삭제 함수
+ * @param aliasId 유저 계정 아이디
+ */
+export const adminDeleteUserAccount = async (
+  aliasId: string
+): Promise<void> => {
+  await authApiClient.delete(`/admin/user/${aliasId}`, {});
 };

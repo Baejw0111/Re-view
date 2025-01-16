@@ -15,6 +15,9 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
   const [queryParams] = useSearchParams();
   const reviewId = queryParams.get("reviewId");
   const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
+  const loginnedUserNickname = useSelector(
+    (state: RootState) => state.userInfo.nickname
+  );
 
   const { mutate: deleteReviewMutate } = useMutation({
     mutationFn: () => deleteReview(reviewId as string),
@@ -57,7 +60,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
         </Button>
       </TooltipWrapper>
       <div className="flex items-center gap-2 ml-auto">
-        {isAuthor ? (
+        {isAuthor || loginnedUserNickname === "운영자" ? (
           <>
             <TooltipWrapper tooltipText="수정">
               <Button variant="ghost" size="icon" asChild>

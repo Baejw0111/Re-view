@@ -27,6 +27,8 @@ import { RootState } from "@/state/store";
 import { signUp, cancelSignUp } from "@/api/auth";
 import { useBlocker } from "react-router-dom";
 import TermsAgreement from "@/features/form/TermsAgreement";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -88,6 +90,11 @@ export default function Onboarding() {
     onSuccess: () => {
       setIsSignUp(true); // 회원 가입을 성공 시 경고창 생성 방지
       window.location.href = "/";
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("회원 가입 과정에서 오류 발생", {
+        description: error.response?.data?.message,
+      });
     },
   });
 

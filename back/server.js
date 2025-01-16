@@ -26,6 +26,7 @@ import {
   getLoginUserInfo,
   logOut,
   deleteUserAccount,
+  adminDeleteUserAccount,
 } from "./controllers/Auth.js";
 import {
   createReview,
@@ -174,6 +175,8 @@ app.get("/tag/search", searchRelatedTags); // 검색어 연관 태그 조회 API
 // 검색 관련 API
 app.get("/search/reviews", searchReviews); // 리뷰 검색 결과 조회 API
 app.get("/search/users", searchUsers); // 유저 검색 결과 조회 API
+
+app.delete("/admin/user/:aliasId", verifyAccessToken, adminDeleteUserAccount); // 관리자 권한 강제 유저 계정 삭제 API
 
 export const handler = async (event, context) => {
   try {

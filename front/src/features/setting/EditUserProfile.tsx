@@ -16,6 +16,8 @@ import {
 import ProfileImageForm from "../form/ProfileImageForm";
 import NicknameForm from "../form/NicknameForm";
 import { Button } from "@/shared/shadcn-ui/button";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export default function EditUserProfile() {
   const queryClient = useQueryClient();
@@ -47,6 +49,11 @@ export default function EditUserProfile() {
     mutationFn: updateUserInfo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["loggedInUserInfo"] });
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("프로필 업데이트 과정에서 오류 발생", {
+        description: error.response?.data?.message,
+      });
     },
   });
 

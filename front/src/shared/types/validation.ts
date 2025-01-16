@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const reviewFieldLimits = {
   title: 20,
-  reviewText: 1000,
+  reviewText: 4000,
   tags: 5,
   files: 5,
   fileSize: 20 * 1024 * 1024, // 20MB

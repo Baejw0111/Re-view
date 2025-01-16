@@ -235,11 +235,12 @@ export const updateReview = asyncHandler(async (req, res) => {
  */
 export const deleteReview = asyncHandler(async (req, res) => {
   const { reviewAliasId } = req.params;
+  const { userId, role } = req;
   const review = await ReviewModel.findOne({ aliasId: reviewAliasId });
 
   if (!review) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
-  } else if (!req.userId.equals(review.authorId)) {
+  } else if (role !== "admin" && !userId.equals(review.authorId)) {
     return res.status(403).json({ message: "리뷰 삭제 권한이 없습니다." });
   }
 

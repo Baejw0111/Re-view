@@ -25,6 +25,9 @@ export default function CommentBox({
   const queryClient = useQueryClient();
   const [isHighlight, setIsHighlight] = useState(highlight);
   const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
+  const loginnedUserNickname = useSelector(
+    (state: RootState) => state.userInfo.nickname
+  );
 
   // 댓글 삭제
   const { mutate: deleteCommentMutate } = useMutation({
@@ -99,7 +102,8 @@ export default function CommentBox({
                 {/* <Button variant="ghost" size="icon">
                   <Pencil className="w-4 h-4 text-muted-foreground" />
                 </Button> */}
-                {commentInfo.authorId === aliasId ? (
+                {commentInfo.authorId === aliasId ||
+                loginnedUserNickname === "운영자" ? (
                   <Alert
                     title="댓글을 삭제하시겠습니까?"
                     description=""
