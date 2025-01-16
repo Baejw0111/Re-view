@@ -10,7 +10,7 @@ import {
  * 소셜 로그인 페이지 이동 함수
  */
 export const socialLogin = async (provider: string): Promise<void> => {
-  window.location.href = `${authUrlVariants[provider]}&redirect_uri=${window.location.origin}/oauth/${provider}`;
+  window.location.href = `${authUrlVariants[provider]}&redirect_uri=https://re-view.my/oauth/${provider}`;
 };
 
 /**
