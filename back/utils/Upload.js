@@ -138,7 +138,7 @@ export const checkFormFieldsExistence = (req, res, next) => {
  */
 const fieldLimits = {
   title: 20,
-  reviewText: 1000,
+  reviewText: 4000,
   tags: 5,
   files: 5,
 };
