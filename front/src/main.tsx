@@ -33,7 +33,7 @@ import Test from "@/pages/Test";
 import Login from "@/pages/Login";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import Terms from "@/pages/Terms";
-import Setting from "@/pages/Setting";
+import Settings from "@/pages/Settings";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -170,10 +170,14 @@ const router = createBrowserRouter(
           element: <Authorization />,
         },
         {
-          path: "/setting",
+          path: "/oauth/:provider/add",
+          element: <Authorization addSocialLogin={true} />,
+        },
+        {
+          path: "/settings",
           element: (
             <LoginRequiredRoute>
-              <Setting />
+              <Settings />
             </LoginRequiredRoute>
           ),
         },
