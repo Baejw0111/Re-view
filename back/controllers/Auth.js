@@ -134,6 +134,90 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 }, "소셜 액세스 토큰 재발급");
 
 /**
+ * 소셜 계정 연동 정보 조회
+ */
+export const getSocialProvidersInfo = asyncHandler(async (req, res) => {
+  const { aliasId } = req;
+  const socialProviders = await IdMapModel.findOne({ aliasId });
+  const providers = { naver: false, kakao: false, google: false };
+
+  if (!socialProviders) {
+    return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+  }
+
+  // IdMapModel의 originalSocialId 배열을 순회하며 소셜 로그인 연동 정보 추출
+  for (const socialId of socialProviders.originalSocialId) {
+    for (const provider in providers) {
+      if (socialId.startsWith(provider)) {
+        providers[provider] = true;
+        break;
+      }
+    }
+  }
+
+  return res.status(200).json(providers);
+}, "소셜 로그인 연동 정보 조회");
+
+/**
+ * 소셜 로그인 추가 연동
+ */
+export const addSocialProvider = asyncHandler(async (req, res) => {
+  const { provider } = req.params;
+  const { code } = req.body;
+  const { access_token } = await authProvider[provider].getToken(code);
+  const { aliasId } = req;
+
+  // 토큰을 통해 소셜 로그인 정보 조회
+  const socialId = await authProvider[provider].verifyToken(access_token);
+  console.table({ socialId });
+
+  const userIdentifier = provider + socialId; // 소셜 로그인 제공자 + 유저 소셜 ID
+  const idMap = await IdMapModel.findOne({ aliasId });
+
+  if (idMap) {
+    if (idMap.originalSocialId.includes(userIdentifier)) {
+      return res.status(409).json({ message: "이미 연동된 플랫폼입니다." });
+    }
+    idMap.originalSocialId.push(userIdentifier);
+    await idMap.save();
+  } else {
+    return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+  }
+
+  return res.status(200).json({ message: "소셜 로그인 연동 성공" });
+}, "소셜 로그인 연동");
+
+/**
+ * 소셜 로그인 연동 해제
+ */
+export const deleteSocialProvider = asyncHandler(async (req, res) => {
+  const { provider } = req.params;
+  const { aliasId } = req;
+  const idMap = await IdMapModel.findOne({ aliasId });
+
+  if (!idMap) {
+    return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+  }
+
+  if (!idMap.originalSocialId.includes(provider)) {
+    return res.status(409).json({ message: "연동된 플랫폼이 아닙니다." });
+  }
+
+  if (idMap.originalSocialId.length === 1) {
+    return res
+      .status(400)
+      .json({ message: "최소 하나의 플랫폼은 연동되어 있어야 합니다." });
+  }
+
+  idMap.originalSocialId = idMap.originalSocialId.filter(
+    (socialId) => !socialId.startsWith(provider)
+  );
+  await idMap.save();
+
+  return res.status(200).json({ message: "소셜 로그인 연동 해제 성공" });
+}, "소셜 로그인 연동 해제");
+
+/**
  * 회원 가입
  */
 export const signUp = asyncHandler(async (req, res) => {
