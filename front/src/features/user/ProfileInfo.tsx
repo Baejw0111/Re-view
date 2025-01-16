@@ -101,7 +101,7 @@ export default function ProfileInfo({
           className="font-bold"
         >
           <UserX className="w-4 h-4 mr-2" />
-          회원 탈퇴
+          강제 탈퇴
         </Button>
       )}
     </div>
