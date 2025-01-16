@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { Form } from "@/shared/shadcn-ui/form";
@@ -17,6 +18,7 @@ import NicknameForm from "../form/NicknameForm";
 import { Button } from "@/shared/shadcn-ui/button";
 
 export default function EditUserProfile() {
+  const queryClient = useQueryClient();
   const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
   const [isUploading, setIsUploading] = useState(false); // 프로필 이미지 업로드 상태
 
@@ -44,7 +46,7 @@ export default function EditUserProfile() {
   const { mutate: updateUserInfoMutation } = useMutation({
     mutationFn: updateUserInfo,
     onSuccess: () => {
-      window.location.reload();
+      queryClient.invalidateQueries({ queryKey: ["loggedInUserInfo"] });
     },
   });
 
@@ -77,7 +79,7 @@ export default function EditUserProfile() {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         onKeyDown={handleEnterKeyDown}
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-8 w-full sm:w-2/3 mx-auto p-8 pt-16 border rounded-xl bg-card"
       >
         {/* 프로필 이미지 */}
         <ProfileImageForm
