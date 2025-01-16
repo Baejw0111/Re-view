@@ -136,11 +136,14 @@ export const getReviewCommentList = asyncHandler(async (req, res) => {
  */
 export const deleteComment = asyncHandler(async (req, res) => {
   const { commentAliasId } = req.params;
+  const { userId, role } = req;
 
   const comment = await CommentModel.findOne({ aliasId: commentAliasId });
 
   if (!comment) {
     return res.status(404).json({ message: "댓글이 존재하지 않습니다." });
+  } else if (role !== "admin" && !userId.equals(comment.authorId)) {
+    return res.status(403).json({ message: "댓글 삭제 권한이 없습니다." });
   }
 
   await CommentModel.findByIdAndDelete(comment._id); // 댓글 삭제

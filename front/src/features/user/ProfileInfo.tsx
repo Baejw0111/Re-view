@@ -1,9 +1,17 @@
+import { useMutation } from "@tanstack/react-query";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import TagBadge from "@/features/review/TagBadge";
 import UserAvatar from "@/features/user/UserAvatar";
 import { fetchUserInfoById } from "@/api/user";
+import { adminDeleteUserAccount } from "@/api/auth";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { Button } from "@/shared/shadcn-ui/button";
+import { UserX } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 export default function ProfileInfo({
   userId,
@@ -14,9 +22,24 @@ export default function ProfileInfo({
   tags?: boolean;
   profileImageSize?: "sm" | "md" | "lg";
 }) {
+  const loginnedUserNickname = useSelector(
+    (state: RootState) => state.userInfo.nickname
+  );
   const { data: userInfo } = useSuspenseQuery({
     queryKey: ["userInfo", userId],
     queryFn: () => fetchUserInfoById(userId),
+  });
+
+  const adminDeleteUserAccountMutation = useMutation({
+    mutationFn: adminDeleteUserAccount,
+    onSuccess: () => {
+      window.location.href = "/";
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error("회원 탈퇴 과정에서 오류 발생", {
+        description: error.response?.data?.message,
+      });
+    },
   });
 
   return (
@@ -70,6 +93,16 @@ export default function ProfileInfo({
             userInfo.favoriteTags.map((tag) => <TagBadge key={tag} tag={tag} />)
           )}
         </div>
+      )}
+      {loginnedUserNickname === "운영자" && userInfo.nickname !== "운영자" && (
+        <Button
+          variant="destructive"
+          onClick={() => adminDeleteUserAccountMutation.mutate(userId)}
+          className="font-bold"
+        >
+          <UserX className="w-4 h-4 mr-2" />
+          회원 탈퇴
+        </Button>
       )}
     </div>
   );
