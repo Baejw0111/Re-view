@@ -15,6 +15,9 @@ import {
   getToken,
   verifyAccessToken,
   refreshAccessToken,
+  getSocialProvidersInfo,
+  addSocialProvider,
+  deleteSocialProvider,
   checkAuth,
   signUp,
   cancelSignUp,
@@ -84,14 +87,16 @@ app.use(helmet()); // 보안 헤더 설정
 
 // 소셜 로그인 관련 API
 app.post("/auth/:provider/token", getToken); // 소셜 토큰 요청 API
-// 가입
+app.get("/auth/providers/info", verifyAccessToken, getSocialProvidersInfo); // 소셜 로그인 연동 정보 조회 API
+app.post("/auth/:provider/add", verifyAccessToken, addSocialProvider); // 소셜 로그인 추가 연동 API
+app.delete("/auth/:provider/delete", verifyAccessToken, deleteSocialProvider); // 소셜 로그인 연동 해제 API
 app.put(
   "/auth/signup",
   verifyAccessToken,
   upload.single("profileImage"),
   handleMulterError,
   signUp
-);
+); // 회원 가입 API
 app.post("/auth/signup/cancel", verifyAccessToken, cancelSignUp); // 회원 가입 취소 API
 app.post("/auth/terms/agreement", verifyAccessToken, updateTermsAgreement); // 약관 동의 업데이트 API
 app.post("/auth/refresh", refreshAccessToken); // 소셜 액세스 토큰 재발급 API
@@ -172,6 +177,7 @@ app.get("/search/users", searchUsers); // 유저 검색 결과 조회 API
 
 export const handler = async (event, context) => {
   try {
+    context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
     return await serverless(app)(event, context);
   } catch (err) {

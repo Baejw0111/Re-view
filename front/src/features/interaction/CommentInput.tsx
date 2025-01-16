@@ -38,7 +38,7 @@ export default function CommentInput() {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // 제출 버튼 클릭 시 발생하는 새로고침 방지
     if (userInfo.aliasId === "") {
       toast.error("로그인 후 이용해주세요.");
       return;
@@ -49,6 +49,7 @@ export default function CommentInput() {
     }
     if (comment.trim()) {
       setIsFocused(false);
+      // mutate()를 쓸 경우 비동기 작업이기 때문에 setComment("")가 먼저 실행되어 댓글 내용이 제대로 등록되지 않음
       await mutation.mutateAsync();
       setComment("");
     }

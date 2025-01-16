@@ -11,17 +11,7 @@ const connectDB = async () => {
   }
 
   try {
-    const connection = await mongoose.connect(
-      MONGO_URI
-      // 문제 생길 경우 주석 해제
-      //   , {
-      //   serverSelectionTimeoutMS: 5000,
-      //   maxPoolSize: 10,
-      //   minPoolSize: 5,
-      //   connectTimeoutMS: 10000,
-      //   maxIdleTimeMS: 5000,
-      // }
-    );
+    const connection = await mongoose.connect(MONGO_URI);
     console.log("MongoDB에 연결되었습니다.");
 
     cachedConnection = connection;

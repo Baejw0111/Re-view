@@ -1,24 +1,16 @@
 import { generalApiClient, authApiClient } from "@/api/util";
 import { LoginUserInfo } from "@/shared/types/interface";
 import {
-  KAKAO_AUTH_URL,
-  GOOGLE_AUTH_URL,
-  NAVER_AUTH_URL,
   TERM_VERSION,
   PRIVACY_VERSION,
+  authUrlVariants,
 } from "@/shared/constants";
 
 /**
  * 소셜 로그인 페이지 이동 함수
  */
 export const socialLogin = async (provider: string): Promise<void> => {
-  const urlVariants: Record<string, string> = {
-    google: GOOGLE_AUTH_URL,
-    kakao: KAKAO_AUTH_URL,
-    naver: NAVER_AUTH_URL,
-  };
-
-  window.location.href = `${urlVariants[provider]}&redirect_uri=${window.location.origin}/oauth/${provider}`;
+  window.location.href = `${authUrlVariants[provider]}&redirect_uri=${window.location.origin}/oauth/${provider}`;
 };
 
 /**
@@ -37,6 +29,40 @@ export const getToken = async (
       withCredentials: true,
     }
   );
+};
+
+/**
+ * 소셜 로그인 연동 정보 조회 함수
+ * @param provider 소셜 플랫폼
+ */
+export const getSocialProvidersInfo = async (): Promise<void> => {
+  const response = await authApiClient.get(`/auth/providers/info`);
+  return response.data;
+};
+
+/**
+ * 소셜 로그인 추가 연동 함수
+ * @param provider 소셜 플랫폼
+ */
+export const addSocialProvider = async (
+  provider: string,
+  code: string
+): Promise<void> => {
+  await authApiClient.post(
+    `/auth/${provider}/add`,
+    { code },
+    {
+      withCredentials: true,
+    }
+  );
+};
+
+/**
+ * 소셜 로그인 연동 해제 함수
+ * @param provider 소셜 플랫폼
+ */
+export const deleteSocialProvider = async (provider: string): Promise<void> => {
+  await authApiClient.delete(`/auth/${provider}/delete`);
 };
 
 /**

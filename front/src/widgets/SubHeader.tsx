@@ -23,7 +23,7 @@ export default function SubHeader() {
     notifications: "모든 알림",
     profile: "프로필",
     policies: "약관 정책",
-    setting: "설정",
+    settings: "설정",
   };
   const isMobile = useMediaQuery("(max-width: 768px)");
 

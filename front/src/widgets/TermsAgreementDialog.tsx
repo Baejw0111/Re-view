@@ -16,6 +16,7 @@ export default function TermsAgreementDialog({ open }: { open: boolean }) {
 
   return (
     <Dialog open={open}>
+      {/*  [&>button]:hidden는 닫기 버튼을 감추기 위한 클래스다. */}
       <DialogContent className="max-w-sm [&>button]:hidden">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">약관 동의</DialogTitle>
