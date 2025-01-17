@@ -140,14 +140,21 @@ export const getPopularTags = asyncHandler(async (req, res) => {
     {}
   );
 
+  console.log(Object.entries(combinedScores));
+
   // 점수 기준으로 정렬 후 상위 5개 태그만 선택
   const sortedTags = Object.entries(combinedScores)
-    .sort(([, a], [, b]) => b - a)
+    .sort(([tagNameA, scoreA], [tagNameB, scoreB]) => {
+      if (scoreA === scoreB) {
+        return tagNameA.localeCompare(tagNameB); // 문자열 기준으로 정렬
+      }
+      return scoreB - scoreA; // 기본 숫자 정렬
+    })
     .map(([tagName]) => tagName)
     .slice(0, 5);
 
   res.status(200).json(sortedTags);
-});
+}, "인기 태그 조회");
 
 /**
  * 검색어 연관 태그 조회
@@ -178,10 +185,12 @@ export const searchRelatedTags = asyncHandler(async (req, res) => {
     });
   }
 
-  const relatedTags = await TagModel.find({
-    $or: conditions,
-  }).limit(10);
+  const relatedTags = await TagModel.aggregate([
+    { $match: { $or: conditions } },
+    { $group: { _id: "$tagName" } }, // 태그 이름으로 그룹화하여 중복 제거
+    { $limit: 10 }, // 상위 10개만 선택
+  ]);
 
-  const tagNames = relatedTags.map((tag) => tag.tagName); // 태그 이름만 추출
+  const tagNames = relatedTags.map((tag) => tag._id); // 태그 이름만 추출
   res.status(200).json(tagNames);
-});
+}, "검색어 연관 태그 조회");
