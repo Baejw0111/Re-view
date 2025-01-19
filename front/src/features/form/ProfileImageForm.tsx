@@ -22,12 +22,14 @@ import { LoginUserInfo, ProfileFormValues } from "@/shared/types/interface";
 
 export default function ProfileImageForm({
   form,
+  isEditing,
   isDefaultProfile,
   isUploading,
   setIsUploading,
   userInfo,
 }: {
   form: UseFormReturn<ProfileFormValues>;
+  isEditing: boolean;
   isDefaultProfile: boolean;
   isUploading: boolean;
   setIsUploading: (isUploading: boolean) => void;
@@ -89,10 +91,16 @@ export default function ProfileImageForm({
                 <div className="relative">
                   <FormLabel
                     htmlFor="profileImage-upload"
-                    className="cursor-pointer"
+                    className={`${isEditing ? "cursor-pointer" : ""}`}
                   >
                     {currentProfileImage.length > 0 || isDefaultProfile ? (
-                      <Avatar className="h-24 w-24 transition-transform hover:scale-105 active:scale-105">
+                      <Avatar
+                        className={`${
+                          isEditing
+                            ? "h-24 w-24 transition-transform hover:scale-105 active:scale-105"
+                            : "h-32 w-32"
+                        }`}
+                      >
                         {isUploading ? (
                           <Skeleton className="h-24 w-24 flex items-center justify-center">
                             <LoaderCircle className="w-6 h-6 animate-spin" />
@@ -112,40 +120,53 @@ export default function ProfileImageForm({
                       </Avatar>
                     ) : (
                       <UserAvatar
-                        className="h-24 w-24 transition-transform hover:scale-105 active:scale-105"
+                        className={`${
+                          isEditing
+                            ? "h-24 w-24 transition-transform hover:scale-105 active:scale-105"
+                            : "h-32 w-32"
+                        }`}
                         profileImage={userInfo.profileImage}
                         nickname={userInfo.nickname}
                       />
                     )}
-                    <div className="absolute bottom-0 right-0 bg-muted-foreground rounded-full p-1 shadow-lg">
-                      <Camera className="w-4 h-4 text-white" />
-                    </div>
+                    {isEditing && (
+                      <div className="absolute bottom-0 right-0 bg-muted-foreground rounded-full p-1 shadow-lg">
+                        <Camera className="w-4 h-4 text-white" />
+                      </div>
+                    )}
                   </FormLabel>
-                  <input
-                    id="profileImage-upload"
-                    type="file"
-                    accept={reviewFieldLimits.imageTypes.join(", ")}
-                    className="hidden"
-                    onChange={handleProfileImageUpload}
-                  />
-                  {!isDefaultProfile && (
-                    <button
-                      type="button"
-                      onClick={handleDefaultProfileImage}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-800 active:bg-red-800 transition-colors"
-                      aria-label="프로필 사진 삭제"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+                  {isEditing && (
+                    <>
+                      <input
+                        id="profileImage-upload"
+                        type="file"
+                        accept={reviewFieldLimits.imageTypes.join(", ")}
+                        className="hidden"
+                        onChange={handleProfileImageUpload}
+                      />
+                      {!isDefaultProfile && (
+                        <button
+                          type="button"
+                          onClick={handleDefaultProfileImage}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-800 active:bg-red-800 transition-colors"
+                          aria-label="프로필 사진 삭제"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  {isUploading
-                    ? `이미지 업로드 중... ${uploadProgress}%`
-                    : "클릭하여 프로필 사진 업로드"}
-                </span>
+                {isEditing && (
+                  <span className="text-sm text-muted-foreground">
+                    {isUploading
+                      ? `이미지 업로드 중... ${uploadProgress}%`
+                      : "클릭하여 프로필 사진 업로드"}
+                  </span>
+                )}
               </div>
             </FormControl>
+            {isEditing && <FormMessage />}
             <FormMessage />
           </FormItem>
         </>

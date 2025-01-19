@@ -194,12 +194,13 @@ export default function Onboarding() {
                     isUploading={isUploading}
                     setIsUploading={setIsUploading}
                     userInfo={userInfo}
+                    isEditing={true}
                   />
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
                   {/* 닉네임 */}
-                  <NicknameForm form={form} />
+                  <NicknameForm form={form} isEditing={true} />
                 </motion.div>
 
                 <motion.div

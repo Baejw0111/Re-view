@@ -22,6 +22,7 @@ import { AxiosError } from "axios";
 export default function EditUserProfile() {
   const queryClient = useQueryClient();
   const userInfo = useSelector((state: RootState) => state.userInfo); // 사용자 정보
+  const [isEditing, setIsEditing] = useState(false); // 프로필 편집 상태
   const [isUploading, setIsUploading] = useState(false); // 프로필 이미지 업로드 상태
 
   const formSchema = z.object({
@@ -49,6 +50,8 @@ export default function EditUserProfile() {
     mutationFn: updateUserInfo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["loggedInUserInfo"] });
+      setIsEditing(false);
+      toast.success("프로필 업데이트 완료");
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error("프로필 업데이트 과정에서 오류 발생", {
@@ -86,11 +89,14 @@ export default function EditUserProfile() {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         onKeyDown={handleEnterKeyDown}
-        className="flex flex-col gap-8 w-full sm:w-2/3 mx-auto p-8 pt-16 border rounded-xl bg-card"
+        className={`flex flex-col gap-8 mx-auto p-8 border rounded-xl transition-all duration-300 w-2/3 ${
+          isEditing ? "bg-card pt-16 w-full sm:w-2/3" : ""
+        }`}
       >
         {/* 프로필 이미지 */}
         <ProfileImageForm
           form={form}
+          isEditing={isEditing}
           isDefaultProfile={isDefaultProfile}
           isUploading={isUploading}
           setIsUploading={setIsUploading}
@@ -98,11 +104,26 @@ export default function EditUserProfile() {
         />
 
         {/* 닉네임 */}
-        <NicknameForm form={form} />
+        <NicknameForm form={form} isEditing={isEditing} />
 
-        <Button type="submit" disabled={isUploading}>
-          저장
-        </Button>
+        {isEditing ? (
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsEditing(false)}
+            >
+              취소
+            </Button>
+            <Button type="submit" disabled={isUploading}>
+              저장
+            </Button>
+          </div>
+        ) : (
+          <Button type="button" onClick={() => setIsEditing(true)}>
+            편집
+          </Button>
+        )}
       </form>
     </Form>
   );
