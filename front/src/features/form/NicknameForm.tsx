@@ -10,8 +10,10 @@ import { UseFormReturn } from "react-hook-form";
 
 export default function NicknameForm({
   form,
+  isEditing,
 }: {
   form: UseFormReturn<ProfileFormValues>;
+  isEditing: boolean;
 }) {
   return (
     <FormField
@@ -22,11 +24,19 @@ export default function NicknameForm({
           <FormItem>
             <FormControl>
               <div className="flex flex-col gap-2">
-                <div className="text-sm font-bold">닉네임</div>
-                <Input id="newNickname" {...field} />
+                {isEditing ? (
+                  <>
+                    <div className="text-sm font-bold">닉네임</div>
+                    <Input id="newNickname" {...field} />
+                  </>
+                ) : (
+                  <h2 className="text-2xl text-center font-semibold">
+                    {field.value}
+                  </h2>
+                )}
               </div>
             </FormControl>
-            <FormMessage />
+            {isEditing && <FormMessage />}
           </FormItem>
         </>
       )}
