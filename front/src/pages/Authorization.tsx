@@ -23,7 +23,8 @@ export default function Authorization({
       mutationFn: async () =>
         await getToken(provider as string, AUTHORIZATION_CODE),
       onSuccess: () => {
-        navigate("/");
+        // 페이지를 새로고침하여 로그인한 사용자 정보를 가져오도록 함
+        window.location.href = "/";
       },
       onError: () => {
         toast.error("로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
