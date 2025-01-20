@@ -82,7 +82,7 @@ export default function TagForm({
         <>
           <FormItem className="space-y-0 flex flex-col gap-2">
             <div className="flex items-center justify-start gap-0">
-              <div className="text-lg font-bold">태그</div>
+              <div className="text-lg font-bold">태그(최대 5개)</div>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -95,7 +95,7 @@ export default function TagForm({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
-                  side="right"
+                  side="top"
                   className="w-60 text-xs text-muted-foreground break-keep"
                 >
                   <p>
@@ -108,6 +108,8 @@ export default function TagForm({
                     분류할 수 있도록 도와줍니다.
                   </p>
                   <br />
+                  <p>이미 입력한 태그를 입력할 경우 자동으로 삭제됩니다.</p>
+                  <br />
                   <p>올바른 태그들을 사용하여 리뷰를 작성해주세요.</p>
                 </PopoverContent>
               </Popover>
@@ -116,7 +118,7 @@ export default function TagForm({
               {currentTags.map((tag, index) => (
                 <Badge key={index} className="px-2 gap-2">
                   {tag}
-                  <button onClick={() => handleDeleteTag(index)}>
+                  <button type="button" onClick={() => handleDeleteTag(index)}>
                     <X className="w-4 h-4" />
                   </button>
                 </Badge>
@@ -126,7 +128,7 @@ export default function TagForm({
                   className="flex-grow outline-none bg-transparent text-sm"
                   placeholder={
                     currentTags.length === 0
-                      ? "태그를 입력해주세요.(최대 5개)"
+                      ? `상단의 ⓘ 버튼을 눌러보세요.`
                       : ""
                   }
                   {...field}
