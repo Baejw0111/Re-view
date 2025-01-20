@@ -46,7 +46,7 @@ export default function EditUserProfile() {
   const isDefaultProfile = form.watch("useDefaultProfile"); // 기본 프로필 이미지 사용 여부
 
   // 프로필 업데이트
-  const { mutate: updateUserInfoMutation } = useMutation({
+  const { mutate: updateUserInfoMutation, isPending } = useMutation({
     mutationFn: updateUserInfo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["loggedInUserInfo"] });
@@ -115,8 +115,8 @@ export default function EditUserProfile() {
             >
               취소
             </Button>
-            <Button type="submit" disabled={isUploading}>
-              저장
+            <Button type="submit" disabled={isUploading || isPending}>
+              {isPending ? "저장 중..." : "저장"}
             </Button>
           </div>
         ) : (

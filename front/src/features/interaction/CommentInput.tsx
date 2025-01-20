@@ -136,7 +136,7 @@ export default function CommentInput() {
             type="submit"
             variant="ghost"
             size="icon"
-            disabled={!comment.trim()}
+            disabled={!comment.trim() || mutation.isPending}
           >
             <Send />
           </Button>
