@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo } from "@/shared/types/interface";
@@ -21,10 +21,10 @@ import UserAvatar from "@/features/user/UserAvatar";
 import { claculateTime } from "@/shared/lib/utils";
 import { AspectRatio } from "@/shared/shadcn-ui/aspect-ratio";
 import TagBadge from "@/features/review/TagBadge";
+import { Separator } from "@/shared/shadcn-ui/separator";
 
 export default function ReviewDetail() {
-  const [queryParams] = useSearchParams();
-  const reviewId = queryParams.get("reviewId");
+  const { reviewId } = useParams();
   const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
 
   // 캐러셀 넘버링
@@ -108,6 +108,8 @@ export default function ReviewDetail() {
 
             {/* 리뷰 제목 */}
             <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
+
+            <Separator className="my-2" />
 
             {/* 리뷰 내용 */}
             <p className="text-sm text-muted-foreground whitespace-pre-wrap break-all">
