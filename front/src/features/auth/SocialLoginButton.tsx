@@ -21,7 +21,6 @@ export default function SocialLoginButton({ provider }: { provider: string }) {
     <Button
       className={`h-10 w-full gap-2 ${buttonVariants[provider]} text-black/85 text-xs font-semibold`}
       onClick={() => socialLogin(provider)}
-      disabled={provider === "naver"}
     >
       <img
         src={`/${provider}-symbol.svg`}
