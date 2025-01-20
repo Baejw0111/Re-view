@@ -24,6 +24,7 @@ export default function SubHeader() {
     profile: "프로필",
     policies: "약관 정책",
     settings: "설정",
+    review: "리뷰",
   };
   const isMobile = useMediaQuery("(max-width: 768px)");
 

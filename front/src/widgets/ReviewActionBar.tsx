@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, FilePenLine, Siren } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
@@ -12,8 +12,7 @@ import { RootState } from "@/state/store";
 import Alert from "@/widgets/Alert";
 
 export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
-  const [queryParams] = useSearchParams();
-  const reviewId = queryParams.get("reviewId");
+  const { reviewId } = useParams();
   const aliasId = useSelector((state: RootState) => state.userInfo.aliasId);
   const loginnedUserNickname = useSelector(
     (state: RootState) => state.userInfo.nickname
@@ -50,7 +49,7 @@ export default function ReviewActionBar({ isAuthor }: { isAuthor: boolean }) {
           size="icon"
           onClick={() => {
             navigator.clipboard.writeText(
-              `${window.location.origin}/?reviewId=${reviewId}`
+              `${window.location.origin}/review/${reviewId}`
             );
             toast.success("링크가 복사되었습니다.");
           }}

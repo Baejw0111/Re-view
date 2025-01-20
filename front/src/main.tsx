@@ -34,6 +34,7 @@ import Login from "@/pages/Login";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import Terms from "@/pages/Terms";
 import Settings from "@/pages/Settings";
+import Review from "@/pages/Review";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,6 +75,10 @@ const router = createBrowserRouter(
             const initialData = await fetchPopularFeed("");
             return initialData;
           },
+        },
+        {
+          path: "/review/:reviewId",
+          element: <Review />,
         },
         {
           path: "/login",

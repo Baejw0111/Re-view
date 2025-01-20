@@ -6,13 +6,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoginUserInfo } from "@/shared/types/interface";
 import { getLoginUserInfo } from "@/api/auth";
 import useAuth from "@/shared/hooks/useAuth";
-import Header from "./widgets/Header";
-import ReviewDetailModal from "./pages/ReviewDetailModal";
-import SearchDialog from "./features/common/SearchDialog";
-import SubHeader from "./widgets/SubHeader";
+import Header from "@/widgets/Header";
+import SearchDialog from "@/features/common/SearchDialog";
+import SubHeader from "@/widgets/SubHeader";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Toaster } from "./shared/shadcn-ui/sonner";
-import TermsAgreementDialog from "./widgets/TermsAgreementDialog";
+import { Toaster } from "@/shared/shadcn-ui/sonner";
+import TermsAgreementDialog from "@/widgets/TermsAgreementDialog";
 import { TERM_VERSION, PRIVACY_VERSION } from "@/shared/constants";
 
 function App() {
@@ -86,7 +85,6 @@ function App() {
       <Header />
       <SubHeader />
       <Outlet />
-      <ReviewDetailModal />
       <SearchDialog />
       <Toaster richColors />
       <TermsAgreementDialog open={isTermsAgreementDialogOpen} />

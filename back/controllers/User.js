@@ -251,7 +251,7 @@ export const userReportReview = asyncHandler(async (req, res) => {
     avatar_url: user.profileImage
       ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
       : "",
-    content: `${FRONT_URL}/?reviewId=${reportedReviewId}`,
+    content: `${FRONT_URL}/review/${reportedReviewId}`,
   });
 });
 
@@ -270,6 +270,6 @@ export const userReportComment = asyncHandler(async (req, res) => {
     avatar_url: user.profileImage
       ? `${IMG_SRC}${encodeURIComponent(user.profileImage)}`
       : "",
-    content: `${FRONT_URL}/?reviewId=${reportedReviewId}#${reportedCommentId}`,
+    content: `${FRONT_URL}/review/${reportedReviewId}#${reportedCommentId}`,
   });
 });

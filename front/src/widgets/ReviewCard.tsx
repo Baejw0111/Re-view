@@ -6,7 +6,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/shared/shadcn-ui/resizable";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IMG_SRC } from "@/shared/constants";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
@@ -20,8 +20,6 @@ import TagBadge from "@/features/review/TagBadge";
 import { Button } from "@/shared/shadcn-ui/button";
 
 export default function ReviewCard({ reviewId }: { reviewId: string }) {
-  const [searchParams] = useSearchParams();
-
   const { data: reviewInfo } = useSuspenseQuery({
     queryKey: ["reviewInfo", reviewId],
     queryFn: () => fetchReviewById(reviewId),
@@ -74,10 +72,7 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               {/* 리뷰 제목 및 상세 페이지 링크 */}
               <div className="flex items-center justify-start">
                 <Link
-                  to={`?${new URLSearchParams({
-                    ...Object.fromEntries(searchParams),
-                    reviewId: reviewInfo.aliasId,
-                  })}`}
+                  to={`/review/${reviewInfo.aliasId}`}
                   className="group flex items-center gap-1 cursor-pointer hover:text-blue-500 active:text-blue-500 transition-colors"
                 >
                   <h2 className="font-semibold line-clamp-1">
