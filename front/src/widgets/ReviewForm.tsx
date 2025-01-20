@@ -70,31 +70,33 @@ export default function ReviewForm({
   });
 
   // 리뷰 업로드
-  const { mutate: writeReviewMutation } = useMutation({
-    mutationFn: writeReview,
-    onSuccess: () => {
-      setIsFormSubmitted(true);
-      toast.success("리뷰가 업로드되었습니다.");
-      queryClient.invalidateQueries({
-        queryKey: ["feed", "latest"],
-      });
-      navigate("/");
-    },
-  });
+  const { mutate: writeReviewMutation, isPending: isWriteReviewPending } =
+    useMutation({
+      mutationFn: writeReview,
+      onSuccess: () => {
+        setIsFormSubmitted(true);
+        toast.success("리뷰가 업로드되었습니다.");
+        queryClient.invalidateQueries({
+          queryKey: ["feed", "latest"],
+        });
+        navigate("/");
+      },
+    });
 
   // 리뷰 수정
-  const { mutate: editReviewMutation } = useMutation({
-    mutationFn: (formData: FormData) =>
-      editReview(reviewInfo?.aliasId as string, formData),
-    onSuccess: () => {
-      setIsFormSubmitted(true);
-      toast.success("리뷰가 수정되었습니다.");
-      queryClient.invalidateQueries({
-        queryKey: ["reviewInfo", reviewInfo?.aliasId],
-      });
-      navigate(-1);
-    },
-  });
+  const { mutate: editReviewMutation, isPending: isEditReviewPending } =
+    useMutation({
+      mutationFn: (formData: FormData) =>
+        editReview(reviewInfo?.aliasId as string, formData),
+      onSuccess: () => {
+        setIsFormSubmitted(true);
+        toast.success("리뷰가 수정되었습니다.");
+        queryClient.invalidateQueries({
+          queryKey: ["reviewInfo", reviewInfo?.aliasId],
+        });
+        navigate(-1);
+      },
+    });
 
   /**
    * 업로드 제출 시 실행될 작업
@@ -224,8 +226,18 @@ export default function ReviewForm({
             <SpoilerSwitch form={form} />
 
             {/* 리뷰 업로드 버튼 */}
-            <Button type="submit" className="font-bold" disabled={isUploading}>
-              {isUploading
+            <Button
+              type="submit"
+              className="font-bold"
+              disabled={
+                isUploading || isWriteReviewPending || isEditReviewPending
+              }
+            >
+              {isWriteReviewPending
+                ? "리뷰 업로드 중..."
+                : isEditReviewPending
+                ? "리뷰 수정 중..."
+                : isUploading
                 ? "파일 업로드 중..."
                 : reviewInfo
                 ? "리뷰 수정"

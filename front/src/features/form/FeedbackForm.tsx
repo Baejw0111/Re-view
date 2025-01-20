@@ -41,9 +41,13 @@ export default function FeedbackForm() {
       </p>
       <Button
         type="submit"
-        disabled={feedback.length === 0 || feedback.length > 2000}
+        disabled={
+          feedback.length === 0 ||
+          feedback.length > 2000 ||
+          sendFeedbackMutation.isPending
+        }
       >
-        제출
+        {sendFeedbackMutation.isPending ? "제출 중..." : "제출"}
       </Button>
     </form>
   );

@@ -85,7 +85,7 @@ export default function Onboarding() {
   const isDefaultProfile = form.watch("useDefaultProfile"); // 기본 프로필 이미지 사용 여부
 
   // 프로필 업데이트
-  const { mutate: signUpMutation } = useMutation({
+  const { mutate: signUpMutation, isPending } = useMutation({
     mutationFn: signUp,
     onSuccess: () => {
       setIsSignUp(true); // 회원 가입을 성공 시 경고창 생성 방지
@@ -220,13 +220,21 @@ export default function Onboarding() {
                     type="submit"
                     variant="outline"
                     className="w-full relative overflow-hidden group"
-                    disabled={isUploading || !isAgreementChecked}
+                    disabled={isUploading || !isAgreementChecked || isPending}
                   >
-                    <span className="relative z-10">회원 가입 하기</span>
-                    <span
-                      className="absolute inset-0 bg-gradient-to-r from-red-500 via-green-500 to-blue-500
-                      opacity-0 group-hover:opacity-100 group-active:opacity-100 group-focus:opacity-100 animate-shimmer transition-opacity duration-300"
-                    ></span>
+                    {isPending ? (
+                      <>
+                        <span className="relative z-10 font-bold">
+                          회원 가입 중...
+                        </span>
+                        <span
+                          className="absolute inset-0 bg-gradient-to-r from-red-500 via-green-500 to-blue-500
+                      opacity-100 animate-shimmer transition-opacity duration-300"
+                        ></span>
+                      </>
+                    ) : (
+                      <span className="relative z-10">회원 가입</span>
+                    )}
                   </Button>
                   <style>{`
                       @keyframes shimmer {

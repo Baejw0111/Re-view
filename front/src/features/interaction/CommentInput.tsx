@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import UserAvatar from "@/features/user/UserAvatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
@@ -14,8 +14,7 @@ import { toast } from "sonner";
 
 export default function CommentInput() {
   const userInfo = useSelector((state: RootState) => state.userInfo);
-  const [queryParams] = useSearchParams();
-  const reviewId = queryParams.get("reviewId");
+  const { reviewId } = useParams();
 
   const [comment, setComment] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -137,7 +136,7 @@ export default function CommentInput() {
             type="submit"
             variant="ghost"
             size="icon"
-            disabled={!comment.trim()}
+            disabled={!comment.trim() || mutation.isPending}
           >
             <Send />
           </Button>

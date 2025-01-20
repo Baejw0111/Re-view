@@ -31,7 +31,7 @@ export default function CommentList({ reviewId }: { reviewId: string }) {
       <h2 className="pt-6 text-lg font-semibold">
         댓글({commentIdList?.length})
       </h2>
-      <div className="grid mt-4">
+      <div className="grid my-4">
         {commentIdList.map((commentInfo, index) => (
           <CommentBox
             key={index}

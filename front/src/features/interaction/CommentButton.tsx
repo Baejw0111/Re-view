@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { fetchCommentCount } from "@/api/comment";
@@ -9,7 +9,6 @@ import { motion } from "framer-motion";
 import { useIntersectionObserver } from "@/shared/hooks";
 
 export default function CommentButton({ reviewId }: { reviewId: string }) {
-  const [searchParams] = useSearchParams();
   const { data: commentCount, refetch } = useQuery({
     queryKey: ["commentCount", reviewId],
     queryFn: () => fetchCommentCount(reviewId),
@@ -34,11 +33,7 @@ export default function CommentButton({ reviewId }: { reviewId: string }) {
     <div className="flex items-center gap-1.5" ref={commentButtonRef}>
       <TooltipWrapper tooltipText="댓글 보기">
         <Link
-          to={`?${new URLSearchParams({
-            ...Object.fromEntries(searchParams),
-            reviewId: reviewId,
-            scrollToComments: "true",
-          })}`}
+          to={`/review/${reviewId}#comment-list`}
           className="hover:text-muted-foreground active:text-muted-foreground"
         >
           <MessageCircle className="w-5 h-5" />
