@@ -237,6 +237,14 @@ export const signUp = asyncHandler(async (req, res) => {
       .json({ message: `"운영자"는 사용할 수 없는 닉네임입니다.` });
   }
 
+  const userExists = await IdMapModel.findOne({
+    originalSocialId: { $in: [userIdentifier] },
+  });
+
+  if (userExists) {
+    return res.status(409).json({ message: "이미 가입된 유저입니다." });
+  }
+
   const aliasId = await generateUserAliasId();
 
   await IdMapModel.create({ originalSocialId: [userIdentifier], aliasId });
