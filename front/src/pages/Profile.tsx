@@ -1,7 +1,7 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
 import { Grid, MessageCircle, Heart } from "lucide-react";
-import { Link, useParams, useLocation, Outlet } from "react-router-dom";
+import { Link, useParams, useLocation, Outlet } from "react-router";
 import { Card } from "@/shared/shadcn-ui/card";
 import ProfileInfo from "@/features/user/ProfileInfo";
 import { Suspense } from "react";

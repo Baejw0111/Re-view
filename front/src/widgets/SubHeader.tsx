@@ -1,6 +1,6 @@
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router";
 import { Tabs, TabsTrigger, TabsList } from "@/shared/shadcn-ui/tabs";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useScrollDirection } from "@/shared/hooks";
 import { Search } from "lucide-react";

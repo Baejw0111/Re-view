@@ -1,5 +1,5 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { searchReviews } from "@/api/review";
 import { searchUsers } from "@/api/user";

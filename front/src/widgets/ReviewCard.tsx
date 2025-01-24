@@ -6,7 +6,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/shared/shadcn-ui/resizable";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { IMG_SRC } from "@/shared/constants";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";

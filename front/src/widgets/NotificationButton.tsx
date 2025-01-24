@@ -10,7 +10,7 @@ import {
 } from "@/shared/shadcn-ui/dropdown-menu";
 import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
 import { Bell } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {

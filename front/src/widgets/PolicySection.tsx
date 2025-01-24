@@ -6,7 +6,7 @@ import {
   CardContent,
 } from "@/shared/shadcn-ui/card";
 import { Button } from "@/shared/shadcn-ui/button";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ChevronRight } from "lucide-react";
 
 export default function PolicySection() {

@@ -1,9 +1,9 @@
 import CardList from "@/widgets/CardList";
 import PageTemplate from "@/shared/original-ui/PageTemplate";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchLatestFeed, fetchPopularFeed } from "@/api/review";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 export default function Feed() {
   const { pathname } = useLocation();

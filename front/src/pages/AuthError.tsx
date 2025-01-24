@@ -1,6 +1,6 @@
 import { Button } from "@/shared/shadcn-ui/button";
 import { LogIn } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function AuthError() {
   return (

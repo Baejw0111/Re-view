@@ -1,6 +1,6 @@
 import PageTemplate from "../shared/original-ui/PageTemplate";
 import ReviewForm from "@/widgets/ReviewForm";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 

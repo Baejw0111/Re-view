@@ -1,6 +1,6 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { useQuery } from "@tanstack/react-query";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router";
 import NotificationBox from "@/features/interaction/NotificationBox";
 import { NotificationInfo } from "@/shared/types/interface";
 

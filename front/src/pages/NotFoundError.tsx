@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Home } from "lucide-react";
 

@@ -3,7 +3,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import UserAvatar from "@/features/user/UserAvatar";
 import { LoginUserInfo } from "@/shared/types/interface";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useTheme } from "@/state/theme/useTheme";
 import {
   DropdownMenu,

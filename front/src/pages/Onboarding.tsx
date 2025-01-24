@@ -21,11 +21,11 @@ import {
 import MovingLogo from "@/features/common/MovingLogo";
 import ProfileImageForm from "@/features/form/ProfileImageForm";
 import NicknameForm from "@/features/form/NicknameForm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { signUp, cancelSignUp } from "@/api/auth";
-import { useBlocker } from "react-router-dom";
+import { useBlocker } from "react-router";
 import TermsAgreement from "@/features/form/TermsAgreement";
 import { toast } from "sonner";
 import { AxiosError } from "axios";

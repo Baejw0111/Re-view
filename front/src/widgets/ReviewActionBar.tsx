@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Share2, Trash2, FilePenLine, Siren } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";

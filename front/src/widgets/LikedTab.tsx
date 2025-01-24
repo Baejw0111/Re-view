@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useParams, useLoaderData } from "react-router-dom";
+import { useParams, useLoaderData } from "react-router";
 import CardList from "@/widgets/CardList";
 import { TabsContent } from "@/shared/shadcn-ui/tabs";
 import { fetchUserLikedList } from "@/api/user";

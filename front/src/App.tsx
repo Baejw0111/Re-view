@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +8,7 @@ import useAuth from "@/shared/hooks/useAuth";
 import Header from "@/widgets/Header";
 import SearchDialog from "@/features/common/SearchDialog";
 import SubHeader from "@/widgets/SubHeader";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router";
 import { Toaster } from "@/shared/shadcn-ui/sonner";
 import TermsAgreementDialog from "@/widgets/TermsAgreementDialog";
 import { TERM_VERSION, PRIVACY_VERSION } from "@/shared/constants";

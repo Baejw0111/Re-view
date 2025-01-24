@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { MessageCircle } from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";
 import { fetchCommentCount } from "@/api/comment";

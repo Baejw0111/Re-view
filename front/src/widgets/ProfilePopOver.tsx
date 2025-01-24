@@ -7,7 +7,7 @@ import {
 } from "@/shared/shadcn-ui/popover";
 import ProfileInfo from "@/features/user/ProfileInfo";
 import { User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function ProfilePopOver({
   userId,

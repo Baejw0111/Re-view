@@ -1,5 +1,5 @@
 import { TabsContent } from "@/shared/shadcn-ui/tabs";
-import { Link, useParams, useLoaderData } from "react-router-dom";
+import { Link, useParams, useLoaderData } from "react-router";
 import { claculateTime } from "@/shared/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { CommentInfo } from "@/shared/types/interface";

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo } from "@/shared/types/interface";
