@@ -49,9 +49,15 @@
 
 ![Architecture](https://github.com/user-attachments/assets/be721e1f-580a-4a02-b41b-42bcc56e0db9)
 
-<!-- ## 🔄 서비스 시퀀스 다이어그램
+<!-- ## 🔄 서비스 시퀀스 다이어그램 -->
 
-## 🔧 이슈 및 해결 과정 -->
+## 🔧 이슈 및 해결 과정
+
+- [카카오 소셜 로그인 적용기 1 - 쿠키에 토큰 저장하기](https://wallbreaker.tistory.com/entry/%EC%98%AC%ED%8F%89-4-%EC%B9%B4%EC%B9%B4%EC%98%A4-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A0%81%EC%9A%A9%EA%B8%B0-%EC%BF%A0%ED%82%A4%EC%97%90-%ED%86%A0%ED%81%B0-%EC%A0%80%EC%9E%A5%ED%95%98%EA%B8%B0)
+- [카카오 소셜 로그인 적용기 2 - Axios 인터셉터로 토큰 자동 갱신 구현하기](https://wallbreaker.tistory.com/entry/%EC%98%AC%ED%8F%89-5-%EC%B9%B4%EC%B9%B4%EC%98%A4-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A0%81%EC%9A%A9%EA%B8%B0-Axios-%EC%9D%B8%ED%84%B0%EC%85%89%ED%84%B0%EB%A1%9C-%ED%86%A0%ED%81%B0-%EC%9E%90%EB%8F%99-%EA%B0%B1%EC%8B%A0-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0)
+- [카카오 소셜 로그인 적용기 3 - Redux Toolkit으로 사용자 정보 관리하기 & 로그아웃 구현](https://wallbreaker.tistory.com/entry/%EC%98%AC%ED%8F%89-6-%EC%B9%B4%EC%B9%B4%EC%98%A4-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A0%81%EC%9A%A9%EA%B8%B0-redux-toolkit%EC%9C%BC%EB%A1%9C-%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%A0%95%EB%B3%B4-%EA%B4%80%EB%A6%AC%ED%95%98%EA%B8%B0-%EB%A1%9C%EA%B7%B8%EC%95%84%EC%9B%83)
+- [무한 스크롤 적용기](https://wallbreaker.tistory.com/entry/Review-8-%EB%AC%B4%ED%95%9C-%EC%8A%A4%ED%81%AC%EB%A1%A4-%EC%A0%81%EC%9A%A9%EA%B8%B0)
+- [리스트 페이지 가상화 기법으로 최적화하기](https://wallbreaker.tistory.com/entry/Review-9-%EB%A6%AC%EC%8A%A4%ED%8A%B8-%ED%8E%98%EC%9D%B4%EC%A7%80-%EA%B0%80%EC%83%81%ED%99%94-%EA%B8%B0%EB%B2%95%EC%9C%BC%EB%A1%9C-%EC%B5%9C%EC%A0%81%ED%99%94%ED%95%98%EA%B8%B0feat-Tanstack-Virtual)
 
 ## ⚙️ 기능 소개
 
