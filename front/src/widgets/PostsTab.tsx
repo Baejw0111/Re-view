@@ -3,10 +3,11 @@ import { useParams, useLoaderData } from "react-router";
 import CardList from "@/widgets/CardList";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchUserReviewList } from "@/api/user";
+import { ReviewInfo } from "@/shared/types/interface";
 
 export default function PostsTab() {
   const { userId } = useParams();
-  const initialData = useLoaderData() as string[];
+  const initialData = useLoaderData() as ReviewInfo[];
 
   // 사용자가 작성한 리뷰 가져오기
   const { data: userReviewList, fetchNextPage: fetchNextUserReviewList } =
@@ -17,7 +18,7 @@ export default function PostsTab() {
         fetchUserReviewList(userId as string, pageParam),
       getNextPageParam: (lastPage) => {
         if (lastPage.length < 20) return undefined;
-        return lastPage[lastPage.length - 1];
+        return lastPage[lastPage.length - 1].aliasId;
       },
       initialData: initialData
         ? { pages: [initialData], pageParams: [""] }
@@ -28,7 +29,7 @@ export default function PostsTab() {
     <TabsContent value="posts" className="mt-6">
       {userReviewList && (
         <CardList
-          idList={userReviewList.pages.flatMap((page) => page)}
+          infoList={userReviewList.pages.flatMap((page) => page)}
           callback={fetchNextUserReviewList}
           cardType="review"
         />

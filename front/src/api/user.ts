@@ -1,5 +1,5 @@
 import { generalApiClient, authApiClient } from "@/api/util";
-import { UserInfo, CommentInfo } from "@/shared/types/interface";
+import { UserInfo, CommentInfo, ReviewInfo } from "@/shared/types/interface";
 
 /**
  * 유저 조회 함수
@@ -20,7 +20,7 @@ export const fetchUserInfoById = async (aliasId: string): Promise<UserInfo> => {
 export const searchUsers = async (
   query: string,
   lastUserAliasId: string
-): Promise<string[]> => {
+): Promise<UserInfo[]> => {
   const response = await generalApiClient.get(`/search/users`, {
     params: { query, lastUserAliasId },
   });
@@ -48,7 +48,7 @@ export const fetchUserCommentList = async (
 export const fetchUserReviewList = async (
   userAliasId: string,
   lastReviewId: string
-): Promise<string[]> => {
+): Promise<ReviewInfo[]> => {
   const response = await generalApiClient.get(`/user/${userAliasId}/reviews`, {
     params: { lastReviewId },
   });
@@ -65,7 +65,7 @@ export const fetchUserReviewList = async (
 export const fetchUserLikedList = async (
   userAliasId: string,
   lastReviewId: string
-): Promise<string[]> => {
+): Promise<ReviewInfo[]> => {
   const response = await generalApiClient.get(`/user/${userAliasId}/liked`, {
     params: { lastReviewId },
   });

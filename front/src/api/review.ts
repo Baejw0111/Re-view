@@ -8,7 +8,7 @@ import { ReviewInfo } from "@/shared/types/interface";
  */
 export const fetchLatestFeed = async (
   lastReviewId: string
-): Promise<string[]> => {
+): Promise<ReviewInfo[]> => {
   const response = await generalApiClient.get(`/review/latest`, {
     params: { lastReviewId },
   });
@@ -23,7 +23,7 @@ export const fetchLatestFeed = async (
  */
 export const fetchPopularFeed = async (
   lastReviewId: string
-): Promise<string[]> => {
+): Promise<ReviewInfo[]> => {
   const response = await generalApiClient.get(`/review/popular`, {
     params: { lastReviewId },
   });
@@ -40,7 +40,7 @@ export const fetchPopularFeed = async (
 export const searchReviews = async (
   query: string,
   lastReviewId: string
-): Promise<string[]> => {
+): Promise<ReviewInfo[]> => {
   const response = await generalApiClient.get(`/search/reviews`, {
     params: { query, lastReviewId },
   });

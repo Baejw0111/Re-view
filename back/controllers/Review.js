@@ -58,16 +58,28 @@ export const getLatestFeed = asyncHandler(async (req, res) => {
       new Date()
     : new Date();
 
-  const reviewList = await ReviewModel.find(
-    { uploadTime: { $lt: lastReviewUploadTime } },
-    { aliasId: 1, uploadTime: 1 } // 필요한 필드만 명시
-  )
+  const reviewList = await ReviewModel.find({
+    uploadTime: { $lt: lastReviewUploadTime },
+  })
     .sort({ uploadTime: -1 })
-    .limit(20);
+    .limit(20)
+    .populate("authorId", "aliasId nickname profileImage"); // authorId에 해당하는 유저의 닉네임과 프로필 이미지 가져오기
 
-  const reviewIdList = reviewList.map((review) => review.aliasId);
+  const formattedReviewList = reviewList.map((review) => ({
+    aliasId: review.aliasId,
+    authorId: review.authorId.aliasId,
+    uploadTime: review.uploadTime,
+    title: review.title,
+    images: review.images,
+    reviewText: review.reviewText,
+    rating: review.rating,
+    tags: review.tags,
+    isSpoiler: review.isSpoiler,
+    userProfileImage: review.authorId.profileImage,
+    userNickname: review.authorId.nickname,
+  }));
 
-  res.status(200).json(reviewIdList);
+  res.status(200).json(formattedReviewList);
 }, "최신 리뷰 조회");
 
 /**
@@ -86,25 +98,35 @@ export const searchReviews = asyncHandler(async (req, res) => {
       new Date()
     : new Date();
 
-  const reviews = await ReviewModel.find(
-    {
-      $or: [
-        { title: { $regex: query, $options: "i" } },
-        { title: { $regex: queryWithoutSpace, $options: "i" } },
-        { reviewText: { $regex: query, $options: "i" } },
-        { reviewText: { $regex: queryWithoutSpace, $options: "i" } },
-        { tags: { $in: [query, queryWithoutSpace] } },
-      ],
-      uploadTime: { $lt: lastReviewUploadTime },
-    },
-    { aliasId: 1, uploadTime: 1 } // 필요한 필드만 명시
-  )
+  const reviewList = await ReviewModel.find({
+    $or: [
+      { title: { $regex: query, $options: "i" } },
+      { title: { $regex: queryWithoutSpace, $options: "i" } },
+      { reviewText: { $regex: query, $options: "i" } },
+      { reviewText: { $regex: queryWithoutSpace, $options: "i" } },
+      { tags: { $in: [query, queryWithoutSpace] } },
+    ],
+    uploadTime: { $lt: lastReviewUploadTime },
+  })
     .sort({ uploadTime: -1 })
-    .limit(20);
+    .limit(20)
+    .populate("authorId", "aliasId nickname profileImage"); // authorId에 해당하는 유저의 닉네임과 프로필 이미지 가져오기
 
-  const reviewIdList = reviews.map((review) => review.aliasId);
+  const formattedReviewList = reviewList.map((review) => ({
+    aliasId: review.aliasId,
+    authorId: review.authorId.aliasId,
+    uploadTime: review.uploadTime,
+    title: review.title,
+    images: review.images,
+    reviewText: review.reviewText,
+    rating: review.rating,
+    tags: review.tags,
+    isSpoiler: review.isSpoiler,
+    userProfileImage: review.authorId.profileImage,
+    userNickname: review.authorId.nickname,
+  }));
 
-  res.status(200).json(reviewIdList);
+  res.status(200).json(formattedReviewList);
 }, "리뷰 검색");
 
 /**
@@ -121,19 +143,29 @@ export const getPopularFeed = asyncHandler(async (req, res) => {
       new Date()
     : new Date();
 
-  const reviewList = await ReviewModel.find(
-    {
-      uploadTime: { $lt: lastReviewUploadTime },
-      likesCount: { $gte: 10 },
-    },
-    { aliasId: 1, uploadTime: 1 } // 필요한 필드만 명시
-  )
+  const reviewList = await ReviewModel.find({
+    uploadTime: { $lt: lastReviewUploadTime },
+    likesCount: { $gte: 10 },
+  })
     .sort({ uploadTime: -1 })
-    .limit(20);
+    .limit(20)
+    .populate("authorId", "aliasId nickname profileImage"); // authorId에 해당하는 유저의 닉네임과 프로필 이미지 가져오기
 
-  const reviewIdList = reviewList.map((review) => review.aliasId);
+  const formattedReviewList = reviewList.map((review) => ({
+    aliasId: review.aliasId,
+    authorId: review.authorId.aliasId,
+    uploadTime: review.uploadTime,
+    title: review.title,
+    images: review.images,
+    reviewText: review.reviewText,
+    rating: review.rating,
+    tags: review.tags,
+    isSpoiler: review.isSpoiler,
+    userProfileImage: review.authorId.profileImage,
+    userNickname: review.authorId.nickname,
+  }));
 
-  res.status(200).json(reviewIdList);
+  res.status(200).json(formattedReviewList);
 }, "인기 리뷰 조회");
 
 /**

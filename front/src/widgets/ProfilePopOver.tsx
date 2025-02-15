@@ -8,6 +8,8 @@ import {
 import ProfileInfo from "@/features/user/ProfileInfo";
 import { User } from "lucide-react";
 import { Link } from "react-router";
+import { fetchUserInfoById } from "@/api/user";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ProfilePopOver({
   userId,
@@ -17,6 +19,12 @@ export default function ProfilePopOver({
   children: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data: userInfo } = useQuery({
+    queryKey: ["userInfo", userId],
+    queryFn: () => fetchUserInfoById(userId),
+    enabled: !!userId,
+  });
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -35,13 +43,17 @@ export default function ProfilePopOver({
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
-        <ProfileInfo userId={userId} profileImageSize="sm" />
-        <Button className="w-full font-bold" asChild>
-          <Link to={`/profile/${userId}`}>
-            <User className="mr-2 h-4 w-4" />
-            프로필 보기
-          </Link>
-        </Button>
+        {userInfo && (
+          <>
+            <ProfileInfo userInfo={userInfo} profileImageSize="sm" />
+            <Button className="w-full font-bold" asChild>
+              <Link to={`/profile/${userId}`}>
+                <User className="mr-2 h-4 w-4" />
+                프로필 보기
+              </Link>
+            </Button>
+          </>
+        )}
       </PopoverContent>
     </Popover>
   );

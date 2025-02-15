@@ -9,7 +9,7 @@ export default function SkeletonUserCard({
   return (
     <div>
       <Card
-        className={`flex flex-col justify-center items-center gap-4 p-8 max-w-xl mx-auto ${
+        className={`flex flex-col justify-center items-center gap-4 p-8 max-w-xl mx-auto border-none ${
           isUserProfile ? "" : "h-48"
         }`}
       >

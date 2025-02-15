@@ -21,7 +21,7 @@ export default function Search() {
       searchReviews(searchQuery ?? "", pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
-      return lastPage[lastPage.length - 1];
+      return lastPage[lastPage.length - 1].aliasId;
     },
     enabled: !!searchQuery && category === "reviews",
   });
@@ -37,7 +37,7 @@ export default function Search() {
       searchUsers(searchQuery ?? "", pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
-      return lastPage[lastPage.length - 1];
+      return lastPage[lastPage.length - 1].aliasId;
     },
     enabled: !!searchQuery && category === "users",
   });
@@ -46,14 +46,14 @@ export default function Search() {
     <PageTemplate>
       {isReviewListSuccess && category === "reviews" && (
         <CardList
-          idList={reviewList.pages.flatMap((page) => page)}
+          infoList={reviewList.pages.flatMap((page) => page)}
           callback={fetchNextReviewList}
           cardType="review"
         />
       )}
       {isUserListSuccess && category === "users" && (
         <CardList
-          idList={userList.pages.flatMap((page) => page)}
+          infoList={userList.pages.flatMap((page) => page)}
           callback={fetchNextUserList}
           cardType="userProfile"
         />

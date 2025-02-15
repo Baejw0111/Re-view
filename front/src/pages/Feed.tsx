@@ -4,10 +4,11 @@ import { useLoaderData } from "react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchLatestFeed, fetchPopularFeed } from "@/api/review";
 import { useLocation } from "react-router";
+import { ReviewInfo } from "@/shared/types/interface";
 
 export default function Feed() {
   const { pathname } = useLocation();
-  const initialData = useLoaderData() as string[];
+  const initialData = useLoaderData() as ReviewInfo[];
 
   const getQueryFn = (path: string) => {
     switch (path) {
@@ -31,7 +32,7 @@ export default function Feed() {
     queryFn: getQueryFn(pathname),
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
-      return lastPage[lastPage.length - 1];
+      return lastPage[lastPage.length - 1].aliasId;
     },
     initialData: initialData
       ? { pages: [initialData], pageParams: [""] }
@@ -43,7 +44,7 @@ export default function Feed() {
     <PageTemplate>
       {isSuccess && (
         <CardList
-          idList={feedData.pages.flatMap((page) => page)}
+          infoList={feedData.pages.flatMap((page) => page)}
           callback={fetchNextPage}
           cardType="review"
         />

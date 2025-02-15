@@ -8,9 +8,6 @@ import {
 } from "@/shared/shadcn-ui/resizable";
 import { Link } from "react-router";
 import { IMG_SRC } from "@/shared/constants";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { fetchReviewById } from "@/api/review";
-import { fetchUserInfoById } from "@/api/user";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
 import LikeButton from "@/features/interaction/LikeButton";
@@ -18,18 +15,9 @@ import ProfilePopOver from "@/widgets/ProfilePopOver";
 import CommentButton from "@/features/interaction/CommentButton";
 import TagBadge from "@/features/review/TagBadge";
 import { Button } from "@/shared/shadcn-ui/button";
+import { ReviewInfo } from "@/shared/types/interface";
 
-export default function ReviewCard({ reviewId }: { reviewId: string }) {
-  const { data: reviewInfo } = useSuspenseQuery({
-    queryKey: ["reviewInfo", reviewId],
-    queryFn: () => fetchReviewById(reviewId),
-  });
-
-  const { data: author } = useSuspenseQuery({
-    queryKey: ["userInfo", reviewInfo?.authorId],
-    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as string),
-  });
-
+export default function ReviewCard({ reviewInfo }: { reviewInfo: ReviewInfo }) {
   return (
     <Card
       className="overflow-hidden shadow-lg transition-shadow h-60 relative hover:shadow-xl active:shadow-xl"
@@ -43,27 +31,27 @@ export default function ReviewCard({ reviewId }: { reviewId: string }) {
               {/*작성자 정보 및 평점 */}
               <div className="flex items-center justify-between">
                 {/* 작성자 정보 및 프로필 팝오버 버튼*/}
-                {author && (
-                  <ProfilePopOver userId={author.aliasId as string}>
-                    <Button
-                      variant="ghost"
-                      className="flex items-center gap-2 p-0 h-auto min-w-8"
+                <ProfilePopOver userId={reviewInfo.authorId}>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-2 p-0 h-auto min-w-8"
+                  >
+                    <UserAvatar
+                      className="h-6 w-6"
+                      profileImage={reviewInfo.userProfileImage}
+                      nickname={reviewInfo.userNickname}
+                    />
+                    <div
+                      className={`text-sm text-muted-foreground font-semibold truncate ${
+                        reviewInfo.userNickname === "운영자"
+                          ? "text-orange-500"
+                          : ""
+                      }`}
                     >
-                      <UserAvatar
-                        className="h-6 w-6"
-                        profileImage={author.profileImage}
-                        nickname={author.nickname}
-                      />
-                      <div
-                        className={`text-sm text-muted-foreground font-semibold truncate ${
-                          author.nickname === "운영자" ? "text-orange-500" : ""
-                        }`}
-                      >
-                        {author.nickname}
-                      </div>
-                    </Button>
-                  </ProfilePopOver>
-                )}
+                      {reviewInfo.userNickname}
+                    </div>
+                  </Button>
+                </ProfilePopOver>
 
                 {/* 평점 */}
                 <ReviewRatingSign rating={reviewInfo.rating as number} />
