@@ -92,16 +92,17 @@ export default function ReviewDetail() {
                   {claculateTime(reviewInfo.uploadTime)}
                 </div>
               </div>
+            </div>
 
+            {/* 리뷰 제목 */}
+            <div className="flex items-center justify-between gap-2">
+              <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
               {/* 평점 */}
               <ReviewRatingSign
                 className="h-7 w-9 text-xl"
                 rating={reviewInfo.rating}
               />
             </div>
-
-            {/* 리뷰 제목 */}
-            <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
 
             <Separator className="my-2" />
 
