@@ -1,6 +1,6 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { useSearchParams } from "react-router";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { searchReviews } from "@/api/review";
 import { searchUsers } from "@/api/user";
 import CardList from "@/widgets/CardList";
@@ -9,6 +9,7 @@ export default function Search() {
   const [queryParams] = useSearchParams();
   const searchQuery = queryParams.get("query");
   const category = queryParams.get("category") ?? "reviews";
+  const queryClient = useQueryClient();
 
   const {
     data: reviewList,
@@ -17,8 +18,13 @@ export default function Search() {
   } = useInfiniteQuery({
     queryKey: ["search", "reviews", searchQuery],
     initialPageParam: "",
-    queryFn: ({ pageParam }: { pageParam: string }) =>
-      searchReviews(searchQuery ?? "", pageParam),
+    queryFn: async ({ pageParam }: { pageParam: string }) => {
+      const data = await searchReviews(searchQuery ?? "", pageParam);
+      data.forEach((item) => {
+        queryClient.setQueryData(["reviewInfo", item.aliasId], item);
+      });
+      return data;
+    },
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
       return lastPage[lastPage.length - 1].aliasId;
@@ -33,8 +39,13 @@ export default function Search() {
   } = useInfiniteQuery({
     queryKey: ["search", "users", searchQuery],
     initialPageParam: "",
-    queryFn: ({ pageParam }: { pageParam: string }) =>
-      searchUsers(searchQuery ?? "", pageParam),
+    queryFn: async ({ pageParam }: { pageParam: string }) => {
+      const data = await searchUsers(searchQuery ?? "", pageParam);
+      data.forEach((item) => {
+        queryClient.setQueryData(["userInfo", item.aliasId], item);
+      });
+      return data;
+    },
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
       return lastPage[lastPage.length - 1].aliasId;
