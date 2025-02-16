@@ -1,24 +1,43 @@
 import CardList from "@/widgets/CardList";
 import PageTemplate from "@/shared/original-ui/PageTemplate";
-import { useLoaderData } from "react-router";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useLocation, useLoaderData } from "react-router";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchLatestFeed, fetchPopularFeed } from "@/api/review";
-import { useLocation } from "react-router";
 import { ReviewInfo } from "@/shared/types/interface";
 
 export default function Feed() {
   const { pathname } = useLocation();
   const initialData = useLoaderData() as ReviewInfo[];
+  const queryClient = useQueryClient();
+
+  // initialData 캐싱
+  if (initialData) {
+    initialData.forEach((item) => {
+      queryClient.setQueryData(["reviewInfo", item.aliasId], item);
+    });
+  }
 
   const getQueryFn = (path: string) => {
     switch (path) {
       case "/":
       case "/latest":
-        return ({ pageParam }: { pageParam: string }) =>
-          fetchLatestFeed(pageParam);
+        // 최신 피드 조회 및 캐싱
+        return async ({ pageParam }: { pageParam: string }) => {
+          const data = await fetchLatestFeed(pageParam);
+          data.forEach((item) => {
+            queryClient.setQueryData(["reviewInfo", item.aliasId], item);
+          });
+          return data;
+        };
       case "/popular":
-        return ({ pageParam }: { pageParam: string }) =>
-          fetchPopularFeed(pageParam);
+        // 인기 피드 조회 및 캐싱
+        return async ({ pageParam }: { pageParam: string }) => {
+          const data = await fetchPopularFeed(pageParam);
+          data.forEach((item) => {
+            queryClient.setQueryData(["reviewInfo", item.aliasId], item);
+          });
+          return data;
+        };
     }
   };
 
