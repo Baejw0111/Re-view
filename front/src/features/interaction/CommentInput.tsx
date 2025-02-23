@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import UserAvatar from "@/features/user/UserAvatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Textarea } from "@/shared/shadcn-ui/textarea";

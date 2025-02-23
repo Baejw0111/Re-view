@@ -1,6 +1,6 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
-import { useSearchParams } from "react-router-dom";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { searchReviews } from "@/api/review";
 import { searchUsers } from "@/api/user";
 import CardList from "@/widgets/CardList";
@@ -9,6 +9,7 @@ export default function Search() {
   const [queryParams] = useSearchParams();
   const searchQuery = queryParams.get("query");
   const category = queryParams.get("category") ?? "reviews";
+  const queryClient = useQueryClient();
 
   const {
     data: reviewList,
@@ -17,11 +18,16 @@ export default function Search() {
   } = useInfiniteQuery({
     queryKey: ["search", "reviews", searchQuery],
     initialPageParam: "",
-    queryFn: ({ pageParam }: { pageParam: string }) =>
-      searchReviews(searchQuery ?? "", pageParam),
+    queryFn: async ({ pageParam }: { pageParam: string }) => {
+      const data = await searchReviews(searchQuery ?? "", pageParam);
+      data.forEach((item) => {
+        queryClient.setQueryData(["reviewInfo", item.aliasId], item);
+      });
+      return data;
+    },
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
-      return lastPage[lastPage.length - 1];
+      return lastPage[lastPage.length - 1].aliasId;
     },
     enabled: !!searchQuery && category === "reviews",
   });
@@ -33,11 +39,16 @@ export default function Search() {
   } = useInfiniteQuery({
     queryKey: ["search", "users", searchQuery],
     initialPageParam: "",
-    queryFn: ({ pageParam }: { pageParam: string }) =>
-      searchUsers(searchQuery ?? "", pageParam),
+    queryFn: async ({ pageParam }: { pageParam: string }) => {
+      const data = await searchUsers(searchQuery ?? "", pageParam);
+      data.forEach((item) => {
+        queryClient.setQueryData(["userInfo", item.aliasId], item);
+      });
+      return data;
+    },
     getNextPageParam: (lastPage) => {
       if (lastPage.length < 20) return undefined;
-      return lastPage[lastPage.length - 1];
+      return lastPage[lastPage.length - 1].aliasId;
     },
     enabled: !!searchQuery && category === "users",
   });
@@ -46,14 +57,14 @@ export default function Search() {
     <PageTemplate>
       {isReviewListSuccess && category === "reviews" && (
         <CardList
-          idList={reviewList.pages.flatMap((page) => page)}
+          infoList={reviewList.pages.flatMap((page) => page)}
           callback={fetchNextReviewList}
           cardType="review"
         />
       )}
       {isUserListSuccess && category === "users" && (
         <CardList
-          idList={userList.pages.flatMap((page) => page)}
+          infoList={userList.pages.flatMap((page) => page)}
           callback={fetchNextUserList}
           cardType="userProfile"
         />

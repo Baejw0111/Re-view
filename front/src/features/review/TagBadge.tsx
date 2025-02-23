@@ -1,5 +1,5 @@
 import { Badge } from "@/shared/shadcn-ui/badge";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function TagBadge({ tag }: { tag: string }) {
   return (

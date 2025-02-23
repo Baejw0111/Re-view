@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import ReviewDetail from "@/widgets/ReviewDetail";
 import CommentList from "@/widgets/CommentList";

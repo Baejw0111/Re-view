@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { Button } from "@/shared/shadcn-ui/button";
 import { PencilLine } from "lucide-react";
 import TooltipWrapper from "@/shared/original-ui/TooltipWrapper";

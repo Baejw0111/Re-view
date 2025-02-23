@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { fetchReviewCommentList } from "@/api/comment";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import CommentBox from "@/features/interaction/CommentBox";

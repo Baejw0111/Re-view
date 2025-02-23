@@ -2,7 +2,7 @@ import Logo from "@/features/common/Logo";
 import NotificationButton from "@/widgets/NotificationButton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store/index";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router";
 import SearchBar from "@/features/common/SearchBar";
 import WriteReviewButton from "@/features/review/WriteReviewButton";
 import { useMediaQuery, useScrollDirection } from "@/shared/hooks";

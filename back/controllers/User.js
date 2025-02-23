@@ -45,7 +45,7 @@ export const searchUsers = asyncHandler(async (req, res) => {
   const { query, lastUserAliasId } = req.query;
   const queryWithoutSpace = query.replace(/\s/g, "");
 
-  const users = await UserModel.find({
+  const userList = await UserModel.find({
     $or: [
       { nickname: { $regex: query, $options: "i" } }, // 대소문자 구분 없이 검색
       { nickname: { $regex: queryWithoutSpace, $options: "i" } }, // 공백 제거 후 검색
@@ -54,9 +54,8 @@ export const searchUsers = asyncHandler(async (req, res) => {
   })
     .sort({ aliasId: 1 }) // 유저 별칭 아이디 오름차순 정렬
     .limit(20); // 최대 20개 검색
-  const userIdList = users.map((user) => user.aliasId);
 
-  res.status(200).json(userIdList);
+  res.status(200).json(userList);
 }, "유저 검색");
 
 /**
@@ -77,18 +76,29 @@ export const getUserReviewList = asyncHandler(async (req, res) => {
       new Date()
     : new Date();
 
-  const reviewList = await ReviewModel.find(
-    {
-      authorId: user._id,
-      uploadTime: { $lt: lastReviewUploadTime }, // 마지막 리뷰 업로드 시간보다 이전인 리뷰 검색
-    },
-    { aliasId: 1, uploadTime: 1 } // 필요한 필드만 명시
-  )
+  const reviewList = await ReviewModel.find({
+    authorId: user._id,
+    uploadTime: { $lt: lastReviewUploadTime }, // 마지막 리뷰 업로드 시간보다 이전인 리뷰 검색
+  })
     .sort({ uploadTime: -1 }) // 업로드 시간 내림차순 정렬
-    .limit(20); // 최대 20개 검색
+    .limit(20) // 최대 20개 조회
+    .populate("authorId", "aliasId nickname profileImage"); // authorId에 해당하는 유저의 닉네임과 프로필 이미지 가져오기
 
-  const reviewIdList = reviewList.map((review) => review.aliasId);
-  res.status(200).json(reviewIdList);
+  const formattedReviewList = reviewList.map((review) => ({
+    aliasId: review.aliasId,
+    authorId: review.authorId.aliasId,
+    uploadTime: review.uploadTime,
+    title: review.title,
+    images: review.images,
+    reviewText: review.reviewText,
+    rating: review.rating,
+    tags: review.tags,
+    isSpoiler: review.isSpoiler,
+    userProfileImage: review.authorId.profileImage,
+    userNickname: review.authorId.nickname,
+  }));
+
+  res.status(200).json(formattedReviewList);
 }, "유저가 작성한 리뷰 목록 조회");
 
 /**
@@ -137,11 +147,13 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "유저가 존재하지 않습니다." });
   }
 
+  const lastReview = await ReviewModel.findOne({ aliasId: lastReviewAliasId });
+
   // 마지막 리뷰 추천 시간 조회
   const lastReviewLikedAt = lastReviewAliasId
     ? (
         await ReviewLikeModel.findOne({
-          reviewId: lastReviewAliasId,
+          reviewId: lastReview._id,
           userId: user._id,
         })
       )?.likedAt || new Date()
@@ -152,15 +164,35 @@ export const getUserLikedList = asyncHandler(async (req, res) => {
     userId: user._id,
     likedAt: { $lt: lastReviewLikedAt }, // 마지막 리뷰 추천 시간보다 이전인 추천 검색
   })
-    .populate("reviewId", "aliasId") // 리뷰 데이터 조회
+    .populate({
+      path: "reviewId",
+      select:
+        "aliasId authorId uploadTime title images reviewText rating tags isSpoiler",
+      populate: {
+        path: "authorId",
+        select: "aliasId nickname profileImage",
+      },
+    })
     .sort({
       likedAt: -1, // 추천 시간 내림차순 정렬
     })
-    .limit(20); // 최대 20개 검색
+    .limit(20); // 최대 20개 조회
 
-  const likedReviewIdList = likedList.map((liked) => liked.reviewId.aliasId);
+  const formattedLikedList = likedList.map((review) => ({
+    aliasId: review.reviewId.aliasId,
+    authorId: review.reviewId.authorId.aliasId,
+    uploadTime: review.reviewId.uploadTime,
+    title: review.reviewId.title,
+    images: review.reviewId.images,
+    reviewText: review.reviewId.reviewText,
+    rating: review.reviewId.rating,
+    tags: review.reviewId.tags,
+    isSpoiler: review.reviewId.isSpoiler,
+    userProfileImage: review.reviewId.authorId.profileImage,
+    userNickname: review.reviewId.authorId.nickname,
+  }));
 
-  res.status(200).json(likedReviewIdList);
+  res.status(200).json(formattedLikedList);
 }, "유저가 추천한 리뷰 목록 조회");
 
 /**

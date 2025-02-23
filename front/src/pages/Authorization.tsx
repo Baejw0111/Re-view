@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { getToken } from "@/api/auth";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { addSocialProvider } from "@/api/auth";

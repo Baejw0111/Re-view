@@ -47,6 +47,8 @@ export interface UserInfo {
  * @property {number} rating - 리뷰 평점
  * @property {string[]} tags - 리뷰 태그
  * @property {boolean} isSpoiler - 스포일러 여부
+ * @property {string} userNickname - 리뷰 작성자 닉네임
+ * @property {string} userProfileImage - 리뷰 작성자 프로필 이미지
  */
 export interface ReviewInfo {
   aliasId: string;
@@ -58,6 +60,8 @@ export interface ReviewInfo {
   rating: number;
   tags: string[];
   isSpoiler: boolean;
+  userNickname: string;
+  userProfileImage: string;
 }
 
 /**

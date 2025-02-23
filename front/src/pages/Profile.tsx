@@ -1,11 +1,13 @@
 import PageTemplate from "@/shared/original-ui/PageTemplate";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
 import { Grid, MessageCircle, Heart } from "lucide-react";
-import { Link, useParams, useLocation, Outlet } from "react-router-dom";
+import { Link, useParams, useLocation, Outlet } from "react-router";
 import { Card } from "@/shared/shadcn-ui/card";
 import ProfileInfo from "@/features/user/ProfileInfo";
 import { Suspense } from "react";
 import SkeletonUserCard from "@/shared/skeleton/SkeletonUserCard";
+import { fetchUserInfoById } from "@/api/user";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export default function Profile() {
   const location = useLocation();
@@ -13,11 +15,16 @@ export default function Profile() {
   // 사용자 정보 가져오기
   const { userId } = useParams();
 
+  const { data: userInfo } = useSuspenseQuery({
+    queryKey: ["userInfo", userId as string],
+    queryFn: () => fetchUserInfoById(userId as string),
+  });
+
   return (
     <PageTemplate>
       <Suspense fallback={<SkeletonUserCard isUserProfile />}>
         <Card className="flex justify-center p-8 max-w-xl mx-auto relative">
-          <ProfileInfo userId={userId as string} tags />
+          <ProfileInfo userInfo={userInfo} tags />
         </Card>
       </Suspense>
 

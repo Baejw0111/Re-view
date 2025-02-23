@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviewById } from "@/api/review";
 import { ReviewInfo } from "@/shared/types/interface";
@@ -13,7 +13,6 @@ import {
   CarouselApi,
 } from "@/shared/shadcn-ui/carousel";
 import ReviewActionBar from "@/widgets/ReviewActionBar";
-import { fetchUserInfoById } from "@/api/user";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import ReviewRatingSign from "@/features/review/ReviewRatingSign";
@@ -57,13 +56,6 @@ export default function ReviewDetail() {
     enabled: !!reviewId,
   });
 
-  // 유저 정보
-  const { data: userInfo } = useQuery({
-    queryKey: ["userInfo", reviewInfo?.authorId],
-    queryFn: () => fetchUserInfoById(reviewInfo?.authorId as string),
-    enabled: !!reviewInfo, // reviewInfo가 있을 때만 쿼리 실행
-  });
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
@@ -83,31 +75,34 @@ export default function ReviewDetail() {
                 >
                   <UserAvatar
                     className="h-7 w-7"
-                    profileImage={userInfo?.profileImage}
-                    nickname={userInfo?.nickname}
+                    profileImage={reviewInfo.userProfileImage}
+                    nickname={reviewInfo.userNickname}
                   />
                   <div
                     className={`line-clamp-1 font-semibold ${
-                      userInfo?.nickname === "운영자" ? "text-orange-500" : ""
+                      reviewInfo.userNickname === "운영자"
+                        ? "text-orange-500"
+                        : ""
                     }`}
                   >
-                    {userInfo?.nickname}
+                    {reviewInfo.userNickname}
                   </div>
                 </Link>
                 <div className="text-xs text-muted-foreground">
                   {claculateTime(reviewInfo.uploadTime)}
                 </div>
               </div>
+            </div>
 
+            {/* 리뷰 제목 */}
+            <div className="flex items-center justify-between gap-2">
+              <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
               {/* 평점 */}
               <ReviewRatingSign
                 className="h-7 w-9 text-xl"
                 rating={reviewInfo.rating}
               />
             </div>
-
-            {/* 리뷰 제목 */}
-            <h1 className="text-2xl font-bold">{reviewInfo.title}</h1>
 
             <Separator className="my-2" />
 
