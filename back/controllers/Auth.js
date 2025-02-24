@@ -108,7 +108,7 @@ export const verifyAccessToken = asyncHandler(async (req, res, next) => {
  */
 export const refreshAccessToken = asyncHandler(async (req, res) => {
   const { refreshToken, provider } = req.cookies;
-  if (!refreshToken) {
+  if (!refreshToken || !provider) {
     return res.status(401).json({ message: "로그인 해주세요." });
   }
 
@@ -328,8 +328,8 @@ export const updateTermsAgreement = asyncHandler(async (req, res) => {
  * 로그인 여부 확인
  */
 export const checkAuth = asyncHandler(async (req, res) => {
-  const { accessToken, refreshToken } = req.cookies;
-  if (!accessToken && !refreshToken) {
+  const { accessToken, refreshToken, provider } = req.cookies;
+  if (!provider || !refreshToken) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
   }
 
