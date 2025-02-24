@@ -55,7 +55,14 @@ export const searchUsers = asyncHandler(async (req, res) => {
     .sort({ aliasId: 1 }) // 유저 별칭 아이디 오름차순 정렬
     .limit(20); // 최대 20개 검색
 
-  res.status(200).json(userList);
+  const userListWithFavoriteTags = await Promise.all(
+    userList.map(async (user) => {
+      const favoriteTags = await getFavoriteTags(user._id);
+      return { ...user._doc, favoriteTags };
+    })
+  );
+
+  res.status(200).json(userListWithFavoriteTags);
 }, "유저 검색");
 
 /**

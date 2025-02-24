@@ -35,13 +35,8 @@ export const getToken = asyncHandler(async (req, res) => {
   console.table(tokenData);
 
   // 브라우저에 쿠키 설정
-  res.cookie("provider", provider, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
-    maxAge: expires_in * 1000, // 엑세스 토큰 유효 기간
-  });
 
+  // 액세스 토큰 쿠키 설정
   res.cookie("accessToken", access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -49,8 +44,18 @@ export const getToken = asyncHandler(async (req, res) => {
     maxAge: expires_in * 1000, // 엑세스 토큰 유효 기간
   });
 
-  // 추후에 DB에 저장하는 로직으로 바꿀 것
+  // 리프레시 토큰 쿠키 설정
   res.cookie("refreshToken", refresh_token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    maxAge: refresh_token_expires_in
+      ? refresh_token_expires_in * 1000
+      : 7 * 24 * 60 * 60 * 1000, // 리프레시 토큰 유효 기간
+  });
+
+  // 소셜 로그인 제공자 쿠키 설정
+  res.cookie("provider", provider, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "Strict",
@@ -127,6 +132,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
+      maxAge: refresh_token_expires_in * 1000,
     });
   }
 
@@ -322,10 +328,11 @@ export const updateTermsAgreement = asyncHandler(async (req, res) => {
  * 로그인 여부 확인
  */
 export const checkAuth = asyncHandler(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  if (!accessToken) {
+  const { accessToken, refreshToken } = req.cookies;
+  if (!accessToken && !refreshToken) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
   }
+
   return res.status(200).json({ message: "로그인 상태입니다." });
 }, "로그인 여부 확인");
 
@@ -381,7 +388,7 @@ export const logOut = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "로그아웃 성공" });
 }, "소셜 로그아웃");
 
-const deleteUserData = async (user, userIdentifier) => {
+const deleteUserData = async (user) => {
   // 리뷰 관련 데이터 모두 삭제
   const reviews = await ReviewModel.find({ authorId: user._id });
   for (const review of reviews) {
