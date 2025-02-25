@@ -178,7 +178,7 @@ export const getReviewById = asyncHandler(async (req, res) => {
   // 리뷰 데이터 조회 시 작성자 aliasId도 함께 조회
   const reviewData = await ReviewModel.findOne({
     aliasId: reviewAliasId,
-  }).populate("authorId", "aliasId");
+  }).populate("authorId", "aliasId nickname profileImage");
 
   if (!reviewData) {
     return res.status(404).json({ message: "리뷰가 존재하지 않습니다." });
@@ -194,6 +194,8 @@ export const getReviewById = asyncHandler(async (req, res) => {
     rating: reviewData.rating,
     tags: reviewData.tags,
     isSpoiler: reviewData.isSpoiler,
+    userProfileImage: reviewData.authorId.profileImage,
+    userNickname: reviewData.authorId.nickname,
   });
 }, "특정 리뷰 조회");
 
