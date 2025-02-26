@@ -1,63 +1,47 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "@/state/store/userInfoSlice";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LoginUserInfo } from "@/shared/types/interface";
-import { getLoginUserInfo } from "@/api/auth";
-import useAuth from "@/shared/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 import Header from "@/widgets/Header";
 import SearchDialog from "@/features/common/SearchDialog";
 import SubHeader from "@/widgets/SubHeader";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useNavigate, useLoaderData } from "react-router";
 import { Toaster } from "@/shared/shadcn-ui/sonner";
 import TermsAgreementDialog from "@/widgets/TermsAgreementDialog";
 import { TERM_VERSION, PRIVACY_VERSION } from "@/shared/constants";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
+  const userInfo = useLoaderData();
   const navigate = useNavigate();
-  const isAuth = useAuth();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const [isTermsAgreementDialogOpen, setIsTermsAgreementDialogOpen] =
     useState(false);
 
-  const { data: userInfo } = useQuery<LoginUserInfo>({
-    queryKey: ["loggedInUserInfo"],
-    queryFn: getLoginUserInfo,
-    retry: false,
-    refetchOnWindowFocus: false,
-    enabled: isAuth,
-  });
-
   useEffect(() => {
-    if (isAuth) {
-      if (userInfo) {
-        if (
-          !userInfo.isSignedUp &&
-          window.location.pathname !== "/onboarding"
-        ) {
-          navigate("/onboarding");
-        } else {
-          dispatch(setUserInfo(userInfo));
-        }
+    if (userInfo) {
+      if (!userInfo.isSignedUp && window.location.pathname !== "/onboarding") {
+        navigate("/onboarding");
+      } else {
+        dispatch(setUserInfo(userInfo));
+      }
 
-        if (
-          userInfo.isSignedUp &&
-          (userInfo.agreedTermVersion === undefined ||
-            userInfo.agreedPrivacyVersion === undefined ||
-            userInfo.agreedTermVersion < TERM_VERSION ||
-            userInfo.agreedPrivacyVersion < PRIVACY_VERSION)
-        ) {
-          setIsTermsAgreementDialogOpen(true);
-        }
+      if (
+        userInfo.isSignedUp &&
+        (userInfo.agreedTermVersion === undefined ||
+          userInfo.agreedPrivacyVersion === undefined ||
+          userInfo.agreedTermVersion < TERM_VERSION ||
+          userInfo.agreedPrivacyVersion < PRIVACY_VERSION)
+      ) {
+        setIsTermsAgreementDialogOpen(true);
       }
     }
-  }, [isAuth, userInfo]);
+  }, [userInfo]);
 
   // 알림 스트림 연결
   useEffect(() => {
-    if (isAuth) {
+    if (userInfo) {
       // const eventSource = new EventSource(`${API_URL}/notification/stream`, {
       //   withCredentials: true,
       // });
@@ -77,7 +61,7 @@ function App() {
 
       return () => clearInterval(interval);
     }
-  }, [isAuth, queryClient]);
+  }, [userInfo, queryClient]);
 
   return (
     <>

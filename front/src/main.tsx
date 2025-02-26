@@ -18,6 +18,7 @@ import Profile from "@/pages/Profile";
 import Notification from "@/pages/Notification";
 import Search from "@/pages/Search";
 import { fetchNotifications } from "@/api/notification";
+import { checkAuth, getLoginUserInfo } from "@/api/auth";
 import { fetchLatestFeed, fetchPopularFeed } from "@/api/review";
 import NotFoundError from "@/pages/NotFoundError";
 import ConnectionError from "@/pages/ConnectionError";
@@ -47,6 +48,15 @@ const queryClient = new QueryClient({
 const router = createBrowserRouter([
   {
     element: <App />,
+    loader: async () => {
+      const isSignedIn = await checkAuth();
+      if (isSignedIn) {
+        const userInfo = await getLoginUserInfo();
+        return userInfo;
+      } else {
+        return null;
+      }
+    },
     children: [
       {
         path: "/",

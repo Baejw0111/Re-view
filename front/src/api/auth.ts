@@ -11,6 +11,16 @@ import {
  */
 export const socialLogin = async (provider: string): Promise<void> => {
   window.location.href = `${authUrlVariants[provider]}&redirect_uri=https://re-view.my/oauth/${provider}`;
+  // window.location.href = `${authUrlVariants[provider]}&redirect_uri=http://localhost:5173/oauth/${provider}`;
+};
+
+/**
+ * 로그인 여부 확인 함수
+ * @returns 로그인 여부
+ */
+export const checkAuth = async (): Promise<boolean> => {
+  const response = await authApiClient.get(`/auth/check`);
+  return response.data.isSignedIn;
 };
 
 /**

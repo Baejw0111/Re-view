@@ -328,12 +328,12 @@ export const updateTermsAgreement = asyncHandler(async (req, res) => {
  * 로그인 여부 확인
  */
 export const checkAuth = asyncHandler(async (req, res) => {
-  const { accessToken, refreshToken, provider } = req.cookies;
+  const { refreshToken, provider } = req.cookies;
   if (!provider || !refreshToken) {
-    return res.status(401).json({ message: "로그인이 필요합니다." });
+    return res.status(200).json({ isSignedIn: false });
   }
 
-  return res.status(200).json({ message: "로그인 상태입니다." });
+  return res.status(200).json({ isSignedIn: true });
 }, "로그인 여부 확인");
 
 /**
