@@ -34,7 +34,9 @@ export default function CardList({
     "2xl": 4,
   }; // 현재 화면 너비에 따른 그리드 칼럼 수
 
+  // 화면에 표시되는 리뷰 카드 그리드의 각 행을 가상화 윈도우로 관리
   const virtualizer = useWindowVirtualizer({
+    // 가상화 윈도우의 총 개수는 (리뷰 개수 / 현재 화면 너비에 따른 그리드 칼럼 수)가 된다.
     count: Math.ceil(infoList.length / gridColumnCount[breakpoint]), // 가상화 리스트 목록의 행 개수
     estimateSize: cardType === "review" ? () => 240 : () => 192, // 각 행의 예상 높이
     gap: 24, // 행 간의 간격
