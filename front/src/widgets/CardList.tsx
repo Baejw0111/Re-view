@@ -33,11 +33,14 @@ export default function CardList({
     xl: 3,
     "2xl": 4,
   }; // 현재 화면 너비에 따른 그리드 칼럼 수
+  const totalWindowCount = Math.ceil(
+    infoList.length / gridColumnCount[breakpoint]
+  ); // 가상화 윈도우의 총 개수
 
   // 화면에 표시되는 리뷰 카드 그리드의 각 행을 가상화 윈도우로 관리
   const virtualizer = useWindowVirtualizer({
     // 가상화 윈도우의 총 개수는 (리뷰 개수 / 현재 화면 너비에 따른 그리드 칼럼 수)가 된다.
-    count: Math.ceil(infoList.length / gridColumnCount[breakpoint]), // 가상화 리스트 목록의 행 개수
+    count: totalWindowCount,
     estimateSize: cardType === "review" ? () => 240 : () => 192, // 각 행의 예상 높이
     gap: 24, // 행 간의 간격
     overscan: 2, // 미리 렌더링할 행 개수
@@ -58,53 +61,57 @@ export default function CardList({
               height: `${virtualizer.getTotalSize()}px`,
             }}
           >
-            {virtualizer.getVirtualItems().map((item) => (
-              <div
-                key={item.index}
-                className="absolute top-0 left-0 w-full"
-                data-index={item.index}
-                style={{
-                  // 가상화 윈도우 내의 각 행들을 제대로 위치시키는 설정
-                  transform: `translateY(${item.start}px)`,
-                }}
-              >
+            {virtualizer.getVirtualItems().map(
+              (
+                item // 가상화 윈도우 렌더링
+              ) => (
                 <div
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
                   key={item.index}
-                  ref={
-                    // 마지막 페이지의 뒤에서 두번째 행이 뷰포트에 보이면 무한 스크롤 콜백 함수 트리거
-                    item.index ===
-                    Math.ceil(infoList.length / gridColumnCount[breakpoint]) - 2
-                      ? infiniteScrollRef
-                      : null
-                  }
+                  className="absolute top-0 left-0 w-full"
+                  data-index={item.index}
+                  style={{
+                    // 각 가상화 윈도우들을 제대로 배치하는 설정
+                    transform: `translateY(${item.start}px)`,
+                  }}
                 >
-                  {Array.from({ length: gridColumnCount[breakpoint] }).map(
-                    (_, index) => {
-                      // 각 카드의 Index
-                      const cardIndex =
-                        item.index * gridColumnCount[breakpoint] + index;
-
-                      // 각 행에 카드들을 순서대로 배치
-                      if (cardIndex < infoList.length) {
-                        // 카드 리스트의 카드 타입에 따라 리뷰 카드 또는 유저 프로필 카드 반환
-                        return cardType === "review" ? (
-                          <ReviewCard
-                            key={cardIndex}
-                            reviewInfo={infoList[cardIndex] as ReviewInfo}
-                          />
-                        ) : (
-                          <UserCard
-                            userInfo={infoList[cardIndex] as UserInfo}
-                            key={cardIndex}
-                          />
-                        );
-                      }
+                  <div
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
+                    key={item.index}
+                    ref={
+                      // 마지막 페이지의 뒤에서 두번째 윈도우가 뷰포트에 표시될 시 무한 스크롤 콜백 함수 트리거
+                      item.index === totalWindowCount - 2
+                        ? infiniteScrollRef
+                        : null
                     }
-                  )}
+                  >
+                    {Array.from({ length: gridColumnCount[breakpoint] }).map(
+                      // 각 가상화 윈도우 내의 리뷰 카드들을 렌더링. 화면 너비에 다라 개수가 달라짐
+                      (_, index) => {
+                        // 각 카드의 Index
+                        const cardIndex =
+                          item.index * gridColumnCount[breakpoint] + index;
+
+                        // 각 행에 카드들을 순서대로 배치
+                        if (cardIndex < infoList.length) {
+                          // 카드 리스트의 카드 타입에 따라 리뷰 카드 또는 유저 프로필 카드 반환
+                          return cardType === "review" ? (
+                            <ReviewCard
+                              key={cardIndex}
+                              reviewInfo={infoList[cardIndex] as ReviewInfo}
+                            />
+                          ) : (
+                            <UserCard
+                              userInfo={infoList[cardIndex] as UserInfo}
+                              key={cardIndex}
+                            />
+                          );
+                        }
+                      }
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         </div>
       ) : (
