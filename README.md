@@ -104,3 +104,84 @@
 <img alt="리뷰 상세 페이지" src="https://github.com/user-attachments/assets/bb352241-aa26-4764-8604-7c189e627965" width="320px">
 
 리뷰 상세 페이지에서 리뷰의 상세 내용을 볼 수 있습니다. 댓글창에서 다른 사용자와 댓글을 통해 소통할 수 있습니다. 다른 사용자가 내 리뷰에 댓글을 달 경우 알림이 옵니다.
+
+## 🖥️ 로컬 개발 환경 설정 가이드
+
+### 📌 사전 요구사항
+
+- Node.js 18.x 버전
+- pnpm 8.x 버전
+- AWS 계정 (백엔드 로컬 테스트용)
+- MongoDB
+
+### 📌 프론트엔드 실행
+
+1. front 디렉토리로 이동
+
+```bash
+cd front
+```
+
+2. 의존성 패키지 설치
+
+```bash
+pnpm install
+```
+
+3. 개발 서버 실행
+
+```bash
+pnpm dev
+```
+
+### 백엔드 실행
+
+1. back 디렉토리로 이동
+
+```bash
+cd back
+```
+
+2. 의존성 패키지 설치
+
+```bash
+npm install
+```
+
+3. 환경변수 설정
+   `.env` 파일을 생성하고 다음 변수들을 설정하세요:
+
+```plaintext
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_REGION=
+AWS_BUCKET_NAME=
+FRONT_URL=
+TEST_FRONT_URL=
+KAKAO_CLIENT_ID=
+KAKAO_CLIENT_SECRET=
+KAKAO_REDIRECT_URI=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=
+NAVER_CLIENT_ID=
+NAVER_CLIENT_SECRET=
+NAVER_REDIRECT_URI=
+MONGO_URI=
+IMG_SRC=
+PUUUSH_WEB_HOOK_URL=
+DISCORD_FEEDBACK_WEB_HOOK_URL=
+DISCORD_REPORT_WEB_HOOK_URL=
+```
+
+4. Serverless Offline 실행
+
+```bash
+npm run dev
+```
+
+### 📌 주의사항
+
+- 프론트엔드와 백엔드는 별도의 터미널에서 실행해야 합니다.
+- 소셜 로그인 기능을 테스트하려면 각 플랫폼(카카오, 구글, 네이버)의 개발자 설정이 필요합니다.
+- AWS S3 관련 기능을 사용하려면 적절한 권한이 설정된 AWS 계정이 필요합니다.
