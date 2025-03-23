@@ -190,6 +190,10 @@ export default function Onboarding() {
                     ) : (
                       <span className="relative z-10">회원 가입</span>
                     )}
+                    <span
+                      className="absolute inset-0 bg-gradient-to-r from-red-500 via-green-500 to-blue-500
+                      opacity-0 group-hover:opacity-100 animate-shimmer transition-opacity duration-300"
+                    ></span>
                   </Button>
                   <Button
                     type="button"
@@ -199,16 +203,6 @@ export default function Onboarding() {
                   >
                     회원 가입 취소 및 홈으로 이동
                   </Button>
-                  <style>{`
-                      @keyframes shimmer {
-                        0% { background-position: 200% 0; }
-                        100% { background-position: -200% 0; }
-                      }
-                      .animate-shimmer {
-                        background-size: 200% auto;
-                        animation: shimmer 0.5s linear infinite;
-                      }
-                    `}</style>
                 </CardFooter>
               </motion.div>
             </form>
