@@ -51,8 +51,12 @@ const router = createBrowserRouter([
     loader: async () => {
       const isSignedIn = await checkAuth();
       if (isSignedIn) {
-        const userInfo = await getLoginUserInfo();
-        return { userInfo, isSignedIn };
+        try {
+          const userInfo = await getLoginUserInfo();
+          return { userInfo, isSignedIn };
+        } catch (error) {
+          return { userInfo: null, isSignedIn: false };
+        }
       } else {
         return { userInfo: null, isSignedIn };
       }
