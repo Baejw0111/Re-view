@@ -4,7 +4,7 @@ const isSignedInSlice = createSlice({
   name: "isSignedIn",
   initialState: false,
   reducers: {
-    setIsSignedIn: (state, action) => action.payload,
+    setIsSignedIn: (_, action) => action.payload,
   },
 });
 
