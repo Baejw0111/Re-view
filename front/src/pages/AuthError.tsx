@@ -1,5 +1,5 @@
 import { Button } from "@/shared/shadcn-ui/button";
-import { LogIn } from "lucide-react";
+import { Home, LogIn } from "lucide-react";
 import { Link } from "react-router";
 
 export default function AuthError() {
@@ -9,6 +9,12 @@ export default function AuthError() {
       <p className="text-lg text-muted-foreground">
         이 페이지에 접근하려면 로그인이 필요합니다. 계속하려면 로그인해 주세요.
       </p>
+      <Button asChild>
+        <Link to="/">
+          <Home className="w-4 h-4 mr-2" />
+          홈으로
+        </Link>
+      </Button>
       <Button asChild>
         <Link to="/login">
           <LogIn className="w-4 h-4 mr-2" />

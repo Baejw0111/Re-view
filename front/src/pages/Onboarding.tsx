@@ -25,18 +25,15 @@ import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { signUp, cancelSignUp } from "@/api/auth";
-import { useBlocker } from "react-router";
 import TermsAgreement from "@/features/form/TermsAgreement";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const blocker = useBlocker(true);
   const userInfo = useSelector((state: RootState) => state.userInfo);
   const [isAgreementChecked, setIsAgreementChecked] = useState(false);
   const [isUploading, setIsUploading] = useState(false); // 프로필 이미지 업로드 상태
-  const [isSignUp, setIsSignUp] = useState(false); // 회원 가입 상태
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -88,7 +85,6 @@ export default function Onboarding() {
   const { mutate: signUpMutation, isPending } = useMutation({
     mutationFn: signUp,
     onSuccess: () => {
-      setIsSignUp(true); // 회원 가입을 성공 시 경고창 생성 방지
       window.location.href = "/";
     },
     onError: (error: AxiosError<{ message: string }>) => {
@@ -114,60 +110,19 @@ export default function Onboarding() {
   useEffect(() => {
     // 이미 회원가입 된 사용자가 Onboarding 페이지에 접속한 경우 메인 페이지로 이동
     if (userInfo?.isSignedUp) {
-      setIsSignUp(true);
       navigate("/");
     }
   }, [userInfo]);
 
-  // 라우트 간 이동 시 경고창 생성
-  useEffect(() => {
-    if (blocker.state === "blocked") {
-      if (isSignUp) {
-        blocker.proceed();
-        return;
-      }
-
-      const confirmLeave = window.confirm(
-        "지금 나가면 회원 가입이 이뤄지지 않습니다. 회원 가입 과정을 취소하시겠습니까?"
-      );
-
-      if (confirmLeave) {
-        if (!userInfo?.isSignedUp) {
-          // 회원 가입 취소
-          cancelSignUp();
-        }
-        blocker.proceed(); // 페이지 이동을 허용
-      } else {
-        blocker.reset(); // 차단 상태 유지
-      }
-    }
-  }, [blocker, isSignUp]);
-
-  // 새로고침 또는 사이트를 떠나려 할 때 경고창 생성
-  useEffect(() => {
-    // 회원 가입 완료 시 경고창 생성 방지
-    if (isSignUp) {
-      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-        e.preventDefault();
-      };
-
-      window.addEventListener("beforeunload", handleBeforeUnload);
-
-      return () => {
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-      };
-    }
-  }, [isSignUp]);
-
   return (
-    <div className="pt-20 flex flex-col items-center gap-10">
+    <div className="md:pt-20 flex flex-col items-center md:gap-10">
       <MovingLogo className="w-40 h-40" />
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <Card className="w-96">
+        <Card className="w-80 md:w-96 mb-10">
           <CardHeader>
             <motion.h1 className="text-2xl font-bold" variants={itemVariants}>
               회원 가입
@@ -215,7 +170,7 @@ export default function Onboarding() {
               </CardContent>
 
               <motion.div variants={itemVariants} className="w-full">
-                <CardFooter>
+                <CardFooter className="flex flex-col gap-10">
                   <Button
                     type="submit"
                     variant="outline"
@@ -235,6 +190,14 @@ export default function Onboarding() {
                     ) : (
                       <span className="relative z-10">회원 가입</span>
                     )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="w-full"
+                    onClick={cancelSignUp}
+                  >
+                    회원 가입 취소 및 홈으로 이동
                   </Button>
                   <style>{`
                       @keyframes shimmer {

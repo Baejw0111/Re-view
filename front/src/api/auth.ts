@@ -96,6 +96,7 @@ export const signUp = async (formData: FormData): Promise<void> => {
  */
 export const cancelSignUp = async (): Promise<void> => {
   await authApiClient.post(`/auth/signup/cancel`, {});
+  window.location.href = "/";
 };
 
 /**
