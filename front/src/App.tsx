@@ -9,10 +9,11 @@ import { Outlet, useNavigate, useLoaderData } from "react-router";
 import { Toaster } from "@/shared/shadcn-ui/sonner";
 import TermsAgreementDialog from "@/widgets/TermsAgreementDialog";
 import { TERM_VERSION, PRIVACY_VERSION } from "@/shared/constants";
+import { setIsSignedIn } from "@/state/store/isSignedInSlice";
 
 function App() {
   // 새로고침 시 로그인 유지를 위해 사용자 정보 조회
-  const userInfo = useLoaderData();
+  const { userInfo, isSignedIn } = useLoaderData();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
@@ -20,6 +21,7 @@ function App() {
     useState(false);
 
   useEffect(() => {
+    dispatch(setIsSignedIn(isSignedIn));
     if (userInfo) {
       if (!userInfo.isSignedUp && window.location.pathname !== "/onboarding") {
         navigate("/onboarding");

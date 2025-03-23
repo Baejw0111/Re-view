@@ -52,9 +52,9 @@ const router = createBrowserRouter([
       const isSignedIn = await checkAuth();
       if (isSignedIn) {
         const userInfo = await getLoginUserInfo();
-        return userInfo;
+        return { userInfo, isSignedIn };
       } else {
-        return null;
+        return { userInfo: null, isSignedIn };
       }
     },
     children: [

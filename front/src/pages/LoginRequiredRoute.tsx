@@ -7,7 +7,7 @@ export default function LoginRequiredRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const userInfo = useSelector((state: RootState) => state.userInfo);
+  const isSignedIn = useSelector((state: RootState) => state.isSignedIn);
 
-  return userInfo.aliasId ? <>{children}</> : <AuthError />;
+  return isSignedIn ? <>{children}</> : <AuthError />;
 }
